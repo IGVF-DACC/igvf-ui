@@ -1,12 +1,13 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
-import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
+import { DataAreaTitle, DataAreaTitleLink, DataPanel } from "./data-area";
 import DataGrid, { DataGridContainer } from "./data-grid";
+import { DeprecatedFileFilterControl } from "./deprecated-files";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
 import Link from "./link-no-prefetch";
@@ -16,6 +17,10 @@ import TableCount from "./table-count";
 // lib
 import { FileTableController } from "../lib/batch-download";
 import type { Row, Cell, CellContentProps } from "../lib/data-grid";
+import {
+  computeFileDisplayData,
+  resolveDeprecatedFileProps,
+} from "../lib/deprecated-files";
 import {
   extractSeqspecsForFile,
   fileGroupsToDataGridFormat,
@@ -30,6 +35,7 @@ import type {
   LabObject,
   OntologyTermObject,
 } from "../globals";
+import { UC } from "../lib/constants";
 
 /**
  * The default maximum number of items in the table before the pager gets displayed.
@@ -323,6 +329,7 @@ export default function SequencingFileTable({
   seqspecFiles = [],
   seqspecDocuments = [],
   isDeletedVisible = false,
+  defaultDeprecatedVisible = false,
   panelId = "sequencing-files",
 }: {
   files: FileObject[];
@@ -334,10 +341,30 @@ export default function SequencingFileTable({
   seqspecFiles?: FileObject[];
   seqspecDocuments?: DocumentObject[];
   isDeletedVisible?: boolean;
+  defaultDeprecatedVisible?: boolean;
   panelId?: string;
 }) {
   // Currently viewed page of sequence files
   const [pageIndex, setPageIndex] = useState(0);
+
+  // Local state for deprecated file visibility if not controlled externally via props
+  const [deprecatedVisible, setDeprecatedVisible] = useState(
+    defaultDeprecatedVisible
+  );
+
+  // Determine the deprecated file visibility and toggle control, either from props or local state.
+  const localDeprecated = resolveDeprecatedFileProps({
+    visible: deprecatedVisible,
+    setVisible: setDeprecatedVisible,
+    defaultVisible: defaultDeprecatedVisible,
+    controlTitle: "Include deprecated files",
+  });
+
+  // Filter out deprecated files if the user has not opted to include them.
+  const { visibleFiles, showDeprecatedToggle } = computeFileDisplayData(
+    files,
+    localDeprecated
+  );
 
   // True or false isIlluminaReadType adds a positive or negative `illumina_read_type` selector to
   // the report link. Undefined generates no `illumina_read_type` selector in the file query string.
@@ -358,8 +385,8 @@ export default function SequencingFileTable({
   // Group the sequence files by their sequencing run, flowcell, and lane. Cache the results
   // because this function can get expensive.
   const sequenceFileGroups = useMemo(
-    () => generateSequenceFileGroups(files),
-    [files]
+    () => generateSequenceFileGroups(visibleFiles),
+    [visibleFiles]
   );
 
   // Paginate the sequence file groups for display in the table. Cache the results because
@@ -371,7 +398,7 @@ export default function SequencingFileTable({
   );
 
   // Determine if the "Tile" column should be shown based on whether any files contain tile info.
-  const showTileColumn = filesContainTile(files);
+  const showTileColumn = filesContainTile(visibleFiles);
 
   // Function to determine if a column should be shown based on the current table conditions.
   function shouldShowColumn(columnId: string) {
@@ -390,11 +417,14 @@ export default function SequencingFileTable({
   });
 
   // Build the data grid with only visible columns
-  const sequenceDataGrid = fileGroupsToDataGridFormat(
-    paginatedSequenceFileGroups[pageIndex],
-    visibleColumns,
-    AlternateRowComponent
-  );
+  const sequenceDataGrid =
+    paginatedSequenceFileGroups.length > 0
+      ? fileGroupsToDataGridFormat(
+          paginatedSequenceFileGroups[pageIndex],
+          visibleColumns,
+          AlternateRowComponent
+        )
+      : [];
 
   // Get the total number of files within `sequenceFileGroups`. This might have a different count
   // from `files.length` if some files were found invalid for a sequence file table.
@@ -420,17 +450,29 @@ export default function SequencingFileTable({
     setPageIndex(newIndex);
   }
 
+  useEffect(() => {
+    // Reset to the first page whenever the number of data items changes.
+    setPageIndex(0);
+  }, [files.length]);
+
   return (
     <>
       <DataAreaTitle id={panelId}>
         {title}
         {(controller || reportLink) && (
           <div className="align-center flex gap-1">
+            {showDeprecatedToggle && (
+              <DeprecatedFileFilterControl
+                panelId={panelId}
+                deprecatedData={localDeprecated}
+              />
+            )}
             {controller && (
               <BatchDownloadActuator
                 controller={controller}
                 label="Download files associated with this file set"
                 size="sm"
+                isDisabled={visibleFiles.length === 0}
               />
             )}
             {reportLink && (
@@ -438,6 +480,8 @@ export default function SequencingFileTable({
                 href={reportLink}
                 label="Report of files that have this item as their file set"
                 isDeletedVisible={isDeletedVisible}
+                isDisabled={visibleFiles.length === 0}
+                isDeprecatedVisible={localDeprecated.visible}
               >
                 <TableCellsIcon className="h-4 w-4" />
               </DataAreaTitleLink>
@@ -458,12 +502,19 @@ export default function SequencingFileTable({
             />
           </TablePagerContainer>
         )}
-        <DataGridContainer className="h-full">
-          <DataGrid
-            data={[resolvedHeaderRow, ...sequenceDataGrid]}
-            meta={{ seqspecFiles, seqspecDocuments }}
-          />
-        </DataGridContainer>
+        {visibleFiles.length > 0 ? (
+          <DataGridContainer className="h-full">
+            <DataGrid
+              data={[resolvedHeaderRow, ...sequenceDataGrid]}
+              meta={{ seqspecFiles, seqspecDocuments }}
+            />
+          </DataGridContainer>
+        ) : (
+          <DataPanel>
+            The files don{UC.rsquo}t appear because they are deprecated. Select{" "}
+            <b>Include deprecated files</b> to view the files.
+          </DataPanel>
+        )}
       </div>
     </>
   );

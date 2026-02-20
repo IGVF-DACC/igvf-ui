@@ -16,9 +16,11 @@ import { generateSVGContent } from "./lib";
 export function DownloadTrigger({
   graphId,
   fileId = "",
+  isDisabled = false,
 }: {
   graphId: string;
   fileId?: string;
+  isDisabled?: boolean;
 }) {
   function downloadSVG() {
     const svgContent = generateSVGContent(graphId);
@@ -42,6 +44,7 @@ export function DownloadTrigger({
       label="Download graph as SVG"
       size="sm"
       hasIconOnly
+      isDisabled={isDisabled}
     >
       <ArrowDownTrayIcon className="h-3 w-3" />
     </Button>

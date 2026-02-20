@@ -23,6 +23,7 @@ import { ButtonLink } from "./form-elements";
 import { secDirId } from "./section-directory";
 import SeparatedList from "./separated-list";
 // lib
+import { deprecatedStatuses } from "../lib/deprecated-files";
 import QueryString from "../lib/query-string";
 import { splitPathAndQueryString } from "../lib/query-utils";
 
@@ -125,18 +126,23 @@ export function DataAreaTitle({
  * @param label - Label for the link
  * @param isExternal - True if the link is external
  * @param isDeletedVisible - True to include deleted items in the linked report
+ * @param isDeprecatedVisible - True to include archived items in the linked report
  */
 export function DataAreaTitleLink({
   href,
   label,
   isExternal,
   isDeletedVisible = false,
+  isDeprecatedVisible = true,
+  isDisabled = false,
   children,
 }: {
   href: string;
   label: string;
   isExternal?: boolean;
   isDeletedVisible?: boolean;
+  isDeprecatedVisible?: boolean;
+  isDisabled?: boolean;
   children: React.ReactNode;
 }) {
   // Add status!=deleted to the query string to avoid linking to deleted items in reports. Replace
@@ -149,12 +155,25 @@ export function DataAreaTitleLink({
     finalHref = `${path}?${query.format()}`;
   }
 
+  // Add deprecated status query params to the query string if archived items shouldn't appear in
+  // the report.
+  if (!isDeprecatedVisible) {
+    const { path, queryString } = splitPathAndQueryString(finalHref);
+    const query = new QueryString(queryString);
+    deprecatedStatuses.forEach((deprecatedStatus) => {
+      query.deleteKeyValue("status", deprecatedStatus);
+      query.addKeyValue("status", deprecatedStatus, "NEGATIVE");
+    });
+    finalHref = `${path}?${query.format()}`;
+  }
+
   return (
     <ButtonLink
       href={finalHref}
       size="sm"
       label={label}
       isExternal={isExternal}
+      isDisabled={isDisabled}
     >
       {children}
     </ButtonLink>

@@ -20,7 +20,7 @@ import type {
   FileSetObject,
   SampleObject,
   SearchResults,
-} from "../../globals.d";
+} from "../../globals";
 
 describe("Test the splitIlluminaSequenceFiles function", () => {
   it("returns all arrays when given an array of each types of files", () => {

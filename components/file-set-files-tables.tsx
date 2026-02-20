@@ -3,6 +3,8 @@ import _ from "lodash";
 // components
 import FileTable from "./file-table";
 import SequencingFileTable from "./sequencing-file-table";
+// lib
+import { isDeprecatedStatus } from "../lib/deprecated-files";
 // root
 import type { FileObject, FileSetObject, DocumentObject } from "../globals";
 
@@ -69,6 +71,7 @@ export default function FileSetFilesTables({
           itemPath={fileSet["@id"]}
           seqspecFiles={seqspecFiles}
           seqspecDocuments={seqspecDocuments}
+          defaultDeprecatedVisible={isDeprecatedStatus(fileSet.status)}
           panelId="sequencing-illumina"
         />
       )}
@@ -82,6 +85,7 @@ export default function FileSetFilesTables({
           itemPath={fileSet["@id"]}
           seqspecFiles={seqspecFiles}
           seqspecDocuments={seqspecDocuments}
+          defaultDeprecatedVisible={isDeprecatedStatus(fileSet.status)}
           panelId="sequencing-other"
         />
       )}
@@ -92,6 +96,10 @@ export default function FileSetFilesTables({
           fileSet={fileSet}
           title="Other Raw Data Files"
           panelId="other-raw-files"
+          hasDeprecatedOption
+          externalDeprecated={{
+            defaultVisible: isDeprecatedStatus(fileSet.status),
+          }}
         />
       )}
     </>

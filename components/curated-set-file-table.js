@@ -1,16 +1,22 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
+import { useState } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
+import { DeprecatedFileFilterControl } from "./deprecated-files";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
 // lib
 import { FileTableController } from "../lib/batch-download";
+import {
+  computeFileDisplayData,
+  resolveDeprecatedFileProps,
+} from "../lib/deprecated-files";
 import { dataSize, truthyOrZero } from "../lib/general";
 
 const filesColumns = [
@@ -85,8 +91,22 @@ export function CuratedSetFileTable({
   reportLabel = "",
   downloadQuery = null,
   controllerContent = null,
+  defaultDeprecatedVisible = false,
   panelId = "files",
 }) {
+  // Local state for deprecated file visibility if not controlled externally via props
+  const [deprecatedVisible, setDeprecatedVisible] = useState(
+    defaultDeprecatedVisible
+  );
+
+  // Determine the deprecated file visibility and toggle control, either from props or local state.
+  const localDeprecated = resolveDeprecatedFileProps({
+    visible: deprecatedVisible,
+    setVisible: setDeprecatedVisible,
+    defaultVisible: defaultDeprecatedVisible,
+    controlTitle: "Include deprecated files",
+  });
+
   // Compose the report link, either from the file set or the given link and label.
   const finalReportLink = fileSet
     ? `/multireport/?type=File&file_set.@id=${encodeURIComponent(
@@ -102,16 +122,24 @@ export function CuratedSetFileTable({
     ? new FileTableController(fileSet, downloadQuery)
     : null;
 
-  const sortableGrid = (
-    <SortableGrid data={files} columns={filesColumns} keyProp="@id" />
+  // Filter out deprecated files if the user has not opted to include them.
+  const { visibleFiles, showDeprecatedToggle } = computeFileDisplayData(
+    files,
+    localDeprecated
   );
 
   return (
     <>
       <DataAreaTitle id={panelId}>
         {title}
-        {(controller || finalReportLink) && (
+        {(controller || finalReportLink || showDeprecatedToggle) && (
           <div className="align-center flex gap-1">
+            {showDeprecatedToggle && (
+              <DeprecatedFileFilterControl
+                panelId={panelId}
+                deprecatedData={localDeprecated}
+              />
+            )}
             {controller && (
               <BatchDownloadActuator
                 controller={controller}
@@ -121,14 +149,25 @@ export function CuratedSetFileTable({
             )}
             {controllerContent}
             {finalReportLink && (
-              <DataAreaTitleLink href={finalReportLink} label={label}>
+              <DataAreaTitleLink
+                href={finalReportLink}
+                label={label}
+                isDisabled={visibleFiles.length === 0}
+                isDeprecatedVisible={localDeprecated.visible}
+              >
                 <TableCellsIcon className="h-4 w-4" />
               </DataAreaTitleLink>
             )}
           </div>
         )}
       </DataAreaTitle>
-      <div className="overflow-hidden">{sortableGrid}</div>
+      <div className="overflow-hidden">
+        <SortableGrid
+          data={visibleFiles}
+          columns={filesColumns}
+          keyProp="@id"
+        />
+      </div>
     </>
   );
 }
@@ -148,6 +187,8 @@ CuratedSetFileTable.propTypes = {
   downloadQuery: PropTypes.object,
   // Extra text or JSX content for the batch download controller
   controllerContent: PropTypes.node,
+  // Default visibility for deprecated files
+  defaultDeprecatedVisible: PropTypes.bool,
   // Unique ID for the table for the section directory
   panelId: PropTypes.string,
 };

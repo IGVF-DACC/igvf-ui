@@ -1,5 +1,6 @@
 // node_modules
 import PropTypes from "prop-types";
+import { useState } from "react";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
@@ -72,6 +73,10 @@ export default function PredictionSet({
   isJson,
 }) {
   const sections = useSecDir({ isJson });
+
+  // State for whether to include deprecated files in the file table and graph.
+  const [areDeprecatedFilesVisible, setAreDeprecatedFilesVisible] =
+    useState(false);
 
   return (
     <>
@@ -244,6 +249,11 @@ export default function PredictionSet({
                 files={files}
                 fileSet={predictionSet}
                 isFilteredVisible
+                hasDeprecatedOption
+                externalDeprecated={{
+                  visible: areDeprecatedFilesVisible,
+                  setVisible: setAreDeprecatedFilesVisible,
+                }}
               />
               <FileGraph
                 fileSet={predictionSet}
@@ -253,6 +263,10 @@ export default function PredictionSet({
                 derivedFromFiles={derivedFromFiles}
                 qualityMetrics={qualityMetrics}
                 fileId={predictionSet.accession}
+                externalDeprecated={{
+                  visible: areDeprecatedFilesVisible,
+                  setVisible: setAreDeprecatedFilesVisible,
+                }}
               />
             </>
           )}

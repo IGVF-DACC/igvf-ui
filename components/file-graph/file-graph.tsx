@@ -16,12 +16,21 @@ import {
   type NodeProps,
 } from "@xyflow/react";
 // components
+import Checkbox from "../checkbox";
 import { DataAreaTitle, DataPanel } from "../data-area";
 import Link from "../link-no-prefetch";
 import { QualityMetricModal } from "../quality-metric";
 import SeparatedList from "../separated-list";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
+import { UC } from "../../lib/constants";
+import {
+  computeDefaultDeprecatedVisibility,
+  computeFileDisplayData,
+  resolveDeprecatedFileProps,
+  trimDeprecatedFiles,
+  type DeprecatedFileFilterProps,
+} from "../../lib/deprecated-files";
 import { truncateText } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
@@ -35,10 +44,10 @@ import {
   countFileNodes,
   elkToReactFlow,
   generateGraphData,
+  generateIncludedFiles,
   MAX_LINE_LENGTH,
   NODE_HEIGHT,
   NODE_WIDTH,
-  trimIsolatedFiles,
 } from "./lib";
 import { NodeStatus } from "./status";
 import {
@@ -51,7 +60,7 @@ import {
   type NodeMetadata,
 } from "./types";
 // root
-import type { FileObject, FileSetObject } from "../../globals.d";
+import type { FileObject, FileSetObject } from "../../globals";
 import "@xyflow/react/dist/style.css";
 
 /**
@@ -518,6 +527,7 @@ function GraphCore({
  * @param graphData - Graph data after ELK layout
  * @param nativeFiles - Files included directly in the file set the user is viewing
  * @param graphId - ID to assign to the graph container element
+ * @param onNodeLayout - Callback invoked after node layout is complete with the laid out nodes
  */
 function Graph({
   graphData,
@@ -645,9 +655,13 @@ function GraphCycleError({ cycles }: { cycles: string[][] }) {
  * @param referenceFiles - Reference files associated with `files`
  * @param qualityMetrics - Quality metrics for `files`
  * @param title - Title that appears above the graph panel
+ * @param deprecatedFileProps - Props for handling the visibility of deprecated files in the graph.
+ * @param secDirTitle - Title for the section directory if the graph is within a section.
  * @param panelId - ID of the file-graph panel unique on the page for the section directory
  * @param graphId - ID of the graph container element unique on the page
  * @param fileId - ID of the file the graph is for; used to customize download filename
+ * @param areDeprecatedFilesVisible - True to show deprecated files in the graph
+ * @param setAreDeprecatedFilesVisible - Function to set the visibility of deprecated files
  */
 export function FileGraph({
   files,
@@ -656,6 +670,8 @@ export function FileGraph({
   referenceFiles,
   qualityMetrics,
   title = "File Association Graph",
+  externalDeprecated,
+  secDirTitle = "File Association Graph",
   panelId = "file-graph",
   graphId = "file-graph-container",
   fileId = "",
@@ -666,34 +682,65 @@ export function FileGraph({
   derivedFromFiles: FileObject[];
   qualityMetrics: QualityMetricObject[];
   title?: string;
+  externalDeprecated?: DeprecatedFileFilterProps;
+  secDirTitle?: string;
   panelId?: string;
   graphId?: string;
   fileId?: string;
 }) {
   const tooltipAttr = useTooltip(`tooltip-${graphId}`);
 
-  // Create a set of paths of files that are available to be included in the graph. Any files
-  // unavailable because of incomplete indexing or access privileges do not get included.
-  const availableFilePaths = new Set([
-    ...files.map((file) => file["@id"]),
-    ...derivedFromFiles.map((file) => file["@id"]),
-  ]);
-
-  // Copy the files but with unavailable files filtered out of their `derived_from` arrays.
-  const filesWithFilteredDerived = files.map((file) => ({
-    ...file,
-    derived_from:
-      file.derived_from?.filter((path) => availableFilePaths.has(path)) || [],
-  }));
-
-  // Only consider native files that derive from other files or that other files derive from. From
-  // these files look for cycles caused by circular `derived_from` relationships.
-  const includedFiles = trimIsolatedFiles(
-    filesWithFilteredDerived,
-    derivedFromFiles
+  // Local state for deprecated file visibility if not controlled externally via props
+  const defaultDeprecatedVisible = computeDefaultDeprecatedVisibility(
+    true,
+    externalDeprecated
   );
-  const cycles = detectCycles(includedFiles.concat(derivedFromFiles));
+  const [deprecatedVisible, setDeprecatedVisible] = useState(
+    defaultDeprecatedVisible
+  );
 
+  // Determine the deprecated file visibility and toggle control, either from props or local state.
+  const localDeprecated = resolveDeprecatedFileProps(
+    {
+      visible: deprecatedVisible,
+      setVisible: setDeprecatedVisible,
+      defaultVisible: defaultDeprecatedVisible,
+      controlTitle: "Include deprecated files",
+    },
+    externalDeprecated
+  );
+  const { showDeprecatedToggle } = computeFileDisplayData(
+    files,
+    localDeprecated
+  );
+
+  // Filter out deprecated files if the user has not opted to include them.
+  const visibleFiles = trimDeprecatedFiles(files, localDeprecated.visible);
+  const includedDerivedFromFiles = trimDeprecatedFiles(
+    derivedFromFiles,
+    localDeprecated.visible
+  );
+
+  // Generate the lists of files to include in the graph, both for all files and for non-deprecated
+  // files.
+  const includedFiles = generateIncludedFiles(
+    visibleFiles,
+    includedDerivedFromFiles
+  );
+  const includedFilesWithDeprecated = localDeprecated.visible
+    ? includedFiles
+    : generateIncludedFiles(files, includedDerivedFromFiles);
+
+  // Determine if the graph is empty only after filtering out deprecated files. We still want to
+  // show a message about deprecated files being hidden in this case instead of the graph or cycle
+  // errors.
+  const isEmptyGraphAfterFiltering =
+    includedFiles.length === 0 && includedFilesWithDeprecated.length > 0;
+
+  // Look for cycles caused by circular `derived_from` relationships.
+  const cycles = detectCycles(includedFiles.concat(includedDerivedFromFiles));
+
+  // Final list of files now determined. Use them to generate the graph data if there are no cycles.
   const graphData =
     cycles.length === 0
       ? generateGraphData(
@@ -705,14 +752,35 @@ export function FileGraph({
         )
       : null;
 
-  if (graphData || cycles.length > 0) {
+  if (graphData || cycles.length > 0 || isEmptyGraphAfterFiltering) {
     return (
       <section role="region" aria-labelledby="file-graph">
-        <DataAreaTitle id={panelId}>
+        <DataAreaTitle id={panelId} secDirTitle={secDirTitle}>
           <div id="file-graph">{title}</div>
-          <TooltipRef tooltipAttr={tooltipAttr}>
-            <DownloadTrigger graphId={graphId} fileId={fileId} />
-          </TooltipRef>
+          <div className="flex gap-1">
+            {showDeprecatedToggle && (
+              <Checkbox
+                id={`file-graph-deprecated-${panelId}`}
+                checked={localDeprecated.visible}
+                name="Include deprecated files"
+                onClick={() =>
+                  localDeprecated.setVisible(!localDeprecated.visible)
+                }
+                className="items-center [&>input]:mr-0"
+              >
+                <div className="order-first mr-1 text-sm">
+                  {localDeprecated.controlTitle}
+                </div>
+              </Checkbox>
+            )}
+            <TooltipRef tooltipAttr={tooltipAttr}>
+              <DownloadTrigger
+                graphId={graphId}
+                fileId={fileId}
+                isDisabled={cycles.length > 0 || isEmptyGraphAfterFiltering}
+              />
+            </TooltipRef>
+          </div>
           <Tooltip tooltipAttr={tooltipAttr}>
             Download the graph as an SVG file. See{" "}
             <Link
@@ -729,9 +797,14 @@ export function FileGraph({
           <DataPanel isPaddingSuppressed>
             <Graph
               graphData={graphData}
-              nativeFiles={filesWithFilteredDerived}
+              nativeFiles={includedFiles}
               graphId={graphId}
             />
+          </DataPanel>
+        ) : isEmptyGraphAfterFiltering ? (
+          <DataPanel>
+            The graph doesn{UC.rsquo}t appear because files are deprecated.
+            Select <b>Include deprecated files</b> to view the graph.
           </DataPanel>
         ) : (
           <DataPanel>

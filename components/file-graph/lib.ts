@@ -120,6 +120,37 @@ export function trimIsolatedFiles(
 }
 
 /**
+ * Generate the list of files to include in the graph. This involves:
+ * - Filtering out `derived_from` files not included in `files`.
+ * - Trimming isolated files that have no connections to other files in the graph
+ *
+ * @param files - Files from which to calculate files to include in the graph
+ * @param availableDerivedFromFiles - All files that files in the graph derive from
+ * @returns Files to include in the graph
+ */
+export function generateIncludedFiles(
+  files: FileObject[],
+  availableDerivedFromFiles: FileObject[]
+): FileObject[] {
+  // Create a set of paths of files that are available to be included in the graph. Any files
+  // unavailable because of incomplete indexing or access privileges do not get included.
+  const availableFilePaths = new Set([
+    ...files.map((file) => file["@id"]),
+    ...availableDerivedFromFiles.map((file) => file["@id"]),
+  ]);
+
+  // Copy the files but with unavailable files filtered out of their `derived_from` arrays.
+  const filesWithFilteredDerived = files.map((file) => ({
+    ...file,
+    derived_from:
+      file.derived_from?.filter((path) => availableFilePaths.has(path)) || [],
+  }));
+
+  // Only consider native files that derive from other files or that other files derive from.
+  return trimIsolatedFiles(filesWithFilteredDerived, availableDerivedFromFiles);
+}
+
+/**
  * Collect all the file-set types that appear in `nodes` and return them along with a count of the
  * number of times each type appears in `nodes`.
  *

@@ -1,13 +1,14 @@
 import {
+  collectRelevantFileSetStats,
   countFileNodes,
+  elkToReactFlow,
+  generateGraphData,
+  generateIncludedFiles,
+  generateSVGContent,
+  getFileMetrics,
   NODE_WIDTH,
   NODE_HEIGHT,
   trimIsolatedFiles,
-  collectRelevantFileSetStats,
-  generateGraphData,
-  getFileMetrics,
-  elkToReactFlow,
-  generateSVGContent,
 } from "../lib";
 import { NODE_KINDS } from "../types";
 import type { FileObject, FileSetObject } from "../../../globals";
@@ -665,6 +666,96 @@ describe("generateGraphData", () => {
   it("should handle empty inputs", () => {
     const result = generateGraphData([], [], [], [], []);
     expect(result).toBeNull();
+  });
+});
+
+describe("Test generateIncludedFiles function", () => {
+  it("should return empty array when no files are included", () => {
+    const result = generateIncludedFiles([], []);
+    expect(result).toEqual([]);
+  });
+
+  it("should return same files when all files are connected", () => {
+    const files: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file2"],
+      },
+      {
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: [],
+      },
+    ];
+    const derivedFromFiles = [files[0]];
+
+    const result = generateIncludedFiles(files, derivedFromFiles);
+    expect(result).toHaveLength(2);
+    expect(result.map((f) => f["@id"])).toEqual([
+      "/files/file1",
+      "/files/file2",
+    ]);
+  });
+
+  it("should filter out derived-from files not included", () => {
+    const files: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file2"],
+      },
+      {
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file3"],
+      },
+    ];
+
+    const derivedFromFiles = [files[1]]; // Only file1 is included
+    const result = generateIncludedFiles(files, derivedFromFiles);
+    expect(result).toHaveLength(2);
+    expect(result[0].derived_from).toEqual(["/files/file2"]);
+    expect(result[1].derived_from).toEqual([]);
+  });
+
+  it("should handle files without derived_from property", () => {
+    const files: FileObject[] = [
+      {
+        "@id": "/files/file1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: ["/files/file2"],
+      },
+      {
+        "@id": "/files/file2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        // No derived_from property at all
+      },
+    ];
+
+    const derivedFromFiles = [files[1]];
+    const result = generateIncludedFiles(files, derivedFromFiles);
+    expect(result).toHaveLength(2);
+    expect(result[0].derived_from).toEqual(["/files/file2"]);
+    expect(result[1].derived_from).toEqual([]);
   });
 });
 

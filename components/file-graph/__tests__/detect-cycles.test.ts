@@ -260,23 +260,6 @@ describe("Test the detectCycles function", () => {
     expect(cycles[0]).toEqual(["A", "B", "A"]);
   });
 
-  it("should throw error for missing derived_from reference", () => {
-    const fileObjects: FileObject[] = [
-      {
-        "@id": "A",
-        "@type": ["File", "Item"],
-        content_type: "reads",
-        file_format: "fastq",
-        file_set: "/file-sets/test",
-        derived_from: ["B"], // B doesn't exist
-      },
-    ];
-
-    expect(() => detectCycles(fileObjects)).toThrow(
-      "File 'A' derived_from references missing @id 'B'."
-    );
-  });
-
   it("should handle nodes with undefined derived_from", () => {
     const fileObjects: FileObject[] = [
       {
