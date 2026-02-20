@@ -133,6 +133,10 @@ export default function AuxiliarySet({
                 files={groupedFiles.tabular}
                 fileSet={auxiliarySet}
                 title="Tabular Files"
+                reportLink={`/multireport/?type=TabularFile&file_set.@id=${encodeURIComponent(
+                  auxiliarySet["@id"]
+                )}`}
+                reportLabel="Report of tabular files that have this item as their file set"
                 panelId="tabular"
                 hasDeprecatedOption
                 externalDeprecated={{
