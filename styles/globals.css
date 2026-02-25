@@ -105,6 +105,18 @@
   --color-doi-brand: oklch(0.8181 0.1678 81.21);
   --color-doi-outline: oklch(0 0 0);
   --color-doi-label: oklch(0 0 0);
+
+  /** Select Menu */
+  --color-select-menu-root: var(--color-white);
+  --color-select-menu-root-outline: var(--color-gray-500);
+  --color-select-menu: var(--color-white);
+  --color-select-menu-outline: var(--color-gray-400);
+  --color-select-menu-signal: var(--color-gray-500);
+  --color-select-menu-separator: var(--color-gray-200);
+  --color-select-menu-item: var(--color-white);
+  --color-select-menu-item-label: var(--color-gray-800);
+  --color-select-menu-item-hover: var(--color-gray-600);
+  --color-select-menu-item-label-hover: var(--color-white);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -125,6 +137,18 @@
     --color-doi-brand: oklch(0.8181 0.1678 81.21);
     --color-doi-outline: oklch(1 0 0);
     --color-doi-label: oklch(0 0 0);
+
+    /** Select Menu */
+    --color-select-menu-root: var(--color-black);
+    --color-select-menu-root-outline: var(--color-gray-500);
+    --color-select-menu: var(--color-black);
+    --color-select-menu-outline: var(--color-gray-500);
+    --color-select-menu-signal: var(--color-gray-500);
+    --color-select-menu-separator: var(--color-gray-600);
+    --color-select-menu-item: var(--color-black);
+    --color-select-menu-item-label: var(--color-gray-200);
+    --color-select-menu-item-hover: var(--color-gray-200);
+    --color-select-menu-item-label-hover: var(--color-gray-800);
   }
 }
 
@@ -375,10 +399,6 @@
   --color-code-text: #1e1e1f;
 
   --color-button-text-info: #000000;
-
-  /** Section Directory */
-  --color-section-directory-highlight: #d9f99d;
-  --color-section-directory: #365314;
 
   /** Tissue Matrix */
   --color-tissue-matrix-data-homo-sapiens: #cab14f;
@@ -667,9 +687,6 @@
 
   --color-modal-border: #68799c;
   --color-modal-backdrop: oklch(0 0 0 / 60%);
-
-  --color-section-directory-highlight: #365314;
-  --color-section-directory: #d9f99d;
 
   /** Tissue Matrix */
   --color-tissue-matrix-data-homo-sapiens: #7b6c30;

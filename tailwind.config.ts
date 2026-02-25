@@ -162,8 +162,6 @@ const tailwindConfig: Config = {
         "file-graph-qc-trigger": "var(--color-file-graph-qc-trigger-bg)",
         "file-graph-qc-trigger-text": "var(--color-file-graph-qc-trigger-text)",
 
-        "section-directory": "var(--color-section-directory-highlight)",
-
         "tissue-matrix-data-homo-sapiens":
           "var(--color-tissue-matrix-data-homo-sapiens)",
         "tissue-matrix-column-header-homo-sapiens":
@@ -468,8 +466,6 @@ const tailwindConfig: Config = {
         "audit-not-compliant": "var(--color-audit-not-compliant-fill)",
         "audit-internal-action": "var(--color-audit-internal-action-fill)",
         "audit-facet": "var(--color-audit-facet-fill)",
-
-        "section-directory": "var(--color-section-directory)",
       },
       gridTemplateColumns: {
         "min-2": "repeat(2, minmax(0, min-content))",

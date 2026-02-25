@@ -237,6 +237,13 @@ describe("Test SecDir component", () => {
     expect(screen.getByText("Modifications")).toBeInTheDocument();
     expect(screen.getByText("Attribution")).toBeInTheDocument();
 
+    // Make sure the Top of Page item is followed by a separator.
+    const topOfPageItem = screen.getByText("Top of Page");
+    expect(topOfPageItem).toBeInTheDocument();
+    const separator = topOfPageItem.nextSibling;
+    expect(separator).toBeInTheDocument();
+    expect(separator).toHaveAttribute("role", "separator");
+
     // Click the menu button again to close the menu
     act(() => {
       menuButton.click();
@@ -294,16 +301,10 @@ describe("Test SecDir component", () => {
 
     // Hover over the dropdown menu
     const menu = screen.getByRole("menu");
-    fireEvent.pointerEnter(menu);
-
-    // Wait 400 milliseconds to let the close delay expire to demonstrate the menu stays open
-    // anyway.
-    act(() => {
-      jest.advanceTimersByTime(400);
-    });
+    fireEvent.mouseEnter(menu);
 
     // Stop hovering over the menu
-    fireEvent.pointerLeave(menu);
+    fireEvent.mouseLeave(menu);
 
     // Wait 500 milliseconds to let the close delay expire
     act(() => {
@@ -326,7 +327,7 @@ describe("Test SecDir component", () => {
     expect(screen.getByText("Attribution")).toBeInTheDocument();
 
     // Stop hovering over the menu button.
-    fireEvent.pointerLeave(menuButton);
+    fireEvent.mouseLeave(menuButton);
 
     // Wait 500 milliseconds to let the close delay expire
     act(() => {

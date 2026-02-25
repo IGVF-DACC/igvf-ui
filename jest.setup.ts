@@ -41,6 +41,13 @@ setConfig(config);
 // Make TextEncoder and TextDecoder available globally in tests.
 Object.assign(globalThis, { TextEncoder, TextDecoder });
 
+// Mock ResizeObserver, which is not available in jsdom but is used by headlessui.
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
 // Mock navigator.clipboard for copy-to-clipboard tests.
 Object.assign(navigator, {
   clipboard: {

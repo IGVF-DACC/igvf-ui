@@ -32,7 +32,7 @@
  *
  * <SampleTable
  *   samples={item.first_samples}
- *   panelId="first-samples""
+ *   panelId="first-samples"
  * />
  * <SampleTable
  *   samples={item.second-samples}
@@ -52,12 +52,11 @@
  */
 
 // node_modules
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useContext, useEffect, useRef, useState } from "react";
 // components
 import Icon from "./icon";
+import { SelectMenu } from "./select-menu";
 import SessionContext from "./session-context";
-import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 import { useTouchPointerType } from "./touch";
 // lib
 import { toShishkebabCase } from "../lib/general";
@@ -85,6 +84,12 @@ const ANCHOR_HIGHLIGHT_TIME = 2000;
  * ID of the "Top of Page" section directory item.
  */
 export const SCROLL_TO_TOP_ID = "scroll-to-top";
+
+/**
+ * ID to generate a separator item in the section directory menu. This separates the "Top of Page"
+ * item from the panel items in the menu.
+ */
+const SEPARATOR_ID = "separator-item";
 
 /**
  * Section directory item that's part of a list of sections on the page to display in a dropdown
@@ -122,7 +127,8 @@ const SEC_DIR_ID_PREFIX = "sec-dir";
 /**
  * Pages with section directories call this function to generate the ID to use on any JSX elements
  * on the page you use as a target of the section directory.
- * @param id Unique ID on the page to add to the section directory prefix
+ *
+ * @param id - Unique ID on the page to add to the section directory prefix
  * @returns ID with the section directory prefix, or empty string if id is empty
  */
 export function secDirId(id: string): string {
@@ -132,6 +138,7 @@ export function secDirId(id: string): string {
 /**
  * Get all elements on the page that have a section directory ID prefix. The page must have been
  * rendered with the section directory IDs on each panel for this to work.
+ *
  * @returns List of all elements on the page that have a section directory ID prefix
  */
 export function getSecDirTargets(): NodeListOf<Element> {
@@ -139,22 +146,16 @@ export function getSecDirTargets(): NodeListOf<Element> {
 }
 
 /**
- * Click handler when the user selects a section to scroll to. It also closes the section-directory
- * menu.
- * @param e Click event on the section-directory menu item
- * @param close Function to close the section-directory menu
+ * Scroll to the section with the given ID and briefly highlight it.
+ *
+ * @param sectionId - ID of the DOM element to scroll to
  */
-function handleSelect(
-  e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-): void {
-  e.preventDefault();
+function handleSelect(sectionId: string): void {
+  const element = document.querySelector(`#${sectionId}`);
+  const isScrollToTop = sectionId === SCROLL_TO_TOP_ID;
 
-  // Get the anchor string from the href attribute of the clicked element.
-  const id = e.currentTarget.getAttribute("href");
-  const element = document.querySelector(id);
-  const isScrollToTop = id === `#${SCROLL_TO_TOP_ID}`;
-
-  // Offset the position of the element to scroll to, allowing for the height of the sticky header.
+  // Offset the position of the element to scroll to, allowing for the height of the sticky
+  // header.
   const elementPosition = element?.getBoundingClientRect().top || 0;
   const offsetPosition = isScrollToTop
     ? 0
@@ -166,7 +167,7 @@ function handleSelect(
 
   // Add a CSS class to the element to highlight it when scrolling to it. After a short time,
   // remove it.
-  if (!isScrollToTop) {
+  if (!isScrollToTop && element) {
     element.classList.add("sec-dir-highlight");
     setTimeout(() => {
       element.classList.remove("sec-dir-highlight");
@@ -176,11 +177,11 @@ function handleSelect(
 
 /**
  * Displays the section directory trigger as well as its dropdown menu.
- * @param sections List of sections to display in the section directory
+ *
+ * @param sections - List of sections to display in the section directory
  */
 export function SecDir({ sections }: { sections: SectionList }) {
   const isTouch = useTouchPointerType();
-  const tooltipAttr = useTooltip("section-directory-menu");
 
   // True if the user has the mouse in the section directory menu. Use ref to avoid closure issue.
   const isMouseHovered = useRef(false);
@@ -194,6 +195,10 @@ export function SecDir({ sections }: { sections: SectionList }) {
     {
       id: SCROLL_TO_TOP_ID,
       title: "Top of Page",
+    },
+    {
+      id: SEPARATOR_ID,
+      title: "",
     },
     ...sections.items,
   ];
@@ -225,67 +230,64 @@ export function SecDir({ sections }: { sections: SectionList }) {
   /**
    * Called when the user selects a section to scroll to. It also closes the section-directory menu
    * on touch devices. The menu gets closed using hover on non-touch devices.
-   * @param e Click event on the section-directory menu item
-   * @param close Function to close the section-directory menu
+   *
+   * @param event - React mouse event from clicking the menu item
+   * @param sectionId - ID of the section to scroll to
+   * @param close - Function to close the section-directory menu
    */
   function onItemClick(
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    event: React.MouseEvent,
+    sectionId: string,
     close: () => void
   ) {
+    event.preventDefault();
     if (isTouch) {
       close();
     }
-    handleSelect(e);
+    handleSelect(sectionId);
   }
 
   return (
-    <>
-      <Menu as="div" className="relative inline-block text-left">
-        {({ open, close }) => (
-          <>
-            <TooltipRef tooltipAttr={tooltipAttr}>
-              <MenuButton
-                className="bg-menu-trigger data-hover:bg-menu-trigger-hover data-open:bg-menu-trigger-open flex cursor-pointer justify-center rounded-t-sm p-1"
-                aria-label="Open section directory menu"
-                aria-expanded={open}
-                onPointerEnter={onPointerEnter}
-                onPointerLeave={() => onPointerLeave(close)}
-              >
-                <Icon.SectionDirectory className="h-7 w-7" />
-              </MenuButton>
-            </TooltipRef>
-            <MenuItems
-              anchor="bottom end"
-              className="border-menu-items bg-menu-items z-20 rounded-b-lg border shadow-lg"
-              onPointerEnter={onPointerEnter}
-              onPointerLeave={() => onPointerLeave(close)}
-            >
-              {sectionItemsWithScrollToTop.map((section) => (
-                <MenuItem key={section.id}>
-                  <a
-                    href={`#${section.id}`}
-                    onClick={(e) => onItemClick(e, close)}
-                    className="text-menu-item hover:bg-menu-item-hover hover:text-menu-item-hover data-focus:bg-menu-item-hover data-focus:text-menu-item-hover block px-4 py-0.5 text-sm font-medium no-underline"
-                  >
-                    {ItemRenderer ? (
-                      <ItemRenderer
-                        section={section}
-                        allSections={sections.items}
-                      />
-                    ) : (
-                      <>{section.title}</>
-                    )}
-                  </a>
-                </MenuItem>
-              ))}
-            </MenuItems>
-          </>
-        )}
-      </Menu>
-      {!isTouch && (
-        <Tooltip tooltipAttr={tooltipAttr}>Jump to section on the page</Tooltip>
+    <SelectMenu className="mb-0.5">
+      {({ close }) => (
+        <>
+          <SelectMenu.Trigger
+            onMouseEnter={onPointerEnter}
+            onMouseLeave={() => onPointerLeave(close)}
+          >
+            <Icon.SectionDirectory className="h-4 w-4" />
+            <div>Page Navigator</div>
+          </SelectMenu.Trigger>
+          <SelectMenu.Items
+            justify="right"
+            onMouseEnter={onPointerEnter}
+            onMouseLeave={() => {
+              onPointerLeave(close);
+            }}
+          >
+            {sectionItemsWithScrollToTop.map((section) =>
+              section.id === SEPARATOR_ID ? (
+                <SelectMenu.Separator key={section.id} />
+              ) : (
+                <SelectMenu.Item
+                  key={section.id}
+                  onClick={(e) => onItemClick(e, section.id, close)}
+                >
+                  {ItemRenderer ? (
+                    <ItemRenderer
+                      section={section}
+                      allSections={sections.items}
+                    />
+                  ) : (
+                    section.title
+                  )}
+                </SelectMenu.Item>
+              )
+            )}
+          </SelectMenu.Items>
+        </>
       )}
-    </>
+    </SelectMenu>
   );
 }
 
@@ -307,13 +309,14 @@ export function SecDir({ sections }: { sections: SectionList }) {
  * the content of the page, and you want to collect the sections again when the user switches
  * between JSON and object formats. `hash` is ignored if `isJson` is provided with either `true`
  * or `false` values.
- * @param renderer React component to render each item in the section directory menu
- * @param hash Hash to use to trigger this hook to collect the sections again
- * @param isJson Use in place of `hash` to trigger collecting the sections, but for the JSON switch
+ *
+ * @param renderer - React component to render each item in the section directory menu
+ * @param hash - Hash to use to trigger this hook to collect the sections again
+ * @param isJson - Use in place of `hash` to trigger collecting the sections, but for the JSON switch
  * @returns List of sections on the page to pass to SecDir
  */
 export function useSecDir({
-  renderer = null,
+  renderer,
   hash = "",
   isJson,
 }: {
@@ -323,9 +326,8 @@ export function useSecDir({
 } = {}): SectionList {
   // If isJson is provided (true or false), use it as the basis for the hash. Otherwise use the
   // hash (if any) as is.
-  if (typeof isJson === "boolean") {
-    hash = isJson ? "json" : "object";
-  }
+  const resolvedHash =
+    typeof isJson === "boolean" ? (isJson ? "json" : "object") : hash;
 
   // Use the session properties `auth.userid` property to detect the user login so we can update
   // the section directory in case new panels appear.
@@ -333,7 +335,10 @@ export function useSecDir({
   const userName = sessionProperties?.["auth.userid"] || "";
 
   // State to hold the list of sections to display in the section directory
-  const [sections, setSections] = useState<SectionList>();
+  const [sections, setSections] = useState<SectionList>({
+    items: [],
+    renderer: undefined,
+  });
 
   useEffect(() => {
     // Get all elements on the page with a section directory ID prefix.
@@ -342,11 +347,12 @@ export function useSecDir({
     // Extract the ID and title of each section to build a list of sections that the directory can
     // use.
     const sectionList = Array.from(extractedSections).map((section) => {
-      const title = section.getAttribute("data-sec-dir") || section.textContent;
+      const title =
+        section.getAttribute("data-sec-dir") || section.textContent!;
       return { id: section.id, title };
     }) as SectionItem[];
     setSections({ items: sectionList, renderer });
-  }, [hash, userName]);
+  }, [resolvedHash, userName]);
 
   return sections;
 }
