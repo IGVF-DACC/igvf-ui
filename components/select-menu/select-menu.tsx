@@ -1,30 +1,16 @@
 // node_modules
 import { Menu } from "@headlessui/react";
-import { ComponentProps, ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 
 /**
- * Derive an object type that maps each MenuItem prop name to its TypeScript type, so individual
- * prop types can be extracted by name below.
+ * The render prop argument passed to SelectMenu's children function. Mirrors headlessui's
+ * MenuRenderPropArg, which cannot be reliably extracted via ComponentProps because Menu is a
+ * generic component and ComponentProps only returns the default-tag signature.
  */
-type MenuProps = ComponentProps<typeof Menu>;
-
-/**
- * Get the type of the `children` prop of MenuItem. This will be used to derive the children type
- * of the `Item` component defined below.
- */
-type MenuChildren = MenuProps["children"];
-
-/**
- * Extract only the function (render prop) type(s) from the union of possible MenuItem children
- * types. This could be a single function type or a union of function types.
- */
-type MenuRenderProp = Extract<MenuChildren, (...args: unknown[]) => unknown>;
-
-/**
- * Get the type of the first argument of the render prop function. This is the type of the props
- * object passed to the render prop function of `Item`.
- */
-type MenuRenderPropArg = Parameters<MenuRenderProp>[0];
+type MenuRenderPropArg = {
+  open: boolean;
+  close: () => void;
+};
 
 /**
  * Wrap your select menu with `<SelectMenu>` to provide the context for all its subcomponents. The
