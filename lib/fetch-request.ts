@@ -289,6 +289,7 @@ export function isErrorObject(
 export default class FetchRequest {
   private headers = new Headers();
   private backend = false;
+  private debug = false;
 
   // Static connection pool for persistent connections (Node only). Imports only import Typescript
   // types, not code. This holds an actual instance of the agent class once initialized, so we need
@@ -485,10 +486,28 @@ export default class FetchRequest {
    * @returns {string} URL to use for the current request
    */
   private get baseUrl(): string {
-    if (this.backend) {
-      return SERVER_URL;
+    if (this.debug) {
+      console.log(
+        "******* BACKEND ISSERVER %s %s\n",
+        this.backend,
+        this.isServer
+      );
+      console.log("  ***** SERVER_URL: %s\n", SERVER_URL);
+      console.log("  ***** BACKEND_URL: %s\n", BACKEND_URL);
+      console.log("  ***** API_URL: %s\n", API_URL);
     }
-    return this.isServer ? BACKEND_URL : API_URL;
+
+    let result;
+    if (this.backend) {
+      result = SERVER_URL;
+    } else {
+      result = this.isServer ? BACKEND_URL : API_URL;
+    }
+    if (this.debug) {
+      console.log("  ***** BASE_URL: %s\n", result);
+    }
+
+    return result;
   }
 
   /**
@@ -964,7 +983,10 @@ export default class FetchRequest {
     path: string,
     payload: object
   ): Promise<DataProviderObject | ErrorObject> {
+    this.debug = true;
     const url = this.pathUrl(path);
+    this.debug = false;
+    console.log("********* POST REQ URL: ", url);
     logRequest("postObject", path, this.usingPersistentConnections);
     const options = this.buildOptionsWithAgent(url, "POST", {
       accept: PAYLOAD_FORMAT.JSON,
