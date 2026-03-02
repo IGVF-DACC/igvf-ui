@@ -1,4 +1,5 @@
 // lib
+import { trimDeprecatedFiles } from "./deprecated-files";
 import FetchRequest from "./fetch-request";
 import { type DatasetSummary } from "./home";
 // root
@@ -9,6 +10,7 @@ import type {
   FileObject,
   FileSetObject,
   LabObject,
+  SampleObject,
 } from "../globals";
 
 /**
@@ -419,6 +421,7 @@ export async function requestSamples(
       paths,
       [
         "accession",
+        "barcode_map",
         "construct_library_sets",
         "disease_terms",
         "protocols",
@@ -745,4 +748,48 @@ export async function requestSupersedes(
   ]);
 
   return { supersedes, supersededBy };
+}
+
+/**
+ * Request the barcode_map tabular files for a given set of samples. You can optionally exclude
+ * files with deleted or deprecated status by setting the `exclude` parameter to "deleted" or
+ * "deprecated", respectively. By default, no files get excluded based on status.
+ *
+ * @param samples - Samples from which to request barcode_map tabular files
+ * @param request - Request object to use to make the request
+ * @param exclude - Exclude files with deleted or deprecated status, or don't exclude any files
+ * @returns Requested barcode_map tabular files, or an empty array if none found
+ */
+export async function requestSampleBarcodeMaps(
+  samples: SampleObject[],
+  request: FetchRequest,
+  exclude: "deleted" | "deprecated" | "none" = "none"
+): Promise<FileObject[]> {
+  // Gather any barcode map tabular-file paths from the samples.
+  const barcodeMapPaths = samples
+    .map((sample) =>
+      typeof sample.barcode_map === "string"
+        ? sample.barcode_map
+        : sample.barcode_map?.["@id"]
+    )
+    .filter((x) => Boolean(x));
+
+  // Request the unique barcode map files if any barcode maps were found in the samples.
+  let barcodeMapFiles: FileObject[] = [];
+  const uniqueBarcodeMapPaths = [...new Set(barcodeMapPaths)];
+  if (uniqueBarcodeMapPaths.length > 0) {
+    barcodeMapFiles = (await requestFiles(uniqueBarcodeMapPaths, request, [
+      "TabularFile",
+    ])) as FileObject[];
+
+    // Exclude files with deleted or deprecated status if specified.
+    if (exclude === "deleted") {
+      barcodeMapFiles = barcodeMapFiles.filter(
+        (file) => file.status !== "deleted"
+      );
+    } else if (exclude === "deprecated") {
+      barcodeMapFiles = trimDeprecatedFiles(barcodeMapFiles, false);
+    }
+  }
+  return barcodeMapFiles;
 }

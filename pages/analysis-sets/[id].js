@@ -50,6 +50,7 @@ import {
   requestLibraryDesignFiles,
   requestPublications,
   requestQualityMetrics,
+  requestSampleBarcodeMaps,
   requestSamples,
   requestSupersedes,
 } from "../../lib/common-requests";
@@ -82,6 +83,7 @@ export default function AnalysisSet({
   constructLibrarySets,
   libraryDesignFiles,
   samples,
+  barcodeMapFiles,
   donors,
   qualityMetrics,
   assayTitleDescriptionMap,
@@ -337,6 +339,15 @@ export default function AnalysisSet({
             />
           )}
 
+          {barcodeMapFiles.length > 0 && (
+            <FileTable
+              files={barcodeMapFiles}
+              title="Sample Barcode Map Files"
+              secDirTitle="Sample Barcode Map Files"
+              panelId="sample-barcode-map-files"
+            />
+          )}
+
           {donors.length > 0 && <DonorTable donors={donors} />}
 
           {analysisSet.construct_library_sets?.length > 0 && (
@@ -351,6 +362,7 @@ export default function AnalysisSet({
             <FileTable
               files={libraryDesignFiles}
               title="Library Design Files"
+              secDirTitle="Library Design Files"
               panelId="library-design-files"
             />
           )}
@@ -448,6 +460,8 @@ AnalysisSet.propTypes = {
   libraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples from analysis set `samples` property that doesn't embed enough properties to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Sample barcode map tabular files associated with the analysis set's samples
+  barcodeMapFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors from analysis set `donors` property that doesn't embed enough properties to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this analysis set
@@ -567,6 +581,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       const samplePaths = analysisSet.samples.map((sample) => sample["@id"]);
       samples = await requestSamples(samplePaths, request);
     }
+
+    const barcodeMapFiles = await requestSampleBarcodeMaps(
+      samples,
+      request,
+      "deleted"
+    );
 
     const donors = await requestDonors(
       analysisSet.donors?.map((donor) => donor["@id"]) || [],
@@ -746,6 +766,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         constructLibrarySets,
         libraryDesignFiles,
         samples,
+        barcodeMapFiles,
         donors,
         qualityMetrics,
         assayTitleDescriptionMap,

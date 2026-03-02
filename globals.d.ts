@@ -500,6 +500,7 @@ export interface HumanDonorObject extends DatabaseObject {
 export interface SampleObject extends DatabaseObject {
   aliases?: string[];
   collections?: string[];
+  barcode_map?: string | FileObject;
   dbxrefs?: string[];
   institutional_certificates?: string[] | InstitutionalCertificateObject[];
   name?: string;
