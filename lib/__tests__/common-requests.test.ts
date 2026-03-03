@@ -1,4 +1,9 @@
-import type { DatabaseObject, FileSetObject } from "../../globals.d";
+import type {
+  DatabaseObject,
+  FileObject,
+  FileSetObject,
+  SampleObject,
+} from "../../globals.d";
 import {
   requestAnalysisSteps,
   requestAnalysisStepVersions,
@@ -19,6 +24,7 @@ import {
   requestPhenotypicFeatures,
   requestPublications,
   requestQualityMetrics,
+  requestSampleBarcodeMaps,
   requestSamples,
   requestSeqspecFiles,
   requestSoftware,
@@ -34,6 +40,16 @@ import FetchRequest from "../fetch-request";
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 global.fetch = mockFetch;
 
+// Helper to create consistent mock responses.
+function createMockResponse(data: any): Response {
+  return {
+    ok: true,
+    json: () => Promise.resolve(data),
+    status: 200,
+    statusText: "OK",
+  } as Response;
+}
+
 describe("Test all the common requests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -44,16 +60,6 @@ describe("Test all the common requests", () => {
   afterAll(() => {
     jest.restoreAllMocks();
   });
-
-  // Helper to create consistent mock responses.
-  function createMockResponse(data: any): Response {
-    return {
-      ok: true,
-      json: () => Promise.resolve(data),
-      status: 200,
-      statusText: "OK",
-    } as Response;
-  }
 
   test("requestAnalysisSteps function", async () => {
     const mockResult = {
@@ -962,7 +968,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFetch).toHaveBeenCalledWith(
-      "/search-quick/?type=Sample&field=accession&field=construct_library_sets&field=disease_terms&field=protocols&field=sample_terms&field=status&field=summary&@id=/tissues/IGVFSM0003DDDD/&@id=/technical-samples/IGVFSM3106NGJL/&limit=2",
+      "/search-quick/?type=Sample&field=accession&field=barcode_map&field=construct_library_sets&field=disease_terms&field=protocols&field=sample_terms&field=status&field=summary&@id=/tissues/IGVFSM0003DDDD/&@id=/technical-samples/IGVFSM3106NGJL/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -1791,5 +1797,388 @@ describe("Test all the common requests", () => {
       expect(result.supersedes).toHaveLength(0);
       expect(result.supersededBy).toHaveLength(0);
     });
+  });
+});
+
+describe("requestSampleBarcodeMaps", () => {
+  const mockBarcodeMapFile: FileObject = {
+    "@id": "/tabular-files/IGVFFI1111AAAA/",
+    "@type": ["TabularFile", "File", "Item"],
+    accession: "IGVFFI1111AAAA",
+    content_type: "barcode to element mapping",
+    file_format: "tsv",
+    file_set: "/measurement-sets/IGVFDS1234TEST/",
+    status: "released",
+    upload_status: "validated",
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFetch.mockReset();
+  });
+
+  it("returns empty array when samples array is empty", async () => {
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps([], request);
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array when no samples have a barcode_map", async () => {
+    const samples: SampleObject[] = [
+      {
+        "@id": "/primary-cells/IGVFSM1111AAAA/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM1111AAAA",
+        status: "released",
+      },
+      {
+        "@id": "/primary-cells/IGVFSM2222BBBB/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM2222BBBB",
+        status: "released",
+      },
+    ] as SampleObject[];
+
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps(samples, request);
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
+  });
+
+  it("requests barcode map when barcode_map is a string path", async () => {
+    const samples: SampleObject[] = [
+      {
+        "@id": "/primary-cells/IGVFSM1111AAAA/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM1111AAAA",
+        barcode_map: "/tabular-files/IGVFFI1111AAAA/",
+        status: "released",
+      },
+    ] as SampleObject[];
+
+    const mockResult = { "@graph": [mockBarcodeMapFile] };
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps(samples, request);
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining("type=TabularFile"),
+      expect.anything()
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining("@id=/tabular-files/IGVFFI1111AAAA/"),
+      expect.anything()
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockBarcodeMapFile);
+  });
+
+  it("requests barcode map when barcode_map is an embedded FileObject", async () => {
+    const samples: SampleObject[] = [
+      {
+        "@id": "/primary-cells/IGVFSM1111AAAA/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM1111AAAA",
+        barcode_map: {
+          "@id": "/tabular-files/IGVFFI1111AAAA/",
+          "@type": ["TabularFile", "File", "Item"],
+          accession: "IGVFFI1111AAAA",
+          status: "released",
+        },
+        status: "released",
+      },
+    ] as SampleObject[];
+
+    const mockResult = { "@graph": [mockBarcodeMapFile] };
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps(samples, request);
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining("@id=/tabular-files/IGVFFI1111AAAA/"),
+      expect.anything()
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockBarcodeMapFile);
+  });
+
+  it("deduplicates barcode map paths across multiple samples", async () => {
+    const samples: SampleObject[] = [
+      {
+        "@id": "/primary-cells/IGVFSM1111AAAA/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM1111AAAA",
+        barcode_map: "/tabular-files/IGVFFI1111AAAA/",
+        status: "released",
+      },
+      {
+        "@id": "/primary-cells/IGVFSM2222BBBB/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM2222BBBB",
+        barcode_map: "/tabular-files/IGVFFI1111AAAA/",
+        status: "released",
+      },
+    ] as SampleObject[];
+
+    const mockResult = { "@graph": [mockBarcodeMapFile] };
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps(samples, request);
+
+    // The same path should only be requested once.
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    const calledUrl = (mockFetch.mock.calls[0][0] as string).split("@id=");
+    // Only one @id parameter in the URL.
+    expect(calledUrl).toHaveLength(2);
+    expect(result).toHaveLength(1);
+  });
+
+  it("collects barcode maps from multiple samples with different paths", async () => {
+    const mockBarcodeMapFile2 = {
+      "@id": "/tabular-files/IGVFFI2222BBBB/",
+      "@type": ["TabularFile", "File", "Item"],
+      accession: "IGVFFI2222BBBB",
+      content_type: "barcode to element mapping",
+      file_format: "tsv",
+      status: "released",
+      upload_status: "validated",
+    };
+
+    const samples: SampleObject[] = [
+      {
+        "@id": "/primary-cells/IGVFSM1111AAAA/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM1111AAAA",
+        barcode_map: "/tabular-files/IGVFFI1111AAAA/",
+        status: "released",
+      },
+      {
+        "@id": "/primary-cells/IGVFSM2222BBBB/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM2222BBBB",
+        barcode_map: "/tabular-files/IGVFFI2222BBBB/",
+        status: "released",
+      },
+    ] as SampleObject[];
+
+    const mockResult = { "@graph": [mockBarcodeMapFile, mockBarcodeMapFile2] };
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps(samples, request);
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining("@id=/tabular-files/IGVFFI1111AAAA/"),
+      expect.anything()
+    );
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining("@id=/tabular-files/IGVFFI2222BBBB/"),
+      expect.anything()
+    );
+    expect(result).toHaveLength(2);
+  });
+
+  it("skips samples without barcode_map while collecting from those that have one", async () => {
+    const samples: SampleObject[] = [
+      {
+        "@id": "/primary-cells/IGVFSM1111AAAA/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM1111AAAA",
+        status: "released",
+      },
+      {
+        "@id": "/primary-cells/IGVFSM2222BBBB/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM2222BBBB",
+        barcode_map: "/tabular-files/IGVFFI1111AAAA/",
+        status: "released",
+      },
+    ] as SampleObject[];
+
+    const mockResult = { "@graph": [mockBarcodeMapFile] };
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps(samples, request);
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockBarcodeMapFile);
+  });
+
+  it("returns empty array when API request fails", async () => {
+    const samples: SampleObject[] = [
+      {
+        "@id": "/primary-cells/IGVFSM1111AAAA/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM1111AAAA",
+        barcode_map: "/tabular-files/IGVFFI1111AAAA/",
+        status: "released",
+      },
+    ] as SampleObject[];
+
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      statusText: "Internal Server Error",
+      json: () => Promise.resolve({ error: "Server error" }),
+    } as Response);
+
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps(samples, request);
+
+    expect(result).toEqual([]);
+  });
+
+  it("excludes deleted files when exclude is 'deleted'", async () => {
+    const deletedFile: FileObject = {
+      "@id": "/tabular-files/IGVFFI2222BBBB/",
+      "@type": ["TabularFile", "File", "Item"],
+      accession: "IGVFFI2222BBBB",
+      content_type: "barcode to element mapping",
+      file_format: "tsv",
+      file_set: "/measurement-sets/IGVFDS1234TEST/",
+      status: "deleted",
+      upload_status: "validated",
+    };
+
+    const samples: SampleObject[] = [
+      {
+        "@id": "/primary-cells/IGVFSM1111AAAA/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM1111AAAA",
+        barcode_map: "/tabular-files/IGVFFI1111AAAA/",
+        status: "released",
+      },
+      {
+        "@id": "/primary-cells/IGVFSM2222BBBB/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM2222BBBB",
+        barcode_map: "/tabular-files/IGVFFI2222BBBB/",
+        status: "released",
+      },
+    ] as SampleObject[];
+
+    const mockResult = { "@graph": [mockBarcodeMapFile, deletedFile] };
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps(samples, request, "deleted");
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockBarcodeMapFile);
+    expect(result.find((f) => f.status === "deleted")).toBeUndefined();
+  });
+
+  it("keeps deleted files when exclude is 'none' (default)", async () => {
+    const deletedFile: FileObject = {
+      "@id": "/tabular-files/IGVFFI2222BBBB/",
+      "@type": ["TabularFile", "File", "Item"],
+      accession: "IGVFFI2222BBBB",
+      content_type: "barcode to element mapping",
+      file_format: "tsv",
+      file_set: "/measurement-sets/IGVFDS1234TEST/",
+      status: "deleted",
+      upload_status: "validated",
+    };
+
+    const samples: SampleObject[] = [
+      {
+        "@id": "/primary-cells/IGVFSM1111AAAA/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM1111AAAA",
+        barcode_map: "/tabular-files/IGVFFI1111AAAA/",
+        status: "released",
+      },
+      {
+        "@id": "/primary-cells/IGVFSM2222BBBB/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM2222BBBB",
+        barcode_map: "/tabular-files/IGVFFI2222BBBB/",
+        status: "released",
+      },
+    ] as SampleObject[];
+
+    const mockResult = { "@graph": [mockBarcodeMapFile, deletedFile] };
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps(samples, request, "none");
+
+    expect(result).toHaveLength(2);
+    expect(result.find((f) => f.status === "deleted")).toEqual(deletedFile);
+  });
+
+  it("excludes deprecated (archived, revoked, deleted) files when exclude is 'deprecated'", async () => {
+    const archivedFile: FileObject = {
+      "@id": "/tabular-files/IGVFFI2222BBBB/",
+      "@type": ["TabularFile", "File", "Item"],
+      accession: "IGVFFI2222BBBB",
+      content_type: "barcode to element mapping",
+      file_format: "tsv",
+      file_set: "/measurement-sets/IGVFDS1234TEST/",
+      status: "archived",
+      upload_status: "validated",
+    };
+    const revokedFile: FileObject = {
+      "@id": "/tabular-files/IGVFFI3333CCCC/",
+      "@type": ["TabularFile", "File", "Item"],
+      accession: "IGVFFI3333CCCC",
+      content_type: "barcode to element mapping",
+      file_format: "tsv",
+      file_set: "/measurement-sets/IGVFDS1234TEST/",
+      status: "revoked",
+      upload_status: "validated",
+    };
+
+    const samples: SampleObject[] = [
+      {
+        "@id": "/primary-cells/IGVFSM1111AAAA/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM1111AAAA",
+        barcode_map: "/tabular-files/IGVFFI1111AAAA/",
+        status: "released",
+      },
+      {
+        "@id": "/primary-cells/IGVFSM2222BBBB/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM2222BBBB",
+        barcode_map: "/tabular-files/IGVFFI2222BBBB/",
+        status: "released",
+      },
+      {
+        "@id": "/primary-cells/IGVFSM3333CCCC/",
+        "@type": ["PrimaryCell", "Sample", "Item"],
+        accession: "IGVFSM3333CCCC",
+        barcode_map: "/tabular-files/IGVFFI3333CCCC/",
+        status: "released",
+      },
+    ] as SampleObject[];
+
+    const mockResult = {
+      "@graph": [mockBarcodeMapFile, archivedFile, revokedFile],
+    };
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestSampleBarcodeMaps(
+      samples,
+      request,
+      "deprecated"
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockBarcodeMapFile);
+    expect(result.find((f) => f.status === "archived")).toBeUndefined();
+    expect(result.find((f) => f.status === "revoked")).toBeUndefined();
   });
 });

@@ -16,6 +16,7 @@ import DocumentTable from "../../components/document-table";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
+import FileTable from "../../components/file-table";
 import { InstitutionalCertificateTable } from "../../components/institutional-certificate-table";
 import JsonDisplay from "../../components/json-display";
 import Link from "../../components/link-no-prefetch";
@@ -37,6 +38,7 @@ import {
   requestFileSets,
   requestInstitutionalCertificates,
   requestPublications,
+  requestSampleBarcodeMaps,
   requestSamples,
   requestSupersedes,
   requestTreatments,
@@ -118,16 +120,6 @@ export default function MultiplexedSample({
                     </DataItemValue>
                   </>
                 )}
-                {barcodeMap && (
-                  <>
-                    <DataItemLabel>Barcode Map</DataItemLabel>
-                    <DataItemValue>
-                      <Link href={barcodeMap["@id"]}>
-                        {barcodeMap.accession}
-                      </Link>
-                    </DataItemValue>
-                  </>
-                )}
               </SampleDataItems>
               <Attribution attribution={attribution} />
             </DataArea>
@@ -144,6 +136,15 @@ export default function MultiplexedSample({
               title="Multiplexed Samples"
               isDeletedVisible
               panelId="multiplexed-samples"
+            />
+          )}
+          {barcodeMap && (
+            <FileTable
+              files={[barcodeMap]}
+              title="Barcode Map Tabular File"
+              reportLink={`/multireport/?type=TabularFile&barcode_map_for=${multiplexedSample["@id"]}`}
+              secDirTitle="Barcode Map Tabular File"
+              panelId="barcode-map-tabular-file"
             />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -311,9 +312,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       );
       multiplexedInSamples = await requestSamples(multiplexedInPaths, request);
     }
-    const barcodeMap = multiplexedSample.barcode_map
-      ? (await request.getObject(multiplexedSample.barcode_map)).optional()
-      : null;
+    const barcodeMaps = await requestSampleBarcodeMaps(
+      [multiplexedSample],
+      request,
+      "deleted"
+    );
     const { supersedes, supersededBy } = await requestSupersedes(
       multiplexedSample,
       "Sample",
@@ -336,7 +339,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         sources,
         treatments,
         multiplexedInSamples,
-        barcodeMap,
+        barcodeMap: barcodeMaps.length > 0 ? barcodeMaps[0] : null,
         supersedes,
         supersededBy,
         pageContext: {
