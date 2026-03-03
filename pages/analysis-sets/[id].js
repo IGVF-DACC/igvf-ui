@@ -1,7 +1,7 @@
 // node_modules
 import _ from "lodash";
 import PropTypes from "prop-types";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 // components
 import AliasList from "../../components/alias-list";
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
@@ -104,6 +104,13 @@ export default function AnalysisSet({
   const [areDeprecatedFilesVisible, setAreDeprecatedFilesVisible] = useState(
     isDeprecatedStatus(analysisSet.status)
   );
+
+  useEffect(() => {
+    // In case you navigate from one analysis set directly to another, this page component
+    // doesn't unmount, so set the initial visibility of deprecated files based on the new
+    // analysis set's status.
+    setAreDeprecatedFilesVisible(isDeprecatedStatus(analysisSet.status));
+  }, [analysisSet["@id"]]);
 
   return (
     <>
