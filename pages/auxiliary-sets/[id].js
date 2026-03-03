@@ -130,6 +130,7 @@ export default function AuxiliarySet({
           >
             {groupedFiles.tabular?.length > 0 && (
               <FileTable
+                key={`${auxiliarySet["@id"]}-tabular-files`}
                 files={groupedFiles.tabular}
                 fileSet={auxiliarySet}
                 title="Tabular Files"
