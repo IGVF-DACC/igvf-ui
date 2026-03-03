@@ -283,6 +283,7 @@ export default function MeasurementSet({
           >
             {groupedFiles.image?.length > 0 && (
               <FileTable
+                key={`${measurementSet["@id"]}-image-files`}
                 files={groupedFiles.image}
                 fileSet={measurementSet}
                 title="Imaging Results"
