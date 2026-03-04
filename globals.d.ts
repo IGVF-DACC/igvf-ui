@@ -117,9 +117,12 @@ export interface RequiredFieldObject {
  */
 export interface SchemaProperty {
   title: string;
-  type: string;
+  description?: string;
   comment?: string;
+  type: string;
   items?: SchemaProperty;
+  linkTo?: string;
+  linkSubmitsFor?: boolean;
   properties?: SchemaProperties;
   enum?: string[];
   enum_descriptions?: Record<string, string>;
@@ -384,6 +387,7 @@ export interface FileObject extends DatabaseObject {
   file_format_specifications?: string[] | DocumentObject[];
   file_set: string | FileSetObject;
   file_size?: number;
+  file_type?: string;
   flowcell_id?: string;
   href?: string;
   illumina_read_type?: string;
