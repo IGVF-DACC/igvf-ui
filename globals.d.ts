@@ -117,9 +117,12 @@ export interface RequiredFieldObject {
  */
 export interface SchemaProperty {
   title: string;
-  type: string;
+  description?: string;
   comment?: string;
+  type: string;
   items?: SchemaProperty;
+  linkTo?: string;
+  linkSubmitsFor?: boolean;
   properties?: SchemaProperties;
   enum?: string[];
   enum_descriptions?: Record<string, string>;
