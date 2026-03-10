@@ -92,6 +92,7 @@ export default function FileSetFilesTables({
       {children}
       {groupedFiles.other?.length > 0 && (
         <FileTable
+          key={`${fileSet["@id"]}-other-raw`}
           files={groupedFiles.other}
           fileSet={fileSet}
           title="Other Raw Data Files"

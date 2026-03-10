@@ -167,6 +167,7 @@ export default function ModelSet({
 
           {files.length > 0 && (
             <FileTable
+              key={`${modelSet["@id"]}-files`}
               files={files}
               fileSet={modelSet}
               hasDeprecatedOption
