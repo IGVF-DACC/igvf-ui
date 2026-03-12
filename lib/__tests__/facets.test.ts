@@ -977,7 +977,7 @@ describe("Test the checkForBooleanFacet function", () => {
 });
 
 describe("Test the getFacetOrder / setFacetOrder functions", () => {
-  it("should get the facet order for the user and object type", async () => {
+  it("should get the facet order for the user and object type while logged in", async () => {
     const mockResult = ["taxa", "lab.title", "status"];
 
     const mockFunction = jest.fn();
@@ -989,22 +989,22 @@ describe("Test the getFacetOrder / setFacetOrder functions", () => {
     );
 
     const request = new FetchRequest();
-    const uuid = "abc-123";
     const selectedType = "MeasurementSet";
+    const isAuthenticated = true;
 
-    await expect(getFacetOrder(uuid, selectedType, request)).resolves.toEqual(
-      mockResult
-    );
+    await expect(
+      getFacetOrder(selectedType, request, isAuthenticated)
+    ).resolves.toEqual(mockResult);
 
     expect(mockFunction).toHaveBeenCalledWith(
-      `/api/facet-order/${uuid}/?type=${selectedType}`,
+      `/api/facet-order/${selectedType}/`,
       expect.objectContaining({
         method: "GET",
       })
     );
   });
 
-  it("should return null when facet order is not found", async () => {
+  it("should return null when facet order is not found while logged in", async () => {
     const mockFunction = jest.fn();
     window.fetch = mockFunction.mockImplementation(() =>
       Promise.resolve({
@@ -1014,15 +1014,15 @@ describe("Test the getFacetOrder / setFacetOrder functions", () => {
     );
 
     const request = new FetchRequest();
-    const uuid = "abc-123";
     const selectedType = "MeasurementSet";
+    const isAuthenticated = true;
 
-    const result = await getFacetOrder(uuid, selectedType, request);
+    const result = await getFacetOrder(selectedType, request, isAuthenticated);
 
     expect(result).toBeNull();
   });
 
-  it("should save the facet order for the user and object type", async () => {
+  it("should save the facet order for the user and object type while logged in", async () => {
     const mockFunction = jest.fn();
     window.fetch = mockFunction.mockImplementation(() =>
       Promise.resolve({
@@ -1032,14 +1032,19 @@ describe("Test the getFacetOrder / setFacetOrder functions", () => {
     );
 
     const request = new FetchRequest();
-    const uuid = "abc-123";
     const selectedType = "MeasurementSet";
     const orderedFacetFields = ["taxa", "lab.title", "status"];
+    const isAuthenticated = true;
 
-    await setFacetOrder(uuid, selectedType, orderedFacetFields, request);
+    await setFacetOrder(
+      selectedType,
+      orderedFacetFields,
+      request,
+      isAuthenticated
+    );
 
     expect(mockFunction).toHaveBeenCalledWith(
-      `/api/facet-order/${uuid}/?type=${selectedType}`,
+      `/api/facet-order/${selectedType}/`,
       {
         body: JSON.stringify(orderedFacetFields),
         credentials: "include",
@@ -1050,7 +1055,7 @@ describe("Test the getFacetOrder / setFacetOrder functions", () => {
     );
   });
 
-  it("should handle empty array when saving facet order", async () => {
+  it("should handle empty array when saving facet order while logged in", async () => {
     const mockFunction = jest.fn();
     window.fetch = mockFunction.mockImplementation(() =>
       Promise.resolve({
@@ -1060,14 +1065,19 @@ describe("Test the getFacetOrder / setFacetOrder functions", () => {
     );
 
     const request = new FetchRequest();
-    const uuid = "user-456";
     const selectedType = "File";
     const orderedFacetFields: string[] = [];
+    const isAuthenticated = true;
 
-    await setFacetOrder(uuid, selectedType, orderedFacetFields, request);
+    await setFacetOrder(
+      selectedType,
+      orderedFacetFields,
+      request,
+      isAuthenticated
+    );
 
     expect(mockFunction).toHaveBeenCalledWith(
-      `/api/facet-order/${uuid}/?type=${selectedType}`,
+      `/api/facet-order/${selectedType}/`,
       {
         body: JSON.stringify(orderedFacetFields),
         credentials: "include",
@@ -1076,6 +1086,218 @@ describe("Test the getFacetOrder / setFacetOrder functions", () => {
         redirect: "follow",
       }
     );
+  });
+
+  it("should get the facet order from localStorage while logged out", async () => {
+    const selectedType = "MeasurementSet";
+    const storedOrder = ["taxa", "lab.title", "status"];
+    const storageKey = `facet-order-${selectedType}`;
+    localStorage.setItem(storageKey, JSON.stringify(storedOrder));
+
+    const request = new FetchRequest();
+    const isAuthenticated = false;
+
+    const result = await getFacetOrder(selectedType, request, isAuthenticated);
+
+    expect(result).toEqual(storedOrder);
+    localStorage.removeItem(storageKey);
+  });
+
+  it("should return null when localStorage is unavailable while logged out", async () => {
+    const selectedType = "MeasurementSet";
+    const request = new FetchRequest();
+    const isAuthenticated = false;
+
+    const originalLocalStorage = global.localStorage;
+    Object.defineProperty(global, "localStorage", {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
+
+    const result = await getFacetOrder(selectedType, request, isAuthenticated);
+
+    Object.defineProperty(global, "localStorage", {
+      value: originalLocalStorage,
+      writable: true,
+      configurable: true,
+    });
+
+    expect(result).toBeNull();
+  });
+
+  it("should return null when no facet order is stored in localStorage while logged out", async () => {
+    const selectedType = "MeasurementSet";
+    const storageKey = `facet-order-${selectedType}`;
+    localStorage.removeItem(storageKey);
+
+    const request = new FetchRequest();
+    const isAuthenticated = false;
+
+    const result = await getFacetOrder(selectedType, request, isAuthenticated);
+
+    expect(result).toBeNull();
+  });
+
+  it("should return null when localStorage contains unparsable JSON while logged out", async () => {
+    const selectedType = "MeasurementSet";
+    const storageKey = `facet-order-${selectedType}`;
+    localStorage.setItem(storageKey, "not-valid-json{{{");
+
+    const request = new FetchRequest();
+    const isAuthenticated = false;
+
+    const result = await getFacetOrder(selectedType, request, isAuthenticated);
+
+    expect(result).toBeNull();
+    localStorage.removeItem(storageKey);
+  });
+
+  it("should return null and remove entry when localStorage contains valid JSON but invalid facet order while logged out", async () => {
+    const selectedType = "MeasurementSet";
+    const storageKey = `facet-order-${selectedType}`;
+    // Valid JSON but not a valid facet order (not an array of strings)
+    localStorage.setItem(storageKey, JSON.stringify({ not: "an array" }));
+
+    const request = new FetchRequest();
+    const isAuthenticated = false;
+
+    const result = await getFacetOrder(selectedType, request, isAuthenticated);
+
+    expect(result).toBeNull();
+    expect(localStorage.getItem(storageKey)).toBeNull();
+  });
+
+  it("should save the facet order to localStorage while logged out", async () => {
+    const selectedType = "MeasurementSet";
+    const orderedFacetFields = ["taxa", "lab.title", "status"];
+    const storageKey = `facet-order-${selectedType}`;
+    localStorage.removeItem(storageKey);
+
+    const request = new FetchRequest();
+    const isAuthenticated = false;
+
+    const result = await setFacetOrder(
+      selectedType,
+      orderedFacetFields,
+      request,
+      isAuthenticated
+    );
+
+    expect(result).toEqual(orderedFacetFields);
+    expect(localStorage.getItem(storageKey)).toEqual(
+      JSON.stringify(orderedFacetFields)
+    );
+    localStorage.removeItem(storageKey);
+  });
+
+  it("should save an empty facet order to localStorage while logged out", async () => {
+    const selectedType = "File";
+    const orderedFacetFields: string[] = [];
+    const storageKey = `facet-order-${selectedType}`;
+    localStorage.removeItem(storageKey);
+
+    const request = new FetchRequest();
+    const isAuthenticated = false;
+
+    const result = await setFacetOrder(
+      selectedType,
+      orderedFacetFields,
+      request,
+      isAuthenticated
+    );
+
+    expect(result).toEqual(orderedFacetFields);
+    expect(localStorage.getItem(storageKey)).toEqual(
+      JSON.stringify(orderedFacetFields)
+    );
+    localStorage.removeItem(storageKey);
+  });
+
+  it("should not call fetch when getting facet order while logged out", async () => {
+    const selectedType = "MeasurementSet";
+    const storageKey = `facet-order-${selectedType}`;
+    localStorage.setItem(storageKey, JSON.stringify(["taxa", "status"]));
+
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction;
+
+    const request = new FetchRequest();
+    const isAuthenticated = false;
+
+    await getFacetOrder(selectedType, request, isAuthenticated);
+
+    expect(mockFunction).not.toHaveBeenCalled();
+    localStorage.removeItem(storageKey);
+  });
+
+  it("should not call fetch when saving facet order while logged out", async () => {
+    const selectedType = "MeasurementSet";
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction;
+
+    const request = new FetchRequest();
+    const isAuthenticated = false;
+
+    await setFacetOrder(
+      selectedType,
+      ["taxa", "lab.title"],
+      request,
+      isAuthenticated
+    );
+
+    expect(mockFunction).not.toHaveBeenCalled();
+    localStorage.removeItem(`facet-order-${selectedType}`);
+  });
+
+  it("should throw when localStorage.setItem throws while logged out", async () => {
+    const selectedType = "MeasurementSet";
+    const orderedFacetFields = ["taxa", "lab.title", "status"];
+
+    jest.spyOn(Storage.prototype, "setItem").mockImplementationOnce(() => {
+      throw new Error("QuotaExceededError");
+    });
+
+    const request = new FetchRequest();
+    const isAuthenticated = false;
+
+    await expect(
+      setFacetOrder(selectedType, orderedFacetFields, request, isAuthenticated)
+    ).rejects.toThrow("Failed to save facet order");
+
+    jest.restoreAllMocks();
+  });
+
+  test("setFacetOrder throws when orderedFacetFields is invalid while logged in", async () => {
+    const request = new FetchRequest();
+    const selectedType = "MeasurementSet";
+    const orderedFacetFields = ["taxa", "", "status"]; // empty string fails isValidFacetOrder
+    const isAuthenticated = true;
+
+    await expect(
+      setFacetOrder(selectedType, orderedFacetFields, request, isAuthenticated)
+    ).rejects.toThrow("Invalid facet order config");
+  });
+
+  test("setFacetOrder throws when the server returns an error while logged in", async () => {
+    const mockFunction = jest.fn();
+    window.fetch = mockFunction.mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        status: 503,
+        json: () =>
+          Promise.resolve({ isError: true, description: "Redis error" }),
+      })
+    );
+
+    const request = new FetchRequest();
+    const selectedType = "MeasurementSet";
+    const orderedFacetFields = ["taxa", "lab.title", "status"];
+    const isAuthenticated = true;
+
+    await expect(
+      setFacetOrder(selectedType, orderedFacetFields, request, isAuthenticated)
+    ).rejects.toMatchObject({ isError: true, description: "Redis error" });
   });
 });
 

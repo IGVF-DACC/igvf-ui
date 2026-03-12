@@ -26,6 +26,7 @@
     "jest.setup.ts",
     "tailwind.config.ts",
     "pages/**/*.tsx",
+    "pages/**/*.ts",
     "components/**/*.tsx",
     "components/**/*.ts",
     "lib"
