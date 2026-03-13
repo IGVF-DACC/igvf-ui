@@ -12,6 +12,7 @@
 
 // node_modules
 import { Children } from "react";
+import { twMerge } from "tailwind-merge";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import {
@@ -107,7 +108,7 @@ export function DataAreaTitle({
   return (
     <h2
       id={`${id ? secDirId(id) : ""}`}
-      className={`mt-4 mb-1 text-2xl font-light ${className}`}
+      className={twMerge("mt-4 mb-1 text-2xl font-light", className)}
       data-testid="dataareatitle"
       {...(secDirTitle ? { "data-sec-dir": secDirTitle } : {})}
     >
