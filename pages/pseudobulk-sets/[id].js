@@ -74,10 +74,9 @@ export default function pseudobulkSet({
   inputFileSets,
   inputFileSetSamples,
   inputFileSetFor,
-  controlFileSets,
   controlFor,
-  auxiliarySets,
-  measurementSets,
+  curatedSets,
+  analysisSets,
   constructLibrarySets,
   samples,
   donors,
@@ -101,9 +100,9 @@ export default function pseudobulkSet({
   );
 
   useEffect(() => {
-    // In case you navigate from one analysis set directly to another, this page component
+    // In case you navigate from one pseudobulk set directly to another, this page component
     // doesn't unmount, so set the initial visibility of deprecated files based on the new
-    // analysis set's status.
+    // pseudobulk set's status.
     setAreDeprecatedFilesVisible(isDeprecatedStatus(pseudobulkSet.status));
   }, [pseudobulkSet["@id"]]);
 
@@ -301,7 +300,7 @@ export default function pseudobulkSet({
             <SampleTable
               samples={samples}
               reportLink={`/multireport/?type=Sample&file_sets.@id=${pseudobulkSet["@id"]}`}
-              reportLabel="Report of samples in this analysis set"
+              reportLabel="Report of samples in this pseudobulk set"
               isConstructLibraryColumnVisible
             />
           )}
@@ -321,9 +320,8 @@ export default function pseudobulkSet({
               thisFileSet={pseudobulkSet}
               fileSets={inputFileSets}
               samples={inputFileSetSamples}
-              controlFileSets={controlFileSets}
-              auxiliarySets={auxiliarySets}
-              measurementSets={measurementSets}
+              curatedSets={curatedSets}
+              analysisSets={analysisSets}
               constructLibrarySets={constructLibrarySets}
             />
           )}
@@ -332,7 +330,7 @@ export default function pseudobulkSet({
             <FileSetTable
               fileSets={inputFileSetFor}
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${pseudobulkSet["@id"]}`}
-              reportLabel="Report of file sets that this analysis set is an input for"
+              reportLabel="Report of file sets that this pseudobulk set is an input for"
               title="File Sets Using This Analysis Set as an Input"
               panelId="input-file-set-for"
             />
@@ -342,7 +340,7 @@ export default function pseudobulkSet({
             <FileSetTable
               fileSets={controlFor}
               reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${pseudobulkSet["@id"]}`}
-              reportLabel="Report of file sets that this analysis set serves as a control for"
+              reportLabel="Report of file sets that this pseudobulk set serves as a control for"
               title="File Sets Controlled by This Analysis Set"
               panelId="control-for"
             />
@@ -385,33 +383,31 @@ pseudobulkSet.propTypes = {
   inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Input file set samples
   inputFileSetSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that this analysis set is input for
+  // File sets that this pseudobulk set is input for
   inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Control file sets to display
-  controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets controlled by this analysis set
+  // File sets controlled by this pseudobulk set
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // AuxiliarySets to display
-  auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // MeasurementSets to display
-  measurementSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // CuratedSets to display
+  curatedSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // AnalysisSets to display
+  analysisSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // ConstructLibrarySets to display
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Library design files associated with this analysis set
+  // Library design files associated with this pseudobulk set
   libraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Samples from analysis set `samples` property that doesn't embed enough properties to display
+  // Samples from pseudobulk set `samples` property that doesn't embed enough properties to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Sample barcode map tabular files associated with the analysis set's samples
+  // Sample barcode map tabular files associated with the pseudobulk set's samples
   barcodeMapFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Donors from analysis set `donors` property that doesn't embed enough properties to display
+  // Donors from pseudobulk set `donors` property that doesn't embed enough properties to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Quality metrics associated with this analysis set
+  // Quality metrics associated with this pseudobulk set
   qualityMetrics: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Assay title description map for this analysis set
+  // Assay title description map for this pseudobulk set
   assayTitleDescriptionMap: PropTypes.object.isRequired,
-  // Publications associated with this analysis set
+  // Publications associated with this pseudobulk set
   publications: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Documents associated with this analysis set
+  // Documents associated with this pseudobulk set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Pipeline parameters documents
   pipelineParametersDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -423,7 +419,7 @@ pseudobulkSet.propTypes = {
   supersedes: PropTypes.arrayOf(PropTypes.object),
   // File sets that supersede this file set
   supersededBy: PropTypes.arrayOf(PropTypes.object),
-  // Attribution for this analysis set
+  // Attribution for this pseudobulk set
   attribution: PropTypes.object,
   // Is the format JSON?
   isJson: PropTypes.bool.isRequired,
@@ -433,7 +429,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const pseudobulkSet = (
-    await request.getObject(`/analysis-sets/${params.id}/`)
+    await request.getObject(`/pseudobulk-sets/${params.id}/`)
   ).union();
 
   if (FetchRequest.isResponseSuccess(pseudobulkSet)) {
@@ -457,7 +453,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const files =
       filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
 
-    // Get all reference file paths from the files in the analysis set, then request those files
+    // Get all reference file paths from the files in the pseudobulk set, then request those files
     // from the server. `reference_files` has a `minItems` of 1, so just check its existence.
     const referenceFilePathsSet = files.reduce((acc, file) => {
       if (file.reference_files) {
@@ -492,15 +488,14 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
 
     let inputFileSets = [];
     if (pseudobulkSet.input_file_sets?.length > 0) {
-      // The embedded `input_file_sets` in the analysis set don't have enough properties to display
+      // The embedded `input_file_sets` in the pseudobulk set don't have enough properties to display
       // in the table, so we have to request them.
       const inputFileSetPaths = pseudobulkSet.input_file_sets.map(
         (fileSet) => fileSet["@id"]
       );
       inputFileSets = await requestFileSets(inputFileSetPaths, request, [
-        "auxiliary_sets",
-        "control_file_sets",
-        "measurement_sets",
+        "analysis_set",
+        "curated_set",
       ]);
     }
 
@@ -534,50 +529,37 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       request
     );
 
-    let auxiliarySets = [];
-    let controlFileSets = [];
-    let measurementSets = [];
+    let curatedSets = [];
+    let analysisSets = [];
     if (inputFileSets.length > 0) {
-      // Retrieve the input file sets' auxiliary sets.
-      let auxiliarySetsPaths = inputFileSets.reduce((acc, fileSet) => {
-        return fileSet.auxiliary_sets?.length > 0
+      // Retrieve the input file sets' curated sets.
+      let curatedSetsPaths = inputFileSets.reduce((acc, fileSet) => {
+        return fileSet.curated_sets?.length > 0
           ? acc.concat(
-              fileSet.auxiliary_sets.map((auxiliarySet) => auxiliarySet["@id"])
+              fileSet.curated_sets.map((curatedSet) => curatedSet["@id"])
             )
           : acc;
       }, []);
-      auxiliarySetsPaths = [...new Set(auxiliarySetsPaths)];
-      auxiliarySets =
-        auxiliarySetsPaths.length > 0
-          ? await requestFileSets(auxiliarySetsPaths, request)
+      curatedSetsPaths = [...new Set(curatedSetsPaths)];
+      curatedSets =
+        curatedSetsPaths.length > 0
+          ? await requestFileSets(curatedSetsPaths, request)
           : [];
 
-      // Retrieve the input file sets' measurement sets.
-      measurementSets = inputFileSets.reduce((acc, fileSet) => {
-        return fileSet.measurement_sets?.length > 0
-          ? acc.concat(fileSet.measurement_sets)
+      // Retrieve the input file sets' analysis sets.
+      analysisSets = inputFileSets.reduce((acc, fileSet) => {
+        return fileSet.analysis_sets?.length > 0
+          ? acc.concat(fileSet.analysis_sets)
           : acc;
       }, []);
-      let measurementSetPaths = measurementSets.map(
-        (measurementSet) => measurementSet["@id"]
+      let analysisSetPaths = analysisSets.map(
+        (analysisSet) => analysisSet["@id"]
       );
-      measurementSetPaths = [...new Set(measurementSetPaths)];
-      measurementSets =
-        measurementSetPaths.length > 0
-          ? await requestFileSets(measurementSetPaths, request)
+      analysisSetPaths = [...new Set(analysisSetPaths)];
+      analysisSets =
+        analysisSetPaths.length > 0
+          ? await requestFileSets(analysisSetPaths, request)
           : [];
-
-      // Retrieve the input file sets' control file sets.
-      controlFileSets = inputFileSets.reduce((acc, fileSet) => {
-        return fileSet.control_file_sets?.length > 0
-          ? acc.concat(fileSet.control_file_sets)
-          : acc;
-      }, []);
-      let controlFileSetPaths = controlFileSets.map(
-        (controlFileSet) => controlFileSet["@id"]
-      );
-      controlFileSetPaths = [...new Set(controlFileSetPaths)];
-      controlFileSets = await requestFileSets(controlFileSetPaths, request);
     }
 
     const embeddedSamples = inputFileSets.reduce((acc, inputFileSet) => {
@@ -703,10 +685,9 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileSets,
         inputFileSetSamples,
         inputFileSetFor,
-        controlFileSets,
         controlFor,
-        auxiliarySets,
-        measurementSets,
+        curatedSets,
+        analysisSets,
         constructLibrarySets,
         libraryDesignFiles,
         samples,
