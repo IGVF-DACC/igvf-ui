@@ -8,7 +8,6 @@ import { AlternativeIdentifiers } from "../../components/alternative-identifiers
 import Attribution from "../../components/attribution";
 import { BatchDownloadFileSet } from "../../components/batch-download-fileset";
 import Breadcrumbs from "../../components/breadcrumbs";
-import { ConstructLibraryTable } from "../../components/construct-library-table";
 import { ControlledAccessIndicator } from "../../components/controlled-access";
 import {
   DataArea,
@@ -45,7 +44,6 @@ import {
   requestDonors,
   requestFileSets,
   requestFiles,
-  requestLibraryDesignFiles,
   requestPublications,
   requestQualityMetrics,
   requestSampleBarcodeMaps,
@@ -63,7 +61,7 @@ import {
 } from "../../lib/ontology-terms";
 import { isJsonFormat } from "../../lib/query-utils";
 
-export default function pseudobulkSet({
+export default function PseudobulkSet({
   pseudobulkSet,
   publications,
   documents,
@@ -77,7 +75,6 @@ export default function pseudobulkSet({
   controlFor,
   curatedSets,
   analysisSets,
-  constructLibrarySets,
   samples,
   donors,
   qualityMetrics,
@@ -307,14 +304,6 @@ export default function pseudobulkSet({
 
           {donors.length > 0 && <DonorTable donors={donors} />}
 
-          {pseudobulkSet.construct_library_sets?.length > 0 && (
-            <ConstructLibraryTable
-              constructLibrarySets={pseudobulkSet.construct_library_sets}
-              title="Associated Construct Library Sets"
-              panelId="associated-construct-library-sets"
-            />
-          )}
-
           {inputFileSets.length > 0 && (
             <InputFileSets
               thisFileSet={pseudobulkSet}
@@ -322,7 +311,6 @@ export default function pseudobulkSet({
               samples={inputFileSetSamples}
               curatedSets={curatedSets}
               analysisSets={analysisSets}
-              constructLibrarySets={constructLibrarySets}
             />
           )}
 
@@ -369,7 +357,7 @@ export default function pseudobulkSet({
   );
 }
 
-pseudobulkSet.propTypes = {
+PseudobulkSet.propTypes = {
   pseudobulkSet: PropTypes.object.isRequired,
   // Files to display
   files: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -391,14 +379,8 @@ pseudobulkSet.propTypes = {
   curatedSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // AnalysisSets to display
   analysisSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // ConstructLibrarySets to display
-  constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Library design files associated with this pseudobulk set
-  libraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples from pseudobulk set `samples` property that doesn't embed enough properties to display
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Sample barcode map tabular files associated with the pseudobulk set's samples
-  barcodeMapFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors from pseudobulk set `donors` property that doesn't embed enough properties to display
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Quality metrics associated with this pseudobulk set
@@ -413,8 +395,6 @@ pseudobulkSet.propTypes = {
   pipelineParametersDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Pipeline parameters tabular files
   pipelineParametersFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Enrichment design files
-  enrichmentDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets that this file set supersedes
   supersedes: PropTypes.arrayOf(PropTypes.object),
   // File sets that supersede this file set
@@ -575,35 +555,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       inputFileSetSamples = await requestSamples(samplePaths, request);
     }
 
-    let constructLibrarySets = [];
-    if (inputFileSetSamples.length > 0) {
-      const embeddedConstructLibrarySets = inputFileSetSamples.reduce(
-        (acc, sample) => {
-          return sample.construct_library_sets?.length > 0
-            ? acc.concat(sample.construct_library_sets)
-            : acc;
-        },
-        []
-      );
-      let constructLibrarySetPaths = embeddedConstructLibrarySets.map(
-        (constructLibrarySet) => constructLibrarySet["@id"]
-      );
-
-      if (constructLibrarySetPaths.length > 0) {
-        constructLibrarySetPaths = [...new Set(constructLibrarySetPaths)];
-        constructLibrarySets = await requestFileSets(
-          constructLibrarySetPaths,
-          request,
-          ["integrated_content_files"]
-        );
-      }
-    }
-
-    const libraryDesignFiles = await requestLibraryDesignFiles(
-      pseudobulkSet,
-      request
-    );
-
     let publications = [];
     if (pseudobulkSet.publications?.length > 0) {
       const publicationPaths = pseudobulkSet.publications.map(
@@ -688,8 +639,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         controlFor,
         curatedSets,
         analysisSets,
-        constructLibrarySets,
-        libraryDesignFiles,
         samples,
         barcodeMapFiles,
         donors,

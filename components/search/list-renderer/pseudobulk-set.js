@@ -26,7 +26,7 @@ export default function PseudobulkSet({
   item: pseudobulkSet,
   accessoryData = null,
 }) {
-  // Determine if at least one workflow in the analysis set has `uniform_pipeline` set.
+  // Determine if at least one workflow in the pseudobulk set has `uniform_pipeline` set.
   const accessoryPseudobulkSet = accessoryData?.[pseudobulkSet["@id"]];
   const workflows = accessoryPseudobulkSet?.workflows || [];
   const isUniformPipeline = workflows.some(
@@ -47,13 +47,17 @@ export default function PseudobulkSet({
     fileContentType.length > 0 ||
     isUniformPipeline;
 
+  const samplesSummary =
+    pseudobulkSet.samples?.length > 0
+      ? [
+          ...new Set(pseudobulkSet.samples.map((sample) => sample.summary)),
+        ].sort()
+      : [];
+
   return (
     <SearchListItemContent>
       <SearchListItemMain>
         <SearchListItemUniqueId>
-          <span className="capitalize">
-            {pseudobulkSet.file_set_type.split(" ")[0]}
-          </span>
           <SearchListItemType item={pseudobulkSet} />
           {pseudobulkSet.accession}
         </SearchListItemUniqueId>
@@ -84,13 +88,23 @@ export default function PseudobulkSet({
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {pseudobulkSet.samples.summary && (
+            {pseudobulkSet.cell_type && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Cell Type
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {pseudobulkSet.cell_type.term_name}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+            {samplesSummary.length > 0 && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Samples
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  {pseudobulkSet.samples.summary}
+                  {samplesSummary.join(", ")}
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
@@ -108,15 +122,15 @@ export default function PseudobulkSet({
   );
 }
 
-pseudobulkSet.propTypes = {
-  // Single analysis set search-result object to display on a search-result list page
+PseudobulkSet.propTypes = {
+  // Single pseudobulk set search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
   // Accessory data to display for all search-result objects
   accessoryData: PropTypes.object,
 };
 
-pseudobulkSet.getAccessoryDataPaths = (items) => {
-  // Get the `workflows` arrays for all analysis sets in the results.
+PseudobulkSet.getAccessoryDataPaths = (items) => {
+  // Get the `workflows` arrays for all pseudobulk sets in the results.
   return [
     {
       type: "pseudobulkSet",
