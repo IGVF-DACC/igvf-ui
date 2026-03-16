@@ -71,6 +71,7 @@ import ModelSet from "./model-set";
 import OntologyTerm from "./ontology-term";
 import OpenReadingFrame from "./open-reading-frame";
 import Page from "./page";
+import PseudobulkSet from "./pseudobulk-set";
 import PhenotypicFeature from "./phenotypic-feature";
 import PredictionSet from "./prediction-set";
 import Publication from "./publication";
@@ -122,6 +123,7 @@ const renderers: Record<string, React.ComponentType<any>> = {
   PlatformTerm: OntologyTerm,
   PredictionSet,
   PrimaryCell: Biosample,
+  PseudobulkSet,
   Publication,
   ReferenceFile: File,
   RodentDonor,
