@@ -500,12 +500,17 @@ export default function InputFileSets({
   auxiliarySets,
   measurementSets,
   constructLibrarySets,
+  excludedTypes = [],
 }) {
   // Group the input file sets by their type and sort the groups by the order in `fileSetSortOrder`.
   const fileSetGroups = _.groupBy(fileSets, "@type[0]");
   const fileSetTypes = _.sortBy(Object.keys(fileSetGroups), (fileSetType) =>
     fileSetSortOrder.indexOf(fileSetType)
-  );
+  ).filter((fileSetType) => !excludedTypes.includes(fileSetType));
+
+  if (fileSetTypes.length === 0) {
+    return null;
+  }
 
   return (
     <>
@@ -546,4 +551,6 @@ InputFileSets.propTypes = {
   measurementSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Construct library sets belonging to the file sets
   constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // `@type`s of file sets to exclude from display, if any
+  excludedTypes: PropTypes.arrayOf(PropTypes.string),
 };
