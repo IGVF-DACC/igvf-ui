@@ -337,6 +337,24 @@ export default function AnalysisSet({
             </>
           )}
 
+          {libraryDesignFiles.length > 0 && (
+            <FileTable
+              files={libraryDesignFiles}
+              title="Library Design Files"
+              secDirTitle="Library Design Files"
+              panelId="library-design-files"
+            />
+          )}
+
+          {enrichmentDesigns.length > 0 && (
+            <FileTable
+              title="Input File Set Enrichment Designs"
+              files={enrichmentDesigns}
+              secDirTitle="Input File Set Enrichment Designs"
+              panelId="enrichment-designs"
+            />
+          )}
+
           {samples.length > 0 && (
             <SampleTable
               samples={samples}
@@ -365,15 +383,6 @@ export default function AnalysisSet({
             />
           )}
 
-          {libraryDesignFiles.length > 0 && (
-            <FileTable
-              files={libraryDesignFiles}
-              title="Library Design Files"
-              secDirTitle="Library Design Files"
-              panelId="library-design-files"
-            />
-          )}
-
           {inputFileSets.length > 0 && (
             <InputFileSets
               thisFileSet={analysisSet}
@@ -383,6 +392,7 @@ export default function AnalysisSet({
               auxiliarySets={auxiliarySets}
               measurementSets={measurementSets}
               constructLibrarySets={constructLibrarySets}
+              excludedTypes={["ConstructLibrarySet"]}
             />
           )}
 
@@ -419,14 +429,6 @@ export default function AnalysisSet({
               title="Pipeline Parameters Files"
               files={pipelineParametersFiles}
               panelId="pipeline-parameters-files"
-            />
-          )}
-
-          {enrichmentDesigns.length > 0 && (
-            <FileTable
-              title="Input File Set Enrichment Designs"
-              files={enrichmentDesigns}
-              panelId="enrichment-designs"
             />
           )}
 
