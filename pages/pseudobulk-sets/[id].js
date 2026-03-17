@@ -46,7 +46,6 @@ import {
   requestFiles,
   requestPublications,
   requestQualityMetrics,
-  requestSampleBarcodeMaps,
   requestSamples,
   requestSupersedes,
 } from "../../lib/common-requests";
@@ -498,12 +497,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       samples = await requestSamples(samplePaths, request);
     }
 
-    const barcodeMapFiles = await requestSampleBarcodeMaps(
-      samples,
-      request,
-      "deleted"
-    );
-
     const donors = await requestDonors(
       pseudobulkSet.donors?.map((donor) => donor["@id"]) || [],
       request
@@ -604,11 +597,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       }
     }
 
-    const enrichmentDesigns =
-      pseudobulkSet.enrichment_designs?.length > 0
-        ? await requestFiles(pseudobulkSet.enrichment_designs, request)
-        : [];
-
     const assayTitleDescriptionMap =
       pseudobulkSet.assay_titles?.length > 0
         ? await getAssayTitleDescriptionMap(pseudobulkSet.assay_titles, request)
@@ -640,13 +628,11 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         curatedSets,
         analysisSets,
         samples,
-        barcodeMapFiles,
         donors,
         qualityMetrics,
         assayTitleDescriptionMap,
         pipelineParametersDocuments,
         pipelineParametersFiles,
-        enrichmentDesigns,
         supersedes,
         supersededBy,
         pageContext: { title: pseudobulkSet.accession },

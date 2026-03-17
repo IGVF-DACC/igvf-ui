@@ -133,7 +133,7 @@ PseudobulkSet.getAccessoryDataPaths = (items) => {
   // Get the `workflows` arrays for all pseudobulk sets in the results.
   return [
     {
-      type: "pseudobulkSet",
+      type: "PseudobulkSet",
       paths: items.map((item) => item["@id"]),
       fields: ["workflows"],
     },
