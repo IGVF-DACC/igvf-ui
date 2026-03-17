@@ -11,6 +11,8 @@ import type {
   FileSetObject,
   LabObject,
   SampleObject,
+  SessionPropertiesObject,
+  UserObject,
 } from "../globals";
 
 /**
@@ -726,20 +728,23 @@ export async function requestSupersedes(
   type: string,
   request: FetchRequest
 ): Promise<{ supersedes: DatabaseObject[]; supersededBy: DatabaseObject[] }> {
+  const itemSupersedes = item.supersedes || [];
+  const itemSupersededBy = item.superseded_by || [];
+
   const [supersedes, supersededBy] = await Promise.all([
-    item.supersedes?.length > 0
+    itemSupersedes.length > 0
       ? ((
           await request.getMultipleObjectsBulk(
-            item.supersedes,
+            itemSupersedes,
             ["accession"],
             [type]
           )
         ).unwrap_or([]) as DatabaseObject[])
       : [],
-    item.superseded_by?.length > 0
+    itemSupersededBy.length > 0
       ? ((
           await request.getMultipleObjectsBulk(
-            item.superseded_by,
+            itemSupersededBy,
             ["accession"],
             [type]
           )
@@ -766,13 +771,16 @@ export async function requestSampleBarcodeMaps(
   exclude: "deleted" | "deprecated" | "none" = "none"
 ): Promise<FileObject[]> {
   // Gather any barcode map tabular-file paths from the samples.
-  const barcodeMapPaths = samples
-    .map((sample) =>
-      typeof sample.barcode_map === "string"
-        ? sample.barcode_map
-        : sample.barcode_map?.["@id"]
-    )
-    .filter((x) => Boolean(x));
+  const barcodeMapPaths = samples.flatMap((sample) => {
+    if (sample.barcode_map) {
+      return [
+        typeof sample.barcode_map === "string"
+          ? sample.barcode_map
+          : sample.barcode_map["@id"],
+      ];
+    }
+    return [];
+  });
 
   // Request the unique barcode map files if any barcode maps were found in the samples.
   let barcodeMapFiles: FileObject[] = [];
@@ -792,4 +800,24 @@ export async function requestSampleBarcodeMaps(
     }
   }
   return barcodeMapFiles;
+}
+
+/**
+ * Request the current user object from the data provider.
+ *
+ * @param cookie - Current user browser cookie
+ * @returns Current user object from session-properties; null if not authenticated
+ */
+export async function requestAuthenticatedUser(
+  cookie: string
+): Promise<UserObject | null> {
+  const request = new FetchRequest({ cookie });
+  const response = (await request.getObject("/session-properties")).optional();
+  if (!response) {
+    return null;
+  }
+
+  // Extract the user object from the session properties.
+  const sessionProperties = response as SessionPropertiesObject;
+  return sessionProperties.user || null;
 }

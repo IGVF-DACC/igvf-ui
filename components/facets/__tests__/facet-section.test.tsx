@@ -1447,7 +1447,7 @@ describe("Test <FacetSection> component", () => {
     // Verify that the facet order was saved
     await waitFor(() => {
       const orderSaveCalls = mockFetch.mock.calls.filter(
-        (call) => call[0] === "/api/facet-order/123/?type=HumanDonor"
+        (call) => call[0] === "/api/facet-order/HumanDonor/"
       );
       expect(orderSaveCalls.length).toBeGreaterThan(0);
     });
@@ -1563,7 +1563,7 @@ describe("Test <FacetSection> component", () => {
     // Verify that no order save was made
     await waitFor(() => {
       const orderSaveCalls = mockFetch.mock.calls.filter(
-        (call) => call[0] === "/api/facet-order/123/?type=HumanDonor"
+        (call) => call[0] === "/api/facet-order/HumanDonor/"
       );
       expect(orderSaveCalls.length).toBe(0);
     });
@@ -1755,7 +1755,7 @@ describe("Test <FacetSection> component", () => {
 
     const mockFetch = jest.fn();
     mockFetch.mockImplementation((url) => {
-      if (url === "/api/facet-order/123/?type=HumanDonor") {
+      if (url === "/api/facet-order/HumanDonor/") {
         // Return saved order that only has "sex" and "status" but not "taxa"
         return Promise.resolve({
           ok: true,
@@ -2021,7 +2021,7 @@ describe("Test <FacetSection> component", () => {
     // Verify the new order was saved
     await waitFor(() => {
       const orderSaveCalls = mockFetch.mock.calls.filter(
-        (call) => call[0] === "/api/facet-order/123/?type=HumanDonor"
+        (call) => call[0] === "/api/facet-order/HumanDonor/"
       );
       expect(orderSaveCalls.length).toBeGreaterThan(0);
       const saveCall = orderSaveCalls[0];
@@ -2178,7 +2178,7 @@ describe("Test <FacetSection> component", () => {
 
     const mockFetch = jest.fn(async (url: string, options?: RequestInit) => {
       if (
-        url === "/api/facet-order/123/?type=HumanDonor" &&
+        url === "/api/facet-order/HumanDonor/" &&
         options?.method === "POST"
       ) {
         // Return the error as JSON response
@@ -2983,7 +2983,7 @@ describe("Test <FacetSection> component", () => {
           json: async () => Promise.resolve({}),
         } as Response);
       }
-      if (url === "/api/facet-order/123/?type=MeasurementSet") {
+      if (url === "/api/facet-order/MeasurementSet/") {
         if ((options as RequestInit)?.method === "POST") {
           // Capture the saved order
           savedOrder = JSON.parse((options as RequestInit).body as string);
@@ -3083,7 +3083,7 @@ describe("Test <FacetSection> component", () => {
       () => {
         const orderFetchCalls = mockFetch.mock.calls.filter(
           (call: any[]) =>
-            call[0] === "/api/facet-order/123/?type=MeasurementSet" &&
+            call[0] === "/api/facet-order/MeasurementSet/" &&
             (!call[1] || (call[1] as RequestInit).method !== "POST")
         );
         expect(orderFetchCalls.length).toBeGreaterThan(0);

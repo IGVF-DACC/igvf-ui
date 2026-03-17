@@ -8,16 +8,13 @@
  * user, and the POST method stores the facet order for the user. The facet order is stored in the
  * redis cache.
  *
- * The endpoint expects a user UUID as part of the path. The UUID is used to identify the user whose
- * facet states are being retrieved or stored. The UUID is required for both GET and POST requests.
- * For POST requests, the facet states are expected in the request body, and a required `type` must
- * exist in the query string. The `type` is the object type for which the facet states are being
- * stored. Example path:
+ * The `type` is the object type for which the facet states are being stored. Example path:
  *
- * /api/facet-order/12345678-1234-1234-1234-123456789012/?type=MeasurementSet
+ * /api/facet-order/MeasurementSet/
  *
  * The data is stored in the cache with the user's UUID as part of the storage key. This way, each
- * logged-in user can have their own set of facet states.
+ * logged-in user can have their own set of facet states. The user's UUID is determined from the
+ * request cookie.
  *
  * The facet states are stored as an array of facet property names in the order they should appear.
  */
@@ -29,8 +26,8 @@ import {
   getCachedDataWithField,
   setCachedDataWithField,
 } from "../../../lib/cache";
-import { generateFacetStoreKey } from "../../../lib/facets";
 import { HTTP_STATUS_CODE, isHttpMethod } from "../../../lib/fetch-request";
+import { getCachedUserUuid } from "../../../lib/user-uuid-cache";
 
 /**
  * Number of seconds to keep the facet order in the cache.
@@ -48,7 +45,7 @@ const FACET_ORDER_MAX_FACETS = 200;
 const FACET_FIELD_NAME_MAX_LENGTH = 100;
 
 /**
- * Handler for the /facet-order/[uuid] endpoint.
+ * Handler for the /facet-order/[type] endpoint.
  *
  * @param req - Next.js parameter with details about the request
  * @param res - Next.js parameter with details about the response
@@ -57,26 +54,36 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  const uuid = req.query.uuid as string;
-  if (!uuid) {
-    res
-      .status(HTTP_STATUS_CODE.BAD_REQUEST)
-      .json({ error: "User UUID required." });
+  // Require POST and GET methods only.
+  if (!isHttpMethod(req.method, "POST") && !isHttpMethod(req.method, "GET")) {
+    res.status(HTTP_STATUS_CODE.METHOD_NOT_ALLOWED).end();
     return;
   }
 
-  // Get the type from the query string; must be exactly one value.
-  const rawType = req.query.type;
-  if (Array.isArray(rawType) ? rawType.length !== 1 : !rawType) {
-    res
-      .status(HTTP_STATUS_CODE.BAD_REQUEST)
-      .json({ error: "Single type required." });
+  // Require a `type` query parameter to specify the object type for which the facet order is being
+  // stored or retrieved.
+  const type = req.query.type;
+  if (typeof type !== "string" || type.length === 0) {
+    res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
+      error: "Missing or invalid 'type' parameter (/api/facet-order/[type]).",
+    });
     return;
   }
-  const type = Array.isArray(rawType) ? rawType[0] : (rawType as string);
 
-  // Generate the facet store key for the current user.
-  const facetStoreKey = generateFacetStoreKey("order", uuid);
+  // Get the user UUID from the cookie and cache it using the in-memory user UUID cache.
+  const userUuid = await getCachedUserUuid(req.headers.cookie || "");
+  if (!userUuid) {
+    res
+      .status(HTTP_STATUS_CODE.UNAUTHORIZED)
+      .json({ error: "User not authenticated." });
+    return;
+  }
+
+  // Generate the facet store key. This is incompatible with the previous implementation that used
+  // a single key for all types, but this new approach allows us to store facet orders for multiple
+  // types without them overwriting each other. We'll just let users lose their previously stored
+  // facet orders, and let Redis expire the old keys over time.
+  const facetStoreKey = `facet-${type}-${userUuid}`;
 
   // Handle a POST request to store the facet order.
   if (isHttpMethod(req.method, "POST")) {
@@ -105,7 +112,6 @@ export default async function handler(
         field.length < FACET_FIELD_NAME_MAX_LENGTH &&
         /^[a-zA-Z0-9_.-]+$/.test(field)
     );
-
     if (!isValid) {
       res
         .status(HTTP_STATUS_CODE.BAD_REQUEST)
@@ -113,6 +119,7 @@ export default async function handler(
       return;
     }
 
+    // Store the facet order in the Redis cache with the user UUID as part of the key.
     await setCachedDataWithField(
       facetStoreKey,
       type,

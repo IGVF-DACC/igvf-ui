@@ -7,6 +7,7 @@ import type {
 import {
   requestAnalysisSteps,
   requestAnalysisStepVersions,
+  requestAuthenticatedUser,
   requestAwards,
   requestBiomarkers,
   requestBiosamples,
@@ -2180,5 +2181,96 @@ describe("requestSampleBarcodeMaps", () => {
     expect(result[0]).toEqual(mockBarcodeMapFile);
     expect(result.find((f) => f.status === "archived")).toBeUndefined();
     expect(result.find((f) => f.status === "revoked")).toBeUndefined();
+  });
+});
+
+describe("requestAuthenticatedUser", () => {
+  test("requestAuthenticatedUser returns user object when authenticated", async () => {
+    const mockUser = {
+      "@id": "/users/abc123/",
+      "@type": ["User", "Item"],
+      uuid: "abc123",
+      email: "user@example.com",
+      first_name: "Test",
+      last_name: "User",
+      title: "Test User",
+    };
+    const mockSessionProperties = {
+      "auth.userid": "user@example.com",
+      user: mockUser,
+      user_actions: [{ id: "signout", title: "Sign out" }],
+    };
+
+    // requestAuthenticatedUser is server-side (uses cookie); simulate server env.
+    Object.defineProperty(global, "window", {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
+
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockSessionProperties));
+
+    const result = await requestAuthenticatedUser("session=abc");
+
+    Object.defineProperty(global, "window", {
+      value: globalThis,
+      writable: true,
+      configurable: true,
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/session-properties",
+      expect.anything()
+    );
+    expect(result).toEqual(mockUser);
+  });
+
+  test("requestAuthenticatedUser returns null when session-properties has no user", async () => {
+    const mockSessionProperties = {
+      "auth.userid": undefined,
+    };
+
+    Object.defineProperty(global, "window", {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
+
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockSessionProperties));
+
+    const result = await requestAuthenticatedUser("session=abc");
+
+    Object.defineProperty(global, "window", {
+      value: globalThis,
+      writable: true,
+      configurable: true,
+    });
+
+    expect(result).toBeNull();
+  });
+
+  test("requestAuthenticatedUser returns null when session-properties request fails", async () => {
+    Object.defineProperty(global, "window", {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
+
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: () => Promise.resolve({ status: "error" }),
+      status: 403,
+      statusText: "Forbidden",
+    } as Response);
+
+    const result = await requestAuthenticatedUser("session=abc");
+
+    Object.defineProperty(global, "window", {
+      value: globalThis,
+      writable: true,
+      configurable: true,
+    });
+
+    expect(result).toBeNull();
   });
 });

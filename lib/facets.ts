@@ -2,7 +2,7 @@
 import _ from "lodash";
 import type { ParsedUrlQuery } from "querystring";
 // lib
-import FetchRequest, { type ErrorObject } from "./fetch-request";
+import FetchRequest, { isErrorObject, type ErrorObject } from "./fetch-request";
 // root
 import type {
   DataProviderObject,
@@ -342,40 +342,127 @@ export async function setFacetConfig(
 }
 
 /**
- * Get the facet order for a user and object type from the Next.js server redis cache.
+ * Type guard to validate that a value is an array of strings, which is the expected structure for
+ * the facet order configuration.
  *
- * @param userUuid - UUID of the current user to get the facet order for
+ * @param config - Facet order config to validate
+ * @returns True if the config is a valid facet order config
+ */
+function isValidFacetOrder(config: unknown): config is string[] {
+  return (
+    Array.isArray(config) &&
+    config.every((item) => typeof item === "string" && item.trim().length > 0)
+  );
+}
+
+/**
+ * Generate the API path to get or set the facet order for a given object type.
+ *
+ * @param selectedType - Search `@type` to generate the path for
+ * @returns API path to get and save the facet order
+ */
+function buildFacetOrderApiPath(selectedType: string): string {
+  return `/api/facet-order/${encodeURIComponent(selectedType)}/`;
+}
+
+/**
+ * Generate the localStorage key to save the facet order for non-authenticated users.
+ *
+ * @param selectedType - Search `@type` to generate the key for
+ * @returns localstorage key to save the facet order
+ */
+function buildFacetOrderStorageKey(selectedType: string): string {
+  return `facet-order-${encodeURIComponent(selectedType)}`;
+}
+
+/**
+ * Get the facet order for a user and object type from the Next.js server redis cache for
+ * authenticated users, or from localStorage for non-authenticated users.
+ *
  * @param selectedType - Type of object for which to get the facet order
  * @param request - FetchRequest object to use for the request
+ * @param isAuthenticated - True if the user has authenticated
  * @returns Promise that resolves to the ordered array of facet fields, or null if not found
  */
 export async function getFacetOrder(
-  userUuid: string,
   selectedType: string,
-  request: FetchRequest
+  request: FetchRequest,
+  isAuthenticated: boolean
 ): Promise<string[] | null> {
-  const apiPath = `/api/facet-order/${userUuid}/?type=${selectedType}`;
-  const response = (await request.getObject(apiPath)).optional();
-  return response as unknown as string[] | null;
+  if (isAuthenticated) {
+    const apiPath = buildFacetOrderApiPath(selectedType);
+    const response = (await request.getObject(apiPath)).optional();
+    return isValidFacetOrder(response) ? response : null;
+  }
+
+  // For non-authenticated users, get the facet order from localStorage.
+  if (typeof localStorage === "undefined") {
+    console.warn(
+      "localStorage is not available. Facet order cannot be retrieved for non-authenticated users."
+    );
+    return null;
+  }
+
+  const storageKey = buildFacetOrderStorageKey(selectedType);
+  const storedOrder = localStorage.getItem(storageKey);
+  if (storedOrder) {
+    try {
+      const parsedOrder: unknown = JSON.parse(storedOrder);
+      if (isValidFacetOrder(parsedOrder)) {
+        return parsedOrder;
+      }
+      localStorage.removeItem(storageKey);
+      console.warn("Invalid facet order in localStorage. Removing entry.");
+    } catch {
+      localStorage.removeItem(storageKey);
+      console.warn(
+        "Failed to parse facet order from localStorage. Removing invalid entry."
+      );
+      return null;
+    }
+  }
+
+  return null;
 }
 
 /**
  * Save the facet order for a user and object type in the Next.js server redis cache via the API.
  *
- * @param userUuid - UUID of the current user to save the facet order
  * @param selectedType - Type of object for which to save the facet order
  * @param orderedFacetFields - Ordered array of facet fields to save
  * @param request - FetchRequest object to use for the request
- * @returns Result of the set operation
+ * @param isAuthenticated - True if the user has authenticated
+ * @returns The saved ordered array of facet fields
+ * @throws If the facet order is invalid or could not be saved
  */
 export async function setFacetOrder(
-  userUuid: string,
   selectedType: string,
   orderedFacetFields: string[],
-  request: FetchRequest
-): Promise<DataProviderObject | ErrorObject> {
-  const apiPath = `/api/facet-order/${userUuid}/?type=${selectedType}`;
-  return await request.postObject(apiPath, orderedFacetFields);
+  request: FetchRequest,
+  isAuthenticated: boolean
+): Promise<string[]> {
+  if (!isValidFacetOrder(orderedFacetFields)) {
+    throw new Error("Invalid facet order config");
+  }
+
+  if (isAuthenticated) {
+    const apiPath = buildFacetOrderApiPath(selectedType);
+    const response = await request.postObject(apiPath, orderedFacetFields);
+    if (isErrorObject(response)) {
+      throw response;
+    }
+    return orderedFacetFields;
+  }
+
+  // For non-authenticated users, save the facet order in localStorage.
+  const storageKey = buildFacetOrderStorageKey(selectedType);
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(orderedFacetFields));
+    return orderedFacetFields;
+  } catch (error) {
+    console.warn("Failed to save facet order to localStorage:", error);
+    throw new Error("Failed to save facet order");
+  }
 }
 
 /**

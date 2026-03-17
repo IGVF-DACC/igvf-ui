@@ -442,28 +442,44 @@ export default function FacetSection({
 
   useEffect(() => {
     // After the page loads, if the user has logged in and they have selected a single search type
-    // (e.g. "type=MeasurementSet"), attempt to load the saved set of open and closed facets as
-    // well as the facet order from the NextJS server redis cache. Use a semaphore to prevent state
-    // changes if the component unmounts before the async calls complete.
+    // (e.g. "type=MeasurementSet"), attempt to load the saved set of open and closed facets from
+    // the NextJS server redis cache. Use a semaphore to prevent state changes if the component
+    // unmounts before the async calls complete.
     let isMounted = true;
     if (userUuid && selectedType) {
-      void Promise.all([
-        getFacetConfig(userUuid, selectedType, request),
-        getFacetOrder(userUuid, selectedType, request),
-      ]).then(([savedOpenFacets, savedOrder]) => {
-        // Prevent state updates if the component has unmounted.
-        if (isMounted) {
-          if (savedOpenFacets) {
-            // Validate that savedOpenFacets is actually an object (not an array)
-            if (
-              !Array.isArray(savedOpenFacets) &&
-              typeof savedOpenFacets === "object"
-            ) {
-              setOpenedFacets(savedOpenFacets);
+      void getFacetConfig(userUuid, selectedType, request).then(
+        (savedOpenFacets) => {
+          // Prevent state updates if the component has unmounted.
+          if (isMounted) {
+            if (savedOpenFacets) {
+              // Validate that savedOpenFacets is actually an object (not an array)
+              if (
+                !Array.isArray(savedOpenFacets) &&
+                typeof savedOpenFacets === "object"
+              ) {
+                setOpenedFacets(savedOpenFacets);
+              }
             }
           }
+        }
+      );
+    }
 
-          if (savedOrder && savedOrder.length > 0) {
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedType, userUuid]);
+
+  useEffect(() => {
+    // After the page loads and the user has selected a single search type, attempt to load the
+    // saved facet order for that type from persistent storage (from the NextJS server Redis cache
+    // for authenticated users, or from localStorage for logged-out users). Use a semaphore to
+    // prevent state changes if the component unmounts before the async calls complete.
+    let isMounted = true;
+    if (selectedType) {
+      void getFacetOrder(selectedType, request, isAuthenticated).then(
+        (savedOrder) => {
+          if (isMounted && savedOrder && savedOrder.length > 0) {
             // If allFacets contains fields that aren't in savedOrder, add those missing fields to
             // the end.
             const missingFields = allFacets
@@ -480,13 +496,13 @@ export default function FacetSection({
             setOrderedFacetFields([...filteredSavedOrder, ...missingFields]);
           }
         }
-      });
+      );
     }
 
     return () => {
       isMounted = false;
     };
-  }, [selectedType, userUuid]);
+  }, [selectedType, isAuthenticated]);
 
   // Save the current state of the opened facets to the NextJS server redis cache.
   async function saveOpen(facetsToSave: Record<string, boolean>) {
@@ -505,15 +521,16 @@ export default function FacetSection({
 
   // Save the current edited facet order to the NextJS server redis cache.
   async function saveOrder(orderedFacetFields: string[]) {
-    if (userUuid && selectedType) {
-      const response = await setFacetOrder(
-        userUuid,
-        selectedType,
-        orderedFacetFields,
-        request
-      );
-      if (isDatabaseObject(response) && response["@type"].includes("Error")) {
-        console.error("Failed to save facet order:", response);
+    if (selectedType) {
+      try {
+        await setFacetOrder(
+          selectedType,
+          orderedFacetFields,
+          request,
+          isAuthenticated
+        );
+      } catch (error) {
+        console.error("Failed to save facet order:", error);
       }
     }
   }
@@ -645,7 +662,7 @@ export default function FacetSection({
                   selectedType={selectedType}
                   allFacets={allFacets}
                   onEditModeChange={onEditModeChange}
-                  showEditOrder={isAuthenticated && selectedType !== ""}
+                  showEditOrder={selectedType !== ""}
                   optionalFacetsConfigForType={optionalFacetsConfigForType}
                   onOptionalFacetsConfigSave={onOptionalFacetsConfigSave}
                   showOptionalFacetsControl={checkOptionalFacetsConfigurable(
