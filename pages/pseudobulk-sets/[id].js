@@ -1,0 +1,645 @@
+// node_modules
+import _ from "lodash";
+import PropTypes from "prop-types";
+import { useContext, useEffect, useState } from "react";
+// components
+import AliasList from "../../components/alias-list";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
+import Attribution from "../../components/attribution";
+import { BatchDownloadFileSet } from "../../components/batch-download-fileset";
+import Breadcrumbs from "../../components/breadcrumbs";
+import { ControlledAccessIndicator } from "../../components/controlled-access";
+import {
+  DataArea,
+  DataItemLabel,
+  DataItemList,
+  DataItemValue,
+  DataItemValueAnnotated,
+  DataPanel,
+} from "../../components/data-area";
+import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
+import DocumentTable from "../../components/document-table";
+import { DoiControl } from "../../components/doi";
+import DonorTable from "../../components/donor-table";
+import { EditableItem } from "../../components/edit";
+import { FileAccessionAndDownload } from "../../components/file-download";
+import { FileGraph } from "../../components/file-graph";
+import FileSetTable from "../../components/file-set-table";
+import FileTable from "../../components/file-table";
+import InputFileSets from "../../components/input-file-sets";
+import JsonDisplay from "../../components/json-display";
+import Link from "../../components/link-no-prefetch";
+import ObjectPageHeader from "../../components/object-page-header";
+import PagePreamble from "../../components/page-preamble";
+import SampleTable from "../../components/sample-table";
+import { useSecDir } from "../../components/section-directory";
+import SessionContext from "../../components/session-context";
+import { StatusPreviewDetail } from "../../components/status";
+import { UniformPipelineStatus } from "../../components/uniform-pipeline-status";
+// lib
+import buildAttribution from "../../lib/attribution";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
+import {
+  requestDocuments,
+  requestDonors,
+  requestFileSets,
+  requestFiles,
+  requestPublications,
+  requestQualityMetrics,
+  requestSamples,
+  requestSupersedes,
+} from "../../lib/common-requests";
+import { isDeprecatedStatus } from "../../lib/deprecated-files";
+import { errorObjectToProps } from "../../lib/errors";
+import FetchRequest from "../../lib/fetch-request";
+import { getAllDerivedFromFiles } from "../../lib/files";
+import { pathToType } from "../../lib/general";
+import {
+  getAssayTitleDescriptionMap,
+  getPreferredAssayTitleDescriptionMap,
+} from "../../lib/ontology-terms";
+import { isJsonFormat } from "../../lib/query-utils";
+
+export default function PseudobulkSet({
+  pseudobulkSet,
+  publications,
+  documents,
+  files,
+  fileFileSets,
+  referenceFiles,
+  derivedFromFiles,
+  inputFileSets,
+  inputFileSetSamples,
+  inputFileSetFor,
+  controlFor,
+  curatedSets,
+  analysisSets,
+  samples,
+  donors,
+  qualityMetrics,
+  assayTitleDescriptionMap,
+  pipelineParametersDocuments,
+  pipelineParametersFiles,
+  supersedes,
+  supersededBy,
+  attribution = null,
+  isJson,
+}) {
+  const sections = useSecDir({ isJson });
+  const { profiles } = useContext(SessionContext);
+  const preferredAssayTitleDescriptionMap =
+    getPreferredAssayTitleDescriptionMap(profiles);
+
+  // State for whether to include deprecated files in the file table and graph.
+  const [areDeprecatedFilesVisible, setAreDeprecatedFilesVisible] = useState(
+    isDeprecatedStatus(pseudobulkSet.status)
+  );
+
+  useEffect(() => {
+    // In case you navigate from one pseudobulk set directly to another, this page component
+    // doesn't unmount, so set the initial visibility of deprecated files based on the new
+    // pseudobulk set's status.
+    setAreDeprecatedFilesVisible(isDeprecatedStatus(pseudobulkSet.status));
+  }, [pseudobulkSet["@id"]]);
+
+  return (
+    <>
+      <Breadcrumbs item={pseudobulkSet} />
+      <EditableItem item={pseudobulkSet}>
+        <PagePreamble sections={sections} />
+        <DoiControl doi={pseudobulkSet.doi} />
+        <AlternativeIdentifiers
+          alternateAccessions={pseudobulkSet.alternate_accessions}
+          supersedes={supersedes}
+          supersededBy={supersededBy}
+        />
+        <ObjectPageHeader item={pseudobulkSet} isJsonFormat={isJson}>
+          <BatchDownloadFileSet fileSet={pseudobulkSet} />
+          <ControlledAccessIndicator item={pseudobulkSet} />
+          <DataUseLimitationSummaries
+            summaries={pseudobulkSet.data_use_limitation_summaries}
+          />
+        </ObjectPageHeader>
+        <JsonDisplay item={pseudobulkSet} isJsonFormat={isJson}>
+          <StatusPreviewDetail item={pseudobulkSet} />
+          <DataPanel>
+            <DataArea>
+              {pseudobulkSet.aliases?.length > 0 && (
+                <>
+                  <DataItemLabel>Aliases</DataItemLabel>
+                  <DataItemValue>
+                    <AliasList aliases={pseudobulkSet.aliases} />
+                  </DataItemValue>
+                </>
+              )}
+              <DataItemLabel>File Set Type</DataItemLabel>
+              <DataItemValueAnnotated
+                objectType={pseudobulkSet["@type"][0]}
+                propertyName="file_set_type"
+              >
+                {pseudobulkSet.file_set_type}
+              </DataItemValueAnnotated>
+              {pseudobulkSet.summary && (
+                <>
+                  <DataItemLabel>Summary</DataItemLabel>
+                  <DataItemValue>{pseudobulkSet.summary}</DataItemValue>
+                </>
+              )}
+              {pseudobulkSet.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{pseudobulkSet.description}</DataItemValue>
+                </>
+              )}
+              {pseudobulkSet.assay_titles?.length > 0 && (
+                <>
+                  <DataItemLabel>Assay Term Names</DataItemLabel>
+                  <DataItemValueAnnotated
+                    externalAnnotations={assayTitleDescriptionMap}
+                  >
+                    {pseudobulkSet.assay_titles}
+                  </DataItemValueAnnotated>
+                </>
+              )}
+              {pseudobulkSet.preferred_assay_titles?.length > 0 && (
+                <>
+                  <DataItemLabel>Preferred Assay Titles</DataItemLabel>
+                  <DataItemValueAnnotated
+                    externalAnnotations={preferredAssayTitleDescriptionMap}
+                  >
+                    {pseudobulkSet.preferred_assay_titles}
+                  </DataItemValueAnnotated>
+                </>
+              )}
+              {pseudobulkSet.cell_qualifier && (
+                <>
+                  <DataItemLabel>Cell Qualifier</DataItemLabel>
+                  <DataItemValue>{pseudobulkSet.cell_qualifier}</DataItemValue>
+                </>
+              )}
+              {pseudobulkSet.cell_type && (
+                <>
+                  <DataItemLabel>Cell Type</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={pseudobulkSet.cell_type["@id"]}>
+                      {pseudobulkSet.cell_type.term_name}
+                    </Link>
+                  </DataItemValue>
+                </>
+              )}
+              {referenceFiles.length > 0 && (
+                <>
+                  <DataItemLabel>Reference Files</DataItemLabel>
+                  <DataItemValue className="@container/ref-file">
+                    <DataItemList isCollapsible>
+                      {referenceFiles.map((file) => (
+                        <div
+                          className="@md/ref-file:flex @md/ref-file:gap-1"
+                          key={file["@id"]}
+                        >
+                          <FileAccessionAndDownload file={file} isInline />
+                          <div>{file.summary}</div>
+                        </div>
+                      ))}
+                    </DataItemList>
+                  </DataItemValue>
+                </>
+              )}
+              {pseudobulkSet.uniform_pipeline_status && (
+                <>
+                  <DataItemLabel>Uniform Pipeline Status</DataItemLabel>
+                  <DataItemValue>
+                    <UniformPipelineStatus
+                      status={pseudobulkSet.uniform_pipeline_status}
+                      atType={pseudobulkSet["@type"][0]}
+                      objectId={pseudobulkSet["@id"]}
+                    />
+                  </DataItemValue>
+                </>
+              )}
+              {publications.length > 0 && (
+                <>
+                  <DataItemLabel>Publications</DataItemLabel>
+                  <DataItemList isCollapsible>
+                    {publications.map((publication) => (
+                      <Link key={publication["@id"]} href={publication["@id"]}>
+                        {publication.title}
+                      </Link>
+                    ))}
+                  </DataItemList>
+                </>
+              )}
+              {pseudobulkSet.protocols?.length > 0 && (
+                <>
+                  <DataItemLabel>Protocols</DataItemLabel>
+                  <DataItemList isCollapsible isUrlList>
+                    {pseudobulkSet.protocols.map((protocol) => (
+                      <a
+                        href={protocol}
+                        key={protocol}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {protocol}
+                      </a>
+                    ))}
+                  </DataItemList>
+                </>
+              )}
+              {pseudobulkSet.submitter_comment && (
+                <>
+                  <DataItemLabel>Submitter Comment</DataItemLabel>
+                  <DataItemValue>
+                    {pseudobulkSet.submitter_comment}
+                  </DataItemValue>
+                </>
+              )}
+              {pseudobulkSet.revoke_detail && (
+                <>
+                  <DataItemLabel>Revoke Detail</DataItemLabel>
+                  <DataItemValue>{pseudobulkSet.revoke_detail}</DataItemValue>
+                </>
+              )}
+              <Attribution attribution={attribution} />
+            </DataArea>
+          </DataPanel>
+
+          {files.length > 0 && (
+            <>
+              <FileTable
+                files={files}
+                fileSet={pseudobulkSet}
+                isFilteredVisible
+                hasDeprecatedOption
+                externalDeprecated={{
+                  visible: areDeprecatedFilesVisible,
+                  setVisible: setAreDeprecatedFilesVisible,
+                }}
+              />
+              <FileGraph
+                fileSet={pseudobulkSet}
+                files={files}
+                referenceFiles={referenceFiles}
+                fileFileSets={fileFileSets}
+                derivedFromFiles={derivedFromFiles}
+                qualityMetrics={qualityMetrics}
+                fileId={pseudobulkSet.accession}
+                externalDeprecated={{
+                  visible: areDeprecatedFilesVisible,
+                  setVisible: setAreDeprecatedFilesVisible,
+                }}
+              />
+            </>
+          )}
+
+          {samples.length > 0 && (
+            <SampleTable
+              samples={samples}
+              reportLink={`/multireport/?type=Sample&file_sets.@id=${pseudobulkSet["@id"]}`}
+              reportLabel="Report of samples in this pseudobulk set"
+              isConstructLibraryColumnVisible
+            />
+          )}
+
+          {donors.length > 0 && <DonorTable donors={donors} />}
+
+          {inputFileSets.length > 0 && (
+            <InputFileSets
+              thisFileSet={pseudobulkSet}
+              fileSets={inputFileSets}
+              samples={inputFileSetSamples}
+              curatedSets={curatedSets}
+              analysisSets={analysisSets}
+            />
+          )}
+
+          {inputFileSetFor.length > 0 && (
+            <FileSetTable
+              fileSets={inputFileSetFor}
+              reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${pseudobulkSet["@id"]}`}
+              reportLabel="Report of file sets that this pseudobulk set is an input for"
+              title="File Sets Using This Analysis Set as an Input"
+              panelId="input-file-set-for"
+            />
+          )}
+
+          {controlFor.length > 0 && (
+            <FileSetTable
+              fileSets={controlFor}
+              reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${pseudobulkSet["@id"]}`}
+              reportLabel="Report of file sets that this pseudobulk set serves as a control for"
+              title="File Sets Controlled by This Analysis Set"
+              panelId="control-for"
+            />
+          )}
+
+          {pipelineParametersDocuments.length > 0 && (
+            <DocumentTable
+              title="Pipeline Parameters Documents"
+              documents={pipelineParametersDocuments}
+              panelId="pipeline-parameters-documents"
+            />
+          )}
+
+          {pipelineParametersFiles.length > 0 && (
+            <FileTable
+              title="Pipeline Parameters Files"
+              files={pipelineParametersFiles}
+              panelId="pipeline-parameters-files"
+            />
+          )}
+
+          {documents.length > 0 && <DocumentTable documents={documents} />}
+        </JsonDisplay>
+      </EditableItem>
+    </>
+  );
+}
+
+PseudobulkSet.propTypes = {
+  pseudobulkSet: PropTypes.object.isRequired,
+  // Files to display
+  files: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that `files` refer to in their `file_sets` property
+  fileFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Reference files to display
+  referenceFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // All derived_from files not included in `files`
+  derivedFromFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Input file sets to display
+  inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Input file set samples
+  inputFileSetSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this pseudobulk set is input for
+  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets controlled by this pseudobulk set
+  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // CuratedSets to display
+  curatedSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // AnalysisSets to display
+  analysisSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Samples from pseudobulk set `samples` property that doesn't embed enough properties to display
+  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Donors from pseudobulk set `donors` property that doesn't embed enough properties to display
+  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Quality metrics associated with this pseudobulk set
+  qualityMetrics: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Assay title description map for this pseudobulk set
+  assayTitleDescriptionMap: PropTypes.object.isRequired,
+  // Publications associated with this pseudobulk set
+  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Documents associated with this pseudobulk set
+  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Pipeline parameters documents
+  pipelineParametersDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Pipeline parameters tabular files
+  pipelineParametersFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // File sets that this file set supersedes
+  supersedes: PropTypes.arrayOf(PropTypes.object),
+  // File sets that supersede this file set
+  supersededBy: PropTypes.arrayOf(PropTypes.object),
+  // Attribution for this pseudobulk set
+  attribution: PropTypes.object,
+  // Is the format JSON?
+  isJson: PropTypes.bool.isRequired,
+};
+
+export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+  const isJson = isJsonFormat(query);
+  const request = new FetchRequest({ cookie: req.headers.cookie });
+  const pseudobulkSet = (
+    await request.getObject(`/pseudobulk-sets/${params.id}/`)
+  ).union();
+
+  if (FetchRequest.isResponseSuccess(pseudobulkSet)) {
+    const canonicalRedirect = createCanonicalUrlRedirect(
+      pseudobulkSet,
+      resolvedUrl,
+      query
+    );
+    if (canonicalRedirect) {
+      return canonicalRedirect;
+    }
+
+    const documents = pseudobulkSet.documents
+      ? await requestDocuments(pseudobulkSet.documents, request)
+      : [];
+
+    const filePaths =
+      pseudobulkSet.files?.length > 0
+        ? pseudobulkSet.files.map((file) => file["@id"])
+        : [];
+    const files =
+      filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
+
+    // Get all reference file paths from the files in the pseudobulk set, then request those files
+    // from the server. `reference_files` has a `minItems` of 1, so just check its existence.
+    const referenceFilePathsSet = files.reduce((acc, file) => {
+      if (file.reference_files) {
+        file.reference_files.forEach((referenceFilePath) => {
+          acc.add(referenceFilePath);
+        });
+      }
+      return acc;
+    }, new Set());
+    const referenceFilePaths = [...referenceFilePathsSet];
+    const referenceFiles =
+      referenceFilePaths.length > 0
+        ? await requestFiles(referenceFilePaths, request)
+        : [];
+
+    // Get the paths of all files that are in `files`' `derived_from` array property. Combine and
+    // deduplicate them, and then request them from the server. Repeat this process with those
+    // files until we have no more files with `derived_from` properties.
+    const derivedFromFiles = await getAllDerivedFromFiles(files, request);
+    const combinedFiles = files.concat(derivedFromFiles);
+
+    // Get all file-set objects in every file's `file_sets` property.
+    let fileFileSets = [];
+    if (combinedFiles.length > 0) {
+      const fileSetPaths = combinedFiles.reduce((acc, file) => {
+        return acc.includes(file.file_set["@id"])
+          ? acc
+          : acc.concat(file.file_set["@id"]);
+      }, []);
+      fileFileSets = await requestFileSets(fileSetPaths, request);
+    }
+
+    let inputFileSets = [];
+    if (pseudobulkSet.input_file_sets?.length > 0) {
+      // The embedded `input_file_sets` in the pseudobulk set don't have enough properties to display
+      // in the table, so we have to request them.
+      const inputFileSetPaths = pseudobulkSet.input_file_sets.map(
+        (fileSet) => fileSet["@id"]
+      );
+      inputFileSets = await requestFileSets(inputFileSetPaths, request, [
+        "analysis_set",
+        "curated_set",
+      ]);
+    }
+
+    const inputFileSetFor =
+      pseudobulkSet.input_for?.length > 0
+        ? await requestFileSets(pseudobulkSet.input_for, request)
+        : [];
+
+    let controlFor = [];
+    if (pseudobulkSet.control_for?.length > 0) {
+      const controlForPaths = pseudobulkSet.control_for.map(
+        (control) => control["@id"]
+      );
+      controlFor = await requestFileSets(controlForPaths, request);
+    }
+
+    let samples = [];
+    if (pseudobulkSet.samples?.length > 0) {
+      const samplePaths = pseudobulkSet.samples.map((sample) => sample["@id"]);
+      samples = await requestSamples(samplePaths, request);
+    }
+
+    const donors = await requestDonors(
+      pseudobulkSet.donors?.map((donor) => donor["@id"]) || [],
+      request
+    );
+
+    let curatedSets = [];
+    let analysisSets = [];
+    if (inputFileSets.length > 0) {
+      // Retrieve the input file sets' curated sets.
+      let curatedSetsPaths = inputFileSets.reduce((acc, fileSet) => {
+        return fileSet.curated_sets?.length > 0
+          ? acc.concat(
+              fileSet.curated_sets.map((curatedSet) => curatedSet["@id"])
+            )
+          : acc;
+      }, []);
+      curatedSetsPaths = [...new Set(curatedSetsPaths)];
+      curatedSets =
+        curatedSetsPaths.length > 0
+          ? await requestFileSets(curatedSetsPaths, request)
+          : [];
+
+      // Retrieve the input file sets' analysis sets.
+      analysisSets = inputFileSets.reduce((acc, fileSet) => {
+        return fileSet.analysis_sets?.length > 0
+          ? acc.concat(fileSet.analysis_sets)
+          : acc;
+      }, []);
+      let analysisSetPaths = analysisSets.map(
+        (analysisSet) => analysisSet["@id"]
+      );
+      analysisSetPaths = [...new Set(analysisSetPaths)];
+      analysisSets =
+        analysisSetPaths.length > 0
+          ? await requestFileSets(analysisSetPaths, request)
+          : [];
+    }
+
+    const embeddedSamples = inputFileSets.reduce((acc, inputFileSet) => {
+      return inputFileSet.samples?.length > 0
+        ? acc.concat(inputFileSet.samples)
+        : acc;
+    }, []);
+
+    let inputFileSetSamples = [];
+    if (embeddedSamples.length > 0) {
+      let samplePaths = embeddedSamples.map((sample) => sample["@id"]);
+      samplePaths = [...new Set(samplePaths)];
+      inputFileSetSamples = await requestSamples(samplePaths, request);
+    }
+
+    let publications = [];
+    if (pseudobulkSet.publications?.length > 0) {
+      const publicationPaths = pseudobulkSet.publications.map(
+        (publication) => publication["@id"]
+      );
+      publications = await requestPublications(publicationPaths, request);
+    }
+
+    let qualityMetrics = [];
+    if (files.length > 0) {
+      let qualityMetricsPaths = files.reduce((acc, file) => {
+        return file.quality_metrics?.length > 0
+          ? acc.concat(file.quality_metrics)
+          : acc;
+      }, []);
+      qualityMetricsPaths = [...new Set(qualityMetricsPaths)];
+      qualityMetrics =
+        qualityMetricsPaths.length > 0
+          ? await requestQualityMetrics(qualityMetricsPaths, request)
+          : [];
+    }
+
+    // `pipeline_parameters` can contain both `/documents/id` and `/tabular-files/id`. Put these
+    // into groups `documents` and `tabular-files`, then request the corresponding objects.
+    let pipelineParametersDocuments = [];
+    let pipelineParametersFiles = [];
+    if (pseudobulkSet.pipeline_parameters?.length > 0) {
+      const pipelineParametersGroups = _.groupBy(
+        pseudobulkSet.pipeline_parameters,
+        (parameter) => pathToType(parameter)
+      );
+
+      // Request Document objects if any exist in the group.
+      if (pipelineParametersGroups.documents) {
+        pipelineParametersDocuments = await requestDocuments(
+          pipelineParametersGroups.documents,
+          request
+        );
+      }
+
+      // Request Tabular File objects if any exist in the group.
+      if (pipelineParametersGroups["tabular-files"]) {
+        pipelineParametersFiles = await requestFiles(
+          pipelineParametersGroups["tabular-files"],
+          request
+        );
+      }
+    }
+
+    const assayTitleDescriptionMap =
+      pseudobulkSet.assay_titles?.length > 0
+        ? await getAssayTitleDescriptionMap(pseudobulkSet.assay_titles, request)
+        : {};
+
+    const { supersedes, supersededBy } = await requestSupersedes(
+      pseudobulkSet,
+      "FileSet",
+      request
+    );
+
+    const attribution = await buildAttribution(
+      pseudobulkSet,
+      req.headers.cookie
+    );
+    return {
+      props: {
+        pseudobulkSet,
+        publications,
+        documents,
+        files,
+        fileFileSets,
+        referenceFiles,
+        derivedFromFiles,
+        inputFileSets,
+        inputFileSetSamples,
+        inputFileSetFor,
+        controlFor,
+        curatedSets,
+        analysisSets,
+        samples,
+        donors,
+        qualityMetrics,
+        assayTitleDescriptionMap,
+        pipelineParametersDocuments,
+        pipelineParametersFiles,
+        supersedes,
+        supersededBy,
+        pageContext: { title: pseudobulkSet.accession },
+        attribution,
+        isJson,
+      },
+    };
+  }
+  return errorObjectToProps(pseudobulkSet);
+}
