@@ -1,4 +1,5 @@
 // node_modules
+import _ from "lodash";
 import PropTypes from "prop-types";
 // components/search/list-renderer
 import {
@@ -35,9 +36,10 @@ export default function PseudobulkSet({
 
   const samplesSummary =
     pseudobulkSet.samples?.length > 0
-      ? [
-          ...new Set(pseudobulkSet.samples.map((sample) => sample.summary)),
-        ].sort()
+      ? _.sortBy(
+          [...new Set(pseudobulkSet.samples.map((sample) => sample.summary))],
+          (item) => item.toLowerCase()
+        )
       : [];
 
   const isSupplementsVisible =
@@ -77,9 +79,7 @@ export default function PseudobulkSet({
                   Cell Type
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  {pseudobulkSet.cell_qualifier
-                    ? `${pseudobulkSet.cell_qualifier} ${pseudobulkSet.cell_type.term_name}`
-                    : pseudobulkSet.cell_type.term_name}
+                  {pseudobulkSet.cell_type.term_name}
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}

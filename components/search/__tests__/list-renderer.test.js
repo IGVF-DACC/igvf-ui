@@ -3694,53 +3694,6 @@ describe("Test IndexFile component", () => {
       );
     });
 
-    it("renders a PseudobulkSet item with cell_qualifier", () => {
-      const item = {
-        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
-        "@type": ["PseudobulkSet", "FileSet", "Item"],
-        accession: "IGVFDS1111PBST",
-        aliases: ["igvf:basic_pseudobulk_set"],
-        award: "/awards/HG012012/",
-        files: [],
-        cell_type: { term_name: "H9" },
-        cell_qualifier: "early",
-        file_set_type: "pseudobulk analysis",
-        lab: {
-          title: "J. Michael Cherry, Stanford",
-        },
-        status: "released",
-        summary: "pseudobulk set of data",
-        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
-      };
-
-      render(
-        <SessionContext.Provider value={{ profiles }}>
-          <PseudobulkSet item={item} />
-        </SessionContext.Provider>
-      );
-
-      expect(
-        screen.getByTestId("search-list-item-unique-id")
-      ).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
-      expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
-        /^pseudobulk set of data$/
-      );
-      expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
-        "J. Michael Cherry, Stanford"
-      );
-
-      expect(
-        screen.getByTestId("search-list-item-supplement")
-      ).toHaveTextContent("Cell Type");
-      expect(
-        screen.getByTestId("search-list-item-supplement-content")
-      ).toHaveTextContent("early H9");
-
-      expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
-        "released"
-      );
-    });
-
     it("renders a PseudobulkSet item with samples.summary", () => {
       const item = {
         "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
@@ -3799,6 +3752,11 @@ describe("Test IndexFile component", () => {
         lab: {
           title: "J. Michael Cherry, Stanford",
         },
+        workflows: [
+          {
+            uniform_pipeline: true,
+          },
+        ],
         status: "released",
         summary: "pseudobulk set of data",
         uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
