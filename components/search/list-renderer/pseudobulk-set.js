@@ -32,13 +32,6 @@ export default function PseudobulkSet({
   const isUniformPipeline = workflows.some(
     (workflow) => workflow.uniform_pipeline
   );
-  // Collect all files.content_type and deduplicate
-  const fileContentType =
-    pseudobulkSet.files?.length > 0
-      ? [
-          ...new Set(pseudobulkSet.files.map((file) => file.content_type)),
-        ].sort()
-      : [];
 
   const samplesSummary =
     pseudobulkSet.samples?.length > 0
