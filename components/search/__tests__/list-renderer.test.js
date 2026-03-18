@@ -3626,24 +3626,26 @@ describe("Test IndexFile component", () => {
         </SessionContext.Provider>
       );
 
-      const uniqueId = screen.getByTestId("search-list-item-unique-id");
-      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+      expect(
+        screen.getByTestId("search-list-item-unique-id")
+      ).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+      expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
+        /^pseudobulk set of data$/
+      );
+      expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
+        "J. Michael Cherry, Stanford"
+      );
 
-      const title = screen.getByTestId("search-list-item-title");
-      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+      expect(
+        screen.getByTestId("search-list-item-supplement")
+      ).toHaveTextContent("Description");
+      expect(
+        screen.getByTestId("search-list-item-supplement-content")
+      ).toHaveTextContent("This is my description");
 
-      const meta = screen.getByTestId("search-list-item-meta");
-      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-      const supplement = screen.getByTestId("search-list-item-supplement");
-      expect(supplement).toHaveTextContent("Description");
-
-      const descriptionLabel = screen.getByText("Description");
-      const descriptionSection = descriptionLabel.closest("div");
-      expect(descriptionSection).toHaveTextContent("This is my description");
-
-      const status = screen.getByTestId("search-list-item-quality");
-      expect(status).toHaveTextContent("released");
+      expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
+        "released"
+      );
     });
 
     it("renders a PseudobulkSet item with cell_type", () => {
@@ -3670,24 +3672,26 @@ describe("Test IndexFile component", () => {
         </SessionContext.Provider>
       );
 
-      const uniqueId = screen.getByTestId("search-list-item-unique-id");
-      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+      expect(
+        screen.getByTestId("search-list-item-unique-id")
+      ).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+      expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
+        /^pseudobulk set of data$/
+      );
+      expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
+        "J. Michael Cherry, Stanford"
+      );
 
-      const title = screen.getByTestId("search-list-item-title");
-      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+      expect(
+        screen.getByTestId("search-list-item-supplement")
+      ).toHaveTextContent("Cell Type");
+      expect(
+        screen.getByTestId("search-list-item-supplement-content")
+      ).toHaveTextContent("H9");
 
-      const meta = screen.getByTestId("search-list-item-meta");
-      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-      const supplement = screen.getByTestId("search-list-item-supplement");
-      expect(supplement).toHaveTextContent("Cell Type");
-
-      const cellTypeLabel = screen.getByText("Cell Type");
-      const cellTypeSection = cellTypeLabel.closest("div");
-      expect(cellTypeSection).toHaveTextContent("H9");
-
-      const status = screen.getByTestId("search-list-item-quality");
-      expect(status).toHaveTextContent("released");
+      expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
+        "released"
+      );
     });
 
     it("renders a PseudobulkSet item with cell_qualifier", () => {
@@ -3715,24 +3719,26 @@ describe("Test IndexFile component", () => {
         </SessionContext.Provider>
       );
 
-      const uniqueId = screen.getByTestId("search-list-item-unique-id");
-      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+      expect(
+        screen.getByTestId("search-list-item-unique-id")
+      ).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+      expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
+        /^pseudobulk set of data$/
+      );
+      expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
+        "J. Michael Cherry, Stanford"
+      );
 
-      const title = screen.getByTestId("search-list-item-title");
-      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+      expect(
+        screen.getByTestId("search-list-item-supplement")
+      ).toHaveTextContent("Cell Type");
+      expect(
+        screen.getByTestId("search-list-item-supplement-content")
+      ).toHaveTextContent("early H9");
 
-      const meta = screen.getByTestId("search-list-item-meta");
-      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-      const supplement = screen.getByTestId("search-list-item-supplement");
-      expect(supplement).toHaveTextContent("Cell Type");
-
-      const cellTypeLabel = screen.getByText("Cell Type");
-      const cellTypeSection = cellTypeLabel.closest("div");
-      expect(cellTypeSection).toHaveTextContent("early H9");
-
-      const status = screen.getByTestId("search-list-item-quality");
-      expect(status).toHaveTextContent("released");
+      expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
+        "released"
+      );
     });
 
     it("renders a PseudobulkSet item with samples.summary", () => {
@@ -3759,24 +3765,26 @@ describe("Test IndexFile component", () => {
         </SessionContext.Provider>
       );
 
-      const uniqueId = screen.getByTestId("search-list-item-unique-id");
-      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+      expect(
+        screen.getByTestId("search-list-item-unique-id")
+      ).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+      expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
+        /^pseudobulk set of data$/
+      );
+      expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
+        "J. Michael Cherry, Stanford"
+      );
 
-      const title = screen.getByTestId("search-list-item-title");
-      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+      expect(
+        screen.getByTestId("search-list-item-supplement")
+      ).toHaveTextContent("Samples");
+      expect(
+        screen.getByTestId("search-list-item-supplement-content")
+      ).toHaveTextContent("test samples.summary");
 
-      const meta = screen.getByTestId("search-list-item-meta");
-      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-      const supplement = screen.getByTestId("search-list-item-supplement");
-      expect(supplement).toHaveTextContent("Samples");
-
-      const samplesLabel = screen.getByText("Samples");
-      const samplesSection = samplesLabel.closest("div");
-      expect(samplesSection).toHaveTextContent("test samples.summary");
-
-      const status = screen.getByTestId("search-list-item-quality");
-      expect(status).toHaveTextContent("released");
+      expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
+        "released"
+      );
     });
 
     it("renders a PseudobulkSet item with workflow", () => {
