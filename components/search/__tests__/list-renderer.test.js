@@ -26,6 +26,7 @@ import OpenReadingFrame from "../list-renderer/open-reading-frame";
 import Page from "../list-renderer/page";
 import PhenotypicFeature from "../list-renderer/phenotypic-feature";
 import PredictionSet from "../list-renderer/prediction-set";
+import PseudobulkSet from "../list-renderer/pseudobulk-set";
 import Publication from "../list-renderer/publication";
 import QualityMetric from "../list-renderer/quality-metric";
 import RodentDonor from "../list-renderer/rodent-donor";
@@ -3557,5 +3558,277 @@ describe("Test IndexFile component", () => {
     expect(supplement).toHaveTextContent(
       "AnalysisSeSUPERSTARR targeting Mir683-2: barcode to sample mapping, coding_variants, diseases_genes, documentation (readme), elements reference and 15 more"
     );
+  });
+
+  describe("Test the PseudobulkSet component", () => {
+    it("renders a PseudobulkSet item with alternate accession", () => {
+      const item = {
+        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+        "@type": ["PseudobulkSet", "FileSet", "Item"],
+        accession: "IGVFDS1111PBST",
+        alternate_accessions: ["IGVFDS1111PBSU"],
+        aliases: ["igvf:basic_pseudobulk_set"],
+        award: "/awards/HG012012/",
+        files: [],
+        file_set_type: "pseudobulk analysis",
+        lab: {
+          title: "J. Michael Cherry, Stanford",
+        },
+        status: "released",
+        summary: "pseudobulk set of data",
+        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+      };
+
+      render(
+        <SessionContext.Provider value={{ profiles }}>
+          <PseudobulkSet item={item} />
+        </SessionContext.Provider>
+      );
+
+      const uniqueId = screen.getByTestId("search-list-item-unique-id");
+      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+
+      const title = screen.getByTestId("search-list-item-title");
+      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+
+      const meta = screen.getByTestId("search-list-item-meta");
+      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+      const supplement = screen.getByTestId("search-list-item-supplement");
+      expect(supplement).toHaveTextContent("Alternate Accessions");
+      expect(supplement).toHaveTextContent("IGVFDS1111PBSU");
+
+      const status = screen.getByTestId("search-list-item-quality");
+      expect(status).toHaveTextContent("released");
+    });
+
+    it("renders a PseudobulkSet item with description", () => {
+      const item = {
+        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+        "@type": ["PseudobulkSet", "FileSet", "Item"],
+        accession: "IGVFDS1111PBST",
+        aliases: ["igvf:basic_pseudobulk_set"],
+        award: "/awards/HG012012/",
+        description: "This is my description",
+        files: [],
+        file_set_type: "pseudobulk analysis",
+        lab: {
+          title: "J. Michael Cherry, Stanford",
+        },
+        status: "released",
+        summary: "pseudobulk set of data",
+        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+      };
+
+      render(
+        <SessionContext.Provider value={{ profiles }}>
+          <PseudobulkSet item={item} />
+        </SessionContext.Provider>
+      );
+
+      const uniqueId = screen.getByTestId("search-list-item-unique-id");
+      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+
+      const title = screen.getByTestId("search-list-item-title");
+      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+
+      const meta = screen.getByTestId("search-list-item-meta");
+      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+      const supplement = screen.getByTestId("search-list-item-supplement");
+      expect(supplement).toHaveTextContent("Description");
+
+      const descriptionLabel = screen.getByText("Description");
+      const descriptionSection = descriptionLabel.closest("div");
+      expect(descriptionSection).toHaveTextContent("This is my description");
+
+      const status = screen.getByTestId("search-list-item-quality");
+      expect(status).toHaveTextContent("released");
+    });
+
+    it("renders a PseudobulkSet item with cell_type", () => {
+      const item = {
+        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+        "@type": ["PseudobulkSet", "FileSet", "Item"],
+        accession: "IGVFDS1111PBST",
+        aliases: ["igvf:basic_pseudobulk_set"],
+        award: "/awards/HG012012/",
+        files: [],
+        cell_type: { term_name: "H9" },
+        file_set_type: "pseudobulk analysis",
+        lab: {
+          title: "J. Michael Cherry, Stanford",
+        },
+        status: "released",
+        summary: "pseudobulk set of data",
+        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+      };
+
+      render(
+        <SessionContext.Provider value={{ profiles }}>
+          <PseudobulkSet item={item} />
+        </SessionContext.Provider>
+      );
+
+      const uniqueId = screen.getByTestId("search-list-item-unique-id");
+      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+
+      const title = screen.getByTestId("search-list-item-title");
+      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+
+      const meta = screen.getByTestId("search-list-item-meta");
+      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+      const supplement = screen.getByTestId("search-list-item-supplement");
+      expect(supplement).toHaveTextContent("Cell Type");
+
+      const cellTypeLabel = screen.getByText("Cell Type");
+      const cellTypeSection = cellTypeLabel.closest("div");
+      expect(cellTypeSection).toHaveTextContent("H9");
+
+      const status = screen.getByTestId("search-list-item-quality");
+      expect(status).toHaveTextContent("released");
+    });
+
+    it("renders a PseudobulkSet item with cell_qualifier", () => {
+      const item = {
+        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+        "@type": ["PseudobulkSet", "FileSet", "Item"],
+        accession: "IGVFDS1111PBST",
+        aliases: ["igvf:basic_pseudobulk_set"],
+        award: "/awards/HG012012/",
+        files: [],
+        cell_type: { term_name: "H9" },
+        cell_qualifier: "early",
+        file_set_type: "pseudobulk analysis",
+        lab: {
+          title: "J. Michael Cherry, Stanford",
+        },
+        status: "released",
+        summary: "pseudobulk set of data",
+        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+      };
+
+      render(
+        <SessionContext.Provider value={{ profiles }}>
+          <PseudobulkSet item={item} />
+        </SessionContext.Provider>
+      );
+
+      const uniqueId = screen.getByTestId("search-list-item-unique-id");
+      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+
+      const title = screen.getByTestId("search-list-item-title");
+      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+
+      const meta = screen.getByTestId("search-list-item-meta");
+      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+      const supplement = screen.getByTestId("search-list-item-supplement");
+      expect(supplement).toHaveTextContent("Cell Type");
+
+      const cellTypeLabel = screen.getByText("Cell Type");
+      const cellTypeSection = cellTypeLabel.closest("div");
+      expect(cellTypeSection).toHaveTextContent("early H9");
+
+      const status = screen.getByTestId("search-list-item-quality");
+      expect(status).toHaveTextContent("released");
+    });
+
+    it("renders a PseudobulkSet item with samples.summary", () => {
+      const item = {
+        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+        "@type": ["PseudobulkSet", "FileSet", "Item"],
+        accession: "IGVFDS1111PBST",
+        aliases: ["igvf:basic_pseudobulk_set"],
+        award: "/awards/HG012012/",
+        files: [],
+        file_set_type: "pseudobulk analysis",
+        samples: [{ summary: "test samples.summary" }],
+        lab: {
+          title: "J. Michael Cherry, Stanford",
+        },
+        status: "released",
+        summary: "pseudobulk set of data",
+        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+      };
+
+      render(
+        <SessionContext.Provider value={{ profiles }}>
+          <PseudobulkSet item={item} />
+        </SessionContext.Provider>
+      );
+
+      const uniqueId = screen.getByTestId("search-list-item-unique-id");
+      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+
+      const title = screen.getByTestId("search-list-item-title");
+      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+
+      const meta = screen.getByTestId("search-list-item-meta");
+      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+      const supplement = screen.getByTestId("search-list-item-supplement");
+      expect(supplement).toHaveTextContent("Samples");
+
+      const samplesLabel = screen.getByText("Samples");
+      const samplesSection = samplesLabel.closest("div");
+      expect(samplesSection).toHaveTextContent("test samples.summary");
+
+      const status = screen.getByTestId("search-list-item-quality");
+      expect(status).toHaveTextContent("released");
+    });
+
+    it("renders a PseudobulkSet item with workflow", () => {
+      const item = {
+        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+        "@type": ["PseudobulkSet", "FileSet", "Item"],
+        accession: "IGVFDS1111PBST",
+        aliases: ["igvf:basic_pseudobulk_set"],
+        award: "/awards/HG012012/",
+        files: [],
+        file_set_type: "pseudobulk analysis",
+        lab: {
+          title: "J. Michael Cherry, Stanford",
+        },
+        status: "released",
+        summary: "pseudobulk set of data",
+        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+      };
+
+      const accessoryData = {
+        "/pseudobulk-sets/IGVFDS1111PBST/": {
+          "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+          "@type": ["PseudobulkSet", "FileSet", "Item"],
+          workflows: [
+            {
+              "@id": "/workflows/IGVFWF0000WORK/",
+              accession: "IGVFWF0000WORK",
+              name: "Pseudobulk Pipeline",
+              uniform_pipeline: true,
+            },
+          ],
+        },
+      };
+
+      render(
+        <SessionContext.Provider value={{ profiles }}>
+          <PseudobulkSet item={item} accessoryData={accessoryData} />
+        </SessionContext.Provider>
+      );
+
+      const uniqueId = screen.getByTestId("search-list-item-unique-id");
+      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+
+      const title = screen.getByTestId("search-list-item-title");
+      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+
+      const meta = screen.getByTestId("search-list-item-meta");
+      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+      const qualityItem = screen.getByTestId("search-list-item-quality");
+      expect(qualityItem).toHaveTextContent("released");
+      expect(qualityItem).toHaveTextContent("uniformly processed");
+    });
   });
 });

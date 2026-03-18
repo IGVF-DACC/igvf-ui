@@ -5164,6 +5164,179 @@ const profiles = {
       },
     },
   },
+
+  PseudobulkSet: {
+    title: "Pseudobulk Set",
+    $id: "/profiles/pseudobulk_set.json",
+    required: ["award", "lab", "file_set_type", "samples", "cell_type"],
+    identifyingProperties: [
+      "accession",
+      "aliases",
+      "alternate_accessions",
+      "uuid",
+    ],
+    properties: {
+      input_file_sets: {
+        title: "Input File Sets",
+        description:
+          "The file set(s) required for this pseudobulking analysis.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Input File Set",
+          description: "A file set that serves as input for this file set.",
+          type: "string",
+          linkTo: ["AnalysisSet", "CuratedSet"],
+        },
+      },
+      publications: {
+        title: "Publications",
+        description: "The publications associated with this object.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Publication",
+          description: "A publication associated with this object.",
+          type: "string",
+          linkTo: "Publication",
+        },
+      },
+      documents: {
+        title: "Documents",
+        description:
+          "Documents that provide additional information (not data file).",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "Document",
+          description:
+            "A document that provides additional information (not data file).",
+          type: "string",
+          linkTo: "Document",
+        },
+      },
+      lab: {
+        title: "Lab",
+        description: "Lab associated with the submission.",
+        type: "string",
+        linkTo: "Lab",
+        linkSubmitsFor: true,
+      },
+      award: {
+        title: "Award",
+        description: "Grant associated with the submission.",
+        type: "string",
+        linkTo: "Award",
+      },
+      aliases: {
+        title: "Aliases",
+        description: "Lab specific identifiers to reference an object.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          uniqueKey: "alias",
+          title: "Lab Alias",
+          description: "A lab specific identifier to reference an object.",
+          type: "string",
+        },
+      },
+      submitter_comment: {
+        title: "Submitter Comment",
+        description:
+          "Additional information specified by the submitter to be displayed as a comment on the portal.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+      },
+      description: {
+        title: "Description",
+        description: "A plain text description of the object.",
+        type: "string",
+        pattern: "^(\\S+(\\s|\\S)*\\S+|\\S)$",
+      },
+      dbxrefs: {
+        title: "External Resources",
+        description:
+          "Identifiers from external resources that may have 1-to-1 or 1-to-many relationships with IGVF file sets.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "External identifier",
+          description:
+            "Identifier from an external resource that may have 1-to-1 or 1-to-many relationships with IGVF file sets.",
+          type: "string",
+          pattern: "^(GEO:GSE\\d+|urn:mavedb:\\d{8}-[0a-z]+-\\d+)$",
+        },
+      },
+      samples: {
+        title: "Source Biosamples",
+        description:
+          "The sample(s) from which the cells in this pseudobulk originated.",
+        type: "array",
+        uniqueItems: true,
+        minItems: 1,
+        items: {
+          title: "Source Biosample",
+          type: "string",
+          linkTo: "Biosample",
+        },
+      },
+      file_set_type: {
+        title: "File Set Type",
+        description: "The level of this analysis set.",
+        type: "string",
+        enum: ["pseudobulk analysis"],
+      },
+      cell_type: {
+        title: "Cell Type",
+        description:
+          "The ontology term that describes the cell type of the cells in this pseudobulk.",
+        type: "string",
+        linkTo: "SampleTerm",
+      },
+      cell_qualifier: {
+        title: "Cell Qualifier",
+        description:
+          "A qualifier that provides additional detail about the cell type annotation or the source biosample.",
+        type: "string",
+      },
+      summary: {
+        title: "Summary",
+        type: "string",
+        notSubmittable: true,
+      },
+      files: {
+        title: "Files",
+        description: "The files associated with this file set.",
+        type: "array",
+        minItems: 1,
+        uniqueItems: true,
+        items: {
+          title: "File",
+          type: "string",
+          linkFrom: "File.file_set",
+        },
+        notSubmittable: true,
+      },
+      workflows: {
+        title: "Workflows",
+        description:
+          "A workflow for computational analysis of genomic data. A workflow is made up of analysis steps.",
+        type: "array",
+        minItems: 1,
+        items: {
+          title: "Workflow",
+          type: "string",
+          linkTo: "Workflow",
+        },
+        notSubmittable: true,
+      },
+    },
+  },
 };
 
 export default profiles;
