@@ -40,19 +40,19 @@ export default function PseudobulkSet({
         ].sort()
       : [];
 
-  const isSupplementsVisible =
-    pseudobulkSet.alternate_accessions ||
-    pseudobulkSet.description ||
-    pseudobulkSet.samples.summary ||
-    fileContentType.length > 0 ||
-    isUniformPipeline;
-
   const samplesSummary =
     pseudobulkSet.samples?.length > 0
       ? [
           ...new Set(pseudobulkSet.samples.map((sample) => sample.summary)),
         ].sort()
       : [];
+
+  const isSupplementsVisible =
+    pseudobulkSet.alternate_accessions ||
+    pseudobulkSet.description ||
+    pseudobulkSet.cell_type ||
+    samplesSummary.length > 0 ||
+    isUniformPipeline;
 
   return (
     <SearchListItemContent>
@@ -78,23 +78,15 @@ export default function PseudobulkSet({
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {fileContentType.length > 0 && (
-              <SearchListItemSupplementSection>
-                <SearchListItemSupplementLabel>
-                  Files
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {fileContentType.join(", ")}
-                </SearchListItemSupplementContent>
-              </SearchListItemSupplementSection>
-            )}
             {pseudobulkSet.cell_type && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Cell Type
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  {pseudobulkSet.cell_type.term_name}
+                  {pseudobulkSet.cell_qualifier
+                    ? `${pseudobulkSet.cell_qualifier} ${pseudobulkSet.cell_type.term_name}`
+                    : pseudobulkSet.cell_type.term_name}
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
