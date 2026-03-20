@@ -74,7 +74,9 @@ function findEarliestAndLatestDates(dates: string[]): string[] {
  * @returns Array of two Date objects representing the earliest and latest dates in the facet
  */
 export function getFacetDateRange(facet: SearchResultsFacet): Date[] {
-  const facetTerms = facet.terms as SearchResultsFacetTerm[];
+  const facetTerms = (facet.terms as SearchResultsFacetTerm[]).filter((term) =>
+    Boolean(term.key_as_string)
+  );
   if (facetTerms.length > 0) {
     const allDates = facetTerms.map((term) =>
       iso8601ToDateOnly(term.key_as_string)

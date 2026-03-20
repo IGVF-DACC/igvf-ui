@@ -118,6 +118,28 @@ describe("Test getFacetDateRange function", () => {
     expect(earliest).toBeNull();
     expect(latest).toBeNull();
   });
+
+  it("should return null for earliest and latest if facet data doesn't include key_as_string", () => {
+    const facet: SearchResultsFacet = {
+      field: "date",
+      title: "Dates",
+      type: "date",
+      terms: [
+        {
+          key: "gte:2026-03-01",
+          isEqual: true,
+        },
+        {
+          key: "lte:2026-03-31",
+          isEqual: true,
+        },
+      ],
+    };
+
+    const [earliest, latest] = getFacetDateRange(facet);
+    expect(earliest).toBeNull();
+    expect(latest).toBeNull();
+  });
 });
 
 describe("Test getFilterDateRange function", () => {

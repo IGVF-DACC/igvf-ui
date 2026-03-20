@@ -135,8 +135,9 @@ export default function DateRangeTerms({
     facet.field,
     searchResults.filters
   );
-  const earliestDate = earliestFilterDate || earliestFacetDate || null;
-  const latestDate = latestFilterDate || latestFacetDate || null;
+  const { startLimit, endLimit } = getSystemDateRange();
+  const earliestDate = earliestFilterDate || earliestFacetDate || startLimit;
+  const latestDate = latestFilterDate || latestFacetDate || endLimit;
   const startDate = earliestDate;
   const endDate = latestDate;
 
@@ -144,9 +145,6 @@ export default function DateRangeTerms({
   function onDateRangeTrigger() {
     setIsOpen(true);
   }
-
-  // Set endDateLimit to today's date plus one month.
-  const { startLimit, endLimit } = getSystemDateRange();
 
   // Called when the user applies a new date range from the modal.
   function onDateRangeApply(newStartDate: Date, newEndDate: Date) {

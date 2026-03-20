@@ -363,8 +363,17 @@ export default function FacetSection({
     selectedType,
     isAuthenticated
   );
+
+  // Compare `facets` to `allFacets`. Produce a merged array that includes everything in
+  // `allFacets` plus any facets in `facets` that are missing from `allFacets`.
+  const missingFacets = facets.filter(
+    (facet) => !allFacets.some((f) => f.field === facet.field)
+  );
+  const mergedAllFacets =
+    missingFacets.length > 0 ? [...allFacets, ...missingFacets] : allFacets;
+
   const facetFields = facets.map((facet) => facet.field);
-  const consideredFacets = isEditOrderMode ? allFacets : facets;
+  const consideredFacets = isEditOrderMode ? mergedAllFacets : facets;
   const facetMap = new Map(
     consideredFacets.map((facet) => [facet.field, facet])
   );
@@ -480,16 +489,16 @@ export default function FacetSection({
       void getFacetOrder(selectedType, request, isAuthenticated).then(
         (savedOrder) => {
           if (isMounted && savedOrder && savedOrder.length > 0) {
-            // If allFacets contains fields that aren't in savedOrder, add those missing fields to
-            // the end.
-            const missingFields = allFacets
+            // If mergedAllFacets contains fields that aren't in savedOrder, add those missing
+            // fields to the end.
+            const missingFields = mergedAllFacets
               .filter((facet) => !savedOrder.includes(facet.field))
               .map((facet) => facet.field);
 
-            // If savedOrder has fields that aren't in allFacets (usually because facets were
+            // If savedOrder has fields that aren't in mergedAllFacets (usually because facets were
             // removed from the search config), ignore those fields
             const filteredSavedOrder = savedOrder.filter((field) =>
-              allFacets.some((facet) => facet.field === field)
+              mergedAllFacets.some((facet) => facet.field === field)
             );
 
             // Update the ordered facet fields state for editing and ordered facet display.
@@ -594,7 +603,9 @@ export default function FacetSection({
 
     // Keep non-optional facets and visible optional facets in their current order.
     const filteredOrderedFields = orderedFacetFields.filter((field) => {
-      const facetToCheck = allFacets.find((facet) => facet.field === field);
+      const facetToCheck = mergedAllFacets.find(
+        (facet) => facet.field === field
+      );
       return (
         facetToCheck &&
         (!facetToCheck.optional || visibleOptionalFacets.includes(field))
@@ -632,14 +643,16 @@ export default function FacetSection({
     // properly included in the sort order.
     const orderedFacets = getVisibleFacets(
       orderedFacetFields
-        .filter((field) => facetFields.includes(field))
+        .filter((field) => facetFields.includes(field) && facetMap.has(field))
         .map((field) => facetMap.get(field)!),
       optionalFacetsConfigForType,
       selectedType,
       isAuthenticated
     );
     const editedOrderedFacets = getVisibleFacets(
-      editedOrderedFacetFields.map((field) => facetMap.get(field)!),
+      editedOrderedFacetFields
+        .filter((field) => facetFields.includes(field) && facetMap.has(field))
+        .map((field) => facetMap.get(field)!),
       optionalFacetsConfigForType,
       selectedType,
       isAuthenticated
@@ -660,7 +673,7 @@ export default function FacetSection({
                 </div>
                 <ConfigFacetsControl
                   selectedType={selectedType}
-                  allFacets={allFacets}
+                  allFacets={mergedAllFacets}
                   onEditModeChange={onEditModeChange}
                   showEditOrder={selectedType !== ""}
                   optionalFacetsConfigForType={optionalFacetsConfigForType}

@@ -124,12 +124,12 @@ export function getVisibleFacets(
   const normalAndParentFacets = filterOutChildFacets(facets);
 
   // Filter out facets that never appear, at least at the current access level.
-  const extraHiddenFIelds = isAuthenticated
+  const extraHiddenFields = isAuthenticated
     ? []
     : ["audit.INTERNAL_ACTION.category"];
   const nonHiddenFacets = normalAndParentFacets.filter(
     (facet) =>
-      !HIDDEN_FACET_FIELDS.concat(extraHiddenFIelds).includes(facet.field)
+      !HIDDEN_FACET_FIELDS.concat(extraHiddenFields).includes(facet.field)
   );
 
   // Finally, filter out any optional facets that are not in the user's visible optional facet
