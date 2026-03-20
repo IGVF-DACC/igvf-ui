@@ -3180,4 +3180,99 @@ describe("Test <FacetSection> component", () => {
     expect(savedOrder).toContain("age");
     expect(savedOrder).not.toContain("nonexistent_field");
   });
+
+  it("merges facets from searchResults that are missing from allFacets", async () => {
+    // This test validates the mergedAllFacets fix. The critical scenario:
+    //
+    // - allFacets contains only ["sex"] (e.g. the canonical config for the type)
+    // - searchResults.facets contains ["sex", "taxa"] (server returned an extra facet)
+    // - A saved facet order ["sex"] is fetched from the API (taxa was never saved)
+    //
+    // Without mergedAllFacets, the getFacetOrder useEffect would compute:
+    //   filteredSavedOrder = ["sex"]   (only keeps fields present in allFacets)
+    //   missingFields      = []        (nothing in allFacets is absent from savedOrder)
+    //   → setOrderedFacetFields(["sex"])  → "taxa" disappears after the async load
+    //
+    // With mergedAllFacets = [sex, taxa]:
+    //   filteredSavedOrder = ["sex"]
+    //   missingFields      = ["taxa"]
+    //   → setOrderedFacetFields(["sex", "taxa"]) → both facets remain visible
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+    } as any);
+
+    const searchResults = {
+      "@id": "/search?type=HumanDonor",
+      "@graph": [],
+      clear_filters: "/search",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "sex",
+          title: "Sex",
+          terms: [
+            { key: "female", doc_count: 3 },
+            { key: "male", doc_count: 1 },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+        {
+          field: "taxa",
+          title: "Taxa",
+          terms: [{ key: "Homo sapiens", doc_count: 4 }],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [],
+    } as any;
+
+    // allFacets only includes "sex"; "taxa" is present in searchResults but missing here.
+    const allFacets = [searchResults.facets[0]];
+
+    const mockFetch = jest.fn().mockImplementation((url) => {
+      if (url === "/api/facet-order/HumanDonor/") {
+        // Saved order contains only "sex" — "taxa" was never added to the saved order.
+        return Promise.resolve({
+          ok: true,
+          json: async () => Promise.resolve(["sex"]),
+        }) as any;
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => Promise.resolve({}),
+      }) as any;
+    });
+    window.fetch = mockFetch as any;
+
+    render(
+      <FacetSection
+        searchResults={searchResults}
+        types={["HumanDonor"]}
+        allFacets={allFacets}
+      />
+    );
+
+    // Wait for getFacetOrder to complete and for React to flush the resulting state update.
+    // After this point, orderedFacetFields reflects the saved order applied via the useEffect.
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        "/api/facet-order/HumanDonor/",
+        expect.anything()
+      );
+    });
+
+    // "taxa" must still be rendered. Without mergedAllFacets it would have been dropped
+    // from orderedFacetFields when the saved order (containing only "sex") was applied.
+    expect(screen.getByText("Sex")).toBeInTheDocument();
+    expect(screen.getByText("Taxa")).toBeInTheDocument();
+  });
 });

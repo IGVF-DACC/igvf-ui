@@ -135,8 +135,9 @@ export default function DateRangeTerms({
     facet.field,
     searchResults.filters
   );
-  const earliestDate = earliestFilterDate || earliestFacetDate || null;
-  const latestDate = latestFilterDate || latestFacetDate || null;
+  const { startLimit, endLimit } = getSystemDateRange();
+  const earliestDate = earliestFilterDate || earliestFacetDate || startLimit;
+  const latestDate = latestFilterDate || latestFacetDate || endLimit;
   const startDate = earliestDate;
   const endDate = latestDate;
 
@@ -145,11 +146,11 @@ export default function DateRangeTerms({
     setIsOpen(true);
   }
 
-  // Set endDateLimit to today's date plus one month.
-  const { startLimit, endLimit } = getSystemDateRange();
-
   // Called when the user applies a new date range from the modal.
-  function onDateRangeApply(newStartDate: Date, newEndDate: Date) {
+  function onDateRangeApply(
+    newStartDate: Date | null,
+    newEndDate: Date | null
+  ) {
     const { queryString } = splitPathAndQueryString(searchResults["@id"]);
     const query = new QueryString(queryString);
 
@@ -174,60 +175,53 @@ export default function DateRangeTerms({
   }
 
   // Convert dateRange start and end dates to human-readable format in long form, e.g. November 11,
-  // 1918. I don't currently see a way that we wouldn't have a start and end date (requires no date
-  // filters, and no facet data), but I felt uncomfortable assuming they exist.
-  if (startDate && endDate) {
-    const humanReadableStartDate = formatLongDate(startDate);
-    const humanReadableEndDate = formatLongDate(endDate);
-    const isResetDisabled =
-      earliestFilterDate === null && latestFilterDate === null;
+  // 1918. At this point startDate and endDate are always defined, falling back to system date-
+  // range limits when no date filters or facet data are present.
+  const humanReadableStartDate = formatLongDate(startDate);
+  const humanReadableEndDate = formatLongDate(endDate);
 
-    return (
-      <>
-        <div className="flex flex-col justify-center gap-1 p-2">
-          <button
-            className="border-button-secondary bg-button-secondary fill-button-secondary text-button-secondary flex w-full rounded-sm border px-2 py-1"
-            onClick={onDateRangeTrigger}
-            data-testid={`date-range-trigger-${facet.field}`}
-            aria-label={`${facet.title} range from ${humanReadableStartDate} to ${humanReadableEndDate}`}
-          >
-            <div className="w-1/2 text-left">
-              <div className="text-xs">From</div>
-              <div className="text-xs font-semibold">
-                {humanReadableStartDate}
-              </div>
+  return (
+    <>
+      <div className="flex flex-col justify-center gap-1 p-2">
+        <button
+          className="border-button-secondary bg-button-secondary fill-button-secondary text-button-secondary flex w-full rounded-sm border px-2 py-1"
+          onClick={onDateRangeTrigger}
+          data-testid={`date-range-trigger-${facet.field}`}
+          aria-label={`${facet.title} range from ${humanReadableStartDate} to ${humanReadableEndDate}`}
+        >
+          <div className="w-1/2 text-left">
+            <div className="text-xs">From</div>
+            <div className="text-xs font-semibold">
+              {humanReadableStartDate}
             </div>
-            <div className="w-1/2 text-left">
-              <div className="text-xs">To</div>
-              <div className="text-xs font-semibold">
-                {humanReadableEndDate}
-              </div>
-            </div>
-          </button>
-          <Button
-            size="sm"
-            type="secondary"
-            id={`date-range-reset-${facet.field}`}
-            isDisabled={isResetDisabled}
-            onClick={() => onDateRangeApply(null, null)}
-          >
-            Reset Date Range
-          </Button>
-        </div>
-        {isOpen && (
-          <DateRangeModal
-            onClose={() => setIsOpen(false)}
-            startDate={startDate}
-            endDate={endDate}
-            startLimit={startLimit}
-            endLimit={endLimit}
-            onDateRangeChange={(newStartDate, newEndDate) => {
-              setIsOpen(false);
-              onDateRangeApply(newStartDate, newEndDate);
-            }}
-          />
-        )}
-      </>
-    );
-  }
+          </div>
+          <div className="w-1/2 text-left">
+            <div className="text-xs">To</div>
+            <div className="text-xs font-semibold">{humanReadableEndDate}</div>
+          </div>
+        </button>
+        <Button
+          size="sm"
+          type="secondary"
+          id={`date-range-reset-${facet.field}`}
+          onClick={() => onDateRangeApply(null, null)}
+        >
+          Reset Date Range
+        </Button>
+      </div>
+      {isOpen && (
+        <DateRangeModal
+          onClose={() => setIsOpen(false)}
+          startDate={startDate}
+          endDate={endDate}
+          startLimit={startLimit}
+          endLimit={endLimit}
+          onDateRangeChange={(newStartDate, newEndDate) => {
+            setIsOpen(false);
+            onDateRangeApply(newStartDate, newEndDate);
+          }}
+        />
+      )}
+    </>
+  );
 }
