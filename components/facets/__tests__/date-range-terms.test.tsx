@@ -458,8 +458,8 @@ describe("Test DateRangeTerms component", () => {
       </ModalManagerProvider>
     );
 
-    // Check that it rendered a button containing the earliest and latest dates from the facet data.
+    // Check that it rendered the date-range button even when no facet dates are available.
     const button = screen.queryByTestId("date-range-trigger-release_timestamp");
-    expect(button).not.toBeInTheDocument();
+    expect(button).toBeInTheDocument();
   });
 });

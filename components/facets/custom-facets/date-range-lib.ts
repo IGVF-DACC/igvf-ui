@@ -70,11 +70,17 @@ function findEarliestAndLatestDates(dates: string[]): string[] {
  * Extracts the earliest and latest dates from a date-range facet. The earliest date gets returned
  * as the first element of the array, and the latest date as the second element. If the facets have
  * no terms, the function returns null for both dates.
+ *
  * @param facet - The facet object containing date range terms
  * @returns Array of two Date objects representing the earliest and latest dates in the facet
  */
-export function getFacetDateRange(facet: SearchResultsFacet): Date[] {
-  const facetTerms = facet.terms as SearchResultsFacetTerm[];
+export function getFacetDateRange(
+  facet: SearchResultsFacet
+): [Date | null, Date | null] {
+  const facetTerms = (facet.terms as SearchResultsFacetTerm[]).filter(
+    (term) =>
+      typeof term.key_as_string === "string" && term.key_as_string !== ""
+  );
   if (facetTerms.length > 0) {
     const allDates = facetTerms.map((term) =>
       iso8601ToDateOnly(term.key_as_string)
