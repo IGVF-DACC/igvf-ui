@@ -27,6 +27,7 @@ import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
 import FileSetFilesTables from "../../components/file-set-files-tables";
 import FileTable from "../../components/file-table";
+import { ImagingFileTable } from "../../components/imaging-file-table";
 import JsonDisplay from "../../components/json-display";
 import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -282,7 +283,7 @@ export default function MeasurementSet({
             seqspecDocuments={seqspecDocuments}
           >
             {groupedFiles.image?.length > 0 && (
-              <FileTable
+              <ImagingFileTable
                 key={`${measurementSet["@id"]}-image-files`}
                 files={groupedFiles.image}
                 fileSet={measurementSet}

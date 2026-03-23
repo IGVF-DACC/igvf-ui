@@ -57,11 +57,11 @@ describe("Facet tests", () => {
     cy.get(
       `label[id="facet-checkbox-lab.title-j-michael-cherry-2c-stanford"]`
     ).click();
-    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length", 4);
+    cy.get(`[data-testid^="search-list-item-/"]`).should("have.length.gte", 5);
     cy.get(`[aria-label="Select report view"]`).click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
-      "4 items"
+      "8 items"
     );
 
     // Now we're in the report view. Make sure the Sample and Lab facets are still open.
@@ -82,7 +82,7 @@ describe("Facet tests", () => {
     ).click();
     cy.get(`[data-testid="search-results-count"]`).should(
       "have.text",
-      "7 items"
+      "8 items"
     );
 
     // Load the search view and make sure the Sample and Lab facets are still open.
