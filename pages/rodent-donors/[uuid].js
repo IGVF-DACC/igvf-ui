@@ -66,6 +66,12 @@ export default function RodentDonor({
               <DonorDataItems item={donor} publications={publications}>
                 <DataItemLabel>Strain</DataItemLabel>
                 <DataItemValue>{donor.strain}</DataItemValue>
+                {donor.rodent_identifier && (
+                  <>
+                    <DataItemLabel>Rodent Identifier</DataItemLabel>
+                    <DataItemValue>{donor.rodent_identifier}</DataItemValue>
+                  </>
+                )}
                 {donor.strain_background && (
                   <>
                     <DataItemLabel>Strain Background</DataItemLabel>
