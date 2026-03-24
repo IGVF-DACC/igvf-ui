@@ -162,6 +162,7 @@ export async function requestFiles(
         "flowcell_id",
         "href",
         "illumina_read_type",
+        "imaging_platform",
         "index",
         "input_file_for",
         "lab.@id",

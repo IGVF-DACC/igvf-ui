@@ -388,9 +388,11 @@ export interface FileObject extends DatabaseObject {
   file_set: string | FileSetObject;
   file_size?: number;
   file_type?: string;
+  filtered?: boolean;
   flowcell_id?: string;
   href?: string;
   illumina_read_type?: string;
+  imaging_platform?: string | OntologyTermObject;
   index?: string;
   input_file_for?: string[] | FileObject[];
   lane?: number;

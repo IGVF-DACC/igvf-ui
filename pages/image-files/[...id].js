@@ -5,7 +5,12 @@ import { AlternativeIdentifiers } from "../../components/alternative-identifiers
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileDataItems } from "../../components/common-data-items";
-import { DataArea, DataPanel } from "../../components/data-area";
+import {
+  DataArea,
+  DataItemLabel,
+  DataItemValue,
+  DataPanel,
+} from "../../components/data-area";
 import DerivedFromTable from "../../components/derived-from-table";
 import DocumentTable from "../../components/document-table";
 import { EditableItem } from "../../components/edit";
@@ -13,6 +18,7 @@ import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
 import JsonDisplay from "../../components/json-display";
+import LinkedIdAndStatus from "../../components/linked-id-and-status";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
 import { QualityMetricPanel } from "../../components/quality-metric";
@@ -72,7 +78,19 @@ export default function ImageFile({
           <StatusPreviewDetail item={imageFile} />
           <DataPanel>
             <DataArea>
-              <FileDataItems item={imageFile} />
+              <FileDataItems item={imageFile}>
+                {imageFile.imaging_platform &&
+                  typeof imageFile.imaging_platform === "object" && (
+                    <>
+                      <DataItemLabel>Imaging Platform</DataItemLabel>
+                      <DataItemValue>
+                        <LinkedIdAndStatus item={imageFile.imaging_platform}>
+                          {imageFile.imaging_platform.term_name}
+                        </LinkedIdAndStatus>
+                      </DataItemValue>
+                    </>
+                  )}
+              </FileDataItems>
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
