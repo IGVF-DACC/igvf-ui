@@ -1,7 +1,7 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
@@ -12,6 +12,7 @@ import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
 import Link from "./link-no-prefetch";
 import Pager, { TablePagerContainer } from "./pager";
+import { useIsomorphicLayoutEffect } from "./react-utility";
 import { SeqspecDocumentLink } from "./seqspec-document";
 import TableCount from "./table-count";
 // lib
@@ -445,8 +446,11 @@ export default function SequencingFileTable({
   // Create a batch-download controller if a file set is provided.
   const controller = fileSet ? new FileTableController(fileSet) : null;
 
-  // Called when the user selects a new page of sequence files to view.
-  function setCurrentPageIndex(newIndex: number) {
+  // Called when the user selects a new page in the pager. Capture the scroll position before
+  // changing the page index to trigger the useIsomorphicLayoutEffect that restores the scroll
+  // position after the re-render.
+  function handlePageChange(newIndex: number) {
+    savedScrollY.current = window.scrollY;
     setPageIndex(newIndex);
   }
 
@@ -454,6 +458,17 @@ export default function SequencingFileTable({
     // Reset to the first page whenever the number of data items changes.
     setPageIndex(0);
   }, [files.length]);
+
+  // Restore the scroll position after a page change. This is needed to prevent Safari from
+  // erratically adjusting the scroll position after a page change when the table height changes
+  // between pages.
+  const savedScrollY = useRef<number | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    if (savedScrollY.current !== null) {
+      window.scrollTo(0, savedScrollY.current);
+      savedScrollY.current = null;
+    }
+  }, [pageIndex]);
 
   return (
     <>
@@ -496,9 +511,7 @@ export default function SequencingFileTable({
             <Pager
               currentPage={pageIndex + 1}
               totalPages={paginatedSequenceFileGroups.length}
-              onClick={(newCurrentPage) =>
-                setCurrentPageIndex(newCurrentPage - 1)
-              }
+              onClick={(newCurrentPage) => handlePageChange(newCurrentPage - 1)}
             />
           </TablePagerContainer>
         )}

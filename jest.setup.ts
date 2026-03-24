@@ -48,6 +48,9 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   disconnect: jest.fn(),
 }));
 
+// Mock window.scrollTo, which is not implemented in jsdom.
+global.scrollTo = jest.fn();
+
 // Mock navigator.clipboard for copy-to-clipboard tests.
 Object.assign(navigator, {
   clipboard: {
