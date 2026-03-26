@@ -367,6 +367,19 @@ function formatAge(item) {
 
 /**
  * Display data items common to all biosample-derived objects.
+ *
+ * @param {{
+ *   item: object,
+ *   classifications?: string[],
+ *   constructLibrarySets?: object[],
+ *   diseaseTerms?: object[],
+ *   annotatedFrom?: object | null,
+ *   partOf?: object | null,
+ *   sampleTerms?: object[],
+ *   sources?: object[] | null,
+ *   publications?: object[],
+ *   children?: import("react").ReactNode,
+ * }} props
  */
 export function BiosampleDataItems({
   item,

@@ -29,8 +29,9 @@ import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest, { type ErrorObject } from "../../lib/fetch-request";
 import PagePreamble from "../../components/page-preamble";
 import { isJsonFormat } from "../../lib/query-utils";
+import { type SampleObject } from "../../lib/samples";
 // root
-import type { LabObject, SampleObject, UserObject } from "../../globals";
+import type { LabObject, UserObject } from "../../globals";
 
 export default function InstitutionalCertificate({
   institutionalCertificate,
@@ -138,6 +139,14 @@ export async function getServerSideProps(
   context: GetServerSidePropsContext<Params>
 ) {
   const { req, query, params, resolvedUrl } = context;
+
+  // 404 if params or params.id is missing or empty
+  if (!params || !params.id || params.id.length === 0) {
+    return {
+      notFound: true,
+    };
+  }
+
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const item = (
@@ -157,7 +166,8 @@ export async function getServerSideProps(
       item as unknown as InstitutionalCertificateObject;
 
     const samples =
-      institutionalCertificate.samples?.length > 0
+      institutionalCertificate.samples &&
+      institutionalCertificate.samples.length > 0
         ? await requestSamples(institutionalCertificate.samples, request)
         : [];
 
@@ -167,7 +177,7 @@ export async function getServerSideProps(
 
     const attribution = await buildAttribution(
       institutionalCertificate,
-      req.headers.cookie
+      req.headers.cookie || ""
     );
 
     return {

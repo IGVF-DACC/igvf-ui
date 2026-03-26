@@ -40,7 +40,16 @@ const biomarkersColumns = [
 ];
 
 /**
- * Display a sortable table of the given treatments.
+ * Display a sortable table of the given biomarkers.
+ *
+ * @param {{
+ *   biomarkers: object[],
+ *   reportLink?: string | null,
+ *   reportLabel?: string | null,
+ *   title?: string,
+ *   isDeletedVisible?: boolean,
+ *   panelId?: string,
+ * }} props
  */
 export default function BiomarkerTable({
   biomarkers,

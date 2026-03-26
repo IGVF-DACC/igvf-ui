@@ -1,5 +1,6 @@
-import { type InstitutionalCertificateObject } from "./lib/data-use-limitation";
+// lib
 import { type QualityMetricObject } from "./lib/quality-metric";
+import { type BiosampleObject, type SampleObject } from "./lib/samples";
 import { type WorkflowObject } from "./lib/workflow";
 
 /**
@@ -483,11 +484,14 @@ export type RelatedDonorObject = {
   relationship_type: string;
 };
 
-export interface HumanDonorObject extends DatabaseObject {
+export interface DonorObject extends DatabaseObject {
   aliases?: string[];
   dbxrefs?: string[];
   description?: string;
   documents: string[] | DocumentObject[];
+}
+
+export interface HumanDonorObject extends DonorObject {
   ethnicities?: string[];
   human_donor_identifiers?: string[];
   notes?: string;
@@ -500,23 +504,36 @@ export interface HumanDonorObject extends DatabaseObject {
   virtual?: boolean;
 }
 
-/**
- * Data structure common to all sample object types.
- */
-export interface SampleObject extends DatabaseObject {
+export interface SourceObject extends DatabaseObject {
   aliases?: string[];
-  collections?: string[];
-  barcode_map?: string | FileObject;
-  dbxrefs?: string[];
-  institutional_certificates?: string[] | InstitutionalCertificateObject[];
-  name?: string;
+  description?: string;
+  name: string;
   notes?: string;
-  study_sets?: string[];
-  submitter_comment?: string;
   summary?: string;
-  taxa?: string;
   title?: string;
-  transcriptome_annotation?: string;
+}
+
+export interface TreatmentObject extends DatabaseObject {
+  amount?: number;
+  amount_units?: string;
+  biosamples_treated?: string[] | BiosampleObject[];
+  depletion: boolean;
+  description?: string;
+  duration?: number;
+  duration_units?: string;
+  notes?: string;
+  pH?: number;
+  post_treatment_time?: number;
+  post_treatment_time_units?: string;
+  product_id?: string;
+  purpose: string;
+  sources?: string[] | (SourceObject | LabObject)[];
+  summary?: string;
+  temperature?: number;
+  temperature_units?: string;
+  treatment_term_id?: string;
+  treatment_term_name: string;
+  treatment_type: string;
 }
 
 export interface OntologyTermObject extends DatabaseObject {
@@ -693,4 +710,14 @@ export interface ApiObject extends DataProviderObject {
  */
 export interface ApiErrorObject {
   error: string;
+}
+
+export interface BiomarkerObject extends DatabaseObject {
+  aliases?: string[];
+  description?: string;
+  name: string;
+  name_quantification?: string;
+  notes?: string;
+  quantification: string;
+  summary?: string;
 }

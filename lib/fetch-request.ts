@@ -589,16 +589,17 @@ export default class FetchRequest {
 
   /**
    * Request the object with the given path.
-   * @param {string} path Path to requested resource
-   * @param {object} options? indicating request options
-   * @param {boolean} options.isDbRequest True to get data from database instead of search engine
-   * @returns {Promise<DataProviderObject|ErrorObject>} Requested object, error object, or
-   *  `defaultErrorValue` if given and the request fails
+   *
+   * @param path - Path to requested resource
+   * @param options? - indicating request options
+   * @param options.isDbRequest - True to get data from database instead of search engine
+   * @returns - Requested object, error object, or `defaultErrorValue` if given and the request
+   *            fails
    */
-  public async getObject(
+  public async getObject<T extends DataProviderObject = DataProviderObject>(
     path: string,
     options = { isDbRequest: false }
-  ): Promise<Result<DataProviderObject, ErrorObject>> {
+  ): Promise<Result<T, ErrorObject>> {
     const url = this.pathUrl(path, options.isDbRequest);
     const headerOptions = this.buildOptionsWithAgent(url, "GET", {
       accept: PAYLOAD_FORMAT.JSON,
@@ -613,7 +614,7 @@ export default class FetchRequest {
         } as ErrorObject;
         return err(error);
       }
-      const results = (await response.json()) as DataProviderObject;
+      const results = (await response.json()) as T;
       return ok(results);
     } catch (error) {
       console.log("NETWORK ERROR: ", error);
@@ -667,24 +668,27 @@ export default class FetchRequest {
    * Request a number of objects with the given paths, returning each path's resource in an array
    * in the same order as their paths in the given array. Any paths that result in an error
    * get placed that array entry.
-   * @param {array} paths Array of paths to requested resources
-   * @param {object} options? Options for these requests
-   * @param {boolean} options.filterErrors True to filter errored requests from the returned array
-   * @returns {Promise<Array<DataProviderObject|ErrorObject|T>>} Array of requested objects
+   *
+   * @param paths - Array of paths to requested resources
+   * @param options - Options for these requests
+   * @param options.filterErrors - True to filter errored requests from the returned array
+   * @returns Array of requested objects
    */
-  public async getMultipleObjects(
-    paths: Array<string>,
+  public async getMultipleObjects<
+    T extends DataProviderObject = DataProviderObject,
+  >(
+    paths: string[],
     options = { filterErrors: false }
-  ): Promise<Array<Result<DataProviderObject, ErrorObject>>> {
+  ): Promise<Array<Result<T, ErrorObject>>> {
     logRequest(
       "getMultipleObjects",
       `[${paths.join(", ")}]`,
       this.usingPersistentConnections
     );
-    const results =
+    const results: Array<Result<T, ErrorObject>> =
       paths.length > 0
-        ? await Promise.all(paths.map((path) => this.getObject(path)))
-        : await Promise.resolve([]);
+        ? await Promise.all(paths.map(async (path) => this.getObject<T>(path)))
+        : [];
 
     return options.filterErrors
       ? results.filter((result) => result.isOk())
@@ -699,16 +703,19 @@ export default class FetchRequest {
    * request. Unlike `getMultipleObjects()`, this method never returns an array that could contain
    * entries for failed requests. It instead either returns an array of successfully requested
    * objects, or a single error value.
-   * @param {Array<string>} paths Path of each object to request
-   * @param {Array<string>} fields Properties of each object to retrieve; if none; all properties
-   * @param {string} type? Type of objects to request; if given, adds `type=` to the query string
-   * @returns {Promise<Result<Array<DataProviderObject>, ErrorObject>>} Array of requested objects
+   *
+   * @param paths - Path of each object to request
+   * @param fields - Properties of each object to retrieve; if none; all properties
+   * @param types - Type of objects to request; if given, adds `type=` to the query string
+   * @returns {Promise<Result<Array<T>, ErrorObject>>} Array of requested objects
    */
-  async getMultipleObjectsBulk(
+  async getMultipleObjectsBulk<
+    T extends DataProviderObject = DataProviderObject,
+  >(
     paths: Array<string>,
     fields: Array<string>,
     types: string[] = []
-  ): Promise<Result<Array<DataProviderObject>, ErrorObject>> {
+  ): Promise<Result<T[], ErrorObject>> {
     logRequest(
       "getMultipleObjectsBulk",
       `types:${types.join()} [${paths.join(", ")}]`,
@@ -743,7 +750,7 @@ export default class FetchRequest {
         const response = await this.getObject(
           `/search-quick/?${typeQuery}${query}&limit=${group.length}`
         );
-        return response.map((g) => g["@graph"] as Array<DataProviderObject>);
+        return response.map((g) => g["@graph"] as T[]);
       })
     );
 
@@ -753,9 +760,8 @@ export default class FetchRequest {
       return firstError;
     }
 
-    // We know that all the Results in the results list are Ok
-    // so we can safely turn them all into Array<DataProviderObject>
-    // Return the the flattened list wrapped in an Ok
+    // We know that all the Results in the results list are Ok so we can safely turn them all into
+    // Array<T>. Return the the flattened list wrapped in an Ok
     return ok(Ok.all(results).flat());
   }
 

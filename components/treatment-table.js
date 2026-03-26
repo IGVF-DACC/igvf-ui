@@ -36,6 +36,15 @@ const treatmentColumns = [
 
 /**
  * Display a sortable table of the given treatments.
+ *
+ * @param {{
+ *   treatments: object[],
+ *   reportLink?: string | null,
+ *   reportLabel?: string | null,
+ *   title?: string,
+ *   isDeletedVisible?: boolean,
+ *   panelId?: string,
+ * }} props
  */
 export default function TreatmentTable({
   treatments,
