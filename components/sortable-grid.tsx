@@ -21,6 +21,7 @@ import {
 import DataGrid, { DataGridContainer } from "./data-grid";
 import Pager, { TablePagerContainer } from "./pager";
 import GridScrollIndicators from "./grid-scroll-indicators";
+import { useIsomorphicLayoutEffect } from "./react-utility";
 import TableCount from "./table-count";
 // lib
 import {
@@ -423,6 +424,25 @@ export default function SortableGrid<
     setPageIndex(0);
   }, [data.length]);
 
+  // Restore the scroll position after a page change. This is needed to prevent Safari from
+  // erratically adjusting the scroll position after a page change when the table height changes
+  // between pages.
+  const savedScrollY = useRef<number | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    if (savedScrollY.current !== null) {
+      window.scrollTo(0, savedScrollY.current);
+      savedScrollY.current = null;
+    }
+  }, [pageIndex]);
+
+  // Called when the user selects a new page in the pager. Capture the scroll position before
+  // changing the page index to trigger the useIsomorphicLayoutEffect that restores the scroll
+  // position after the re-render.
+  function handlePageChange(newPageIndex: number) {
+    savedScrollY.current = window.scrollY;
+    setPageIndex(newPageIndex);
+  }
+
   // Generate the cells within the header row. The column title can contain a string or a React
   // component.
   const headerCells = visibleColumns.map((column) => {
@@ -468,7 +488,7 @@ export default function SortableGrid<
         <TablePager
           data={data}
           currentPageIndex={pageIndex}
-          setCurrentPageIndex={setPageIndex}
+          setCurrentPageIndex={handlePageChange}
           maxItemsPerPage={MAX_ITEMS_PER_PAGE}
         />
       )}
