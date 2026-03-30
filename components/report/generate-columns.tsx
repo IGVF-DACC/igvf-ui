@@ -14,6 +14,7 @@ import { AliasesCell } from "../table-cells";
 import { attachmentToServerHref } from "../../lib/attachment";
 import { API_URL } from "../../lib/constants";
 import { dataSize } from "../../lib/general";
+import { type GeneLocation } from "../../lib/genes";
 import { type ColumnSpec } from "../../lib/report";
 // root
 import type {
@@ -21,7 +22,6 @@ import type {
   DocumentObject,
   FileObject,
   FileSetObject,
-  GeneLocation,
   HumanDonorObject,
   OntologyTermObject,
   PageObject,

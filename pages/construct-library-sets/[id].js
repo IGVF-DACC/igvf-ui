@@ -1,10 +1,11 @@
 // node_modules
 import PropTypes from "prop-types";
-import { Fragment, useContext } from "react";
+import { useContext } from "react";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
 import Breadcrumbs from "../../components/breadcrumbs";
+import ChromosomeLocations from "../../components/chromosome-locations";
 import { FileSetDataItems } from "../../components/common-data-items";
 import {
   DataArea,
@@ -87,15 +88,11 @@ function LibraryDetails({ library }) {
             <>
               <DataItemLabel>Small Scale Loci List</DataItemLabel>
               <DataItemValue>
-                <SeparatedList isCollapsible>
-                  {library.small_scale_loci_list.map((loci, index) => (
-                    <Fragment key={index}>
-                      {loci.assembly} {loci.chromosome} {loci.start}
-                      {"-"}
-                      {loci.end}
-                    </Fragment>
-                  ))}
-                </SeparatedList>
+                <ChromosomeLocations
+                  locations={library.small_scale_loci_list}
+                  isCollapsible
+                  testid="construct-library-small-scale-loci-list"
+                />
               </DataItemValue>
             </>
           )}
