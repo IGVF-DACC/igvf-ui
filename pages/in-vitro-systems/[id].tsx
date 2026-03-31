@@ -1,5 +1,5 @@
-// node_modules
-import PropTypes from "prop-types";
+// root
+import { type GetServerSidePropsContext } from "next";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
@@ -27,7 +27,7 @@ import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 import TreatmentTable from "../../components/treatment-table";
 // lib
-import buildAttribution from "../../lib/attribution";
+import buildAttribution, { type AttributionData } from "../../lib/attribution";
 import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestBiomarkers,
@@ -43,11 +43,34 @@ import {
   requestTreatments,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
+import { type InstitutionalCertificateObject } from "../../lib/data-use-limitation";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";
 import { Ok } from "../../lib/result";
+import type {
+  BiosampleObject,
+  InVitroSystemObject,
+  SampleObject,
+} from "../../lib/samples";
+import {
+  isEmbedded,
+  isEmbeddedArray,
+  isPath,
+  isPathArray,
+} from "../../lib/types";
+// root
+import type {
+  BiomarkerObject,
+  DocumentObject,
+  DonorObject,
+  FileSetObject,
+  LabObject,
+  OntologyTermObject,
+  PublicationObject,
+  SourceObject,
+  TreatmentObject,
+} from "../../globals";
 
 export default function InVitroSystem({
   inVitroSystem,
@@ -73,8 +96,34 @@ export default function InVitroSystem({
   institutionalCertificates,
   supersedes,
   supersededBy,
-  attribution = null,
+  attribution,
   isJson,
+}: {
+  inVitroSystem: InVitroSystemObject;
+  cellFateProtocol: DocumentObject | null;
+  constructLibrarySets: FileSetObject[];
+  demultiplexedFrom: SampleObject | null;
+  demultiplexedTo: SampleObject[];
+  diseaseTerms: OntologyTermObject[];
+  annotatedFrom: BiosampleObject | null;
+  documents: DocumentObject[];
+  donors: DonorObject[];
+  originOf: SampleObject[];
+  partOf: BiosampleObject | null;
+  parts: BiosampleObject[];
+  pooledFrom: BiosampleObject[];
+  pooledIn: BiosampleObject[];
+  publications: PublicationObject[];
+  sortedFractions: SampleObject[];
+  sources: (SourceObject | LabObject)[];
+  treatments: TreatmentObject[];
+  biomarkers: BiomarkerObject[];
+  multiplexedInSamples: SampleObject[];
+  institutionalCertificates: InstitutionalCertificateObject[];
+  supersedes: SampleObject[];
+  supersededBy: SampleObject[];
+  attribution?: AttributionData;
+  isJson: boolean;
 }) {
   const sections = useSecDir({ isJson });
 
@@ -99,16 +148,16 @@ export default function InVitroSystem({
                 constructLibrarySets={constructLibrarySets}
                 diseaseTerms={diseaseTerms}
                 annotatedFrom={annotatedFrom}
-                parts={parts}
                 partOf={partOf}
                 publications={publications}
-                sampleTerms={inVitroSystem.sample_terms}
+                sampleTerms={
+                  isEmbeddedArray(inVitroSystem.sample_terms)
+                    ? inVitroSystem.sample_terms
+                    : []
+                }
                 sources={sources}
-                options={{
-                  dateObtainedTitle: "Date Collected",
-                }}
               >
-                {inVitroSystem.targeted_sample_term && (
+                {isEmbedded(inVitroSystem.targeted_sample_term) && (
                   <>
                     <DataItemLabel>Targeted Sample Term</DataItemLabel>
                     <DataItemValue>
@@ -118,7 +167,7 @@ export default function InVitroSystem({
                     </DataItemValue>
                   </>
                 )}
-                {truthyOrZero(inVitroSystem.passage_number) && (
+                {inVitroSystem.passage_number !== undefined && (
                   <>
                     <DataItemLabel>Passage Number</DataItemLabel>
                     <DataItemValue>
@@ -126,14 +175,25 @@ export default function InVitroSystem({
                     </DataItemValue>
                   </>
                 )}
-                {truthyOrZero(inVitroSystem.time_post_change) && (
+                {inVitroSystem.time_post_change !== undefined && (
                   <>
                     <DataItemLabel>Time Post Change</DataItemLabel>
                     <DataItemValue>
                       {inVitroSystem.time_post_change}{" "}
-                      {inVitroSystem.time_post_change > 1
-                        ? `${inVitroSystem.time_post_change_units}s`
-                        : inVitroSystem.time_post_change_units}
+                      {inVitroSystem.time_post_change === 1
+                        ? inVitroSystem.time_post_change_units
+                        : `${inVitroSystem.time_post_change_units}s`}
+                    </DataItemValue>
+                  </>
+                )}
+                {inVitroSystem.time_post_culture !== undefined && (
+                  <>
+                    <DataItemLabel>Time Post Culture</DataItemLabel>
+                    <DataItemValue>
+                      {inVitroSystem.time_post_culture}{" "}
+                      {inVitroSystem.time_post_culture === 1
+                        ? inVitroSystem.time_post_culture_units
+                        : `${inVitroSystem.time_post_culture_units}s`}
                     </DataItemValue>
                   </>
                 )}
@@ -164,11 +224,11 @@ export default function InVitroSystem({
                   </>
                 )}
               </BiosampleDataItems>
-              <Attribution attribution={attribution} />
+              <Attribution attribution={attribution ?? null} />
             </DataArea>
           </DataPanel>
           {donors.length > 0 && <DonorTable donors={donors} />}
-          {inVitroSystem.file_sets?.length > 0 && (
+          {isEmbeddedArray(inVitroSystem.file_sets) && (
             <FileSetTable fileSets={inVitroSystem.file_sets} />
           )}
           {multiplexedInSamples.length > 0 && (
@@ -226,7 +286,7 @@ export default function InVitroSystem({
               panelId="origin-of"
             />
           )}
-          {inVitroSystem.modifications?.length > 0 && (
+          {isEmbeddedArray(inVitroSystem.modifications) && (
             <ModificationTable modifications={inVitroSystem.modifications} />
           )}
           {sortedFractions.length > 0 && (
@@ -268,66 +328,20 @@ export default function InVitroSystem({
   );
 }
 
-InVitroSystem.propTypes = {
-  // In Vitro System sample to display
-  inVitroSystem: PropTypes.object.isRequired,
-  // Biomarkers of the sample
-  biomarkers: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Cell Fate Change Protocols of the sample
-  cellFateProtocol: PropTypes.object,
-  // Construct libraries that link to this object
-  constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Demultiplexed from sample
-  demultiplexedFrom: PropTypes.object,
-  // Demultiplexed to sample
-  demultiplexedTo: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Disease ontology for this sample
-  diseaseTerms: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Annotated from sample
-  annotatedFrom: PropTypes.object,
-  // Documents associated with the sample
-  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Donors associated with the sample
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Origin of sample
-  originOf: PropTypes.arrayOf(PropTypes.object),
-  // Part of Sample
-  partOf: PropTypes.object,
-  // Sample parts
-  parts: PropTypes.arrayOf(PropTypes.object),
-  // Pooled from sample
-  pooledFrom: PropTypes.arrayOf(PropTypes.object),
-  // Pooled in sample
-  pooledIn: PropTypes.arrayOf(PropTypes.object),
-  // Publications associated with the sample
-  publications: PropTypes.arrayOf(PropTypes.object),
-  // Sorted fractions sample
-  sortedFractions: PropTypes.arrayOf(PropTypes.object),
-  // Source lab or source for this sample
-  sources: PropTypes.arrayOf(PropTypes.object),
-  // Treatments of the sample
-  treatments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Multiplexed in samples
-  multiplexedInSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Institutional certificates referencing this sample
-  institutionalCertificates: PropTypes.arrayOf(PropTypes.object),
-  // Samples that this sample supersedes
-  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Samples that supersede this sample
-  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Attribution for this sample
-  attribution: PropTypes.object,
-  // Is the format JSON?
-  isJson: PropTypes.bool.isRequired,
-};
-
-export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+  resolvedUrl,
+}: GetServerSidePropsContext) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const inVitroSystem = (
+  const response = (
     await request.getObject(`/in-vitro-systems/${params.id}/`)
   ).union();
-  if (FetchRequest.isResponseSuccess(inVitroSystem)) {
+  if (FetchRequest.isResponseSuccess(response)) {
+    const inVitroSystem = response as InVitroSystemObject;
+
     const canonicalRedirect = createCanonicalUrlRedirect(
       inVitroSystem,
       resolvedUrl,
@@ -336,83 +350,87 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     if (canonicalRedirect) {
       return canonicalRedirect;
     }
-
-    let biomarkers = [];
-    if (inVitroSystem.biomarkers?.length > 0) {
+    let biomarkers: BiomarkerObject[] = [];
+    if (isEmbeddedArray(inVitroSystem.biomarkers)) {
       const biomarkerPaths = inVitroSystem.biomarkers.map(
         (biomarker) => biomarker["@id"]
       );
       biomarkers = await requestBiomarkers(biomarkerPaths, request);
     }
-    let cellFateProtocol = null;
-    if (inVitroSystem.cell_fate_change_protocol) {
+    let cellFateProtocol: DocumentObject | null = null;
+    if (isPath(inVitroSystem.cell_fate_change_protocol)) {
       cellFateProtocol = (
-        await request.getObject(inVitroSystem.cell_fate_change_protocol)
+        await request.getObject<DocumentObject>(
+          inVitroSystem.cell_fate_change_protocol
+        )
       ).optional();
     }
-    const demultiplexedFrom = inVitroSystem.demultiplexed_from
-      ? (await request.getObject(inVitroSystem.demultiplexed_from)).optional()
+    const demultiplexedFrom = isPath(inVitroSystem.demultiplexed_from)
+      ? (
+          await request.getObject<SampleObject>(
+            inVitroSystem.demultiplexed_from
+          )
+        ).optional()
       : null;
-    const demultiplexedTo =
-      inVitroSystem.demultiplexed_to?.length > 0
-        ? await requestBiosamples(inVitroSystem.demultiplexed_to, request)
-        : [];
-    let diseaseTerms = [];
-    if (inVitroSystem.disease_terms) {
+    const demultiplexedTo = isPathArray(inVitroSystem.demultiplexed_to)
+      ? await requestBiosamples(inVitroSystem.demultiplexed_to, request)
+      : [];
+    let diseaseTerms: OntologyTermObject[] = [];
+    if (isEmbeddedArray(inVitroSystem.disease_terms)) {
       const diseaseTermPaths = inVitroSystem.disease_terms.map(
         (diseaseTerm) => diseaseTerm["@id"]
       );
       diseaseTerms = await requestOntologyTerms(diseaseTermPaths, request);
     }
-    const documents = inVitroSystem.documents
+    const documents = isPathArray(inVitroSystem.documents)
       ? await requestDocuments(inVitroSystem.documents, request)
       : [];
-    let donors = [];
-    if (inVitroSystem.donors?.length > 0) {
+    let donors: DonorObject[] = [];
+    if (isEmbeddedArray(inVitroSystem.donors)) {
       const donorPaths = inVitroSystem.donors.map((donor) => donor["@id"]);
       donors = await requestDonors(donorPaths, request);
     }
-    const partOf = inVitroSystem.part_of
-      ? (await request.getObject(inVitroSystem.part_of)).optional()
+    const partOf = isPath(inVitroSystem.part_of)
+      ? (
+          await request.getObject<BiosampleObject>(inVitroSystem.part_of)
+        ).optional()
       : null;
-    const parts =
-      inVitroSystem.parts?.length > 0
-        ? await requestBiosamples(inVitroSystem.parts, request)
-        : [];
-    const pooledFrom =
-      inVitroSystem.pooled_from?.length > 0
-        ? await requestBiosamples(inVitroSystem.pooled_from, request)
-        : [];
-    const pooledIn =
-      inVitroSystem.pooled_in?.length > 0
-        ? await requestBiosamples(inVitroSystem.pooled_in, request)
-        : [];
-    const originOf =
-      inVitroSystem.origin_of?.length > 0
-        ? await requestBiosamples(inVitroSystem.origin_of, request)
-        : [];
-    const sortedFractions =
-      inVitroSystem.sorted_fractions?.length > 0
-        ? await requestSamples(inVitroSystem.sorted_fractions, request)
-        : [];
-    let sources = [];
-    if (inVitroSystem.sources?.length > 0) {
+    const parts = isPathArray(inVitroSystem.parts)
+      ? await requestBiosamples(inVitroSystem.parts, request)
+      : [];
+    const pooledFrom = isPathArray(inVitroSystem.pooled_from)
+      ? await requestBiosamples(inVitroSystem.pooled_from, request)
+      : [];
+    const pooledIn = isPathArray(inVitroSystem.pooled_in)
+      ? await requestBiosamples(inVitroSystem.pooled_in, request)
+      : [];
+    const originOf = isPathArray(inVitroSystem.origin_of)
+      ? await requestBiosamples(inVitroSystem.origin_of, request)
+      : [];
+    const sortedFractions = isPathArray(inVitroSystem.sorted_fractions)
+      ? await requestSamples(inVitroSystem.sorted_fractions, request)
+      : [];
+    let sources: (SourceObject | LabObject)[] = [];
+    if (isEmbeddedArray(inVitroSystem.sources)) {
       const sourcePaths = inVitroSystem.sources.map((source) => source["@id"]);
       sources = Ok.all(
-        await request.getMultipleObjects(sourcePaths, {
-          filterErrors: true,
-        })
+        await request.getMultipleObjects<SourceObject | LabObject>(
+          sourcePaths,
+          {
+            filterErrors: true,
+          }
+        )
       );
     }
-    let treatments = [];
-    if (inVitroSystem.treatments?.length > 0) {
+    let treatments: TreatmentObject[] = [];
+    if (isEmbeddedArray(inVitroSystem.treatments)) {
       const treatmentPaths = inVitroSystem.treatments.map(
         (treatment) => treatment["@id"]
       );
       treatments = await requestTreatments(treatmentPaths, request);
     }
-    let constructLibrarySets = [];
-    if (inVitroSystem.construct_library_sets?.length > 0) {
+    let constructLibrarySets: FileSetObject[] = [];
+    if (isEmbeddedArray(inVitroSystem.construct_library_sets)) {
       const constructLibrarySetPaths = inVitroSystem.construct_library_sets.map(
         (constructLibrarySet) => constructLibrarySet["@id"]
       );
@@ -421,15 +439,15 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         request
       );
     }
-    let multiplexedInSamples = [];
-    if (inVitroSystem.multiplexed_in?.length > 0) {
+    let multiplexedInSamples: SampleObject[] = [];
+    if (isEmbeddedArray(inVitroSystem.multiplexed_in)) {
       const multiplexedInPaths = inVitroSystem.multiplexed_in.map(
         (sample) => sample["@id"]
       );
       multiplexedInSamples = await requestSamples(multiplexedInPaths, request);
     }
-    let institutionalCertificates = [];
-    if (inVitroSystem.institutional_certificates?.length > 0) {
+    let institutionalCertificates: InstitutionalCertificateObject[] = [];
+    if (isEmbeddedArray(inVitroSystem.institutional_certificates)) {
       const institutionalCertificatePaths =
         inVitroSystem.institutional_certificates.map(
           (institutionalCertificate) => institutionalCertificate["@id"]
@@ -439,11 +457,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         request
       );
     }
-    const annotatedFrom = inVitroSystem.annotated_from
-      ? (await request.getObject(inVitroSystem.annotated_from)).optional()
+    const annotatedFrom = isPath(inVitroSystem.annotated_from)
+      ? (
+          await request.getObject<BiosampleObject>(inVitroSystem.annotated_from)
+        ).optional()
       : null;
-    let publications = [];
-    if (inVitroSystem.publications?.length > 0) {
+    let publications: PublicationObject[] = [];
+    if (isEmbeddedArray(inVitroSystem.publications)) {
       const publicationPaths = inVitroSystem.publications.map(
         (publication) => publication["@id"]
       );
@@ -458,6 +478,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       inVitroSystem,
       req.headers.cookie
     );
+
+    const sampleTermName =
+      isEmbeddedArray(inVitroSystem.sample_terms) &&
+      inVitroSystem.sample_terms.length > 0
+        ? (inVitroSystem.sample_terms[0].term_name ?? "no sample term")
+        : "no sample term";
+
     return {
       props: {
         inVitroSystem,
@@ -484,12 +511,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         supersedes,
         supersededBy,
         pageContext: {
-          title: `${inVitroSystem.accession} ${UC.mdash} ${inVitroSystem.sample_terms[0].term_name}`,
+          title: `${inVitroSystem.accession} ${UC.mdash} ${sampleTermName}`,
         },
         attribution,
         isJson,
       },
     };
   }
-  return errorObjectToProps(inVitroSystem);
+  return errorObjectToProps(response);
 }

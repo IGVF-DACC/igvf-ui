@@ -108,6 +108,16 @@ const sampleColumns = [
 
 /**
  * Display a sortable table of the given sample objects.
+ *
+ * @param {{
+ *   samples: object[],
+ *   reportLink?: string | null,
+ *   reportLabel?: string | null,
+ *   title?: string,
+ *   panelId?: string,
+ *   isConstructLibraryColumnVisible?: boolean,
+ *   isDeletedVisible?: boolean,
+ * }} props
  */
 export default function SampleTable({
   samples,

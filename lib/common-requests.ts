@@ -1,17 +1,24 @@
 // lib
+import { type InstitutionalCertificateObject } from "./data-use-limitation";
 import { trimDeprecatedFiles } from "./deprecated-files";
 import FetchRequest from "./fetch-request";
 import { type DatasetSummary } from "./home";
+import { type BiosampleObject, type SampleObject } from "./samples";
 // root
 import type {
   AnalysisStepVersionObject,
+  BiomarkerObject,
   DatabaseObject,
   DataProviderObject,
+  DocumentObject,
+  DonorObject,
   FileObject,
   FileSetObject,
   LabObject,
-  SampleObject,
+  OntologyTermObject,
+  PublicationObject,
   SessionPropertiesObject,
+  TreatmentObject,
   UserObject,
 } from "../globals";
 
@@ -86,16 +93,17 @@ export async function requestAwards(
 
 /**
  * Retrieve the biomarker objects for the given biosample paths from the data provider.
- * @param {Array<string>} paths Paths to the biomarker objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The biomarker objects requested
+ *
+ * @param paths - Paths to the biomarker objects to request
+ * @param request - The request object to use to make the request
+ * @returns The biomarker objects requested
  */
 export async function requestBiomarkers(
   paths: Array<string>,
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<BiomarkerObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<BiomarkerObject>(
       paths,
       [
         "aliases",
@@ -119,9 +127,9 @@ export async function requestBiomarkers(
 export async function requestBiosamples(
   paths: Array<string>,
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<Array<BiosampleObject>> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<BiosampleObject>(
       paths,
       ["accession", "disease_terms", "sample_terms", "status", "summary"],
       ["Biosample"]
@@ -250,9 +258,9 @@ export async function requestFileSets(
   paths: string[],
   request: FetchRequest,
   addedProperties: string[] = []
-): Promise<Array<DataProviderObject>> {
+): Promise<FileSetObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<FileSetObject>(
       paths,
       [
         "@type",
@@ -279,9 +287,9 @@ export async function requestFileSets(
 export async function requestDocuments(
   paths: Array<string>,
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<Array<DocumentObject>> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<DocumentObject>(
       paths,
       [
         "attachment",
@@ -299,14 +307,14 @@ export async function requestDocuments(
  * Retrieve the donor objects for the given donor paths from the data provider.
  * @param {Array<string>} paths Paths to the donor objects to request
  * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The donor objects requested
+ * @returns {Array<DonorObject>} The donor objects requested
  */
 export async function requestDonors(
   paths: Array<string>,
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<Array<DonorObject>> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<DonorObject>(
       paths,
       [
         "accession",
@@ -339,16 +347,17 @@ export async function requestGenes(
 
 /**
  * Retrieves the institutional-certificate objects for the given paths from the data provider.
- * @param {string[]} paths Paths to the institutional-certificate objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {DataProviderObject[]} The institutional-certificate objects requested
+ *
+ * @param paths - Paths to the institutional-certificate objects to request
+ * @param request - The request object to use to make the request
+ * @returns The institutional-certificate objects requested
  */
 export async function requestInstitutionalCertificates(
   paths: string[],
   request: FetchRequest
-): Promise<DataProviderObject[]> {
+): Promise<InstitutionalCertificateObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<InstitutionalCertificateObject>(
       paths,
       [
         "certificate_identifier",
@@ -371,9 +380,9 @@ export async function requestInstitutionalCertificates(
 export async function requestOntologyTerms(
   paths: Array<string>,
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<Array<OntologyTermObject>> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<OntologyTermObject>(
       paths,
       ["term_id", "term_name"],
       ["OntologyTerm"]
@@ -411,16 +420,17 @@ export async function requestPhenotypicFeatures(
 
 /**
  * Retrieve the samples objects for the given sample paths from the data provider.
- * @param {Array<string>} paths Paths to the samples objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The samples objects requested
+ *
+ * @param paths - Paths to the samples objects to request
+ * @param request - The request object to use to make the request
+ * @returns The samples objects requested
  */
 export async function requestSamples(
   paths: Array<string>,
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<SampleObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<SampleObject>(
       paths,
       [
         "accession",
@@ -486,16 +496,17 @@ export async function requestSoftwareVersions(
 
 /**
  * Retrieve the treatments objects for the given paths from the data provider.
- * @param {Array<string>} paths Paths to the treatment objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The treatment objects requested
+ *
+ * @param paths - Paths to the treatment objects to request
+ * @param request - The request object to use to make the request
+ * @returns The treatment objects requested
  */
 export async function requestTreatments(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<TreatmentObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<TreatmentObject>(
       paths,
       ["purpose", "status", "summary", "treatment_term_name", "treatment_type"],
       ["Treatment"]
@@ -581,16 +592,17 @@ export async function requestWorkflows(
 
 /**
  * Retrieve the publication objects for the given paths from the data provider.
- * @param paths Paths to the publication objects to request
- * @param request The request object to use to make the request
+ *
+ * @param paths - Paths to the publication objects to request
+ * @param request - The request object to use to make the request
  * @returns The publication objects requested, or an empty array if none found
  */
 export async function requestPublications(
   paths: string[],
   request: FetchRequest
-): Promise<DataProviderObject[]> {
+): Promise<PublicationObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<PublicationObject>(
       paths,
       [
         "aliases",

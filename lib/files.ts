@@ -12,12 +12,12 @@ import {
   type RowComponentProps,
 } from "./data-grid";
 import type FetchRequest from "./fetch-request";
+import { type SampleObject } from "./samples";
 // root
 import type {
   DatabaseObject,
   FileObject,
   FileSetObject,
-  SampleObject,
   UploadStatus,
 } from "../globals.d";
 
@@ -152,7 +152,7 @@ async function getFileDerivedFromFiles(
 
   // Collect all derived_from file paths from `files`.
   let derivedFromPaths = files.reduce((acc: string[], file) => {
-    return file.derived_from?.length > 0 ? acc.concat(file.derived_from) : acc;
+    return acc.concat(file.derived_from ?? []);
   }, []);
 
   // Deduplicate the paths.
@@ -250,9 +250,9 @@ export function checkFileDownloadable(
   file: FileObject,
   viewingGroups: string[] = []
 ): boolean {
-  const isDownloadDisabledByStatus = nonDownloadableStatuses.has(
-    file.upload_status
-  );
+  const isDownloadDisabledByStatus = file.upload_status
+    ? nonDownloadableStatuses.has(file.upload_status)
+    : false;
   const isDownloadDisabledByControlledAccess =
     file.controlled_access && !viewingGroups.includes("IGVF");
   return (
@@ -296,7 +296,7 @@ function checkSampleIsObjectArray(
 export function collectFileFileSetSamples(files: FileObject): SampleObject[] {
   // Collect all samples from the file set of the file.
   const samples: SampleObject[] = [];
-  if (checkFileSetIsObject(files.file_set)) {
+  if (checkFileSetIsObject(files.file_set) && files.file_set.samples) {
     if (checkSampleIsObjectArray(files.file_set.samples)) {
       samples.push(...files.file_set.samples);
     }
@@ -469,7 +469,7 @@ export function extractSeqspecsForFile(
   seqspecs: FileObject[]
 ): FileObject[] {
   let matchingSeqspecs: FileObject[] = [];
-  if (file.seqspecs?.length > 0) {
+  if (file.seqspecs && file.seqspecs.length > 0) {
     const fileSeqspecPaths =
       typeof file.seqspecs[0] === "string"
         ? (file.seqspecs as string[])

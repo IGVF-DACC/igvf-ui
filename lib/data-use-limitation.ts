@@ -1,5 +1,7 @@
+// lib
+import { type SampleObject } from "./samples";
 // root
-import type { DatabaseObject, SampleObject } from "../globals";
+import type { DatabaseObject } from "../globals";
 
 /**
  * Institutional certificate object type.

@@ -1,3 +1,5 @@
+// lib
+import { type SampleObject } from "./samples";
 // root
 import {
   AnalysisStepObject,
@@ -13,7 +15,6 @@ import {
   OntologyTermObject,
   PageObject,
   PublicationObject,
-  SampleObject,
   SoftwareObject,
   SoftwareVersionObject,
   UserObject,
