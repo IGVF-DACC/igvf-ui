@@ -170,6 +170,14 @@ export default function MeasurementSet({
                   preferredAssayTitleDescriptionMap
                 }
               >
+                {measurementSet.library_preparation_kit && (
+                  <>
+                    <DataItemLabel>Library Preparation Kit</DataItemLabel>
+                    <DataItemValue>
+                      {measurementSet.library_preparation_kit}
+                    </DataItemValue>
+                  </>
+                )}
                 {assayTerm && (
                   <>
                     <DataItemLabel>Assay Term</DataItemLabel>
