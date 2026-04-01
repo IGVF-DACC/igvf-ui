@@ -1,4 +1,5 @@
 // node_modules
+import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
@@ -60,6 +61,15 @@ export default function ModelSet({
 }) {
   const sections = useSecDir({ isJson });
 
+  // Sort the software version objects by their summary. The software versions might not be
+  // embedded during indexing.
+  const softwareVersions = (modelSet.software_versions || []).filter(
+    (version) => version.summary
+  );
+  const sortedSoftwareVersions = _.sortBy(softwareVersions, (version) =>
+    version.summary.toLowerCase()
+  );
+
   return (
     <>
       <Breadcrumbs item={modelSet} />
@@ -108,20 +118,6 @@ export default function ModelSet({
                     </DataItemValue>
                   </>
                 )}
-                {modelSet.software_versions?.length > 0 && (
-                  <>
-                    <DataItemLabel>Software Versions</DataItemLabel>
-                    <DataItemValue>
-                      <SeparatedList>
-                        {modelSet.software_versions.map((version) => (
-                          <Link key={version["@id"]} href={version["@id"]}>
-                            {version.summary}
-                          </Link>
-                        ))}
-                      </SeparatedList>
-                    </DataItemValue>
-                  </>
-                )}
                 {modelSet.model_zoo_location && (
                   <>
                     <DataItemLabel>Model Zoo Location</DataItemLabel>
@@ -146,12 +142,12 @@ export default function ModelSet({
                     </DataItemValue>
                   </>
                 )}
-                {modelSet.software_versions?.length > 0 && (
+                {sortedSoftwareVersions.length > 0 && (
                   <>
                     <DataItemLabel>Software Versions</DataItemLabel>
                     <DataItemValue>
                       <SeparatedList isCollapsible>
-                        {modelSet.software_versions.map((version) => (
+                        {sortedSoftwareVersions.map((version) => (
                           <Link href={version["@id"]} key={version["@id"]}>
                             {version.summary}
                           </Link>
