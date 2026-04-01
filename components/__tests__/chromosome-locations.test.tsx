@@ -2,9 +2,10 @@ import { render, screen } from "@testing-library/react";
 import ChromosomeLocations, {
   ChromosomeLocation,
 } from "../chromosome-locations";
+import { type GeneLocation } from "../../lib/genes";
 
 describe("Test the ChromosomeLocations component", () => {
-  const locations = [
+  const locations: GeneLocation[] = [
     {
       chromosome: "1",
       start: 100,
@@ -15,7 +16,8 @@ describe("Test the ChromosomeLocations component", () => {
       chromosome: "2",
       start: 300,
       end: 400,
-      assembly: "hg19",
+      assembly: "GRCm39",
+      name: "Gene 2",
     },
   ];
 
@@ -23,8 +25,8 @@ describe("Test the ChromosomeLocations component", () => {
     render(<ChromosomeLocations locations={locations} />);
     const listItems = screen.getAllByRole("listitem");
     expect(listItems.length).toBe(2);
-    expect(listItems[0].textContent).toBe("1:100-200GRCh38");
-    expect(listItems[1].textContent).toBe("2:300-400hg19");
+    expect(listItems[0].textContent).toBe("GRCh381:100-200");
+    expect(listItems[1].textContent).toBe("GRCm392:300-400Gene 2");
   });
 
   it("should render a list of gene locations with Tailwind CSS classes on the ul", () => {
@@ -38,7 +40,7 @@ describe("Test the ChromosomeLocations component", () => {
 });
 
 describe("Test the ChromosomeLocation component", () => {
-  const location = {
+  const location: GeneLocation = {
     chromosome: "1",
     start: 100,
     end: 200,
@@ -49,7 +51,7 @@ describe("Test the ChromosomeLocation component", () => {
     render(<ChromosomeLocation location={location} />);
     const div = screen.getAllByTestId("chromosome-location");
     expect(div.length).toBe(1);
-    expect(div[0].textContent).toBe("1:100-200GRCh38");
+    expect(div[0].textContent).toBe("GRCh381:100-200");
   });
 
   it("should render a single gene location with Tailwind CSS classes on the wrapper div", () => {

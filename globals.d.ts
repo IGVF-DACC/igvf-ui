@@ -1,4 +1,4 @@
-// lib
+import { type GeneLocation } from "./lib/genes";
 import { type QualityMetricObject } from "./lib/quality-metric";
 import { type BiosampleObject, type SampleObject } from "./lib/samples";
 import { type WorkflowObject } from "./lib/workflow";
@@ -425,13 +425,6 @@ export interface FileSetObject extends DatabaseObject {
   samples?: string[] | SampleObject[];
   summary: string;
 }
-
-export type GeneLocation = {
-  assembly: string;
-  chromosome: string;
-  start: number;
-  end: number;
-};
 
 export interface GeneObject extends DatabaseObject {
   aliases?: string[];

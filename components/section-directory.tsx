@@ -256,7 +256,9 @@ export function SecDir({ sections }: { sections: SectionList }) {
             onMouseLeave={() => onPointerLeave(close)}
           >
             <Icon.SectionDirectory className="h-4 w-4" />
-            <div className="hidden @xl/main:block">Page Navigator</div>
+            <div className="hidden whitespace-nowrap @xl/main:block">
+              Page Navigator
+            </div>
           </SelectMenu.Trigger>
           <SelectMenu.Items
             justify="right"
