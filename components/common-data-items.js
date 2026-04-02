@@ -602,12 +602,12 @@ OntologyTermDataItems.commonProperties = [
 /**
  * Display data items common to all file-derived objects.
  */
-export function FileDataItems({
-  item,
-  analysisStepVersion = null,
-  children = null,
-}) {
+export function FileDataItems({ item, children = null }) {
   const tooltipAttr = useTooltip("external-host-url");
+  const analysisStepVersion =
+    typeof item.analysis_step_version === "object"
+      ? item.analysis_step_version
+      : null;
 
   return (
     <>
@@ -780,8 +780,6 @@ export function FileDataItems({
 FileDataItems.propTypes = {
   // file object common for all file types
   item: PropTypes.object.isRequired,
-  // Analysis step version for this file
-  analysisStepVersion: PropTypes.object,
   // Children elements to render
   children: PropTypes.node,
 };

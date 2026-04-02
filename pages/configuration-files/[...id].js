@@ -1,5 +1,4 @@
 // node_modules
-import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
@@ -50,7 +49,6 @@ export default function ConfigurationFile({
   fileFormatSpecifications,
   workflows,
   qualityMetrics,
-  analysisStepVersion,
   supersedes,
   supersededBy,
   isJson,
@@ -76,10 +74,7 @@ export default function ConfigurationFile({
           <StatusPreviewDetail item={configurationFile} />
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={configurationFile}
-                analysisStepVersion={analysisStepVersion}
-              />
+              <FileDataItems item={configurationFile} />
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
@@ -146,8 +141,6 @@ ConfigurationFile.propTypes = {
   workflows: PropTypes.arrayOf(PropTypes.object),
   // Quality metrics for this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
-  // Analysis step version for this file
-  analysisStepVersion: PropTypes.object,
   // Files that this file supersedes
   supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files that supersede this file
@@ -226,13 +219,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
             request
           )
         : [];
-    const analysisStepVersionId = _.get(
-      configurationFile,
-      "analysis_step_version.@id"
-    );
-    const analysisStepVersion = analysisStepVersionId
-      ? (await request.getObject(analysisStepVersionId)).optional()
-      : null;
     const { supersedes, supersededBy } = await requestSupersedes(
       configurationFile,
       "File",
@@ -252,7 +238,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         fileFormatSpecifications,
         workflows,
         qualityMetrics,
-        analysisStepVersion,
         supersedes,
         supersededBy,
         pageContext: { title: configurationFile.accession },
