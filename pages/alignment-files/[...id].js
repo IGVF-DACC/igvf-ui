@@ -1,5 +1,4 @@
 // node_modules
-import _ from "lodash";
 import PropTypes from "prop-types";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
@@ -57,7 +56,6 @@ export default function AlignmentFile({
   workflows,
   referenceFiles,
   qualityMetrics,
-  analysisStepVersion,
   supersedes,
   supersededBy,
   isJson,
@@ -65,9 +63,9 @@ export default function AlignmentFile({
   const sections = useSecDir({ isJson });
   const isAlignmentDetailsVisible = Boolean(
     alignmentFile.redacted ||
-      alignmentFile.filtered ||
-      alignmentFile.assembly ||
-      alignmentFile.transcriptome_annotation
+    alignmentFile.filtered ||
+    alignmentFile.assembly ||
+    alignmentFile.transcriptome_annotation
   );
 
   return (
@@ -90,10 +88,7 @@ export default function AlignmentFile({
           <StatusPreviewDetail item={alignmentFile} />
           <DataPanel>
             <DataArea>
-              <FileDataItems
-                item={alignmentFile}
-                analysisStepVersion={analysisStepVersion}
-              />
+              <FileDataItems item={alignmentFile} />
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
@@ -189,8 +184,6 @@ AlignmentFile.propTypes = {
   workflows: PropTypes.arrayOf(PropTypes.object),
   // Quality metrics associated with this file
   qualityMetrics: PropTypes.arrayOf(PropTypes.object),
-  // Analysis step version associated with this file
-  analysisStepVersion: PropTypes.object,
   // Files that this file supersedes
   supersedes: PropTypes.array.isRequired,
   // Files that supersede this file
@@ -266,13 +259,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       alignmentFile.quality_metrics?.length > 0
         ? await requestQualityMetrics(alignmentFile.quality_metrics, request)
         : [];
-    const analysisStepVersionId = _.get(
-      alignmentFile,
-      "analysis_step_version.@id"
-    );
-    const analysisStepVersion = analysisStepVersionId
-      ? (await request.getObject(analysisStepVersionId)).optional()
-      : null;
     const { supersedes, supersededBy } = await requestSupersedes(
       alignmentFile,
       "File",
@@ -291,7 +277,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         fileFormatSpecifications,
         workflows,
         qualityMetrics,
-        analysisStepVersion,
         pageContext: { title: alignmentFile.accession },
         supersedes,
         supersededBy,
