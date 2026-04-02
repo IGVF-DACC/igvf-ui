@@ -186,6 +186,11 @@ export function SecDir({ sections }: { sections: SectionList }) {
   // True if the user has the mouse in the section directory menu. Use ref to avoid closure issue.
   const isMouseHovered = useRef(false);
 
+  // Don't render the section directory if there are no sections to display.
+  if (sections.items.length === 0) {
+    return null;
+  }
+
   // Get the item renderer, either the default one or the custom one passed in the sections prop.
   const ItemRenderer = sections.renderer;
 

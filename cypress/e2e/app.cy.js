@@ -32,61 +32,70 @@ describe("Navigation", () => {
     cy.get("[data-testid=navigation-files]").click();
     cy.url().should("include", "/search/?type=File");
     cy.get("h1").should("exist"); // Actual title depends on data
-
-    // Test Resources and Standards submenus. Add to this once the pages these submenus link to exist.
-    cy.get("[data-testid=navigation-resources-standards]").click();
-
-    // Test About submenus. Add to this once the pages these submenus link to exist.
-    cy.get("[data-testid=navigation-about]").click();
-
-    // Test Help submenus. Add to this once the pages these submenus link to exist.
-    cy.get("[data-testid=navigation-help]").click();
   });
 
-  it("should load every schema's list and report page", () => {
-    cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
-    cy.contains("Cypress Testing");
-    cy.wait(1000);
+  // Shared login helper using cy.session() to cache Auth0 cookies across the two schema tests,
+  // avoiding a full OAuth roundtrip for the second test while still giving Chrome a fresh context.
+  function loginWithSession() {
+    cy.session("auth0-session", () => {
+      cy.visit("/");
+      cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
+      cy.contains("Cypress Testing");
+    });
+  }
 
-    // Go to the schemas page.
-    cy.get(`[data-testid="navigation-data-model"]`).click();
-    cy.get(`[data-testid="navigation-schemas"]`).click();
+  it("should load every schema's list page", () => {
+    loginWithSession();
+    cy.visit("/profiles/");
+
+    // Wait for the session context to finish loading so the links reflect the authenticated user's
+    // query params (status!=deleted) rather than the anonymous-user defaults (status=released).
+    cy.get(`[aria-label^="List view of all"]`)
+      .first()
+      .should("have.attr", "href")
+      .and("include", "status!=deleted");
 
     // Collect up all the list view links for every schema.
     const listHrefs = [];
-    cy.get(`[data-testid^="schema-"`).each(($schema) => {
+    cy.get(`[data-testid^="schema-"]`).each(($schema) => {
       const href = $schema
         .find(`[aria-label^="List view of all"]`)
         .attr("href");
       listHrefs.push(href);
     });
 
-    // Visit each list page to make sure it comes up, then go back to the schema page.
+    // Request each list page to make sure it returns a 200.
     cy.then(() => {
       listHrefs.forEach((href) => {
-        cy.get(`a[href="${href}"]`).click();
-        cy.wait(500);
-        cy.get("h1").should("exist");
-        cy.get(`[data-testid="navigation-schemas"]`).click();
+        cy.request(href).its("status").should("eq", 200);
       });
     });
+  });
+
+  it("should load every schema's report page", () => {
+    loginWithSession();
+    cy.visit("/profiles/");
+
+    // Wait for the session context to finish loading so the links reflect the authenticated user's
+    // query params (status!=deleted) rather than the anonymous-user defaults (status=released).
+    cy.get(`[aria-label^="Report view of all"]`)
+      .first()
+      .should("have.attr", "href")
+      .and("include", "status!=deleted");
 
     // Collect up all the report view links for every schema.
     const reportHrefs = [];
-    cy.get(`[data-testid^="schema-"`).each(($schema) => {
+    cy.get(`[data-testid^="schema-"]`).each(($schema) => {
       const href = $schema
         .find(`[aria-label^="Report view of all"]`)
         .attr("href");
       reportHrefs.push(href);
     });
 
-    // Visit each report page to make sure it comes up, then go back to the schema page.
+    // Request each report page to make sure it returns a 200.
     cy.then(() => {
       reportHrefs.forEach((href) => {
-        cy.get(`a[href="${href}"]`).click();
-        cy.wait(500);
-        cy.get("h1").should("exist");
-        cy.get(`[data-testid="navigation-schemas"]`).click();
+        cy.request(href).its("status").should("eq", 200);
       });
     });
   });

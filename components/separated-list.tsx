@@ -65,7 +65,7 @@ export default function SeparatedList({
   maxItemsBeforeCollapse?: number;
   children: React.ReactNode;
 }) {
-  const childrenArray = Children.toArray(children);
+  const childrenArray = Children.toArray(children) as React.ReactElement[];
   const collapser = useCollapseControl(
     childrenArray,
     maxItemsBeforeCollapse,
@@ -76,14 +76,13 @@ export default function SeparatedList({
   if (items.length > 0) {
     return (
       <div className={className || ""} data-testid={testid}>
-        {items
-          .filter(Boolean)
-          .map((item) => <Fragment key={item.key}>{item}</Fragment>)
-          .reduce((combined, curr, index) => [
-            combined,
-            <Fragment key={`sep-${index}`}>{separator}</Fragment>,
-            <Fragment key={`sep-${index + 1}`}>
-              {curr}
+        {items.filter(Boolean).map((item, index) =>
+          index === 0 ? (
+            <Fragment key={item.key}>{item}</Fragment>
+          ) : (
+            <Fragment key={`sep-${index}`}>
+              {separator}
+              {item}
               {collapser.isCollapseControlVisible &&
               index === collapser.items.length - 1 ? (
                 <CollapseControlInline
@@ -92,8 +91,9 @@ export default function SeparatedList({
                   setIsCollapsed={collapser.setIsCollapsed}
                 />
               ) : null}
-            </Fragment>,
-          ])}
+            </Fragment>
+          )
+        )}
       </div>
     );
   }

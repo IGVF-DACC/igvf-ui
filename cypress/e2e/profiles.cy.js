@@ -12,7 +12,6 @@ describe("Test the profiles page and each individual profile page", () => {
       const href = $schema.attr("href");
       profileHrefs.push(href);
     });
-    cy.log(profileHrefs);
 
     // Visit each list page to make sure it comes up, then go back to the schema page.
     cy.then(() => {

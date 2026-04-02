@@ -568,7 +568,7 @@ function SchemaProperties({
 
   return (
     <>
-      <section className="border-panel bg-schema-search sticky top-[37px] z-10 border-b px-4 py-2">
+      <section className="border-panel bg-schema-search sticky top-9.25 z-10 border-b px-4 py-2">
         <FormLabel>Search Schema Properties</FormLabel>
         <div className="mb-4">
           <SchemaSearchField
