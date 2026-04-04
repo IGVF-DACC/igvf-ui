@@ -12,6 +12,7 @@
 
 // node_modules
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
+import _ from "lodash";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 // components
@@ -609,6 +610,18 @@ export function FileDataItems({ item, children = null }) {
       ? item.analysis_step_version
       : null;
 
+  // Extract the software versions from the analysis step version object.
+  const softwareVersions = (
+    analysisStepVersion?.software_versions || []
+  ).filter(
+    (version) =>
+      version && typeof version === "object" && !Array.isArray(version)
+  );
+  const sortedSoftwareVersions = _.sortBy(
+    softwareVersions,
+    (version) => version.summary?.toLowerCase() || "\uffff"
+  );
+
   return (
     <>
       {typeof item.file_set === "object" && (
@@ -643,6 +656,20 @@ export function FileDataItems({ item, children = null }) {
               {analysisStepVersion["@id"]}
             </Link>
           </DataItemValueUrl>
+        </>
+      )}
+      {sortedSoftwareVersions.length > 0 && (
+        <>
+          <DataItemLabel>Software Versions</DataItemLabel>
+          <DataItemValue>
+            <SeparatedList isCollapsible>
+              {sortedSoftwareVersions.map((version) => (
+                <Link href={version["@id"]} key={version["@id"]}>
+                  {version.summary}
+                </Link>
+              ))}
+            </SeparatedList>
+          </DataItemValue>
         </>
       )}
       <DataItemLabel>File Format</DataItemLabel>

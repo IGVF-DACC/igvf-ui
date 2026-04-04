@@ -39,23 +39,40 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
 } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
 import { useState } from "react";
+
+/**
+ * Result returned by the `useCollapseControl` hook that contains the collapsed state, the setter
+ * for the collapsed state, a boolean indicating whether the collapse control should be visible,
+ * and the truncated list of items to display
+ *
+ * @property isCollapsed - True if the list appears collapsed; applies if `isCollapsible` is true
+ * @property setIsCollapsed - Function to set the collapsed state
+ * @property isCollapseControlVisible - True if the list has enough items to need a collapse control
+ * @property items - Truncated list of items to display
+ */
+export interface CollapseControlResult<T> {
+  isCollapsed: boolean;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  isCollapseControlVisible: boolean;
+  items: T[];
+}
 
 /**
  * Hook to control the collapsed state of a list. It keeps the collapsed/expanded state and
  * handles the truncation of the list of items while collapsed.
- * @param {Array} items List of items to display
- * @param {number} maxItemsBeforeCollapse Max number of items before the list appears collapsed
- * @param {boolean} isCollapsible True if the list should be collapsible
- * @returns {Object} Object containing the collapsed state, the collapsed/expanded state setter,
- *   and the truncated list of items
+ *
+ * @param items - List of items to display
+ * @param maxItemsBeforeCollapse - Max number of items before the list appears collapsed
+ * @param isCollapsible - True if the list should be collapsible
+ * @returns Object containing the collapsed state, the collapsed/expanded state setter, a boolean
+ *   indicating whether the collapse control should be visible, and the truncated list of items
  */
-export function useCollapseControl(
-  items,
+export function useCollapseControl<T>(
+  items: T[],
   maxItemsBeforeCollapse = DEFAULT_MAX_COLLAPSE_ITEMS_INLINE,
   isCollapsible = true
-) {
+): CollapseControlResult<T> {
   // True if the list appears collapsed
   const [isCollapsed, setIsCollapsed] = useState(true);
 
@@ -92,8 +109,20 @@ export const DEFAULT_MAX_COLLAPSE_ITEMS_VERTICAL = 5;
 
 /**
  * Displays the expand/collapse control for a collapsible list.
+ *
+ * @param length - Total number of items in the list
+ * @param isCollapsed - True if the list appears collapsed
+ * @param setIsCollapsed - Function to set the collapsed state
  */
-export function CollapseControlInline({ length, isCollapsed, setIsCollapsed }) {
+export function CollapseControlInline({
+  length,
+  isCollapsed,
+  setIsCollapsed,
+}: {
+  length: number;
+  isCollapsed: boolean;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const label = isCollapsed
     ? `Show all ${length} items in list`
     : `Show fewer items in list`;
@@ -121,23 +150,24 @@ export function CollapseControlInline({ length, isCollapsed, setIsCollapsed }) {
   );
 }
 
-CollapseControlInline.propTypes = {
-  // Total length of the list
-  length: PropTypes.number.isRequired,
-  // True if the list appears collapsed
-  isCollapsed: PropTypes.bool.isRequired,
-  // Function to set the collapsed state
-  setIsCollapsed: PropTypes.func.isRequired,
-};
-
 /**
  * Displays the expand/collapse control for `<DataItemList>`.
+ *
+ * @param length - Total number of items in the list
+ * @param isCollapsed - True if the list appears collapsed
+ * @param setIsCollapsed - Function to set the collapsed state
+ * @param isFullBorder - True to have all four sides of the button have a border; false to have all but the top border
  */
 export function CollapseControlVertical({
   length,
   isCollapsed,
   setIsCollapsed,
   isFullBorder = false,
+}: {
+  length: number;
+  isCollapsed: boolean;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  isFullBorder?: boolean;
 }) {
   const label = isCollapsed
     ? `Show all ${length} items in list`
@@ -168,14 +198,3 @@ export function CollapseControlVertical({
     </button>
   );
 }
-
-CollapseControlVertical.propTypes = {
-  // Total length of the list
-  length: PropTypes.number.isRequired,
-  // True if the list appears collapsed
-  isCollapsed: PropTypes.bool.isRequired,
-  // Function to set the collapsed state
-  setIsCollapsed: PropTypes.func.isRequired,
-  // True to have all four sides of the button have a border; false to have all but the top border
-  isFullBorder: PropTypes.bool,
-};
