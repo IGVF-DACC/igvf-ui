@@ -37,6 +37,13 @@
   --status-ring: var(--color-status-deleted-ring);
 }
 
+@utility status-derived-manually {
+  --status-bg: var(--color-status-derived-manually-bg);
+  --status-text: var(--color-status-derived-manually-text);
+  --status-fill: var(--color-status-derived-manually-text);
+  --status-ring: var(--color-status-derived-manually-ring);
+}
+
 @utility status-disabled {
   --status-bg: var(--color-status-disabled-bg);
   --status-text: var(--color-status-disabled-text);

@@ -36,9 +36,10 @@ interface IconProps extends SVGProps<SVGSVGElement> {
  * Styles and icons for every possible status value.
  *
  * @property styles - Tailwind CSS classes defining the colors for the status badge
- * @property Icon - Icon component to display within the status badge
- * @property colorValues - CSS variable names for status colors; use for non-standard status badges
  * @property style - CSS properties to apply to the Icon component as a `style` attribute
+ * @property Glyph - React component that renders the SVG path(s) for the status icon
+ * @property colorValues - CSS variable names for status colors; use for non-standard status badges
+ * @property Icon - Icon component to display within the status badge
  */
 interface StatusStyle {
   styles: string;
@@ -58,22 +59,23 @@ interface StatusStyle {
  * are added to the schemas.
  */
 type StatusStyleKey =
-  | "fallback"
+  | "archived"
   | "current"
   | "deleted"
-  | "archived"
+  | "derived manually"
   | "disabled"
+  | "fallback"
+  | "file not found"
   | "filtered"
-  | "standardized"
   | "in progress"
+  | "invalidated"
+  | "pending"
+  | "preview"
   | "released"
   | "replaced"
   | "revoked"
+  | "standardized"
   | "validated"
-  | "invalidated"
-  | "file not found"
-  | "pending"
-  | "preview"
   | "validation exempted";
 
 /**
@@ -98,6 +100,15 @@ function CurrentGlyph() {
 function DeletedGlyph() {
   return (
     <polygon points="17,6.3 13.7,3 10,6.7 6.3,3 3,6.3 6.7,10 3,13.7 6.3,17 10,13.3 13.7,17 17,13.7 13.3,10 " />
+  );
+}
+
+function DerivedManuallyGlyph() {
+  return (
+    <path
+      d="M10.8,3.8c0-.4-.3-.8-.8-.8s-.8.3-.8.8v5.1c0,.2-.2.4-.4.4s-.4-.2-.4-.4v-4.3c0-.4-.3-.8-.8-.8s-.8.3-.8.8v4.3c0,.2-.2.4-.4.4s-.4-.2-.4-.4v-2.7c0-.4-.3-.8-.8-.8s-.8.3-.8.8v5.4c0,3,2.4,5.4,5.4,5.4s5.4-2.4,5.4-5.4v-3.1c0-.4-.3-.8-.8-.8s-.8.3-.8.8v2.7c0,.2-.2.4-.4.4s-.4-.2-.4-.4v-6.6c0-.4-.3-.8-.8-.8s-.8.3-.8.8v4.3c0,.2-.2.4-.4.4s-.4-.2-.4-.4V3.8Z"
+      style={{ fillRule: "evenodd" }}
+    />
   );
 }
 
@@ -300,6 +311,26 @@ const statusStyles: Record<StatusStyleKey, StatusStyle> = {
         style={style}
       >
         <DeletedGlyph />
+      </svg>
+    ),
+  },
+
+  "derived manually": {
+    styles: "status status-derived-manually",
+    Glyph: DerivedManuallyGlyph,
+    colorValues: {
+      bg: "--color-status-derived-manually-bg",
+      text: "--color-status-derived-manually-text",
+      ring: "--color-status-derived-manually-ring",
+    },
+    Icon: ({ className = "", style = {} }: IconProps) => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        className={twMerge("h-full", className)}
+        style={style}
+      >
+        <DerivedManuallyGlyph />
       </svg>
     ),
   },

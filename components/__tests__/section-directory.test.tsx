@@ -452,4 +452,14 @@ describe("Test SecDir component", () => {
     expect(screen.getByText("TEST Modifications TEST")).toBeInTheDocument();
     expect(screen.getByText("TEST Attribution TEST")).toBeInTheDocument();
   });
+
+  it("renders nothing when sections.items is empty", () => {
+    const sections = { items: [] };
+
+    render(<SecDir sections={sections} />, {
+      wrapper: Wrapper,
+    });
+
+    expect(screen.queryByRole("button")).toBeNull();
+  });
 });

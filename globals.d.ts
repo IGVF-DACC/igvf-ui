@@ -382,6 +382,7 @@ export interface FileObject extends DatabaseObject {
   content_summary?: string;
   content_type: string;
   derived_from?: string[];
+  derived_manually?: boolean;
   external_host_url?: string;
   externally_hosted?: boolean;
   file_format: string;
