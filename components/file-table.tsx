@@ -1,6 +1,5 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
 import { useState } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
@@ -9,7 +8,7 @@ import { DataAreaTitle, DataAreaTitleLink, DataPanel } from "./data-area";
 import { DeprecatedFileFilterControl } from "./deprecated-files";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
-import SortableGrid from "./sortable-grid";
+import SortableGrid, { type SortableGridConfig } from "./sortable-grid";
 import Status from "./status";
 import { WorkflowList } from "./workflow";
 // lib
@@ -19,10 +18,18 @@ import {
   computeDefaultDeprecatedVisibility,
   computeFileDisplayData,
   resolveDeprecatedFileProps,
+  type DeprecatedFileFilterProps,
 } from "../lib/deprecated-files";
-import { dataSize, truthyOrZero } from "../lib/general";
+import { dataSize } from "../lib/general";
+import { isEmbedded, isEmbeddedArray } from "../lib/types";
+// root
+import type { FileObject, FileSetObject } from "../globals";
 
-const filesColumns = [
+type FileTableMeta = {
+  isFilteredVisible: boolean;
+};
+
+const filesColumns: SortableGridConfig<FileObject, FileTableMeta>[] = [
   {
     id: "accession",
     title: "Accession",
@@ -50,7 +57,7 @@ const filesColumns = [
           {source.content_type}
         </AnnotatedValue>
       ) : null,
-    sorter: (item) => (item.content_type || "Z").toLowerCase(),
+    sorter: (item) => (item.content_type || "\uffff").toLowerCase(),
   },
   {
     id: "summary",
@@ -60,43 +67,54 @@ const filesColumns = [
     id: "workflows",
     title: "Workflows",
     display: ({ source }) => {
-      const workflows = source.workflows || [];
-      return <WorkflowList workflows={workflows} />;
+      if (source.workflows && isEmbeddedArray(source.workflows)) {
+        return <WorkflowList workflows={source.workflows} />;
+      }
+
+      // `derived_manually` might be set for files without a `workflows` array.
+      if (source.derived_manually) {
+        return <Status status="derived manually" />;
+      }
+      return null;
     },
-    hide: (data) => {
-      const anyWorkflows = data.some((item) => item.workflows?.length > 0);
-      return !anyWorkflows;
-    },
+    hide: (files) =>
+      // Hide the Workflows column if no files have workflows nor derived_manually set.
+      !files.some(
+        (item) =>
+          (item.workflows && isEmbeddedArray(item.workflows)) ||
+          item.derived_manually
+      ),
     isSortable: false,
   },
   {
     id: "lab",
     title: "Lab",
-    display: ({ source }) => source.lab?.title,
-    sorter: (item) => (item.lab ? item.lab.title.toLowerCase() : ""),
+    display: ({ source }) =>
+      source.lab && isEmbedded(source.lab) ? source.lab.title : null,
+    sorter: (item) =>
+      item.lab && isEmbedded(item.lab)
+        ? item.lab.title.toLowerCase()
+        : "\uffff",
   },
   {
     id: "file_size",
     title: "File Size",
     display: ({ source }) =>
-      truthyOrZero(source.file_size) ? dataSize(source.file_size) : "",
+      source.file_size !== undefined ? dataSize(source.file_size) : "",
   },
   {
     id: "filtered",
     title: "Filtered",
-    display: ({ source }) => {
-      return source.filtered ? <Status status="filtered" /> : null;
-    },
+    display: ({ source }) =>
+      source.filtered ? <Status status="filtered" /> : null,
     sorter: (item) => (item.filtered ? 0 : 1),
     hide: (data, columns, meta) => {
       if (!meta.isFilteredVisible) {
         return true;
       }
 
-      // Only show this column if the files have a mix of filtered and unfiltered statuses.
-      const filtered = data.map((item) => Boolean(item.filtered));
-      const filteredValues = new Set(filtered);
-      return filteredValues.size === 1;
+      // Only show this column if at least one file has the filtered flag set to true
+      return !data.some((item) => item.filtered);
     },
   },
   {
@@ -108,21 +126,46 @@ const filesColumns = [
 
 /**
  * Display a sortable table of the given files.
+ *
+ * @param files - Array of file objects to display in the table
+ * @param fileSet - Optional file set object to associate with the table for batch download / report links
+ * @param title - Optional title for the table section
+ * @param reportLink - Optional URL for a report link
+ * @param reportLabel - Optional label for the report link
+ * @param controllerContent - Optional additional content to render alongside the batch download controller
+ * @param isFilteredVisible - Optional flag to control visibility of the filtered column
+ * @param isDeletedVisible - Optional flag to control visibility of deleted files
+ * @param hasDeprecatedOption - Optional flag indicating whether deprecated file toggle should be shown
+ * @param externalDeprecated - Optional external control for deprecated file visibility
+ * @param secDirTitle - Optional secondary directory title for the data area
+ * @param panelId - Optional id for the data area panel
  */
 export default function FileTable({
   files,
-  fileSet = null,
+  fileSet,
   title = "Files",
   reportLink = "",
   reportLabel = "",
-  downloadQuery = null,
-  controllerContent = null,
+  controllerContent,
   isFilteredVisible = false,
   isDeletedVisible = false,
   hasDeprecatedOption = false,
   externalDeprecated,
   secDirTitle = "Files",
   panelId = "files",
+}: {
+  files: FileObject[];
+  fileSet?: FileSetObject;
+  title?: string;
+  reportLink?: string;
+  reportLabel?: string;
+  controllerContent?: React.ReactNode;
+  isFilteredVisible?: boolean;
+  isDeletedVisible?: boolean;
+  hasDeprecatedOption?: boolean;
+  externalDeprecated?: DeprecatedFileFilterProps;
+  secDirTitle?: string;
+  panelId?: string;
 }) {
   // Local state for deprecated file visibility if not controlled externally via props.
   const defaultDeprecatedVisible = computeDefaultDeprecatedVisibility(
@@ -155,9 +198,7 @@ export default function FileTable({
     : reportLabel;
 
   // Create a batch-download controller if a file set is provided.
-  const controller = fileSet
-    ? new FileTableController(fileSet, downloadQuery)
-    : null;
+  const controller = fileSet ? new FileTableController(fileSet) : null;
 
   // Filter out deprecated files if the user has not opted to include them.
   const { visibleFiles, showDeprecatedToggle } = computeFileDisplayData(
@@ -220,37 +261,3 @@ export default function FileTable({
     </>
   );
 }
-
-FileTable.propTypes = {
-  // Files to display
-  files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // FileSet object containing these files; used for report link and batch download
-  fileSet: PropTypes.object,
-  // Title for the table; can be a string or a React component
-  title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  // Full report link for file tables not on FileSet pages, i.e. without `fileSet`
-  reportLink: PropTypes.string,
-  // Label for the report link for file tables not on FileSet pages, i.e. without `fileSet`
-  reportLabel: PropTypes.string,
-  // Extra query parameters for downloading files, if needed
-  downloadQuery: PropTypes.object,
-  // Extra text or JSX content for the batch download controller
-  controllerContent: PropTypes.node,
-  // True to show the "Filtered" column if both filtered and unfiltered files exist
-  isFilteredVisible: PropTypes.bool,
-  // True to include deleted files in the linked report
-  isDeletedVisible: PropTypes.bool,
-  // True allows user to toggle deprecated file visibility; `externalDeprecated` ignored if false
-  hasDeprecatedOption: PropTypes.bool,
-  // Props related to viewing deprecated files; if not provided, defaults to local state management
-  externalDeprecated: PropTypes.shape({
-    visible: PropTypes.bool,
-    setVisible: PropTypes.func,
-    defaultVisible: PropTypes.bool,
-    controlTitle: PropTypes.string,
-  }),
-  // Title for this table's section directory entry if not default
-  secDirTitle: PropTypes.string,
-  // Unique ID for the table for the section directory
-  panelId: PropTypes.string,
-};

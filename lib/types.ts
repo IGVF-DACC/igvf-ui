@@ -39,7 +39,7 @@ export function isPathArray<T>(
  * @param value - Object property to check if it is an embedded object (T)
  * @returns True if the property is an embedded object (T), false if it is a link (string).
  */
-export function isEmbedded<T extends object>(value: LinkTo<T>): value is T {
+export function isEmbedded<T>(value: LinkTo<T>): value is T {
   return typeof value === "object" && value !== null;
 }
 
@@ -50,7 +50,7 @@ export function isEmbedded<T extends object>(value: LinkTo<T>): value is T {
  * @param value - Object property to check if it's an array of embedded objects (T)
  * @returns True if the property is an array of embedded objects (T)
  */
-export function isEmbeddedArray<T extends object>(
+export function isEmbeddedArray<T>(
   value: LinkTo<T>[] | undefined | null
 ): value is T[] {
   return (
