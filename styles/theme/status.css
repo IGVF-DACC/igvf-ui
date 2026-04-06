@@ -16,6 +16,7 @@
   --color-status-archived-bg: oklch(0.7168 0.0879 80.83);
   --color-status-current-bg: oklch(0.6611 0.115985 185.9407);
   --color-status-deleted-bg: oklch(0.603 0.2347 26.99);
+  --color-status-derived-manually-bg: oklch(0.591 0.293 322.896);
   --color-status-disabled-bg: oklch(0.6079 0.2362 12.25);
   --color-status-fallback-bg: oklch(0.8576 0 0);
   --color-status-file-not-found-bg: oklch(0.6079 0.2362 12.25);
@@ -36,6 +37,7 @@
   --color-status-current-ring: oklch(0.5368 0.09407 186.1693);
   --color-status-deleted-ring: oklch(0.5276 0.2043 26.98);
   --color-status-disabled-ring: oklch(0.5282 0.2039 11.96);
+  --color-status-derived-manually-ring: oklch(0.551 0.273 322.896);
   --color-status-fallback-ring: oklch(0.7058 0 0);
   --color-status-file-not-found-ring: oklch(0.5282 0.2039 11.96);
   --color-status-filtered-ring: oklch(0.606 0.25 292.717);
@@ -54,6 +56,7 @@
   --color-status-archived-text: oklch(0 0 0);
   --color-status-current-text: oklch(1 0 0);
   --color-status-deleted-text: oklch(1 0 0);
+  --color-status-derived-manually-text: oklch(1 0 0);
   --color-status-disabled-text: oklch(1 0 0);
   --color-status-fallback-text: oklch(0 0 0);
   --color-status-file-not-found-text: oklch(1 0 0);
@@ -76,6 +79,7 @@
     --color-status-archived-bg: oklch(0.7168 0.0879 80.83);
     --color-status-current-bg: oklch(0.6611 0.115985 185.9407);
     --color-status-deleted-bg: oklch(0.603 0.2347 26.99);
+    --color-status-derived-manually-bg: oklch(0.591 0.293 322.896);
     --color-status-disabled-bg: oklch(0.6079 0.2362 12.25);
     --color-status-in-progress-bg: oklch(0.5381 0.1433 247.55);
     --color-status-fallback-bg: oklch(0.8576 0 0);
@@ -95,6 +99,7 @@
     --color-status-archived-ring: oklch(0.6074 0.0733 81.06);
     --color-status-current-ring: oklch(0.5368 0.09407 186.1693);
     --color-status-deleted-ring: oklch(0.5276 0.2043 26.98);
+    --color-status-derived-manually-ring: oklch(0.551 0.273 322.896);
     --color-status-disabled-ring: oklch(0.5282 0.2039 11.96);
     --color-status-fallback-ring: oklch(0.7058 0 0);
     --color-status-file-not-found-ring: oklch(0.5282 0.2039 11.96);
@@ -114,6 +119,7 @@
     --color-status-archived-text: oklch(0 0 0);
     --color-status-current-text: oklch(1 0 0);
     --color-status-deleted-text: oklch(1 0 0);
+    --color-status-derived-manually-text: oklch(1 0 0);
     --color-status-disabled-text: oklch(1 0 0);
     --color-status-fallback-text: oklch(0 0 0);
     --color-status-file-not-found-text: oklch(1 0 0);
