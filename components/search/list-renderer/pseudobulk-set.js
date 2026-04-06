@@ -67,7 +67,12 @@ export default function PseudobulkSet({ item: pseudobulkSet }) {
                   Cell Type
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  {pseudobulkSet.cell_type.term_name}
+                  {[
+                    pseudobulkSet.cell_qualifier,
+                    pseudobulkSet.cell_type.term_name,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
