@@ -781,6 +781,14 @@ export function FileDataItems({ item, children = null }) {
           </DataItemValue>
         </>
       )}
+      {item.checkfiles_timestamp && (
+        <>
+          <DataItemLabel>Checkfiles Timestamp</DataItemLabel>
+          <DataItemValue>
+            {formatDate(item.checkfiles_timestamp, "show-time")}
+          </DataItemValue>
+        </>
+      )}
       {item.validation_error_detail && (
         <>
           <DataItemLabel>Validation Error Detail</DataItemLabel>
@@ -813,6 +821,8 @@ FileDataItems.propTypes = {
 
 FileDataItems.commonProperties = [
   "aliases",
+  "checkfiles_timestamp",
+  "checkfiles_version",
   "content_md5sum",
   "content_type",
   "content_summary",
