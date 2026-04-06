@@ -18,11 +18,11 @@ import { UniformlyProcessedBadge } from "../../common-pill-badges";
 import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 // lib
+import { type AnalysisSetObject } from "../../../lib/file-sets";
 import { truncateText } from "../../../lib/general";
 import { isEmbedded, isEmbeddedArray } from "../../../lib/types";
 import { WorkflowObject } from "../../../lib/workflow";
 // root
-import { FileSetObject } from "../../../globals";
 
 type AccessoryData = {
   [analysisSetId: string]: {
@@ -34,7 +34,7 @@ export default function AnalysisSet({
   item: analysisSet,
   accessoryData = null,
 }: {
-  item: FileSetObject;
+  item: AnalysisSetObject;
   accessoryData: AccessoryData | null;
 }) {
   // Determine if at least one workflow in the analysis set has `uniform_pipeline` set.
@@ -122,7 +122,7 @@ export default function AnalysisSet({
   );
 }
 
-AnalysisSet.getAccessoryDataPaths = (items: FileSetObject[]) => {
+AnalysisSet.getAccessoryDataPaths = (items: AnalysisSetObject[]) => {
   // Get the `workflows` arrays for all analysis sets in the results.
   return [
     {

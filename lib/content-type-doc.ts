@@ -53,11 +53,10 @@ export async function getContentTypeDocContent(
   cookie: string
 ): Promise<string | null> {
   const request = new FetchRequest({ cookie });
-  const response = (
-    await request.getObject("/content-type-doc-content/")
+  const page = (
+    await request.getObject<PageObject>("/content-type-doc-content/")
   ).union();
-  if (FetchRequest.isResponseSuccess(response)) {
-    const page = response as PageObject;
+  if (FetchRequest.isResponseSuccess(page)) {
     const blocks = page.layout?.blocks;
     if (blocks && blocks.length > 0) {
       const body = blocks[0].body.trim();

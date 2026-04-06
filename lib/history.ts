@@ -34,9 +34,27 @@ export type HistoryObject = {
 };
 
 /**
+ * Type guard to test whether an object appears to be a HistoryObject. This is not a perfect test,
+ * but it should be sufficient for distinguishing HistoryObjects from other objects in the UI.
+ *
+ * @param object - Object to test if it appears to contain the editing history of a database object
+ * @returns True if the object appears to be a HistoryObject
+ */
+export function isHistoryObject(object: unknown): object is HistoryObject {
+  return (
+    typeof object === "object" &&
+    object !== null &&
+    "rid" in object &&
+    "latest" in object &&
+    "history" in object
+  );
+}
+
+/**
  * Compare two JSON strings and generate an array of 1-based line numbers where they differ. The
  * JSON string must contain newlines for this line numbering to work. Deleted lines appear as
  * negative numbers, while added lines appear as positive numbers.
+ *
  * @param originalText - Original JSON string
  * @param modifiedText - Modified JSON string
  * @returns Array of 1-based line numbers where the JSON strings differ

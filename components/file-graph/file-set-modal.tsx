@@ -123,13 +123,13 @@ export function FileSetModal({
   nativeFiles: FileObject[];
   onClose: () => void;
 }) {
-  const { fileSet, externalFiles, downstreamFile } =
+  const { fileSet, externalFiles, downstreamFiles } =
     node.data as FileSetMetadata;
-  const reportLink = `/multireport/?type=File&file_set.@id=${fileSet["@id"]}&input_file_for=${downstreamFile["@id"]}`;
+  const reportLink = `/multireport/?type=File&file_set.@id=${fileSet["@id"]}&${downstreamFiles.map((file) => `input_file_for=${file["@id"]}`).join("&")}`;
 
   // Collect all sample summaries and display them as a collapsible list.
   const sampleSummaries =
-    fileSet.samples?.length && isEmbeddedArray(fileSet.samples)
+    fileSet.samples?.length > 0 && isEmbeddedArray(fileSet.samples)
       ? fileSet.samples.map((sample) => sample.summary)
       : [];
   const uniqueSampleSummaries = [...new Set(sampleSummaries)];

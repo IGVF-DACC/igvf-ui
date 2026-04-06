@@ -25,7 +25,7 @@ import { type AttributionData } from "../../lib/attribution";
 import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestAnalysisStepVersions } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
-import FetchRequest, { type ErrorObject } from "../../lib/fetch-request";
+import FetchRequest from "../../lib/fetch-request";
 import AliasList from "../../components/alias-list";
 import buildAttribution from "../../lib/attribution";
 import { isJsonFormat } from "../../lib/query-utils";
@@ -174,21 +174,19 @@ export async function getServerSideProps({
 }: GetServerSidePropsContext<{ id: string }>) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const response = (
-    await request.getObject(`/analysis-steps/${params.id}/`)
+  const analysisStep = (
+    await request.getObject<AnalysisStepObject>(`/analysis-steps/${params.id}/`)
   ).union();
 
-  if (FetchRequest.isResponseSuccess(response)) {
+  if (FetchRequest.isResponseSuccess(analysisStep)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
-      response,
+      analysisStep,
       resolvedUrl,
       query
     );
     if (canonicalRedirect) {
       return canonicalRedirect;
     }
-
-    const analysisStep = response as AnalysisStepObject;
 
     let analysisStepVersions = [];
     if (analysisStep.analysis_step_versions?.length > 0) {
@@ -213,5 +211,5 @@ export async function getServerSideProps({
       },
     };
   }
-  return errorObjectToProps(response as ErrorObject);
+  return errorObjectToProps(analysisStep);
 }

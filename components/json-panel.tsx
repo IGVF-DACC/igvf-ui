@@ -3,8 +3,12 @@ import {
   CheckIcon,
   ClipboardDocumentCheckIcon,
 } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
-import { Children, useContext } from "react";
+import {
+  Children,
+  type ComponentType,
+  isValidElement,
+  useContext,
+} from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import {
   lightfair,
@@ -39,11 +43,18 @@ const themeMap = {
 };
 
 /**
+ * This is a redeclaration of the `SyntaxHighlighter` component from `react-syntax-highlighter`
+ * because its TypeScript types are not compatible with our usage of it.
+ */
+const SyntaxHighlighterComponent =
+  SyntaxHighlighter as unknown as ComponentType<any>;
+
+/**
  * Use this to wrap each tool within the JSON panel tools. This component is used to identify the
  * panel tools within this section so `<JsonPanel>` can give these components special
  * treatment.
  */
-export function JsonPanelTool({ children }) {
+export function JsonPanelTool({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
@@ -51,8 +62,16 @@ export function JsonPanelTool({ children }) {
  * Display the tools in the upper right corner of the JSON panel. This includes the button to copy
  * the JSON to the clipboard. The parent component can provide extra tools to display next to this
  * button.
+ *
+ * @param target Text to copy to the clipboard when the copy button is clicked.
  */
-function JsonPanelTools({ target, children }) {
+function JsonPanelTools({
+  target,
+  children,
+}: {
+  target: string;
+  children: React.ReactNode;
+}) {
   const tooltipAttr = useTooltip("json-copy");
 
   return (
@@ -76,13 +95,14 @@ function JsonPanelTools({ target, children }) {
   );
 }
 
-JsonPanelTools.propTypes = {
-  // React components or elements that are the target of the tools
-  target: PropTypes.string.isRequired,
-};
-
 /**
  * Display a JSON object as a code panel with code colorization.
+ *
+ * @param id - Optional unique identifier for the component
+ * @param highlightedLines - Optional array of 1-based line numbers to highlight
+ * @param isLowContrast - Optional boolean to use low contrast colors for the code panel
+ * @param isBorderHidden - Optional boolean to hide the border of the code panel
+ * @param className - Optional additional Tailwind CSS classes to apply to the code panel
  */
 export default function JsonPanel({
   id = null,
@@ -91,15 +111,29 @@ export default function JsonPanel({
   isBorderHidden = false,
   className = "",
   children,
+}: {
+  id?: string | null;
+  highlightedLines?: number[];
+  isLowContrast?: boolean;
+  isBorderHidden?: boolean;
+  className?: string;
+  children: React.ReactNode;
 }) {
   // Extract just the <JsonPanelTool> children from the children prop
   const toolChildren = Children.toArray(children).filter(
-    (child) => child.type === JsonPanelTool
+    (child) => isValidElement(child) && child.type === JsonPanelTool
   );
   const contentChildren = Children.toArray(children).filter(
-    (child) => child.type !== JsonPanelTool
+    (child) => !isValidElement(child) || child.type !== JsonPanelTool
   );
-  const jsonContent = contentChildren.length > 0 ? contentChildren[0] : "";
+  const jsonContent = contentChildren
+    .map((child) => {
+      if (typeof child === "string" || typeof child === "number") {
+        return String(child);
+      }
+      return "";
+    })
+    .join("");
 
   const { darkMode } = useContext(GlobalContext);
   const modeThemes = isLowContrast
@@ -109,7 +143,7 @@ export default function JsonPanel({
 
   return (
     <div className="relative">
-      <SyntaxHighlighter
+      <SyntaxHighlighterComponent
         id={id}
         language="json"
         style={theme}
@@ -117,7 +151,7 @@ export default function JsonPanel({
           isBorderHidden ? "" : "border-json-panel border"
         } ${className}`}
         lineNumberStyle={{ display: "none" }}
-        lineProps={(lineNumber) => {
+        lineProps={(lineNumber: number) => {
           const isAdded = highlightedLines.includes(lineNumber);
           if (isAdded) {
             return {
@@ -135,22 +169,9 @@ export default function JsonPanel({
         showLineNumbers
         wrapLines
       >
-        {contentChildren}
-      </SyntaxHighlighter>
+        {jsonContent}
+      </SyntaxHighlighterComponent>
       <JsonPanelTools target={jsonContent}>{toolChildren}</JsonPanelTools>
     </div>
   );
 }
-
-JsonPanel.propTypes = {
-  // Unique identifier for the component
-  id: PropTypes.string,
-  // 1-based line numbers to highlight
-  highlightedLines: PropTypes.array,
-  // True for low-contrast themes
-  isLowContrast: PropTypes.bool,
-  // True to hide the JSON panel border
-  isBorderHidden: PropTypes.bool,
-  // Tailwind CSS classes to apply to the JSON panel
-  className: PropTypes.string,
-};

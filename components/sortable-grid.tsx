@@ -113,10 +113,7 @@ export interface InitialSortConfig {
  * @param keyProp - Property of each item to use as the React key; index used if not provided
  * @returns `items` contents in a form suitable for passing to <DataGrid>
  */
-function convertObjectArrayToDataGrid<
-  TItem extends Record<string, unknown>,
-  TMeta,
->(
+function convertObjectArrayToDataGrid<TItem extends object, TMeta>(
   items: TItem[],
   columns: SortableGridConfig<TItem, TMeta>[],
   keyProp: string
@@ -361,10 +358,7 @@ function TablePager<TItem>({
  *
  *
  */
-export default function SortableGrid<
-  TItem extends Record<string, unknown>,
-  TMeta,
->({
+export default function SortableGrid<TItem extends object, TMeta>({
   data,
   columns,
   keyProp = "",
@@ -475,7 +469,7 @@ export default function SortableGrid<
         (pageIndex + 1) * MAX_ITEMS_PER_PAGE
       )
     : sortedData;
-  const dataRows = convertObjectArrayToDataGrid(
+  const dataRows = convertObjectArrayToDataGrid<TItem, TMeta>(
     pagedData,
     visibleColumns,
     keyProp

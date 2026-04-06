@@ -1,6 +1,3 @@
-/**
- * General file-related utility functions.
- */
 // node_modules
 import _ from "lodash";
 // lib
@@ -21,15 +18,11 @@ import {
 } from "./database-object";
 import type FetchRequest from "./fetch-request";
 import { type QualityMetricObject } from "./quality-metric";
+import { type FileSetObject } from "./file-sets";
 import { type SampleObject } from "./samples";
 import { isEmbedded, isPath, isPathArray } from "./types";
 // root
-import type {
-  DatabaseObject,
-  FileObject,
-  FileSetObject,
-  UploadStatus,
-} from "../globals";
+import type { DatabaseObject, FileObject, UploadStatus } from "../globals";
 
 /**
  * Flag indicating a missing flowcell ID in a sequencing file group. Uses "z" to ensure
@@ -100,7 +93,7 @@ export function isFileObjectArray(files: unknown): files is FileObject[] {
  * @returns Arrays of files with and without the `illumina_read_type`
  */
 export function splitIlluminaSequenceFiles(
-  files: Array<DatabaseObject>
+  files: FileObject[]
 ): IlluminaSequenceFiles {
   return files.reduce(
     (acc: IlluminaSequenceFiles, file) => {

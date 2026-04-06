@@ -1,14 +1,13 @@
 // lib
-import FetchRequest, { type ErrorObject } from "./fetch-request";
+import FetchRequest, { isErrorObject, type ErrorObject } from "./fetch-request";
 import { requestPages } from "./common-requests";
 // type
 import type { BreadcrumbMeta } from "./breadcrumbs";
 import type {
   DatabaseObject,
   DatabaseWriteResponse,
-  DataProviderObject,
   SessionObject,
-} from "../globals.d";
+} from "../globals";
 
 /**
  * Meta information about the page used in various places. This is separate from the PageObject
@@ -71,12 +70,10 @@ export type WritingDirection = "ltr" | "rtl";
  * @returns Object.title Page title without ordering number
  * @returns Object.codes Array of strings representing the codes in the title
  */
-export function getPageTitleAndCodes(item: DataProviderObject): {
+export function getPageTitleAndCodes(page: PageObject): {
   title: string;
   codes: string[];
 } {
-  const page = item as PageObject;
-
   // Match the page title with a regex that captures the displayable title and one or more square-
   // bracket-delimited codes. The displayable title gets captured in the first group, and all the
   // square-bracket-delimited codes get captured in the second group.
@@ -149,12 +146,13 @@ export async function savePage(
   // you can't check for network/permission errors in the usual way.
   const request = new FetchRequest({ session });
   if (!isNewPage) {
-    writeablePage = (
-      await request.getObject(`${page["@id"]}?frame=edit`)
-    ).union() as PageObject;
-    if (writeablePage["@type"]?.includes("Error")) {
-      return writeablePage;
+    const response = (
+      await request.getObject<PageObject>(`${page["@id"]}?frame=edit`)
+    ).union();
+    if (isErrorObject(response)) {
+      return response;
     }
+    writeablePage = response;
   } else {
     // Create a new page object based on the given page, but remove properties that should not be
     // included in a new page object -- @id and @type.

@@ -1286,7 +1286,11 @@ describe("Test the getFacetOrder / setFacetOrder functions", () => {
         ok: false,
         status: 503,
         json: () =>
-          Promise.resolve({ isError: true, description: "Redis error" }),
+          Promise.resolve({
+            "@type": ["Error"],
+            isError: true,
+            description: "Redis error",
+          }),
       })
     );
 

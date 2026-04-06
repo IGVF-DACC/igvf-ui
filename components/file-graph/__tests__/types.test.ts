@@ -4,36 +4,42 @@ import {
   isFileNodeMetadata,
   isFileSetNodeMetadata,
 } from "../types";
-import type {
-  NodeKind,
-  FileMetadata,
-  FileSetMetadata,
-  NodeMetadata,
-  ElkNodeEx,
-  FileSetTypeColorMap,
-  FileSetStats,
+import {
+  isGroupNodeMetadata,
+  isFileSetNode,
+  type ElkNodeEx,
+  type FileMetadata,
+  type FileSetMetadata,
+  type FileSetStats,
+  type FileSetTypeColorMap,
+  type NodeKind,
+  type NodeMetadata,
 } from "../types";
-import type { FileObject, FileSetObject } from "../../../globals";
+import type { FileObject } from "../../../globals";
 import type { QualityMetricObject } from "../../../lib/quality-metric";
+import { type FileSetObject } from "../../../lib/file-sets";
 
 describe("types.ts", () => {
   describe("NODE_KINDS constant", () => {
     it("should have correct values", () => {
       expect(NODE_KINDS.FILE).toBe("file");
       expect(NODE_KINDS.FILESET).toBe("fileset");
+      expect(NODE_KINDS.GROUP).toBe("group");
     });
 
     it("should have only the expected keys", () => {
-      expect(Object.keys(NODE_KINDS)).toEqual(["FILE", "FILESET"]);
+      expect(Object.keys(NODE_KINDS)).toEqual(["FILE", "FILESET", "GROUP"]);
     });
 
     it("should be used as const assertion", () => {
       // Test that NODE_KINDS is properly typed as const
       const fileKind: "file" = NODE_KINDS.FILE;
       const filesetKind: "fileset" = NODE_KINDS.FILESET;
+      const groupKind: "group" = NODE_KINDS.GROUP;
 
       expect(fileKind).toBe("file");
       expect(filesetKind).toBe("fileset");
+      expect(groupKind).toBe("group");
     });
   });
 
@@ -55,6 +61,8 @@ describe("types.ts", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/test",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+        status: "released",
       };
 
       const mockQualityMetric: QualityMetricObject = {
@@ -62,6 +70,7 @@ describe("types.ts", () => {
         "@type": ["QualityMetric", "Item"],
         analysis_step_version: "/analysis-step-versions/test",
         quality_metric_of: ["/files/test"],
+        status: "released",
       };
 
       const fileMetadata: FileMetadata = {
@@ -88,6 +97,7 @@ describe("types.ts", () => {
         accession: "TEST001",
         file_set_type: "principal analysis",
         files: [],
+        status: "released",
         summary: "Test file set",
       };
 
@@ -97,6 +107,8 @@ describe("types.ts", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/test",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+        status: "released",
       };
 
       const fileSetMetadata: FileSetMetadata = {
@@ -120,6 +132,8 @@ describe("types.ts", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/test",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+        status: "released",
       };
 
       const fileMetadata: NodeMetadata = {
@@ -142,6 +156,7 @@ describe("types.ts", () => {
         accession: "TEST001",
         file_set_type: "intermediate analysis",
         files: [],
+        status: "released",
         summary: "Test file set",
       };
 
@@ -151,6 +166,8 @@ describe("types.ts", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/test",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+        status: "released",
       };
 
       const fileSetMetadata: NodeMetadata = {
@@ -180,6 +197,8 @@ describe("types.ts", () => {
             content_type: "reads",
             file_format: "fastq",
             file_set: "/file-sets/test",
+            md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+            status: "released",
           },
           upstreamNativeFiles: [],
           upstreamExternalFiles: [],
@@ -336,6 +355,8 @@ describe("types.ts", () => {
           content_type: "reads",
           file_format: "fastq",
           file_set: "/file-sets/test",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          status: "released",
         },
         upstreamNativeFiles: [],
         upstreamExternalFiles: [],
@@ -356,6 +377,7 @@ describe("types.ts", () => {
           accession: "TEST001",
           file_set_type: "principal analysis",
           files: [],
+          status: "released",
           summary: "Test file set",
         },
         externalFiles: [],
@@ -365,6 +387,8 @@ describe("types.ts", () => {
           content_type: "reads",
           file_format: "fastq",
           file_set: "/file-sets/test",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          status: "released",
         },
       };
 
@@ -380,6 +404,8 @@ describe("types.ts", () => {
           content_type: "reads",
           file_format: "fastq",
           file_set: "/file-sets/test",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          status: "released",
         },
         upstreamNativeFiles: [],
         upstreamExternalFiles: [],
@@ -408,6 +434,7 @@ describe("types.ts", () => {
           accession: "TEST001",
           file_set_type: "principal analysis",
           files: [],
+          status: "released",
           summary: "Test file set",
         },
         externalFiles: [],
@@ -417,6 +444,8 @@ describe("types.ts", () => {
           content_type: "reads",
           file_format: "fastq",
           file_set: "/file-sets/test",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          status: "released",
         },
       };
 
@@ -432,6 +461,8 @@ describe("types.ts", () => {
           content_type: "reads",
           file_format: "fastq",
           file_set: "/file-sets/test",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          status: "released",
         },
         upstreamNativeFiles: [],
         upstreamExternalFiles: [],
@@ -452,6 +483,7 @@ describe("types.ts", () => {
           accession: "TEST001",
           file_set_type: "principal analysis",
           files: [],
+          status: "released",
           summary: "Test file set",
         },
         externalFiles: [],
@@ -461,6 +493,8 @@ describe("types.ts", () => {
           content_type: "reads",
           file_format: "fastq",
           file_set: "/file-sets/test",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          status: "released",
         },
       };
 
@@ -484,6 +518,8 @@ describe("types.ts", () => {
           content_type: "reads",
           file_format: "fastq",
           file_set: "/file-sets/test",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          status: "released",
         },
         upstreamNativeFiles: [],
         upstreamExternalFiles: [],
@@ -500,6 +536,7 @@ describe("types.ts", () => {
           accession: "TEST001",
           file_set_type: "principal analysis",
           files: [],
+          status: "released",
           summary: "Test file set",
         },
         externalFiles: [],
@@ -509,6 +546,8 @@ describe("types.ts", () => {
           content_type: "reads",
           file_format: "fastq",
           file_set: "/file-sets/test",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          status: "released",
         },
       };
 
@@ -519,5 +558,122 @@ describe("types.ts", () => {
       expect(isFileSetNodeMetadata(fileSetMetadata)).toBe(true);
       expect(isFileNodeMetadata(fileSetMetadata)).toBe(false);
     });
+  });
+});
+
+describe("isGroupNodeMetadata function", () => {
+  it("should return true for group metadata", () => {
+    const groupMetadata: NodeMetadata = {
+      kind: NODE_KINDS.GROUP,
+      targetFileIds: ["/files/test1", "/files/test2"],
+    };
+
+    expect(isGroupNodeMetadata(groupMetadata)).toBe(true);
+  });
+
+  it("should return false for file metadata", () => {
+    const fileMetadata: NodeMetadata = {
+      kind: NODE_KINDS.FILE,
+      file: {
+        "@id": "/files/test",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+        status: "released",
+      },
+      upstreamNativeFiles: [],
+      upstreamExternalFiles: [],
+      upstreamFileSetNodes: [],
+      referenceFiles: [],
+      qualityMetrics: [],
+    };
+
+    expect(isGroupNodeMetadata(fileMetadata)).toBe(false);
+  });
+
+  it("should return false for file set metadata", () => {
+    const fileSetMetadata: NodeMetadata = {
+      kind: NODE_KINDS.FILESET,
+      fileSet: {
+        "@id": "/file-sets/test",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+        accession: "TEST001",
+        file_set_type: "principal analysis",
+        files: [],
+        status: "released",
+        summary: "Test file set",
+      },
+      externalFiles: [],
+      downstreamFile: {
+        "@id": "/files/downstream",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+        status: "released",
+      },
+    };
+
+    expect(isGroupNodeMetadata(fileSetMetadata)).toBe(false);
+  });
+});
+
+describe("isFileSetNode function", () => {
+  it("should return true for nodes with FileSetMetadata", () => {
+    const fileSetNode: ElkNodeEx = {
+      id: "fileset-node",
+      metadata: {
+        kind: NODE_KINDS.FILESET,
+        fileSet: {
+          "@id": "/file-sets/test",
+          "@type": ["AnalysisSet", "FileSet", "Item"],
+          accession: "TEST001",
+          file_set_type: "principal analysis",
+          files: [],
+          status: "released",
+          summary: "Test file set",
+        },
+        externalFiles: [],
+        downstreamFile: {
+          "@id": "/files/downstream",
+          "@type": ["File", "Item"],
+          content_type: "reads",
+          file_format: "fastq",
+          file_set: "/file-sets/test",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          status: "released",
+        },
+      },
+    };
+
+    expect(isFileSetNode(fileSetNode)).toBe(true);
+  });
+
+  it("should return false for nodes without FileSetMetadata", () => {
+    const nonFileSetNode: ElkNodeEx = {
+      id: "non-fileset-node",
+      metadata: {
+        kind: NODE_KINDS.FILE,
+        file: {
+          "@id": "/files/test",
+          "@type": ["File", "Item"],
+          content_type: "reads",
+          file_format: "fastq",
+          file_set: "/file-sets/test",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          status: "released",
+        },
+        upstreamNativeFiles: [],
+        upstreamExternalFiles: [],
+        upstreamFileSetNodes: [],
+        referenceFiles: [],
+        qualityMetrics: [],
+      },
+    };
+
+    expect(isFileSetNode(nonFileSetNode)).toBe(false);
   });
 });

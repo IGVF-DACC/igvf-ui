@@ -8,8 +8,7 @@ import {
 import { RadioCardGroup } from "./radio-card-group";
 // lib
 import { FileTableController, FileSetController } from "../lib/batch-download";
-// root
-import { FileSetObject } from "../globals";
+import { type FileSetObject } from "../lib/file-sets";
 
 /**
  * Allowed values for the type of file-set batch download.

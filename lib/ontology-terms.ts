@@ -1,13 +1,9 @@
 // lib
 import FetchRequest from "./fetch-request";
 import { extractSchema } from "./profiles";
+import { isFileSetObjectType, type FileSetObject } from "./file-sets";
 // root
-import {
-  DatabaseObject,
-  FileSetObject,
-  OntologyTermObject,
-  Profiles,
-} from "../globals";
+import { DatabaseObject, OntologyTermObject, Profiles } from "../globals";
 
 export interface AssayTermObject extends DatabaseObject {
   ancestors?: string[];
@@ -32,6 +28,7 @@ export interface AssayTermObject extends DatabaseObject {
  * Fetch assay term descriptions for a list of assay titles. The assay titles often come from the
  * `assay_titles` property of file sets. The returned object maps assay titles to their
  * corresponding descriptions.
+ *
  * @param titles - Assay titles to fetch descriptions for
  * @param request - FetchRequest instance to make the API call
  * @returns Map of assay titles to their descriptions
@@ -43,7 +40,7 @@ export async function getAssayTitleDescriptionMap(
   if (titles.length > 0) {
     // Retrieve assay term objects corresponding to the given titles.
     const assayTermObjects = (
-      await request.getMultipleObjectsBySearch(
+      await request.getMultipleObjectsBySearch<OntologyTermObject>(
         "AssayTerm",
         ["term_name", "definition"],
         {
@@ -51,7 +48,7 @@ export async function getAssayTitleDescriptionMap(
           values: titles,
         }
       )
-    ).unwrap_or([]) as OntologyTermObject[];
+    ).unwrap_or([]);
 
     // Build the map of assay term names to their definitions from the fetched assay ontology term
     // objects.
@@ -68,6 +65,7 @@ export async function getAssayTitleDescriptionMap(
  * Given the object retrieved from `/profiles` extract the map of preferred assay titles to their
  * corresponding descriptions. If `/profiles` hasn't yet loaded or something odd happened with its
  * contents, this function returns an empty object.
+ *
  * @param profiles - Profiles object containing all schema definitions
  * @returns Map of preferred assay titles to their descriptions
  */
@@ -86,6 +84,7 @@ export function getPreferredAssayTitleDescriptionMap(
 /**
  * Fetch the assay term at the path provided, which is typically the `@id` of the assay term object,
  * and return its description from its `definition` property.
+ *
  * @param assayTermPath - Path (normally from `@id`) to the assay term object
  * @param request - FetchRequest instance to make the fetch request
  * @returns Description of the assay term; empty string if error occurs or definition not available
@@ -95,8 +94,8 @@ export async function getAssayTitleDescription(
   request: FetchRequest
 ): Promise<string> {
   const response = (
-    await request.getObject(assayTermPath)
-  ).optional() as OntologyTermObject;
+    await request.getObject<OntologyTermObject>(assayTermPath)
+  ).optional();
   return response?.definition || "";
 }
 
@@ -105,6 +104,7 @@ export async function getAssayTitleDescription(
  * assay terms, so this function returns a map with a single entry if the assay term exists. If no
  * assay term exists, or if loading the measurement set's assay term object fails, this function
  * returns an empty object.
+ *
  * @param measurementSet - Measurement set object to generate a description map for
  * @param request - FetchRequest instance to make the fetch request
  * @returns Map of assay titles to their descriptions; empty object if no assay term exists
@@ -114,6 +114,7 @@ export async function getMeasurementSetAssayTitleDescriptionMap(
   request: FetchRequest
 ): Promise<Record<string, string>> {
   if (
+    isFileSetObjectType(measurementSet, "MeasurementSet") &&
     measurementSet.assay_term &&
     typeof measurementSet.assay_term === "object" &&
     measurementSet.assay_titles?.length > 0

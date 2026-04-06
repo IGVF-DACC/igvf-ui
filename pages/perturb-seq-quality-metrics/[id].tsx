@@ -20,7 +20,6 @@ import {
   perturbSeqFields,
   qualityMetricTitle,
   type PerturbSeqQualityMetricObject,
-  type QualityMetricObject,
 } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
 // root
@@ -78,20 +77,20 @@ export default function PerturbSeqQualityMetric({
 export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const item = (
-    await request.getObject(`/perturb-seq-quality-metrics/${params.id}/`)
+  const qualityMetric = (
+    await request.getObject<PerturbSeqQualityMetricObject>(
+      `/perturb-seq-quality-metrics/${params.id}/`
+    )
   ).union();
-  if (FetchRequest.isResponseSuccess(item)) {
+  if (FetchRequest.isResponseSuccess(qualityMetric)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
-      item,
+      qualityMetric,
       resolvedUrl,
       query
     );
     if (canonicalRedirect) {
       return canonicalRedirect;
     }
-
-    const qualityMetric = item as QualityMetricObject;
 
     const qualityMetricOf =
       qualityMetric.quality_metric_of?.length > 0
@@ -112,5 +111,5 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       },
     };
   }
-  return errorObjectToProps(item);
+  return errorObjectToProps(qualityMetric);
 }

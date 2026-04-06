@@ -20,10 +20,11 @@ import {
   resolveDeprecatedFileProps,
   type DeprecatedFileFilterProps,
 } from "../lib/deprecated-files";
+import { type FileSetObject } from "../lib/file-sets";
 import { dataSize } from "../lib/general";
 import { isEmbedded, isEmbeddedArray } from "../lib/types";
 // root
-import type { FileObject, FileSetObject } from "../globals";
+import type { FileObject } from "../globals";
 
 type FileTableMeta = {
   isFilteredVisible: boolean;

@@ -58,8 +58,10 @@ export async function getSessionProperties(
  */
 export async function getDataProviderUrl(): Promise<string | null> {
   const request = new FetchRequest({ backend: true });
-  const response = (await request.getObject("/api/data-provider/")).optional();
-  return (response?.dataProviderUrl as string) || null;
+  const response = (
+    await request.getObject<{ dataProviderUrl: string }>("/api/data-provider/")
+  ).optional();
+  return response?.dataProviderUrl || null;
 }
 
 /**
@@ -85,7 +87,9 @@ export async function logoutDataProvider(): Promise<
   DataProviderObject | ErrorObject
 > {
   const request = new FetchRequest();
-  return (await request.getObject("/logout?redirect=false")).union();
+  return (
+    await request.getObject<DataProviderObject>("/logout?redirect=false")
+  ).union();
 }
 
 /**

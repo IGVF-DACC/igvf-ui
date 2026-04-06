@@ -396,7 +396,7 @@ export async function getAccessoryData(
         // Get the objects for this type. Any network errors get returned as an empty array.
         const request = new FetchRequest({ cookie });
         const objects = (
-          await request.getMultipleObjectsBulk(
+          await request.getMultipleObjectsBulk<DatabaseObject>(
             accessoryDataPaths[type].paths,
             accessoryDataPaths[type].fields,
             [type]

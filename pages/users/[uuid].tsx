@@ -99,12 +99,12 @@ export async function getServerSideProps({
     await request.getObject<UserObject>(`/users/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(user)) {
-    const lab: LabObject | null = user.lab
-      ? ((
-          await request.getObject(
+    const lab = user.lab
+      ? (
+          await request.getObject<LabObject>(
             typeof user.lab === "string" ? user.lab : user.lab["@id"]
           )
-        ).optional() as LabObject | null)
+        ).optional()
       : null;
 
     return {

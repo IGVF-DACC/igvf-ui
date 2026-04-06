@@ -3,8 +3,8 @@ import { DataAreaTitle } from "./data-area";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import LinkedIdAndStatusStack from "./linked-id-and-status-stack";
 import SortableGrid from "./sortable-grid";
-// root
-import { FileSetObject } from "../globals.d";
+// lib
+import { type FileSetObject } from "../lib/file-sets";
 
 /**
  * Define the columns for the construct library table.

@@ -17,6 +17,7 @@ import Icon from "../../components/icon";
 import SessionContext from "../session-context";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
+import { isErrorObject } from "../../lib/fetch-request";
 import {
   checkOptionalFacetsConfigurable,
   getFacetConfig,
@@ -29,7 +30,6 @@ import {
   type OptionalFacetsConfigForType,
 } from "../../lib/facets";
 import FetchRequest from "../../lib/fetch-request";
-import { isDatabaseObject } from "../../lib/general";
 // root
 import { SearchResults, SearchResultsFacet } from "../../globals";
 
@@ -522,7 +522,7 @@ export default function FacetSection({
         facetsToSave,
         request
       );
-      if (isDatabaseObject(response) && response["@type"].includes("Error")) {
+      if (isErrorObject(response)) {
         console.error("Failed to save facet configuration:", response);
       }
     }

@@ -2,8 +2,6 @@
 import _ from "lodash";
 // lib
 import { UC } from "./constants";
-// root
-import type { DatabaseObject } from "../globals";
 
 /**
  * Convert an object path into the object type.
@@ -427,14 +425,4 @@ export function isObjectArrayProperty<T extends object, K extends keyof T>(
     );
   }
   return false;
-}
-
-/**
- * Type guard to check if an object is likely a database object.
- *
- * @param obj - Object to test if it's likely a database object or not
- * @returns True if the object is likely a database object
- */
-export function isDatabaseObject(obj: any): obj is DatabaseObject {
-  return Array.isArray(obj["@type"]) && obj["@type"].length > 0;
 }

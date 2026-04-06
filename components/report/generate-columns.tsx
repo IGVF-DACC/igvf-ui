@@ -13,6 +13,7 @@ import { AliasesCell } from "../table-cells";
 // lib
 import { attachmentToServerHref } from "../../lib/attachment";
 import { API_URL } from "../../lib/constants";
+import { type FileSetObject } from "../../lib/file-sets";
 import { dataSize } from "../../lib/general";
 import { type GeneLocation } from "../../lib/genes";
 import { type ColumnSpec } from "../../lib/report";
@@ -21,7 +22,6 @@ import type {
   DatabaseObject,
   DocumentObject,
   FileObject,
-  FileSetObject,
   HumanDonorObject,
   OntologyTermObject,
   PageObject,

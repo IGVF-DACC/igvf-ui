@@ -1,5 +1,4 @@
 // node_modules
-import { AnimatePresence, motion } from "motion/react";
 import {
   CheckCircleIcon,
   CheckIcon,
@@ -8,7 +7,8 @@ import {
   MinusIcon,
   PlusIcon,
 } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
+import { AnimatePresence, motion } from "motion/react";
+import type { GetServerSidePropsContext } from "next";
 import { useContext, useEffect, useState } from "react";
 // components
 import { AddLink } from "../../components/add";
@@ -48,7 +48,7 @@ import {
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
 import { errorObjectToProps } from "../../lib/errors";
-import FetchRequest from "../../lib/fetch-request";
+import FetchRequest, { isErrorObject } from "../../lib/fetch-request";
 import { toShishkebabCase } from "../../lib/general";
 import {
   checkSearchTermSchema,
@@ -57,7 +57,10 @@ import {
   schemaToType,
 } from "../../lib/profiles";
 import { decodeUriElement, encodeUriElement } from "../../lib/query-encoding";
+import { isIndividualSchema } from "../../lib/schema";
 import { retrieveCollectionNames } from "../../lib/server-objects";
+// root
+import type { Schema, SchemaProperty } from "../../globals";
 
 /**
  * Use as IDs for each of the tabs on the schema page.
@@ -71,8 +74,17 @@ const TAB_ID_DEPENDENCIES = "dependencies";
 /**
  * Display a button that copies the given URL of the Properties or Dependencies tab to the
  * clipboard.
+ *
+ * @param attributeId - ID of the property or dependency to copy to the clipboard
+ * @param url - URL to copy to the clipboard
  */
-function AttributePanelUrlCopyButton({ attributeId, url }) {
+function AttributePanelUrlCopyButton({
+  attributeId,
+  url,
+}: {
+  attributeId: string;
+  url: string;
+}) {
   const tooltipAttr = useTooltip("copy-attribute-url");
 
   return (
@@ -97,21 +109,25 @@ function AttributePanelUrlCopyButton({ attributeId, url }) {
   );
 }
 
-AttributePanelUrlCopyButton.propTypes = {
-  // ID of the property or dependency to copy to the clipboard
-  attributeId: PropTypes.string.isRequired,
-  // URL to copy to the clipboard
-  url: PropTypes.string.isRequired,
-};
-
 /**
  * Display an expandable/collapsable JSON panel for the given schema property or dependency.
+ *
+ * @param attribute - Schema property or dependency to display
+ * @param attributeId - HTML id of the property or dependency name for this JSON panel
+ * @param schemaAttributeUrl - Whole URL of a single schema page plus the Properties or
+ *   Dependencies tab path
+ * @param isJsonDetailOpen - True if the JSON panel is open
  */
 function SchemaJsonPanel({
   attribute,
   attributeId,
   schemaAttributeUrl,
   isJsonDetailOpen,
+}: {
+  attribute: SchemaProperty;
+  attributeId: string;
+  schemaAttributeUrl: string;
+  isJsonDetailOpen: boolean;
 }) {
   const attributeUrl = `${schemaAttributeUrl}?property=${attributeId}`;
 
@@ -145,22 +161,17 @@ function SchemaJsonPanel({
   );
 }
 
-SchemaJsonPanel.propTypes = {
-  // Schema property or dependency to display
-  attribute: PropTypes.object.isRequired,
-  // HTML id of the property or dependency name for this JSON panel
-  attributeId: PropTypes.string.isRequired,
-  // Whole URL of a single schema page plus the Properties or Dependencies tab path
-  schemaAttributeUrl: PropTypes.string.isRequired,
-  // True if the JSON panel is open
-  isJsonDetailOpen: PropTypes.bool.isRequired,
-};
-
 /**
  * Display a button that copies the given attribute name to the clipboard. The button includes a
  * helpful tooltip.
+ *
+ * @param attributeName - Name of the property or dependency to copy to the clipboard
  */
-function CopyAttributeNameControl({ attributeName }) {
+function CopyAttributeNameControl({
+  attributeName,
+}: {
+  attributeName: string;
+}) {
   const tooltipAttr = useTooltip(`property-name-${attributeName}`);
   const { isCopied, initiateCopy } = useCopyAction(attributeName);
 
@@ -182,13 +193,14 @@ function CopyAttributeNameControl({ attributeName }) {
   );
 }
 
-CopyAttributeNameControl.propTypes = {
-  // Name of the property to copy to the clipboard
-  attributeName: PropTypes.string.isRequired,
-};
-
 /**
  * Display a single property dependency with a toggle to show the JSON detail.
+ *
+ * @param dependencyId - Name of the property that has dependencies
+ * @param dependencies - Single property dependency to display
+ * @param schemaDependenciesUrl - Whole URL including the protocol and host for the base schema page
+ * @param isJsonDetailOpen - True if the JSON panel for this dependency is open
+ * @param setJsonDetailOpen - Callback to set the JSON panel open state for this dependency
  */
 function Dependency({
   dependencyId,
@@ -196,6 +208,12 @@ function Dependency({
   schemaDependenciesUrl = "",
   isJsonDetailOpen,
   setJsonDetailOpen,
+}: {
+  dependencyId: string;
+  dependencies: Record<string, SchemaProperty>;
+  schemaDependenciesUrl?: string;
+  isJsonDetailOpen: boolean;
+  setJsonDetailOpen: (id: string, isOptionKey: boolean) => void;
 }) {
   const dependency = dependencies[dependencyId];
   const dependencyControlId = `dependency-${dependencyId}-control`;
@@ -234,32 +252,28 @@ function Dependency({
   );
 }
 
-Dependency.propTypes = {
-  // Property that has dependencies
-  dependencyId: PropTypes.string.isRequired,
-  // Single property dependency to display
-  dependencies: PropTypes.object.isRequired,
-  // Whole URL including the protocol and host for the base schema page
-  schemaDependenciesUrl: PropTypes.string,
-  // True if the JSON panel is open
-  isJsonDetailOpen: PropTypes.bool.isRequired,
-  // Callback to set the JSON panel open state
-  setJsonDetailOpen: PropTypes.func.isRequired,
-};
-
 /**
  * Section of the display that shows the property dependencies of a schema.
+ *
+ * @param dependencies - All schema property dependencies to display
+ * @param schemaDependenciesUrl - Whole URL of a single schema page plus the Schema Dependencies
+ *   tab path
+ * @param openedProperties - Open these properties' JSON panels on tab load
  */
 function Dependencies({
   dependencies = null,
   schemaDependenciesUrl,
   openedProperties,
+}: {
+  dependencies?: Record<string, SchemaProperty>;
+  schemaDependenciesUrl?: string;
+  openedProperties: string[];
 }) {
   // Contains the names of all properties with their JSON panels open
   const [openJsonIds, setOpenJsonIds] = useState(openedProperties);
 
   // Callback to set the JSON panel open state for property dependencies.
-  function handleJsonPanelOpen(propertyId, isOptionKey) {
+  function handleJsonPanelOpen(propertyId: string, isOptionKey: boolean) {
     if (openJsonIds.includes(propertyId)) {
       // The clicked property is open. Remove it from the list of open panels, or close all panels
       // if the user holds down the option key.
@@ -304,19 +318,12 @@ function Dependencies({
   );
 }
 
-Dependencies.propTypes = {
-  // All schema property dependencies to display
-  dependencies: PropTypes.object,
-  // Whole URL of a single schema page plus the Schema Dependencies tab path
-  schemaDependenciesUrl: PropTypes.string,
-  // Open these properties' JSON panels on tab load
-  openedProperties: PropTypes.array.isRequired,
-};
-
 /**
  * If a property is not user submittable, display this status. Otherwise, display nothing.
+ *
+ * @param property - Schema property to display the not-submittable status of properties
  */
-function NotSubmittableStatus({ property }) {
+function NotSubmittableStatus({ property }: { property: SchemaProperty }) {
   return notSubmittableProperty(property) ? (
     <Icon.PencilSlash
       className="mr-1 h-4 w-4"
@@ -324,11 +331,6 @@ function NotSubmittableStatus({ property }) {
     />
   ) : null;
 }
-
-NotSubmittableStatus.propTypes = {
-  // Schema property to display the not-submittable status of properties
-  property: PropTypes.object.isRequired,
-};
 
 /**
  * Defines the status badge background and border colors for each possible schema type.
@@ -356,8 +358,10 @@ const TYPE_COLORS = {
 /**
  * Display the types of the given schema property as little badges. In rare cases, a property can
  * have multiple types, in which case this displays multiple type badges side by side.
+ *
+ * @param property - Schema property to display the types of
  */
-function SchemaTypes({ property }) {
+function SchemaTypes({ property }: { property: SchemaProperty }) {
   if (property.type) {
     // property.type can hold a single value or an array of values. Normalize that to an array
     // even for one value.
@@ -417,14 +421,16 @@ function SchemaTypes({ property }) {
   return null;
 }
 
-SchemaTypes.propTypes = {
-  // Schema property to display
-  property: PropTypes.object.isRequired,
-};
-
 /**
  * Display a single property of the schema including its name, types, submittable status,
  * description, and the property's collapsable JSON representation.
+ *
+ * @param propertyId - Schema property to display
+ * @param properties - All schema properties to display
+ * @param schemaPropertiesUrl - Whole URL of a single schema page + the Schema Properties tab path
+ * @param isJsonDetailOpen - True if the JSON panel for this property is open
+ * @param setJsonDetailOpen - Callback to set the JSON panel open state for this property
+ * @param isHighlighted - True to highlight the property name based on the search term
  */
 function SchemaProperty({
   propertyId,
@@ -433,6 +439,13 @@ function SchemaProperty({
   isJsonDetailOpen,
   setJsonDetailOpen,
   isHighlighted,
+}: {
+  propertyId: string;
+  properties: Record<string, SchemaProperty>;
+  schemaPropertiesUrl?: string;
+  isJsonDetailOpen: boolean;
+  setJsonDetailOpen: (propertyId: string, isOptionKey: boolean) => void;
+  isHighlighted: boolean;
 }) {
   const property = properties[propertyId];
   const propertyControlId = `property-${propertyId}-control`;
@@ -488,23 +501,14 @@ function SchemaProperty({
   );
 }
 
-SchemaProperty.propTypes = {
-  // Schema property to display
-  propertyId: PropTypes.string.isRequired,
-  // All schema properties to display
-  properties: PropTypes.object,
-  // Whole URL of a single schema page plus the Schema Properties tab path
-  schemaPropertiesUrl: PropTypes.string,
-  // True if the JSON panel is open
-  isJsonDetailOpen: PropTypes.bool.isRequired,
-  // Callback to set the JSON panel open state
-  setJsonDetailOpen: PropTypes.func.isRequired,
-  // True to highlight the property name
-  isHighlighted: PropTypes.bool.isRequired,
-};
-
 /**
  * Display all the properties of a schema.
+ *
+ * @param properties - All schema properties to display
+ * @param openedProperties - Open these properties' JSON panels on page load
+ * @param searchTerm - Search term to highlight matching properties
+ * @param setSearchTerm - Callback to set the search term
+ * @param schemaPropertiesUrl - Whole URL including the protocol and host for the base schema page
  */
 function SchemaProperties({
   properties,
@@ -512,6 +516,12 @@ function SchemaProperties({
   searchTerm,
   setSearchTerm,
   schemaPropertiesUrl = "",
+}: {
+  properties: Record<string, SchemaProperty>;
+  openedProperties: string[];
+  searchTerm: string;
+  setSearchTerm: (searchTerm: string) => void;
+  schemaPropertiesUrl?: string;
 }) {
   // Holds names of all properties with their JSON panels open
   const [openPropertyIds, setOpenPropertyIds] = useState(openedProperties);
@@ -519,7 +529,7 @@ function SchemaProperties({
   const [isNotSubmittableVisible, setIsNotSubmittableVisible] = useState(false);
 
   // Callback to set the JSON panel open state for a property.
-  function handleJsonPanelOpen(propertyId, isOptionKey) {
+  function handleJsonPanelOpen(propertyId: string, isOptionKey: boolean) {
     if (openPropertyIds.includes(propertyId)) {
       if (isOptionKey) {
         setOpenPropertyIds([]);
@@ -617,21 +627,15 @@ function SchemaProperties({
   );
 }
 
-SchemaProperties.propTypes = {
-  // Schema properties to display
-  properties: PropTypes.object.isRequired,
-  // Open these properties' JSON panels on tab load
-  openedProperties: PropTypes.array.isRequired,
-  // Search term to highlight matching properties
-  searchTerm: PropTypes.string.isRequired,
-  // Callback to set the search term
-  setSearchTerm: PropTypes.func.isRequired,
-  // Whole URL including the protocol and host for the base schema page
-  schemaPropertiesUrl: PropTypes.string,
-};
-
 /**
  * Display the schema in a formatted, easily readable way with expandable properties.
+ *
+ * @param schema - Schema object for a specific object type
+ * @param openedProperties - Open these properties' JSON panels on page load
+ * @param searchTerm - Search term to highlight matching properties
+ * @param setSearchTerm - Callback to set the search term
+ * @param defaultTabId - ID of the default tab to open without user interaction
+ * @param schemaTabUrl - Whole URL including the protocol and host for the base schema page
  */
 function FormattedSchema({
   schema,
@@ -640,6 +644,13 @@ function FormattedSchema({
   setSearchTerm,
   defaultTabId,
   schemaTabUrl = "",
+}: {
+  schema: Schema;
+  openedProperties: string[];
+  searchTerm: string;
+  setSearchTerm: (searchTerm: string) => void;
+  defaultTabId: string;
+  schemaTabUrl?: string;
 }) {
   // Filter openedProperties to only include properties that exist as keys in the schema's properties.
   const existingopenedProperties = schema.properties
@@ -717,37 +728,33 @@ function FormattedSchema({
   );
 }
 
-FormattedSchema.propTypes = {
-  // Schema to display formatted
-  schema: PropTypes.object.isRequired,
-  // Open these properties' JSON panels on page load
-  openedProperties: PropTypes.array.isRequired,
-  // Search term to highlight matching properties
-  searchTerm: PropTypes.string.isRequired,
-  // Callback to set the search term
-  setSearchTerm: PropTypes.func.isRequired,
-  // ID of the default tab
-  defaultTabId: PropTypes.string.isRequired,
-  // Whole URL including the protocol and host for the base schema page and Schema tab
-  schemaTabUrl: PropTypes.string,
-};
-
 /**
  * Display the formatted changelog for a schema.
+ *
+ * @param changelog - Changelog markdown to display
  */
-function Changelog({ changelog }) {
+function Changelog({ changelog }: { changelog: string }) {
   return <MarkdownSection className="px-4 py-2">{changelog}</MarkdownSection>;
 }
 
-Changelog.propTypes = {
-  // Changelog markdown to display
-  changelog: PropTypes.string.isRequired,
-};
-
 /**
  * Displays a tab title with a copy button to copy the URL that opens this tab on page load.
+ *
+ * @param id - ID of the tab whose path we copy
+ * @param tabTitle - Displayed title of the tab
+ * @param tabUrl - Whole URL including the protocol and host for the tab being rendered
  */
-function SchemaTab({ id, tabTitle, tabUrl = "", children }) {
+function SchemaTab({
+  id,
+  tabTitle,
+  tabUrl = "",
+  children,
+}: {
+  id: string;
+  tabTitle: string;
+  tabUrl?: string;
+  children: React.ReactNode;
+}) {
   const { isCopied, initiateCopy } = useCopyAction(tabUrl);
   const tooltipAttr = useTooltip(`copy-tab-url-${id}`);
 
@@ -774,15 +781,19 @@ function SchemaTab({ id, tabTitle, tabUrl = "", children }) {
   );
 }
 
-SchemaTab.propTypes = {
-  // ID of the tab whose path we copy
-  id: PropTypes.string.isRequired,
-  // Displayed title of the tab
-  tabTitle: PropTypes.string,
-  // Whole URL including the protocol and host for the tab being rendered
-  tabUrl: PropTypes.string,
-};
-
+/**
+ * Display an individual schema page with the schema information organized into tabs. The URL hash determines
+ * the search term for properties and the selected tabs on page load. The user can also open specific
+ * properties' JSON panels on page load by including one or more `property=` query parameters in the URL with the property name as the value.
+ *
+ * @param schema - Schema object for a specific object type
+ * @param changelog - Changelog markdown for the schema
+ * @param collection - Collection name from the schema path
+ * @param collectionNames - Collection names mapping from the schema path
+ * @param tab - ID of the tab to select without user interaction; determined by the URL hash
+ * @param subTab - ID of the sub-tab to select without user interaction; determined by the URL hash
+ * @param openedProperties - Properties to open on page load; determined by the `property=` query parameters in the URL
+ */
 export default function Schema({
   schema,
   changelog,
@@ -791,6 +802,14 @@ export default function Schema({
   tab,
   subTab,
   openedProperties,
+}: {
+  schema: Schema;
+  changelog: string;
+  collection: string;
+  collectionNames: Record<string, string>;
+  tab: string;
+  subTab: string;
+  openedProperties: string[];
 }) {
   // Search term the user has entered or that we've detected in the URL hash
   const [searchTerm, setSearchTerm] = useState("");
@@ -891,58 +910,52 @@ export default function Schema({
   );
 }
 
-Schema.propTypes = {
-  // Schema object for the path
-  schema: PropTypes.object.isRequired,
-  // Changelog markdown for the schema
-  changelog: PropTypes.string.isRequired,
-  // Collection name from the schema path
-  collection: PropTypes.string.isRequired,
-  // Collection names mapping from the schema path
-  collectionNames: PropTypes.object.isRequired,
-  // ID of the tab to select without user interaction
-  tab: PropTypes.string.isRequired,
-  // ID of the sub-tab to select without user interaction
-  subTab: PropTypes.string.isRequired,
-  // Properties to open on page load
-  openedProperties: PropTypes.array.isRequired,
-};
-
-export async function getServerSideProps({ params, req, query }) {
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+}: GetServerSidePropsContext) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const [profile, tab, subTab] = params.profile;
-  const schema = (await request.getObject(`/profiles/${profile}`)).union();
-  if (FetchRequest.isResponseSuccess(schema)) {
-    const changelog = await request.getText(schema.changelog, "");
-
-    // Get any `property=` query parameters to open specific properties' JSON panels on page load.
-    // Annoyingly, the query property is a string for a single property and an array for multiple
-    // properties, so we have to normalize `property` to an array even for singles.
-    let openedProperties = [];
-    if (query.property) {
-      openedProperties = Array.isArray(query.property)
-        ? query.property
-        : [query.property];
-    }
-
-    const collectionNames = await retrieveCollectionNames(req.headers.cookie);
-    if (!collectionNames) {
-      // 404 page
-      return { notFound: true };
-    }
-
-    return {
-      props: {
-        schema,
-        changelog,
-        collection: profile,
-        collectionNames,
-        tab: tab || "",
-        subTab: subTab || "",
-        openedProperties,
-        pageContext: { title: schema.title },
-      },
-    };
+  const schema = (
+    await request.getObject<Schema>(`/profiles/${profile}`)
+  ).union();
+  if (isErrorObject(schema) || !isIndividualSchema(schema)) {
+    console.log("******* Error fetching schema *******", schema);
+    return errorObjectToProps(schema);
   }
-  return errorObjectToProps(schema);
+
+  const changelog = await request.getText(schema.changelog, "");
+  if (isErrorObject(changelog)) {
+    return errorObjectToProps(changelog);
+  }
+
+  // Get any `property=` query parameters to open specific properties' JSON panels on page load.
+  // Annoyingly, the query property is a string for a single property and an array for multiple
+  // properties, so we have to normalize `property` to an array even for singles.
+  let openedProperties: string[] = [];
+  if (query.property) {
+    openedProperties = Array.isArray(query.property)
+      ? query.property
+      : [query.property];
+  }
+
+  const collectionNames = await retrieveCollectionNames(req.headers.cookie);
+  if (!collectionNames) {
+    // 404 page
+    return { notFound: true };
+  }
+
+  return {
+    props: {
+      schema,
+      changelog,
+      collection: profile,
+      collectionNames,
+      tab: tab || "",
+      subTab: subTab || "",
+      openedProperties,
+      pageContext: { title: schema.title },
+    },
+  };
 }

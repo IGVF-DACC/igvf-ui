@@ -1,7 +1,7 @@
 // lib
 import FetchRequest from "./fetch-request";
 // root
-import type { DataProviderObject } from "../globals";
+import { type DataProviderObject } from "../globals";
 
 /**
  * Contains the UI and server version strings to pass to the UI.

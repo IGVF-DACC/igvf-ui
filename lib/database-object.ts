@@ -1,4 +1,6 @@
 // lib
+import { isErrorObject } from "./fetch-request";
+import { type FileSetObject } from "./file-sets";
 import { type SampleObject } from "./samples";
 import { isPathArray } from "./types";
 // root
@@ -10,7 +12,6 @@ import {
   DocumentObject,
   DonorObject,
   FileObject,
-  FileSetObject,
   GeneObject,
   HumanDonorObject,
   LabObject,
@@ -78,6 +79,10 @@ export function isDatabaseObject(
   checkType: CheckTypeOptions = "noCheckType"
 ): item is DatabaseObject {
   if (!item || typeof item !== "object" || Array.isArray(item)) {
+    return false;
+  }
+
+  if (isErrorObject(item)) {
     return false;
   }
 
