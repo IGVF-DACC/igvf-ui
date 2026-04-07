@@ -378,6 +378,7 @@ export type UploadStatus =
 export interface FileObject extends DatabaseObject {
   accession?: string;
   aliases?: string[];
+  checkfiles_timestamp?: string;
   checkfiles_version?: string;
   content_summary?: string;
   content_type: string;
