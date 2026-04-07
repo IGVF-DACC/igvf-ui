@@ -26,7 +26,7 @@ const limitationConfigs = {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="white"
-        className="ml-[-4px] h-full"
+        className="-ml-1 h-full"
         data-testid="icon-limitation-ds"
       >
         <path d="M17,10.5v-1h-2.1c-.1-1-.5-1.9-1.1-2.6l1.4-1.4-.7-.7-1.4,1.4c-.7-.6-1.6-1-2.6-1.1v-2.1h-1v2.1c-1,.1-1.9.5-2.6,1.1l-1.4-1.4-.7.7,1.4,1.4c-.6.7-1,1.6-1.1,2.6h-2.1v1h2.1c.1,1,.5,1.9,1.1,2.6l-1.4,1.4.7.7,1.4-1.4c.7.6,1.6,1,2.6,1.1v2.1h1v-2.1c1-.1,1.9-.5,2.6-1.1l1.4,1.4.7-.7-1.4-1.4c.6-.7,1-1.6,1.1-2.6h2.1ZM8.6,9.5c-.5,0-1-.4-1-1s.4-1,1-1,1,.4,1,1-.4,1-1,1ZM11.4,12.4c-.5,0-1-.4-1-1s.4-1,1-1,1,.4,1,1-.4,1-1,1Z" />
@@ -47,7 +47,7 @@ const limitationConfigs = {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="white"
-        className="ml-[-4px] h-full"
+        className="-ml-1 h-full"
         data-testid="icon-limitation-gru"
       >
         <path d="M10,17c-3.9,0-7-3.1-7-7s3.1-7,7-7,7,3.1,7,7-3.1,7-7,7ZM10,5.6c-2.4,0-4.4,2-4.4,4.4s2,4.4,4.4,4.4,4.4-2,4.4-4.4-2-4.4-4.4-4.4Z" />
@@ -68,7 +68,7 @@ const limitationConfigs = {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="white"
-        className="ml-[-4px] h-full"
+        className="-ml-1 h-full"
         data-testid="icon-limitation-hmb"
       >
         <polygon points="17 8 12 8 12 3 8 3 8 8 3 8 3 12 8 12 8 17 12 17 12 12 17 12 17 8" />
@@ -83,7 +83,7 @@ const limitationConfigs = {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="white"
-        className="ml-[-4px] h-full"
+        className="-ml-1 h-full"
         data-testid="icon-limitation-other"
       >
         <path d="M5.6,8.6c.2-.7.5-1.3,1-1.8l-1.4-2.4c-1.2,1.1-2.1,2.5-2.4,4.2h2.8Z" />
@@ -103,7 +103,7 @@ const limitationConfigs = {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="white"
-        className="ml-[-4px] h-full"
+        className="-ml-1 h-full"
         data-testid="icon-limitation-multiple"
       >
         <path d="M10.1,3c-3.9,0-7.1,3-7.1,6.9,0,3.9,3,7.1,6.9,7.1,3.9,0,7.1-3,7.1-6.9,0-3.9-3-7.1-6.9-7.1ZM8.9,5.5c0-.6.5-1.1,1.1-1.1s1.1.5,1.1,1.1v5.3c0,.6-.5,1.1-1.1,1.1s-1.1-.5-1.1-1.1v-5.3ZM10,15.6c-.7,0-1.2-.6-1.2-1.2s.6-1.2,1.2-1.2,1.2.6,1.2,1.2-.6,1.2-1.2,1.2Z" />
@@ -118,7 +118,7 @@ const limitationConfigs = {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="white"
-        className="ml-[-4px] h-full"
+        className="-ml-1 h-full"
         data-testid="icon-limitation-none"
       >
         <path d="M16.3,12.8c0,.4-.1.7-.4,1-.3.3-.6.4-1,.4s-.8-.1-1.1-.3c-.3-.2-.8-.7-1.5-1.4-.8-.8-1.3-1.3-1.7-1.5,0,.4.2,1.2.5,2.2.3,1,.5,1.8.5,2.2s-.1.9-.4,1.2-.6.5-1.1.5-.8-.2-1.1-.5c-.3-.3-.4-.7-.4-1.2s.2-1.2.5-2.2c.3-1,.5-1.8.5-2.2-.4.2-1,.7-1.7,1.5-.7.7-1.2,1.2-1.5,1.4-.3.2-.7.3-1.1.3s-.7-.1-1-.4c-.3-.3-.4-.6-.4-1s.2-.8.5-1.1c.3-.3,1.2-.7,2.5-1,1.1-.3,1.8-.5,2.1-.7-.4-.2-1.1-.4-2.1-.7-1.3-.3-2.2-.6-2.5-1-.4-.3-.6-.7-.6-1.1s.1-.7.4-1c.3-.3.6-.4,1-.4s.7.1,1,.3c.4.2.9.7,1.6,1.4.8.8,1.3,1.3,1.7,1.5,0-.4-.2-1.1-.5-2.2-.3-1-.5-1.8-.5-2.2s.1-.9.4-1.2c.3-.3.6-.5,1.1-.5s.8.2,1.1.5.4.7.4,1.2-.2,1.2-.5,2.2c-.3,1-.5,1.8-.5,2.2.4-.2.9-.7,1.7-1.5.7-.7,1.3-1.2,1.6-1.4s.7-.3,1-.3.7.1,1,.4.4.6.4,1-.2.8-.6,1.1c-.4.3-1.2.6-2.5,1-1.1.3-1.8.5-2.1.7.4.2,1.1.4,2.1.7,1.3.3,2.2.7,2.5,1,.3.3.5.7.5,1.1Z" />
@@ -231,7 +231,7 @@ export function DataUseLimitationStatus({
               className="bg-stone-700 text-white ring-stone-800"
               testid={`dul-badge-${toShishkebabCase(localLimitation)}`}
             >
-              <Icon className="ml-[-4px]" />
+              <Icon className="-ml-1" />
               <div
                 data-testid={`limitation-${toShishkebabCase(localLimitation)}`}
                 className={localModifiers.length > 0 ? "pr-1" : ""}
@@ -244,7 +244,7 @@ export function DataUseLimitationStatus({
                     return (
                       <div
                         key={modifier}
-                        className="border-l border-white px-0.5 last:mr-[-5px] last:rounded-r-full last:pr-1.5"
+                        className="border-l border-white px-0.5 last:-mr-1.25 last:rounded-r-full last:pr-1.5"
                         data-testid={`modifier-${toShishkebabCase(modifier)}`}
                       >
                         {modifier}

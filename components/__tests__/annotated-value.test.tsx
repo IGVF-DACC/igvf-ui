@@ -279,6 +279,54 @@ describe("AnnotatedValue", () => {
     expect(el).toHaveClass("underline");
     expect(el).toHaveClass("decoration-help-underline");
   });
+
+  it("renders a span by default when no as prop is given and there is no annotation", () => {
+    renderWithSession(
+      <AnnotatedValue objectType="File" propertyName="content_type">
+        fastq
+      </AnnotatedValue>,
+      null
+    );
+
+    const el = screen.getByText("fastq");
+    expect(el.tagName.toLowerCase()).toBe("span");
+  });
+
+  it("renders the element specified by as when there is no annotation", () => {
+    renderWithSession(
+      <AnnotatedValue as="div" objectType="File" propertyName="content_type">
+        fastq
+      </AnnotatedValue>,
+      null
+    );
+
+    const el = screen.getByText("fastq");
+    expect(el.tagName.toLowerCase()).toBe("div");
+  });
+
+  it("renders the element specified by as when there is an annotation", () => {
+    const profiles = {
+      File: {
+        properties: {
+          content_type: {
+            type: "string",
+            enum_descriptions: { fastq: "FASTQ sequence reads." },
+          },
+        },
+      },
+    };
+
+    renderWithSession(
+      <AnnotatedValue as="div" objectType="File" propertyName="content_type">
+        fastq
+      </AnnotatedValue>,
+      profiles
+    );
+
+    const el = screen.getByText("fastq");
+    expect(el.tagName.toLowerCase()).toBe("div");
+    expect(el).toHaveClass("underline");
+  });
 });
 
 describe("AnnotatedItem", () => {
@@ -327,5 +375,46 @@ describe("AnnotatedItem", () => {
     const el = screen.getByText("test value");
     expect(el).toHaveClass("underline");
     expect(el).toHaveClass("custom-class");
+  });
+
+  it("renders a span by default when no as prop is given", () => {
+    render(
+      <>
+        <TooltipPortalRoot />
+        <AnnotatedItem tooltipKey="test-key">test value</AnnotatedItem>
+      </>
+    );
+
+    const el = screen.getByText("test value");
+    expect(el.tagName.toLowerCase()).toBe("span");
+  });
+
+  it("renders the element specified by the as prop when there is no annotation", () => {
+    render(
+      <>
+        <TooltipPortalRoot />
+        <AnnotatedItem as="div" tooltipKey="test-key">
+          test value
+        </AnnotatedItem>
+      </>
+    );
+
+    const el = screen.getByText("test value");
+    expect(el.tagName.toLowerCase()).toBe("div");
+  });
+
+  it("renders the element specified by the as prop when there is an annotation", () => {
+    render(
+      <>
+        <TooltipPortalRoot />
+        <AnnotatedItem as="div" tooltipKey="test-key" annotation="A tooltip">
+          test value
+        </AnnotatedItem>
+      </>
+    );
+
+    const el = screen.getByText("test value");
+    expect(el.tagName.toLowerCase()).toBe("div");
+    expect(el).toHaveClass("underline");
   });
 });
