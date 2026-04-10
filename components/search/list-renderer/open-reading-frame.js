@@ -29,7 +29,9 @@ export default function OpenReadingFrame({ item: openReadingFrame }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{openReadingFrame.orf_id}</SearchListItemTitle>
         {isMetaVisible && (
-          <SearchListItemMeta>{openReadingFrame.protein_id}</SearchListItemMeta>
+          <SearchListItemMeta>
+            <span key="protein_id">{openReadingFrame.protein_id}</span>
+          </SearchListItemMeta>
         )}
         <SearchListItemSupplement>
           <SearchListItemSupplementSection>

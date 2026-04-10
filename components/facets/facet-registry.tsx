@@ -8,17 +8,18 @@ import type {
   SearchResultsFilter,
 } from "../../globals";
 // components/facets/custom-facets
+import InternalActionAuditTerms from "./custom-facets/audit-internal-action-terms";
 import AuditTitle from "./custom-facets/audit-title";
 import DateRangeTagLabel from "./custom-facets/date-range-tag-label";
 import DateRangeTerms from "./custom-facets/date-range-terms";
+import FileSizeTagLabel from "./custom-facets/file-size-tag-label";
 import FileSizeTerms from "./custom-facets/file-size-terms";
-import InternalActionAuditTerms from "./custom-facets/audit-internal-action-terms";
 import NoTermCountTitle from "./custom-facets/no-term-count-title";
+import PreferredAssayTermsLabel from "./custom-facets/preferred-assay-terms-label";
 import StandardTagLabel from "./custom-facets/standard-tag-label";
 import StandardTermLabel from "./custom-facets/standard-term-label";
 import StandardTerms from "./custom-facets/standard-terms";
 import StandardTitle from "./custom-facets/standard-title";
-import FileSizeTagLabel from "./custom-facets/file-size-tag-label";
 import TaxaTagLabel from "./custom-facets/taxa-tag-label";
 import TaxaTermLabel from "./custom-facets/taxa-term-label";
 
@@ -128,6 +129,8 @@ const tagLabel: FacetRegistrySection<TagComponent> = {
 const termLabel: FacetRegistrySection<TermLabelComponent> = {
   components: {
     "donors.taxa": TaxaTermLabel,
+    "file_sets.preferred_assay_titles": PreferredAssayTermsLabel,
+    preferred_assay_titles: PreferredAssayTermsLabel,
     taxa: TaxaTermLabel,
   },
   standard: StandardTermLabel,
