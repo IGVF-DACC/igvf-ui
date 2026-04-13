@@ -395,7 +395,8 @@ export async function getAccessoryData(
         const objects = (
           await request.getMultipleObjectsBulk(
             accessoryDataPaths[type].paths,
-            accessoryDataPaths[type].fields
+            accessoryDataPaths[type].fields,
+            [type]
           )
         ).unwrap_or([]);
 
