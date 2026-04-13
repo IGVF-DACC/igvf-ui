@@ -171,18 +171,26 @@ export default function PseudobulkSet({
                   </DataItemValueAnnotated>
                 </>
               )}
-              {pseudobulkSet.cell_qualifier && (
+              {pseudobulkSet.cell_type && (
                 <>
-                  <DataItemLabel>Cell Qualifier</DataItemLabel>
-                  <DataItemValue>{pseudobulkSet.cell_qualifier}</DataItemValue>
+                  <DataItemLabel>Cell Annotation</DataItemLabel>
+                  <DataItemValue>
+                    {pseudobulkSet.cell_qualifier &&
+                      `${pseudobulkSet.cell_qualifier} `}
+                    <DataItemValueAnnotated
+                      externalAnnotations={pseudobulkSet.cell_type.definition}
+                    >
+                      {pseudobulkSet.cell_type.term_names}
+                    </DataItemValueAnnotated>
+                  </DataItemValue>
                 </>
               )}
               {pseudobulkSet.cell_type && (
                 <>
-                  <DataItemLabel>Cell Type</DataItemLabel>
+                  <DataItemLabel>Cell Ontology ID</DataItemLabel>
                   <DataItemValue>
                     <Link href={pseudobulkSet.cell_type["@id"]}>
-                      {pseudobulkSet.cell_type.term_name}
+                      {pseudobulkSet.cell_type.term_id}
                     </Link>
                   </DataItemValue>
                 </>
