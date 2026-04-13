@@ -17,12 +17,16 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 // components
+import { UniformlyProcessedBadge } from "../../common-pill-badges";
 import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 // lib
 import { truncateText } from "../../../lib/general";
 
-export default function PseudobulkSet({ item: pseudobulkSet }) {
+export default function PseudobulkSet({
+  item: pseudobulkSet,
+  accessoryData = null,
+}) {
   const samplesSummary =
     pseudobulkSet.samples?.length > 0
       ? _.sortBy(
@@ -31,11 +35,19 @@ export default function PseudobulkSet({ item: pseudobulkSet }) {
         )
       : [];
 
+  // Determine if at least one workflow in the analysis set has `uniform_pipeline` set.
+  const accessoryAnalysisSet = accessoryData?.[pseudobulkSet["@id"]];
+  const workflows = accessoryAnalysisSet?.workflows || [];
+  const isUniformPipeline = workflows.some(
+    (workflow) => workflow.uniform_pipeline
+  );
+
   const isSupplementsVisible =
     pseudobulkSet.alternate_accessions ||
     pseudobulkSet.description ||
     pseudobulkSet.cell_type ||
-    samplesSummary.length > 0;
+    samplesSummary.length > 0 ||
+    isUniformPipeline;
 
   return (
     <SearchListItemContent>
@@ -64,7 +76,7 @@ export default function PseudobulkSet({ item: pseudobulkSet }) {
             {pseudobulkSet.cell_type && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
-                  Cell Type
+                  Cell Annotation
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
                   {[
@@ -90,6 +102,7 @@ export default function PseudobulkSet({ item: pseudobulkSet }) {
         )}
       </SearchListItemMain>
       <SearchListItemQuality item={pseudobulkSet}>
+        {isUniformPipeline && <UniformlyProcessedBadge />}
         <ControlledAccessIndicator item={pseudobulkSet} />
         <DataUseLimitationSummaries
           summaries={pseudobulkSet.data_use_limitation_summaries}
@@ -102,4 +115,17 @@ export default function PseudobulkSet({ item: pseudobulkSet }) {
 PseudobulkSet.propTypes = {
   // Single pseudobulk set search-result object to display on a search-result list page
   item: PropTypes.object.isRequired,
+  // Accessory data to display for all search-result objects
+  accessoryData: PropTypes.object,
+};
+
+PseudobulkSet.getAccessoryDataPaths = (items) => {
+  // Get the `workflows` arrays for all analysis sets in the results.
+  return [
+    {
+      type: "PseudobulkSet",
+      paths: items.map((item) => item["@id"]),
+      fields: ["workflows"],
+    },
+  ];
 };

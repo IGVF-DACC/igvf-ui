@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 // components
 import AliasList from "../../components/alias-list";
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
+import { AnnotatedValue } from "../../components/annotated-value";
 import Attribution from "../../components/attribution";
 import { BatchDownloadFileSet } from "../../components/batch-download-fileset";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -175,18 +176,19 @@ export default function PseudobulkSet({
                 <>
                   <DataItemLabel>Cell Annotation</DataItemLabel>
                   <DataItemValue>
-                    {pseudobulkSet.cell_qualifier &&
-                      `${pseudobulkSet.cell_qualifier} `}
-                    <DataItemValueAnnotated
-                      externalAnnotations={pseudobulkSet.cell_type.definition}
+                    {pseudobulkSet.cell_qualifier && (
+                      <>{pseudobulkSet.cell_qualifier} </>
+                    )}
+                    <AnnotatedValue
+                      externalAnnotations={{
+                        [pseudobulkSet.cell_type.term_name]:
+                          pseudobulkSet.cell_type.definition,
+                      }}
                     >
-                      {pseudobulkSet.cell_type.term_names}
-                    </DataItemValueAnnotated>
+                      {pseudobulkSet.cell_type.term_name}
+                    </AnnotatedValue>
                   </DataItemValue>
-                </>
-              )}
-              {pseudobulkSet.cell_type && (
-                <>
+
                   <DataItemLabel>Cell Ontology ID</DataItemLabel>
                   <DataItemValue>
                     <Link href={pseudobulkSet.cell_type["@id"]}>
