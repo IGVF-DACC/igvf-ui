@@ -2,13 +2,6 @@
 import { TableCellsIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import { useContext } from "react";
-// root
-import type {
-  CollectionTitles,
-  FileObject,
-  FileSetObject,
-  LabObject,
-} from "../globals";
 // components
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import Link from "./link-no-prefetch";
@@ -19,18 +12,27 @@ import SortableGrid, { type SortableGridConfig } from "./sortable-grid";
 import { AliasesCell } from "./table-cells";
 // lib
 import { isFileObjectArray } from "../lib/files";
+import { isEmbedded } from "../lib/types";
+// root
+import type {
+  CollectionTitles,
+  FileObject,
+  FileSetObject,
+  LabObject,
+} from "../globals";
 
 /**
  * Used to pass metadata to the sortable grid for file set table rendering. `options` comes from
  * FileSetTable props. `collectionTitles` comes from session context.
  */
-interface FileSetMeta {
+type FileSetMeta = {
   options: {
-    showFileSetFiles: boolean;
+    showFileSetFiles?: boolean;
+    showCellColumns?: boolean;
     fileFilter?: (files: FileObject[]) => FileObject[];
   } | null;
   collectionTitles: CollectionTitles;
-}
+};
 
 /**
  * Columns configuration for the file set sortable grid.
@@ -62,6 +64,51 @@ const fileSetColumns: SortableGridConfig<FileSetObject, FileSetMeta>[] = [
       return null;
     },
     isSortable: false,
+  },
+  {
+    id: "cell_type",
+    title: "Cell Type",
+    display: ({ source }) => {
+      const cellType = isEmbedded(source.cell_type) ? source.cell_type : null;
+      return cellType ? (
+        <Link href={cellType["@id"]}>{cellType.term_name}</Link>
+      ) : null;
+    },
+    sorter: (item) => {
+      const cellType = isEmbedded(item.cell_type) ? item.cell_type : null;
+      return cellType?.term_name.toLowerCase() || "\uffff";
+    },
+    hide: (data, columns, meta) => {
+      // Hide the column if the client didn't request it, or if they did but there are no cell
+      // types to display.
+      if (meta.options?.showCellColumns) {
+        const hasCellTypes = data.some((fileSet) => {
+          const cellType = isEmbedded(fileSet.cell_type)
+            ? fileSet.cell_type
+            : null;
+          return Boolean(cellType);
+        });
+        return !hasCellTypes;
+      }
+      return true;
+    },
+  },
+  {
+    id: "cell_qualifier",
+    title: "Cell Qualifier",
+    sorter: (item) => item.cell_qualifier?.toLowerCase() || "\uffff",
+    hide: (data, columns, meta) => {
+      // Hide the column if the client didn't request it, or if they did but there are no cell
+      // qualifiers to display.
+      if (meta.options?.showCellColumns) {
+        const hasCellQualifiers = data.some(
+          (fileSet) =>
+            fileSet.cell_qualifier && fileSet.cell_qualifier.trim() !== ""
+        );
+        return !hasCellQualifiers;
+      }
+      return true;
+    },
   },
   {
     id: "files",
@@ -168,10 +215,7 @@ export default function FileSetTable({
   reportLink?: string;
   reportLabel?: string;
   title?: string;
-  fileSetMeta?: {
-    showFileSetFiles: boolean;
-    fileFilter?: (files: FileObject[]) => FileObject[];
-  } | null;
+  fileSetMeta?: FileSetMeta["options"] | null;
   isDeletedVisible?: boolean;
   panelId?: string;
 }) {
@@ -196,7 +240,9 @@ export default function FileSetTable({
           data={fileSets}
           columns={fileSetColumns}
           keyProp="@id"
-          meta={{ options: fileSetMeta, collectionTitles }}
+          meta={
+            { options: fileSetMeta, collectionTitles } satisfies FileSetMeta
+          }
         />
       </div>
     </>

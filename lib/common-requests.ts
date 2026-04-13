@@ -267,6 +267,8 @@ export async function requestFileSets(
         "@type",
         "accession",
         "aliases",
+        "cell_qualifier",
+        "cell_type",
         "file_set_type",
         "lab.title",
         "preferred_assay_titles",

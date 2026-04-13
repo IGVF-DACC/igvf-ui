@@ -419,6 +419,8 @@ export interface FileSetObject extends DatabaseObject {
   construct_library_sets?: string[] | FileSetObject[];
   assay_term?: string | OntologyTermObject;
   assay_titles?: string[];
+  cell_qualifier?: string;
+  cell_type?: string | OntologyTermObject;
   external_image_urls?: string[];
   file_set_type?: string;
   files: string[] | FileObject[];

@@ -128,6 +128,7 @@ export default function CuratedSet({
               fileSets={inputFileSetFor}
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${curatedSet["@id"]}`}
               reportLabel="Report of file sets that this curated set is an input for"
+              fileSetMeta={{ showCellColumns: true }}
               title="File Sets Using This Curated Set as an Input"
               panelId="input-file-set-for"
             />
