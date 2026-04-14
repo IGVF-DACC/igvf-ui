@@ -51,8 +51,6 @@ export default function Software({
           <StatusPreviewDetail item={software} />
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Title</DataItemLabel>
-              <DataItemValue>{software.title}</DataItemValue>
               <DataItemLabel>Description</DataItemLabel>
               <DataItemValue>{software.description}</DataItemValue>
               <DataItemLabel>Source URL</DataItemLabel>
@@ -164,7 +162,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         award,
         lab,
         versions,
-        pageContext: { title: software.name },
+        pageContext: { title: software.title },
         attribution,
         isJson,
       },
