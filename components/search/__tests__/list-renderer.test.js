@@ -3684,7 +3684,7 @@ describe("Test IndexFile component", () => {
 
       expect(
         screen.getByTestId("search-list-item-supplement")
-      ).toHaveTextContent("Cell Type");
+      ).toHaveTextContent("Cell Annotation");
       expect(
         screen.getByTestId("search-list-item-supplement-content")
       ).toHaveTextContent("H9");
@@ -3734,6 +3734,70 @@ describe("Test IndexFile component", () => {
       expect(
         screen.getByTestId("search-list-item-supplement-content")
       ).toHaveTextContent("test samples.summary");
+
+      expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
+        "released"
+      );
+    });
+
+    it("renders a PseudobulkSet item with workflows", () => {
+      const item = {
+        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+        "@type": ["PseudobulkSet", "FileSet", "Item"],
+        accession: "IGVFDS1111PBST",
+        aliases: ["igvf:basic_pseudobulk_set"],
+        award: "/awards/HG012012/",
+        workflows: [
+          {
+            uniform_pipeline: true,
+          },
+        ],
+        files: [],
+        file_set_type: "pseudobulk analysis",
+        lab: {
+          title: "J. Michael Cherry, Stanford",
+        },
+        status: "released",
+        summary: "pseudobulk set of data",
+        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+      };
+
+      const accessoryData = {
+        "/pseudobulk-sets/IGVFDS1111PBST/": {
+          "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+          "@type": ["PseudobulkSet", "FileSet", "Item"],
+          workflows: [
+            {
+              "@id": "/workflows/IGVFWF0000WORK/",
+              accession: "IGVFWF0000WORK",
+              name: "Perturb-seq Pipeline",
+              uniform_pipeline: true,
+            },
+          ],
+        },
+      };
+
+      render(
+        <SessionContext.Provider value={{ profiles }}>
+          <PseudobulkSet item={item} accessoryData={accessoryData} />
+        </SessionContext.Provider>
+      );
+
+      expect(
+        screen.getByTestId("search-list-item-unique-id")
+      ).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+
+      expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
+        /^pseudobulk set of data$/
+      );
+
+      expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
+        "J. Michael Cherry, Stanford"
+      );
+
+      const qualityItem = screen.getByTestId("search-list-item-quality");
+      expect(qualityItem).toHaveTextContent("released");
+      expect(qualityItem).toHaveTextContent("uniformly processed");
 
       expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
         "released"
