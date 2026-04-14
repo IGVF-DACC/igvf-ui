@@ -403,6 +403,7 @@ export default function AnalysisSet({
               reportLabel="Report of file sets that this analysis set is an input for"
               title="File Sets Using This Analysis Set as an Input"
               panelId="input-file-set-for"
+              fileSetMeta={{ showCellColumns: true }}
             />
           )}
 
