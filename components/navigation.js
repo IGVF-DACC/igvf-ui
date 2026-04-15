@@ -633,20 +633,20 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
             Processed Data Sets
           </NavigationHrefItem>
           <NavigationHrefItem
-            id="prediction-datasets"
-            href={`/search/?type=PredictionSet${extraQueries}`}
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Prediction Data Sets
-          </NavigationHrefItem>
-          <NavigationHrefItem
             id="pseudobulk-datasets"
             href={`/search/?type=PseudobulkSet${extraQueries}`}
             navigationClick={navigationClick}
             isChildItem
           >
             Pseudobulk Data Sets
+          </NavigationHrefItem>
+          <NavigationHrefItem
+            id="prediction-datasets"
+            href={`/search/?type=PredictionSet${extraQueries}`}
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Prediction Data Sets
           </NavigationHrefItem>
           <NavigationHrefItem
             id="files"
