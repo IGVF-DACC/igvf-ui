@@ -117,6 +117,11 @@
   --color-select-menu-item-label: var(--color-gray-800);
   --color-select-menu-item-hover: var(--color-gray-600);
   --color-select-menu-item-label-hover: var(--color-white);
+
+  /** Radio Button Cards */
+  --color-radio-card-outline: var(--color-gray-300);
+  --color-radio-card-outline-checked: var(--color-blue-500);
+  --color-radio-card-button: var(--color-blue-500);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -149,6 +154,11 @@
     --color-select-menu-item-label: var(--color-gray-200);
     --color-select-menu-item-hover: var(--color-gray-200);
     --color-select-menu-item-label-hover: var(--color-gray-800);
+
+    /** Radio Button Cards */
+    --color-radio-card-outline: var(--color-gray-700);
+    --color-radio-card-outline-checked: var(--color-blue-500);
+    --color-radio-card-button: var(--color-blue-500);
   }
 }
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
+import { BatchDownloadFileSet } from "../../components/batch-download-fileset";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
 import ChromosomeLocations from "../../components/chromosome-locations";
@@ -96,6 +97,7 @@ export default function PredictionSet({
           supersededBy={supersededBy}
         />
         <ObjectPageHeader item={predictionSet} isJsonFormat={isJson}>
+          <BatchDownloadFileSet fileSet={predictionSet} />
           <ControlledAccessIndicator item={predictionSet} />
           <DataUseLimitationSummaries
             summaries={predictionSet.data_use_limitation_summaries}

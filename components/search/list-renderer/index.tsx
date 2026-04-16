@@ -148,7 +148,7 @@ const renderers: Record<string, React.ComponentType<any>> = {
 /**
  * Search-list renderer for search-result items that don't have a specific renderer.
  */
-export function Fallback({ item }: { item: Record<string, any> }) {
+export function Fallback({ item }: { item: DatabaseObject }) {
   const title =
     item.accession ||
     item.title ||

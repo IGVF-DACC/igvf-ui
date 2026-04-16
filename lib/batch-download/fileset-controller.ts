@@ -12,10 +12,12 @@ import type { FileSetObject } from "../../globals";
  */
 export default class FileSetController extends BaseController {
   private fileSet: FileSetObject;
+  private includeDownstream: boolean;
 
-  constructor(fileSet: FileSetObject) {
+  constructor(fileSet: FileSetObject, includeDownstream: boolean) {
     super(new QueryString(""));
     this.fileSet = fileSet;
+    this.includeDownstream = includeDownstream;
   }
 
   get offerDownload() {
@@ -23,6 +25,6 @@ export default class FileSetController extends BaseController {
   }
 
   get downloadUrl(): string {
-    return `${API_URL}${this.fileSet["@id"]}@@all-files`;
+    return `${API_URL}${this.fileSet["@id"]}@@all-files${this.includeDownstream ? "?include_downstream=true" : ""}`;
   }
 }
