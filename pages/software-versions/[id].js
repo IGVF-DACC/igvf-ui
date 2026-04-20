@@ -45,8 +45,6 @@ export default function SoftwareVersion({
           <StatusPreviewDetail item={softwareVersion} />
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Summary</DataItemLabel>
-              <DataItemValue>{softwareVersion.summary}</DataItemValue>
               <DataItemLabel>Software</DataItemLabel>
               <DataItemValue>
                 <Link href={softwareVersion.software["@id"]}>
@@ -162,7 +160,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         publications,
         award,
         lab,
-        pageContext: { title: softwareVersion.name },
+        pageContext: { title: softwareVersion.summary },
         attribution,
         isJson,
       },

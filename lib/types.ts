@@ -40,7 +40,7 @@ export function isPathArray<T>(
  * @returns True if the property is an embedded object (T), false if it is a link (string).
  */
 export function isEmbedded<T>(value: LinkTo<T>): value is T {
-  return typeof value === "object" && value !== null;
+  return typeof value === "object" && !Array.isArray(value) && value !== null;
 }
 
 /**
@@ -55,6 +55,9 @@ export function isEmbeddedArray<T>(
 ): value is T[] {
   return (
     Array.isArray(value) &&
-    value.every((item) => typeof item === "object" && item !== null)
+    value.every(
+      (item) =>
+        typeof item === "object" && !Array.isArray(item) && item !== null
+    )
   );
 }
