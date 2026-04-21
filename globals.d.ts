@@ -69,10 +69,13 @@ export interface DatabaseObject extends DataProviderObject {
   audit?: Audits;
   collections?: string[];
   creation_timestamp?: string;
+  description?: string;
   lab?: string | LabObject;
+  name?: string;
   release_timestamp?: string;
   status?: string;
   submitted_by?: string | UserObject;
+  summary?: string;
   supersedes?: string[];
   superseded_by?: string[];
   title?: string;

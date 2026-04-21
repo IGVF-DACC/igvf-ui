@@ -7,6 +7,7 @@ import { Fragment } from "react";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
+import { BatchDownloadFileSet } from "../../components/batch-download-fileset";
 import Breadcrumbs from "../../components/breadcrumbs";
 import { FileSetDataItems } from "../../components/common-data-items";
 import { ConstructLibraryTable } from "../../components/construct-library-table";
@@ -153,6 +154,7 @@ export default function MeasurementSet({
           supersededBy={supersededBy}
         />
         <ObjectPageHeader item={measurementSet} isJsonFormat={isJson}>
+          <BatchDownloadFileSet fileSet={measurementSet} />
           <ControlledAccessIndicator item={measurementSet} />
           <DataUseLimitationSummaries
             summaries={measurementSet.data_use_limitation_summaries}

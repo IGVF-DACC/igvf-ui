@@ -1,6 +1,5 @@
 // node_modules
-import PropTypes from "prop-types";
-import { Children, useContext } from "react";
+import { Children, ReactNode, useContext } from "react";
 // components
 import { AlternateAccessions } from "../../alternative-identifiers";
 import { AuditDetail, useAudit } from "../../audit";
@@ -10,12 +9,14 @@ import SeparatedList from "../../separated-list";
 import SessionContext from "../../session-context";
 // lib
 import { extractSchema } from "../../../lib/profiles";
+// root
+import { DatabaseObject } from "../../../globals";
 
 /**
  * Display the main contents of a search-list item including the unique identifier, title, and
  * status, and not including the data portion.
  */
-export function SearchListItemMain({ children }) {
+export function SearchListItemMain({ children }: { children: ReactNode }) {
   return (
     <div className="grow" data-testid="search-list-item-main">
       {children}
@@ -26,8 +27,10 @@ export function SearchListItemMain({ children }) {
 /**
  * Displays the type of the search-list item. This just displays the item's `@type` property if we
  * can't determine the human-readable type from the schema.
+ *
+ * @param item - Search-result item to display on a search-result list-view page
  */
-export function SearchListItemType({ item }) {
+export function SearchListItemType({ item }: { item: DatabaseObject }) {
   const { profiles } = useContext(SessionContext);
 
   const type = item["@type"][0];
@@ -39,22 +42,18 @@ export function SearchListItemType({ item }) {
   );
 }
 
-SearchListItemType.propTypes = {
-  // Search-result item to display on a search-result list page
-  item: PropTypes.object.isRequired,
-};
-
 /**
  * Display a search-list item's type and unique ID, often an accession.
  */
-export function SearchListItemUniqueId({ children }) {
+export function SearchListItemUniqueId({ children }: { children: ReactNode }) {
   // Copy the children but with a space inserted between each child (typically the type and unique
   // ID) so that you can select their text separately.
+  const childCount = Children.count(children);
   const spacedChildren = Children.map(children, (child, i) => {
     return (
       <>
         {child}
-        {i < children.length - 1 && <> </>}
+        {i < childCount - 1 && <> </>}
       </>
     );
   });
@@ -71,8 +70,14 @@ export function SearchListItemUniqueId({ children }) {
 
 /**
  * Display an object's alternate accessions in a search-list item as a supplement.
+ *
+ * @param item - Search-result item to display the alternate accessions for
  */
-export function SearchListItemSupplementAlternateAccessions({ item }) {
+export function SearchListItemSupplementAlternateAccessions({
+  item,
+}: {
+  item: DatabaseObject;
+}) {
   return (
     <>
       {item.alternate_accessions?.length > 0 && (
@@ -92,15 +97,16 @@ export function SearchListItemSupplementAlternateAccessions({ item }) {
   );
 }
 
-SearchListItemSupplementAlternateAccessions.propTypes = {
-  // Search-result item to display the alternate accessions for
-  item: PropTypes.object.isRequired,
-};
-
 /**
  * Display an object's summary in a search-list item as a supplement.
+ *
+ * @param item - Search-result item to display the summary for
  */
-export function SearchListItemSupplementSummary({ item }) {
+export function SearchListItemSupplementSummary({
+  item,
+}: {
+  item: DatabaseObject;
+}) {
   return (
     <SearchListItemSupplementSection>
       <SearchListItemSupplementLabel>Summary</SearchListItemSupplementLabel>
@@ -111,15 +117,10 @@ export function SearchListItemSupplementSummary({ item }) {
   );
 }
 
-SearchListItemSupplementSummary.propTypes = {
-  // Search-result item to display the summary for
-  item: PropTypes.object.isRequired,
-};
-
 /**
  * Display a search-list item's title. This appears in large, bold text.
  */
-export function SearchListItemTitle({ children }) {
+export function SearchListItemTitle({ children }: { children: ReactNode }) {
   return (
     <div
       className="text-lg leading-tight font-semibold text-gray-600 dark:text-gray-300"
@@ -134,7 +135,7 @@ export function SearchListItemTitle({ children }) {
  * Displays the data line below the title in a search-list item. It separates each item with a
  * circle bullet. Each child component should include a React key.
  */
-export function SearchListItemMeta({ children }) {
+export function SearchListItemMeta({ children }: { children: ReactNode }) {
   return (
     <div className="mt-2" data-testid="search-list-item-meta">
       <SeparatedList
@@ -153,7 +154,11 @@ export function SearchListItemMeta({ children }) {
  * Wraps the whole supplement section of a search-list item. It contains one or more
  * `<SearchListItemSupplementSection />'s.
  */
-export function SearchListItemSupplement({ children }) {
+export function SearchListItemSupplement({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
     <div
       className="mt-2 border-t border-gray-200 dark:border-gray-800"
@@ -168,7 +173,11 @@ export function SearchListItemSupplement({ children }) {
  * Wraps a single section of a search-list item's supplement area. It contains a single property
  * of a search-list item including a label and the data for that property.
  */
-export function SearchListItemSupplementSection({ children }) {
+export function SearchListItemSupplementSection({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
     <div className="mt-1.5" data-testid="search-list-item-supplement-section">
       {children}
@@ -179,7 +188,11 @@ export function SearchListItemSupplementSection({ children }) {
 /**
  * Displays the label of a search-list item's supplement section.
  */
-export function SearchListItemSupplementLabel({ children }) {
+export function SearchListItemSupplementLabel({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
     <div
       className="mr-1 text-xs font-semibold text-gray-800 uppercase dark:text-gray-200"
@@ -193,7 +206,11 @@ export function SearchListItemSupplementLabel({ children }) {
 /**
  * Displays the data of a search-list item's supplement section, under the label.
  */
-export function SearchListItemSupplementContent({ children }) {
+export function SearchListItemSupplementContent({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
     <div
       className="text-xs text-gray-600 dark:text-gray-400"
@@ -208,14 +225,22 @@ export function SearchListItemSupplementContent({ children }) {
  * Wraps the content area of a search-list item. That includes everything except the link to the
  * object page.
  */
-export function SearchListItemContent({ children }) {
+export function SearchListItemContent({ children }: { children: ReactNode }) {
   return <div data-testid="search-list-item-content">{children}</div>;
 }
 
 /**
  * Wrapper for the status and audit information of a search-list item.
+ *
+ * @param item - Search-result item to display the status and audits for
  */
-export function SearchListItemQuality({ item, children = null }) {
+export function SearchListItemQuality({
+  item,
+  children = null,
+}: {
+  item: DatabaseObject;
+  children?: ReactNode;
+}) {
   const auditState = useAudit();
 
   return (
@@ -232,10 +257,3 @@ export function SearchListItemQuality({ item, children = null }) {
     </>
   );
 }
-
-SearchListItemQuality.propTypes = {
-  // Search-result item to to display the status and audits for
-  item: PropTypes.object.isRequired,
-  // Additional children to display in the quality section
-  children: PropTypes.node,
-};

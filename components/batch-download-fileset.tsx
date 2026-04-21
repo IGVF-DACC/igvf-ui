@@ -5,6 +5,7 @@ import {
   BatchDownloadActuator,
   BatchDownloadModalContent,
 } from "./batch-download";
+import { RadioCardGroup } from "./radio-card-group";
 // lib
 import { FileTableController, FileSetController } from "../lib/batch-download";
 // root
@@ -15,7 +16,8 @@ import { FileSetObject } from "../globals";
  */
 const DOWNLOAD_OPTIONS = {
   FILES: "files",
-  FILES_WITH_INPUTS: "files-with-inputs",
+  FILES_WITH_RELATED: "files-with-related",
+  FILES_WITH_RELATED_AND_ANALYSIS: "files-with-related-and-analysis",
 } as const;
 
 /**
@@ -47,41 +49,48 @@ export function BatchDownloadFileSet({ fileSet }: { fileSet: FileSetObject }) {
   // Create the appropriate controller based on the selected download option, recreating it when
   // the user switches options. Use fileSet["@id"] as a dependency in case the user navigates
   // between different file sets, causing the component to be reused without clearing state.
-  const controller = useMemo(
-    () =>
-      selectedOption === DOWNLOAD_OPTIONS.FILES_WITH_INPUTS
-        ? new FileSetController(fileSet)
-        : new FileTableController(fileSet),
-    [selectedOption, fileSet["@id"]]
-  );
-
-  if (controller.offerDownload) {
-    return (
-      <BatchDownloadActuator
-        controller={controller}
-        label="Download files associated with this file set"
-        size="sm"
-        onDownloadActuated={() => setIsOptionDisabled(true)}
-        onDownloadModalClosed={() => setIsOptionDisabled(false)}
-      >
-        <BatchDownloadModalContent>
-          <DownloadTypeOptions
-            selectedOption={selectedOption}
-            isOptionDisabled={isOptionDisabled}
-            onSelect={(selection: DownloadOption) => {
-              setSelectedOption(selection);
-            }}
-          />
-        </BatchDownloadModalContent>
-      </BatchDownloadActuator>
+  const controller = useMemo(() => {
+    if (selectedOption === DOWNLOAD_OPTIONS.FILES) {
+      return new FileTableController(fileSet);
+    }
+    return new FileSetController(
+      fileSet,
+      selectedOption === DOWNLOAD_OPTIONS.FILES_WITH_RELATED_AND_ANALYSIS
     );
+  }, [selectedOption, fileSet["@id"]]);
+
+  if (!controller.offerDownload) {
+    // Don't render the actuator at all if the controller determines that a download isn't offered
+    // (e.g. if there are no files to download).
+    return null;
   }
+
+  return (
+    <BatchDownloadActuator
+      controller={controller}
+      label="Download files associated with this file set"
+      size="sm"
+      onDownloadActuated={() => setIsOptionDisabled(true)}
+      onDownloadModalClosed={() => setIsOptionDisabled(false)}
+    >
+      <BatchDownloadModalContent>
+        <DownloadTypeOptions
+          selectedOption={selectedOption}
+          isOptionDisabled={isOptionDisabled}
+          onSelect={(selection: DownloadOption) => {
+            setSelectedOption(selection);
+          }}
+        />
+      </BatchDownloadModalContent>
+    </BatchDownloadActuator>
+  );
 }
 
 /**
- * Display the radio button options for the two different types of file-set batch downloads:
+ * Display the radio button options for the three different types of file-set batch downloads:
  *   1. download all files in the file set
  *   2. download all files in the file set as well as input files
+ *   3. download all files in the file set as well as input files and downstream analysis files
  *
  * @param selectedOption - Currently selected download option
  * @param isOptionDisabled - True to disable the radio buttons
@@ -97,68 +106,34 @@ function DownloadTypeOptions({
   onSelect: (value: string) => void;
 }) {
   return (
-    <div className="mt-4">
-      <div className="mt-1 leading-6 w-fit mx-auto border border-panel py-2 px-3">
-        <Option
-          value={DOWNLOAD_OPTIONS.FILES}
-          checked={selectedOption === DOWNLOAD_OPTIONS.FILES}
-          isOptionDisabled={isOptionDisabled}
-          onSelect={onSelect}
-        >
-          Download files in this dataset
-        </Option>
-        <Option
-          value={DOWNLOAD_OPTIONS.FILES_WITH_INPUTS}
-          checked={selectedOption === DOWNLOAD_OPTIONS.FILES_WITH_INPUTS}
-          isOptionDisabled={isOptionDisabled}
-          onSelect={onSelect}
-        >
-          Download all files in this dataset including inputs
-        </Option>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Display a single radio button for one file-set batch-download option.
- *
- * @param value - Value of the radio button passed to the onSelect callback on click
- * @param checked - Whether this radio button should be checked
- * @param isOptionDisabled - True to disable the radio button
- * @param onSelect - Called when the user selects this option
- * @param children - Text label to display next to the radio button
- */
-function Option({
-  value,
-  checked,
-  isOptionDisabled,
-  onSelect,
-  children,
-}: {
-  value: string;
-  checked: boolean;
-  isOptionDisabled: boolean;
-  onSelect: (value: string) => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="flex items-center gap-1 cursor-pointer w-fit">
-      <input
-        type="radio"
-        name="download-type"
-        value={value}
-        checked={checked}
-        onChange={(e) => onSelect(e.target.value)}
+    <RadioCardGroup
+      name="download-type"
+      legend="Select the files to include:"
+      selectedValue={selectedOption}
+      setSelectedValue={onSelect}
+      className="mt-6"
+    >
+      <RadioCardGroup.Card
+        id="files-only"
+        value={DOWNLOAD_OPTIONS.FILES}
+        label="Files in this file set"
+        description="Download all files directly associated with this file set."
         disabled={isOptionDisabled}
       />
-      <span
-        className={
-          isOptionDisabled ? "text-gray-400" : "text-black dark:text-white"
-        }
-      >
-        {children}
-      </span>
-    </label>
+      <RadioCardGroup.Card
+        id="files-with-related"
+        value={DOWNLOAD_OPTIONS.FILES_WITH_RELATED}
+        label="Files in this file set and their input files"
+        description="Download all files directly associated with this file set, along with any files used as inputs to generate them."
+        disabled={isOptionDisabled}
+      />
+      <RadioCardGroup.Card
+        id="files-with-related-and-analysis"
+        value={DOWNLOAD_OPTIONS.FILES_WITH_RELATED_AND_ANALYSIS}
+        label="Files in this file set, their input files, and downstream analysis files"
+        description="Download all files directly associated with this file set, along with any input files used to generate them and any analysis files derived from them."
+        disabled={isOptionDisabled}
+      />
+    </RadioCardGroup>
   );
 }

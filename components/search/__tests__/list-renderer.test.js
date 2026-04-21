@@ -3650,249 +3650,258 @@ describe("Test IndexFile component", () => {
       "AnalysisSeSUPERSTARR targeting Mir683-2: barcode to sample mapping, coding_variants, diseases_genes, documentation (readme), elements reference and 15 more"
     );
   });
+});
 
-  describe("Test the PseudobulkSet component", () => {
-    it("renders a PseudobulkSet item with alternate accession", () => {
-      const item = {
-        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
-        "@type": ["PseudobulkSet", "FileSet", "Item"],
-        accession: "IGVFDS1111PBST",
-        alternate_accessions: ["IGVFDS1111PBSU"],
-        aliases: ["igvf:basic_pseudobulk_set"],
-        award: "/awards/HG012012/",
-        files: [],
-        file_set_type: "pseudobulk analysis",
-        lab: {
-          title: "J. Michael Cherry, Stanford",
+describe("Test the PseudobulkSet component", () => {
+  it("renders a PseudobulkSet item with alternate accession", () => {
+    const item = {
+      "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS1111PBST",
+      alternate_accessions: ["IGVFDS1111PBSU"],
+      aliases: ["igvf:basic_pseudobulk_set"],
+      award: "/awards/HG012012/",
+      files: [],
+      file_set_type: "pseudobulk analysis",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      summary: "pseudobulk set of data",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PseudobulkSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(/^pseudobulk set of data$/);
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
+
+    const supplement = screen.getByTestId("search-list-item-supplement");
+    expect(supplement).toHaveTextContent("Alternate Accessions");
+    expect(supplement).toHaveTextContent("IGVFDS1111PBSU");
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a PseudobulkSet item with description", () => {
+    const item = {
+      "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS1111PBST",
+      aliases: ["igvf:basic_pseudobulk_set"],
+      award: "/awards/HG012012/",
+      description: "This is my description",
+      files: [],
+      file_set_type: "pseudobulk analysis",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      summary: "pseudobulk set of data",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PseudobulkSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    expect(screen.getByTestId("search-list-item-unique-id")).toHaveTextContent(
+      /^Pseudobulk Set IGVFDS1111PBST$/
+    );
+    expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
+      /^pseudobulk set of data$/
+    );
+    expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
+      "J. Michael Cherry, Stanford"
+    );
+
+    expect(screen.getByTestId("search-list-item-supplement")).toHaveTextContent(
+      "Description"
+    );
+    expect(
+      screen.getByTestId("search-list-item-supplement-content")
+    ).toHaveTextContent("This is my description");
+
+    expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
+      "released"
+    );
+  });
+
+  it("renders a PseudobulkSet item with cell_type", () => {
+    const item = {
+      "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS1111PBST",
+      aliases: ["igvf:basic_pseudobulk_set"],
+      award: "/awards/HG012012/",
+      files: [],
+      cell_type: { term_name: "H9" },
+      file_set_type: "pseudobulk analysis",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      summary: "pseudobulk set of data",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PseudobulkSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    expect(screen.getByTestId("search-list-item-unique-id")).toHaveTextContent(
+      /^Pseudobulk Set IGVFDS1111PBST$/
+    );
+    expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
+      /^pseudobulk set of data$/
+    );
+    expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
+      "J. Michael Cherry, Stanford"
+    );
+
+    expect(screen.getByTestId("search-list-item-supplement")).toHaveTextContent(
+      "Cell Annotation"
+    );
+    expect(
+      screen.getByTestId("search-list-item-supplement-content")
+    ).toHaveTextContent("H9");
+
+    expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
+      "released"
+    );
+  });
+
+  it("renders a PseudobulkSet item with samples.summary", () => {
+    const item = {
+      "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS1111PBST",
+      aliases: ["igvf:basic_pseudobulk_set"],
+      award: "/awards/HG012012/",
+      files: [],
+      file_set_type: "pseudobulk analysis",
+      samples: [{ summary: "test samples.summary" }],
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      summary: "pseudobulk set of data",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PseudobulkSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    expect(screen.getByTestId("search-list-item-unique-id")).toHaveTextContent(
+      /^Pseudobulk Set IGVFDS1111PBST$/
+    );
+    expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
+      /^pseudobulk set of data$/
+    );
+    expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
+      "J. Michael Cherry, Stanford"
+    );
+
+    expect(screen.getByTestId("search-list-item-supplement")).toHaveTextContent(
+      "Samples"
+    );
+    expect(
+      screen.getByTestId("search-list-item-supplement-content")
+    ).toHaveTextContent("test samples.summary");
+
+    expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
+      "released"
+    );
+  });
+
+  it("renders a PseudobulkSet item with workflows", () => {
+    const item = {
+      "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS1111PBST",
+      aliases: ["igvf:basic_pseudobulk_set"],
+      award: "/awards/HG012012/",
+      workflows: [
+        {
+          uniform_pipeline: true,
         },
-        status: "released",
-        summary: "pseudobulk set of data",
-        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
-      };
+      ],
+      files: [],
+      file_set_type: "pseudobulk analysis",
+      lab: {
+        title: "J. Michael Cherry, Stanford",
+      },
+      status: "released",
+      summary: "pseudobulk set of data",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
 
-      render(
-        <SessionContext.Provider value={{ profiles }}>
-          <PseudobulkSet item={item} />
-        </SessionContext.Provider>
-      );
-
-      const uniqueId = screen.getByTestId("search-list-item-unique-id");
-      expect(uniqueId).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
-
-      const title = screen.getByTestId("search-list-item-title");
-      expect(title).toHaveTextContent(/^pseudobulk set of data$/);
-
-      const meta = screen.getByTestId("search-list-item-meta");
-      expect(meta).toHaveTextContent("J. Michael Cherry, Stanford");
-
-      const supplement = screen.getByTestId("search-list-item-supplement");
-      expect(supplement).toHaveTextContent("Alternate Accessions");
-      expect(supplement).toHaveTextContent("IGVFDS1111PBSU");
-
-      const status = screen.getByTestId("search-list-item-quality");
-      expect(status).toHaveTextContent("released");
-    });
-
-    it("renders a PseudobulkSet item with description", () => {
-      const item = {
+    const accessoryData = {
+      "/pseudobulk-sets/IGVFDS1111PBST/": {
         "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
         "@type": ["PseudobulkSet", "FileSet", "Item"],
-        accession: "IGVFDS1111PBST",
-        aliases: ["igvf:basic_pseudobulk_set"],
-        award: "/awards/HG012012/",
-        description: "This is my description",
-        files: [],
-        file_set_type: "pseudobulk analysis",
-        lab: {
-          title: "J. Michael Cherry, Stanford",
-        },
-        status: "released",
-        summary: "pseudobulk set of data",
-        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
-      };
-
-      render(
-        <SessionContext.Provider value={{ profiles }}>
-          <PseudobulkSet item={item} />
-        </SessionContext.Provider>
-      );
-
-      expect(
-        screen.getByTestId("search-list-item-unique-id")
-      ).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
-      expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
-        /^pseudobulk set of data$/
-      );
-      expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
-        "J. Michael Cherry, Stanford"
-      );
-
-      expect(
-        screen.getByTestId("search-list-item-supplement")
-      ).toHaveTextContent("Description");
-      expect(
-        screen.getByTestId("search-list-item-supplement-content")
-      ).toHaveTextContent("This is my description");
-
-      expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
-        "released"
-      );
-    });
-
-    it("renders a PseudobulkSet item with cell_type", () => {
-      const item = {
-        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
-        "@type": ["PseudobulkSet", "FileSet", "Item"],
-        accession: "IGVFDS1111PBST",
-        aliases: ["igvf:basic_pseudobulk_set"],
-        award: "/awards/HG012012/",
-        files: [],
-        cell_type: { term_name: "H9" },
-        file_set_type: "pseudobulk analysis",
-        lab: {
-          title: "J. Michael Cherry, Stanford",
-        },
-        status: "released",
-        summary: "pseudobulk set of data",
-        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
-      };
-
-      render(
-        <SessionContext.Provider value={{ profiles }}>
-          <PseudobulkSet item={item} />
-        </SessionContext.Provider>
-      );
-
-      expect(
-        screen.getByTestId("search-list-item-unique-id")
-      ).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
-      expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
-        /^pseudobulk set of data$/
-      );
-      expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
-        "J. Michael Cherry, Stanford"
-      );
-
-      expect(
-        screen.getByTestId("search-list-item-supplement")
-      ).toHaveTextContent("Cell Annotation");
-      expect(
-        screen.getByTestId("search-list-item-supplement-content")
-      ).toHaveTextContent("H9");
-
-      expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
-        "released"
-      );
-    });
-
-    it("renders a PseudobulkSet item with samples.summary", () => {
-      const item = {
-        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
-        "@type": ["PseudobulkSet", "FileSet", "Item"],
-        accession: "IGVFDS1111PBST",
-        aliases: ["igvf:basic_pseudobulk_set"],
-        award: "/awards/HG012012/",
-        files: [],
-        file_set_type: "pseudobulk analysis",
-        samples: [{ summary: "test samples.summary" }],
-        lab: {
-          title: "J. Michael Cherry, Stanford",
-        },
-        status: "released",
-        summary: "pseudobulk set of data",
-        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
-      };
-
-      render(
-        <SessionContext.Provider value={{ profiles }}>
-          <PseudobulkSet item={item} />
-        </SessionContext.Provider>
-      );
-
-      expect(
-        screen.getByTestId("search-list-item-unique-id")
-      ).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
-      expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
-        /^pseudobulk set of data$/
-      );
-      expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
-        "J. Michael Cherry, Stanford"
-      );
-
-      expect(
-        screen.getByTestId("search-list-item-supplement")
-      ).toHaveTextContent("Samples");
-      expect(
-        screen.getByTestId("search-list-item-supplement-content")
-      ).toHaveTextContent("test samples.summary");
-
-      expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
-        "released"
-      );
-    });
-
-    it("renders a PseudobulkSet item with workflows", () => {
-      const item = {
-        "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
-        "@type": ["PseudobulkSet", "FileSet", "Item"],
-        accession: "IGVFDS1111PBST",
-        aliases: ["igvf:basic_pseudobulk_set"],
-        award: "/awards/HG012012/",
         workflows: [
           {
+            "@id": "/workflows/IGVFWF0000WORK/",
+            accession: "IGVFWF0000WORK",
+            name: "Perturb-seq Pipeline",
             uniform_pipeline: true,
           },
         ],
-        files: [],
-        file_set_type: "pseudobulk analysis",
-        lab: {
-          title: "J. Michael Cherry, Stanford",
-        },
-        status: "released",
-        summary: "pseudobulk set of data",
-        uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
-      };
+      },
+    };
 
-      const accessoryData = {
-        "/pseudobulk-sets/IGVFDS1111PBST/": {
-          "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
-          "@type": ["PseudobulkSet", "FileSet", "Item"],
-          workflows: [
-            {
-              "@id": "/workflows/IGVFWF0000WORK/",
-              accession: "IGVFWF0000WORK",
-              name: "Perturb-seq Pipeline",
-              uniform_pipeline: true,
-            },
-          ],
-        },
-      };
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PseudobulkSet item={item} accessoryData={accessoryData} />
+      </SessionContext.Provider>
+    );
 
-      render(
-        <SessionContext.Provider value={{ profiles }}>
-          <PseudobulkSet item={item} accessoryData={accessoryData} />
-        </SessionContext.Provider>
-      );
+    expect(screen.getByTestId("search-list-item-unique-id")).toHaveTextContent(
+      /^Pseudobulk Set IGVFDS1111PBST$/
+    );
 
-      expect(
-        screen.getByTestId("search-list-item-unique-id")
-      ).toHaveTextContent(/^Pseudobulk Set IGVFDS1111PBST$/);
+    expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
+      /^pseudobulk set of data$/
+    );
 
-      expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
-        /^pseudobulk set of data$/
-      );
+    expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
+      "J. Michael Cherry, Stanford"
+    );
 
-      expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
-        "J. Michael Cherry, Stanford"
-      );
+    const qualityItem = screen.getByTestId("search-list-item-quality");
+    expect(qualityItem).toHaveTextContent("released");
+    expect(qualityItem).toHaveTextContent("uniformly processed");
 
-      const qualityItem = screen.getByTestId("search-list-item-quality");
-      expect(qualityItem).toHaveTextContent("released");
-      expect(qualityItem).toHaveTextContent("uniformly processed");
+    expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
+      "released"
+    );
 
-      expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
-        "released"
-      );
-    });
+    const paths = PseudobulkSet.getAccessoryDataPaths([item]);
+    expect(paths).toEqual([
+      {
+        type: "PseudobulkSet",
+        paths: ["/pseudobulk-sets/IGVFDS1111PBST/"],
+        fields: ["workflows"],
+      },
+    ]);
   });
 });
