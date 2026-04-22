@@ -460,7 +460,7 @@ function SchemaProperty({
             <PlusIcon className="mr-1 h-4 w-4" />
           )}
           <div
-            className={`scroll-mt-46 text-left break-all @2xl:scroll-mt-32 ${
+            className={`scroll-mt-46 text-left break-all @2xl:scroll-mt-44 ${
               isHighlighted ? "bg-schema-name-highlight" : ""
             }`}
           >
