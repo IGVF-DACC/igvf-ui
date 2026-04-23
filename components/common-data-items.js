@@ -256,10 +256,14 @@ export function SampleDataItems({
           <DataItemValue>{item.submitter_comment}</DataItemValue>
         </>
       )}
-      {item.nucleic_acid_delivery && (
+      {item.construct_delivery_methods?.length > 0 && (
         <>
-          <DataItemLabel>Nucleic Acid Delivery</DataItemLabel>
-          <DataItemValue>{item.nucleic_acid_delivery}</DataItemValue>
+          <DataItemLabel>Construct Delivery Methods</DataItemLabel>
+          <DataItemValue>
+            {_.sortBy(item.construct_delivery_methods, (method) =>
+              method.toLowerCase()
+            ).join(", ")}
+          </DataItemValue>
         </>
       )}
       {item.aliases?.length > 0 && (
@@ -324,12 +328,12 @@ SampleDataItems.propTypes = {
 
 SampleDataItems.commonProperties = [
   "aliases",
+  "construct_delivery_methods",
   "date_obtained",
   "dbxrefs",
   "description",
   "lot_id",
   "institutional_certificates",
-  "nucleic_acid_delivery",
   "publications",
   "revoke_detail",
   "sorted_from",
