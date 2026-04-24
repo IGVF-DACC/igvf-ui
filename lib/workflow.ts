@@ -21,7 +21,7 @@ export interface WorkflowObject extends DatabaseObject {
   publications?: string[] | PublicationObject[];
   source_url: string;
   standards_page?: string | PageObject;
-  uniform_pipeline?: boolean;
+  uniform_pipeline: boolean;
   workflow_repositories?: string[];
   workflow_version?: string;
 }

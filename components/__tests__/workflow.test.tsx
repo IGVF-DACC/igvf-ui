@@ -10,6 +10,7 @@ describe("WorkflowTitle component", () => {
         "@type": ["Workflow"],
         name: "Test Workflow",
         source_url: "https://example.com",
+        uniform_pipeline: true,
       };
       render(<WorkflowTitle workflow={workflow} />);
 
@@ -23,6 +24,7 @@ describe("WorkflowTitle component", () => {
         "@type": ["Workflow"],
         name: "Test Workflow",
         source_url: "https://example.com",
+        uniform_pipeline: true,
         workflow_version: "v1.2.0",
       };
       render(<WorkflowTitle workflow={workflow} />);
@@ -57,6 +59,7 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: "Single Workflow",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
       ];
 
@@ -78,6 +81,7 @@ describe("WorkflowList component", () => {
           name: "Versioned Workflow",
           source_url: "https://example.com",
           workflow_version: "v1.5.0",
+          uniform_pipeline: true,
         },
       ];
 
@@ -118,18 +122,21 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: "Zebra Workflow",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
         {
           "@id": "/workflows/alpha/",
           "@type": ["Workflow"],
           name: "Alpha Workflow",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
         {
           "@id": "/workflows/beta/",
           "@type": ["Workflow"],
           name: "Beta Workflow",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
       ];
 
@@ -150,18 +157,21 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: "lowercase workflow",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
         {
           "@id": "/workflows/uppercase/",
           "@type": ["Workflow"],
           name: "UPPERCASE WORKFLOW",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
         {
           "@id": "/workflows/mixedcase/",
           "@type": ["Workflow"],
           name: "MixedCase Workflow",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
       ];
 
@@ -182,6 +192,7 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: "Test Workflow",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
       ];
 
@@ -198,6 +209,7 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: "No Version Workflow",
           source_url: "https://example.com",
+          uniform_pipeline: true,
           workflow_version: undefined,
         },
       ];
@@ -216,6 +228,7 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: "With Version Workflow",
           source_url: "https://example.com",
+          uniform_pipeline: true,
           workflow_version: "v2.0.0",
         },
       ];
@@ -238,12 +251,14 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: "No Version",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
         {
           "@id": "/workflows/with-version/",
           "@type": ["Workflow"],
           name: "With Version",
           source_url: "https://example.com",
+          uniform_pipeline: true,
           workflow_version: "v1.0.0",
         },
       ];
@@ -261,6 +276,7 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: "Empty Version",
           source_url: "https://example.com",
+          uniform_pipeline: true,
           workflow_version: "",
         },
       ];
@@ -307,23 +323,6 @@ describe("WorkflowList component", () => {
         screen.queryByTestId("uniform-pipeline-badge-abbreviated")
       ).not.toBeInTheDocument();
     });
-
-    it("does not render uniform pipeline badge when uniform_pipeline is undefined", () => {
-      const workflows: WorkflowObject[] = [
-        {
-          "@id": "/workflows/undefined-uniform/",
-          "@type": ["Workflow"],
-          name: "Undefined Uniform Workflow",
-          source_url: "https://example.com",
-        },
-      ];
-
-      render(<WorkflowList workflows={workflows} />);
-
-      expect(
-        screen.queryByTestId("uniform-pipeline-badge-abbreviated")
-      ).not.toBeInTheDocument();
-    });
   });
 
   describe("Collapse control integration", () => {
@@ -335,6 +334,7 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: `Workflow ${i}`,
           source_url: "https://example.com",
+          uniform_pipeline: true,
         })
       );
 
@@ -352,12 +352,14 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: "Key Test 1",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
         {
           "@id": "/workflows/key-test-2/",
           "@type": ["Workflow"],
           name: "Key Test 2",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
       ];
 
@@ -402,6 +404,7 @@ describe("WorkflowList component", () => {
           "@type": ["Workflow"],
           name: "Minimal Workflow",
           source_url: "https://example.com",
+          uniform_pipeline: true,
         },
       ];
 

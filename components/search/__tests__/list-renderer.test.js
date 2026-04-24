@@ -1821,6 +1821,32 @@ describe("Test the AnalysisSet component", () => {
     expect(qualityItem).toHaveTextContent("released");
     expect(qualityItem).toHaveTextContent("uniformly processed");
   });
+
+  it("renders an AnalysisSet item with a non-embedded lab", () => {
+    const item = {
+      "@id": "/analysis-sets/IGVFDS0390NOLS/",
+      "@type": ["AnalysisSet", "FileSet", "Item"],
+      accession: "IGVFDS0390NOLS",
+      aliases: ["igvf:basic_analysis_set_3"],
+      award: "/awards/HG012012/",
+      file_set_type: "primary analysis",
+      files: [],
+      lab: "/labs/j-michael-cherry/",
+      status: "released",
+      summary: "primary analysis of data",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <AnalysisSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const meta = screen.queryByTestId("search-list-item-meta");
+    expect(meta).toBeInTheDocument();
+    expect(meta).not.toHaveTextContent("J. Michael Cherry, Stanford");
+  });
 });
 
 describe("Test the CuratedSet component", () => {
