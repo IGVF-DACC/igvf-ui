@@ -17,6 +17,7 @@ const mockWorkflow1: WorkflowObject = {
   "@type": ["Workflow"],
   name: "RNA-seq Pipeline",
   source_url: "https://example.com/workflow1",
+  uniform_pipeline: true,
   workflow_version: "v1.0.0",
 };
 
@@ -25,6 +26,7 @@ const mockWorkflow2: WorkflowObject = {
   "@type": ["Workflow"],
   name: "ChIP-seq Analysis",
   source_url: "https://example.com/workflow2",
+  uniform_pipeline: false,
   workflow_version: "v2.1.0",
 };
 
@@ -33,6 +35,7 @@ const mockWorkflow3: WorkflowObject = {
   "@type": ["Workflow"],
   name: "ATAC-seq Pipeline",
   source_url: "https://example.com/workflow3",
+  uniform_pipeline: true,
   // No version number for this workflow
 };
 

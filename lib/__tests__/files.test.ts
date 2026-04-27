@@ -14,11 +14,11 @@ import {
 } from "../files";
 import FetchRequest from "../fetch-request";
 import type { Cell, RowComponentProps } from "../data-grid";
+import { type SampleObject } from "../samples";
 import type {
   DatabaseObject,
   FileObject,
   FileSetObject,
-  SampleObject,
   SearchResults,
 } from "../../globals";
 
@@ -650,6 +650,7 @@ describe("Test collectFileFileSetSamples function", () => {
     const fileSet: FileSetObject = {
       "@id": "file-set-1",
       "@type": ["FileSet", "Item"],
+      file_set_type: "intermediate analysis",
       files: ["file-1", "file-2"],
       samples: [sample1, sample2],
       summary: "Summary of file set 1",

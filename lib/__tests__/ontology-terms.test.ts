@@ -367,6 +367,7 @@ describe("ontology-terms", () => {
           term_name: "imaging assay",
         },
         assay_titles: ["imaging assay"],
+        file_set_type: "intermediate analysis",
         files: [],
         summary: "Test measurement set",
       };
@@ -401,6 +402,7 @@ describe("ontology-terms", () => {
         "@type": ["MeasurementSet", "FileSet", "Item"],
         assay_term: "/ontology-terms/EFO_0008896/", // string instead of object
         assay_titles: ["RNA-seq"],
+        file_set_type: "intermediate analysis",
         files: [],
         summary: "Test measurement set",
       };
@@ -420,6 +422,7 @@ describe("ontology-terms", () => {
         "@type": ["MeasurementSet", "FileSet", "Item"],
         assay_term: null,
         assay_titles: ["RNA-seq"],
+        file_set_type: "intermediate analysis",
         files: [],
         summary: "Test measurement set",
       };
@@ -444,6 +447,7 @@ describe("ontology-terms", () => {
           term_name: "RNA-seq",
         },
         assay_titles: [], // empty array
+        file_set_type: "intermediate analysis",
         files: [],
         summary: "Test measurement set",
       };
@@ -463,6 +467,7 @@ describe("ontology-terms", () => {
         "@type": ["MeasurementSet", "FileSet", "Item"],
         // assay_term is undefined
         assay_titles: ["RNA-seq"],
+        file_set_type: "intermediate analysis",
         files: [],
         summary: "Test measurement set",
       };
@@ -487,6 +492,7 @@ describe("ontology-terms", () => {
           term_name: "RNA-seq",
         },
         assay_titles: ["RNA-seq", "ChIP-seq"], // multiple titles
+        file_set_type: "intermediate analysis",
         files: [],
         summary: "Test measurement set",
       };

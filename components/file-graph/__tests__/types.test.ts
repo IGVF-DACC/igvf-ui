@@ -10,7 +10,6 @@ import type {
   FileSetMetadata,
   NodeMetadata,
   ElkNodeEx,
-  FileSetTypeColorMapSpec,
   FileSetTypeColorMap,
   FileSetStats,
 } from "../types";
@@ -87,6 +86,7 @@ describe("types.ts", () => {
         "@id": "/file-sets/test",
         "@type": ["AnalysisSet", "FileSet", "Item"],
         accession: "TEST001",
+        file_set_type: "principal analysis",
         files: [],
         summary: "Test file set",
       };
@@ -140,6 +140,7 @@ describe("types.ts", () => {
         "@id": "/file-sets/test",
         "@type": ["AnalysisSet", "FileSet", "Item"],
         accession: "TEST001",
+        file_set_type: "intermediate analysis",
         files: [],
         summary: "Test file set",
       };
@@ -207,22 +208,6 @@ describe("types.ts", () => {
     });
   });
 
-  describe("FileSetTypeColorMapSpec type", () => {
-    it("should create valid color map specifications", () => {
-      const colorSpec: FileSetTypeColorMapSpec = {
-        bg: "bg-test-color",
-        bgCount: "bg-test-count",
-        border: "border-test-color",
-        bgColor: "#ff0000",
-      };
-
-      expect(colorSpec.bg).toBe("bg-test-color");
-      expect(colorSpec.bgCount).toBe("bg-test-count");
-      expect(colorSpec.border).toBe("border-test-color");
-      expect(colorSpec.bgColor).toBe("#ff0000");
-    });
-  });
-
   describe("FileSetTypeColorMap type", () => {
     it("should create valid color maps", () => {
       const colorMap: FileSetTypeColorMap = {
@@ -230,6 +215,7 @@ describe("types.ts", () => {
           bg: "bg-test",
           bgCount: "bg-test-count",
           border: "border-test",
+          borderColor: "#000000",
           bgColor: "#123456",
         },
       };
@@ -368,6 +354,7 @@ describe("types.ts", () => {
           "@id": "/file-sets/test",
           "@type": ["AnalysisSet", "FileSet", "Item"],
           accession: "TEST001",
+          file_set_type: "principal analysis",
           files: [],
           summary: "Test file set",
         },
@@ -419,6 +406,7 @@ describe("types.ts", () => {
           "@id": "/file-sets/test",
           "@type": ["AnalysisSet", "FileSet", "Item"],
           accession: "TEST001",
+          file_set_type: "principal analysis",
           files: [],
           summary: "Test file set",
         },
@@ -462,6 +450,7 @@ describe("types.ts", () => {
           "@id": "/file-sets/test",
           "@type": ["AnalysisSet", "FileSet", "Item"],
           accession: "TEST001",
+          file_set_type: "principal analysis",
           files: [],
           summary: "Test file set",
         },
@@ -509,6 +498,7 @@ describe("types.ts", () => {
           "@id": "/file-sets/test",
           "@type": ["AnalysisSet", "FileSet", "Item"],
           accession: "TEST001",
+          file_set_type: "principal analysis",
           files: [],
           summary: "Test file set",
         },

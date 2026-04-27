@@ -424,11 +424,13 @@ export interface FileSetObject extends DatabaseObject {
   assay_titles?: string[];
   cell_qualifier?: string;
   cell_type?: string | OntologyTermObject;
+  data_use_limitation_summaries?: string[];
   external_image_urls?: string[];
-  file_set_type?: string;
+  file_set_type: string;
   files: string[] | FileObject[];
   integrated_content_files?: string[] | FileObject[];
   preferred_assay_titles?: string[];
+  sample_summary?: string;
   samples?: string[] | SampleObject[];
   summary: string;
 }

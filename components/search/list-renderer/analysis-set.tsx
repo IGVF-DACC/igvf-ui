@@ -1,5 +1,3 @@
-// node_modules
-import PropTypes from "prop-types";
 // components/search/list-renderer
 import {
   SearchListItemContent,
@@ -21,10 +19,23 @@ import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 // lib
 import { truncateText } from "../../../lib/general";
+import { isEmbedded, isEmbeddedArray } from "../../../lib/types";
+import { WorkflowObject } from "../../../lib/workflow";
+// root
+import { FileSetObject } from "../../../globals";
+
+type AccessoryData = {
+  [analysisSetId: string]: {
+    workflows?: WorkflowObject[];
+  };
+};
 
 export default function AnalysisSet({
   item: analysisSet,
   accessoryData = null,
+}: {
+  item: FileSetObject;
+  accessoryData: AccessoryData | null;
 }) {
   // Determine if at least one workflow in the analysis set has `uniform_pipeline` set.
   const accessoryAnalysisSet = accessoryData?.[analysisSet["@id"]];
@@ -32,10 +43,13 @@ export default function AnalysisSet({
   const isUniformPipeline = workflows.some(
     (workflow) => workflow.uniform_pipeline
   );
-  // Collect all files.content_type and deduplicate
+
+  // Collect all files.content_type and deduplicate.
   const fileContentType =
-    analysisSet.files?.length > 0
-      ? [...new Set(analysisSet.files.map((file) => file.content_type))].sort()
+    analysisSet.files?.length > 0 && isEmbeddedArray(analysisSet.files)
+      ? [...new Set(analysisSet.files.map((file) => file.content_type))].sort(
+          (a, b) => a.localeCompare(b)
+        )
       : [];
 
   const isSupplementsVisible =
@@ -44,6 +58,8 @@ export default function AnalysisSet({
     analysisSet.sample_summary ||
     fileContentType.length > 0 ||
     isUniformPipeline;
+
+  const lab = isEmbedded(analysisSet.lab) ? analysisSet.lab : null;
 
   return (
     <SearchListItemContent>
@@ -57,7 +73,7 @@ export default function AnalysisSet({
         </SearchListItemUniqueId>
         <SearchListItemTitle>{analysisSet.summary}</SearchListItemTitle>
         <SearchListItemMeta>
-          <span key="lab">{analysisSet.lab.title}</span>
+          <span key="lab">{lab?.title}</span>
         </SearchListItemMeta>
         {isSupplementsVisible && (
           <SearchListItemSupplement>
@@ -72,16 +88,6 @@ export default function AnalysisSet({
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {fileContentType.length > 0 && (
-              <SearchListItemSupplementSection>
-                <SearchListItemSupplementLabel>
-                  Files
-                </SearchListItemSupplementLabel>
-                <SearchListItemSupplementContent>
-                  {fileContentType.join(", ")}
-                </SearchListItemSupplementContent>
-              </SearchListItemSupplementSection>
-            )}
             {analysisSet.sample_summary && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
@@ -89,6 +95,16 @@ export default function AnalysisSet({
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
                   {analysisSet.sample_summary}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+            {fileContentType.length > 0 && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Files
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  {fileContentType.join(", ")}
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
@@ -106,14 +122,7 @@ export default function AnalysisSet({
   );
 }
 
-AnalysisSet.propTypes = {
-  // Single analysis set search-result object to display on a search-result list page
-  item: PropTypes.object.isRequired,
-  // Accessory data to display for all search-result objects
-  accessoryData: PropTypes.object,
-};
-
-AnalysisSet.getAccessoryDataPaths = (items) => {
+AnalysisSet.getAccessoryDataPaths = (items: FileSetObject[]) => {
   // Get the `workflows` arrays for all analysis sets in the results.
   return [
     {

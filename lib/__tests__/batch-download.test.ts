@@ -55,6 +55,7 @@ describe("Test batch download controller classes", () => {
         "@id": "/analysis-sets/IGVFDS1006IYEJ/",
         "@type": ["AnalysisSet", "FileSet", "Item"],
         creation_timestamp: "2024-07-05T17:19:40.744723+00:00",
+        file_set_type: "principal analysis",
         status: "released",
         uuid: "dd171b83-cbd9-4d06-4aa1-b77ab49569cd",
         files: [
@@ -90,6 +91,7 @@ describe("Test batch download controller classes", () => {
         "@id": "/analysis-sets/IGVFDS1006IYEJ/",
         "@type": ["AnalysisSet", "FileSet", "Item"],
         creation_timestamp: "2024-07-05T17:19:40.744723+00:00",
+        file_set_type: "principal analysis",
         status: "released",
         uuid: "dd171b83-cbd9-4d06-4aa1-b77ab49569cd",
         files: [
