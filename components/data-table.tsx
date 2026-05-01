@@ -121,14 +121,14 @@ function SingleRow<TMeta = unknown>({
         // Pass meta only to custom components, not to default components
         const cellProps = cell.component
           ? {
-              rowSpan: cell._rowSpan,
-              colSpan: cell.colSpan,
+              rowSpan: cell._rowSpan ?? 1,
+              colSpan: cell.colSpan ?? 1,
               meta,
               ...cell.componentProps,
             }
           : {
-              rowSpan: cell._rowSpan,
-              colSpan: cell.colSpan,
+              rowSpan: cell._rowSpan ?? 1,
+              colSpan: cell.colSpan ?? 1,
               ...cell.componentProps,
             };
 
@@ -164,7 +164,7 @@ export function DataTable<TMeta = unknown>({
           const htmlTableRows = _.groupBy(flattenedCells, "_htmlRowId");
 
           // Now we're in a contiguous segment of rows that are all header rows or all data rows.
-          const isHeaderSegment = rows[0].isHeaderRow;
+          const isHeaderSegment = rows[0].isHeaderRow ?? false;
           const SegmentWrapper = isHeaderSegment
             ? HeaderRowsWrapper
             : DataRowsWrapper;

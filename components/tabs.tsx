@@ -1,7 +1,6 @@
 // node_modules
 import { Tab } from "@headlessui/react";
-import PropTypes from "prop-types";
-import { Children } from "react";
+import { Children, isValidElement, ReactNode } from "react";
 
 /**
  * This module lets you place tabs that switch between different content in one area of a page. See
@@ -14,33 +13,58 @@ import { Children } from "react";
  * these indices changing if you change the order of the tabs. By using an id instead, you can
  * reorder tabs without changing their ids. The array this function returns helps map the index to
  * the id.
- * @param {React.node} children Direct children of the TabGroup component including TabList
- * @returns {string[]} An array of the ids of the TabTitle components within the TabGroup
+ *
+ * @param children - Direct children of the TabGroup component including TabList
+ * @returns Array of the ids of the TabTitle components within the TabGroup
  */
-function getTabIdsWithinTabGroup(children) {
-  const tabTitleComponents = Children.toArray(children)
-    .filter((child) => child.type === TabList)
-    .map((tabList) => Children.toArray(tabList.props.children))
-    .flat();
-  return tabTitleComponents.map((tabTitle) => tabTitle.props.id);
+function getTabIdsWithinTabGroup(children: ReactNode): string[] {
+  // Find all TabList components within the TabGroup's children.
+  const tabListChildren = Children.toArray(children).filter(
+    (child): child is React.ReactElement<{ children: ReactNode }> =>
+      isValidElement(child) && child.type === TabList
+  );
+
+  // For each TabList, find all TabTitle components.
+  const tabTitleComponents = tabListChildren.flatMap((tabList) =>
+    Children.toArray(tabList.props.children)
+  );
+
+  // For each TabTitle component, extract its id if it's a string. If the id is missing or not a
+  // string, ignore that TabTitle since we won't be able to map it to an index reliably.
+  return tabTitleComponents.flatMap((tabTitle) => {
+    if (!isValidElement(tabTitle) || tabTitle.type !== TabTitle) {
+      return [];
+    }
+
+    return typeof tabTitle.props.id === "string" ? [tabTitle.props.id] : [];
+  });
 }
 
 /**
  * Wraps the entire tab complex including all tabs and their associated panes. Optionally, pass
  * user clicks in tabs to the parent component.
+ *
+ * @param onChange - Optional callback function to invoke when the selected tab changes
+ * @param defaultId - The id of the tab to select by default. First tab if not provided
+ * @param className - Tailwind CSS classes to apply to the outermost element
  */
 export function TabGroup({
-  onChange = null,
-  defaultId = "",
-  className = null,
+  onChange,
+  defaultId,
+  className,
   children,
+}: {
+  onChange?: (id: string) => void;
+  defaultId?: string;
+  className?: string;
+  children: ReactNode;
 }) {
   const tabIds = getTabIdsWithinTabGroup(children);
   const defaultTabIndex = defaultId ? tabIds.indexOf(defaultId) : 0;
 
   // Convert the tab index from headlessui to the corresponding tab id, then invoke the parent's
   // onChange callback with the id, if provided.
-  function onChangeWithId(index) {
+  function onChangeWithId(index: number) {
     if (onChange) {
       onChange(tabIds[index]);
     }
@@ -56,32 +80,26 @@ export function TabGroup({
   );
 }
 
-TabGroup.propTypes = {
-  // Optional callback function to invoke when the selected tab changes
-  onChange: PropTypes.func,
-  // The id of the tab to select by default
-  defaultId: PropTypes.string,
-  // Tailwind CSS classes to apply to the outermost element
-  className: PropTypes.string,
-};
-
 /**
  * Wrap the `TabTitle` components within this component. By default, this component adds a
  * bottom border to the tabs that's the full width of the <TabGroup> component. You can override
  * this with the `className` prop.
+ *
+ * @param className - Tailwind CSS classes to apply to the wrapper around the tabs
  */
-export function TabList({ className = "border-b border-tab-group", children }) {
+export function TabList({
+  className = "border-b border-tab-group",
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
   return (
     <Tab.List className={`flex items-stretch ${className}`}>
       {children}
     </Tab.List>
   );
 }
-
-TabList.propTypes = {
-  // Tailwind CSS classes to apply to the wrapper around the tabs; overrides the default
-  className: PropTypes.string,
-};
 
 /**
  * Implements a single tab. Wrap each tab's title tab title within this component. You can use this
@@ -90,29 +108,29 @@ TabList.propTypes = {
  * tab. This lets you render different content for the selected tab. The function also receives the
  * `isDisabled` argument for tabs the parent component has disabled. Disabled tabs do not react to
  * mouse clicks nor hovers.
+ *
+ * @param label - Accessible label for this tab if the title isn't enough
+ * @param isDisabled - True to disable this tab
+ * @param className - Tailwind CSS classes to apply to each tab title; overrides the default
  */
 export function TabTitle({
-  id = null,
-  label = null,
+  id,
+  label,
   isDisabled = false,
   className = "items-center font-semibold",
   children,
+}: {
+  id?: string;
+  label?: string;
+  isDisabled?: boolean;
+  className?: string;
+  children:
+    | ReactNode
+    | ((props: { selected: boolean; isDisabled: boolean }) => ReactNode);
 }) {
-  // Clone the children of TabTitle and add TabTitle's id prop to each clone's props.
-  const childrenWithId = Children.map(children, (child) => {
-    return child && typeof child === "object"
-      ? {
-          ...child,
-          props: {
-            ...child.props,
-            id,
-          },
-        }
-      : child;
-  });
-
   return (
     <Tab
+      id={id}
       disabled={isDisabled}
       className={`flex items-stretch ${className}`}
       aria-label={label}
@@ -131,8 +149,8 @@ export function TabTitle({
             }`}
           >
             {typeof children === "function"
-              ? childrenWithId({ selected, isDisabled })
-              : childrenWithId}
+              ? children({ selected, isDisabled })
+              : children}
           </div>
         );
       }}
@@ -140,37 +158,32 @@ export function TabTitle({
   );
 }
 
-TabTitle.propTypes = {
-  // Unique ID to identify this tab
-  id: PropTypes.string,
-  // Accessible label if the tab title isn't enough
-  label: PropTypes.string,
-  // True to disable this tab
-  isDisabled: PropTypes.bool,
-  // Tailwind CSS classes to apply to each tab title; overrides the default
-  className: PropTypes.string,
-};
-
 /**
  * Wraps all of the content areas for the tabs.
+ *
+ * @param className - Tailwind CSS classes to apply to the wrapper around all tab panes
  */
-export function TabPanes({ className = null, children }) {
+export function TabPanes({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
   return <Tab.Panels className={className}>{children}</Tab.Panels>;
 }
 
-TabPanes.propTypes = {
-  // Tailwind CSS classes to apply to the wrapper around all tab panes
-  className: PropTypes.string,
-};
-
 /**
  * Wraps a single tab content area for a single tab.
+ *
+ * @param className - Tailwind CSS classes to apply to this tab pane; overrides the default
  */
-export function TabPane({ className = null, children }) {
+export function TabPane({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
   return <Tab.Panel className={className}>{children}</Tab.Panel>;
 }
-
-TabPane.propTypes = {
-  // Tailwind CSS classes to apply to the tab pane
-  className: PropTypes.string,
-};

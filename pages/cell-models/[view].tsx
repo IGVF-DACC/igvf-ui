@@ -1,5 +1,6 @@
 // node_modules
 import _ from "lodash";
+import { type GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -419,8 +420,8 @@ export default function TissueSummary({
   // the `<DataGrid>` component.
   const dataGrid = convertMatrixToDataGrid(cellModel.matrix, view);
 
-  function handleTabClick(tabId) {
-    router.push(viewQueries[tabId].pagePath);
+  function handleTabClick(tabId: string) {
+    void router.push(viewQueries[tabId].pagePath);
   }
 
   return (
@@ -436,9 +437,9 @@ export default function TissueSummary({
           ))}
         </TabList>
         <div className="mt-4">
-          <LabelXAxis label={cellModel.matrix.x.label} />
+          <LabelXAxis label={cellModel.matrix.x.label!} />
           <div className="flex">
-            <LabelYAxis label={cellModel.matrix.y.label} />
+            <LabelYAxis label={cellModel.matrix.y.label!} />
             <div
               role="table"
               className="border-panel grid w-max auto-rows-min gap-px overflow-x-auto border bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
@@ -452,10 +453,13 @@ export default function TissueSummary({
   );
 }
 
-export async function getServerSideProps({ req, params }) {
+export async function getServerSideProps({
+  req,
+  params,
+}: GetServerSidePropsContext) {
   // Make sure the last path segment contains something we handle.
-  const view = params.view;
-  if (!acceptedViews.includes(view)) {
+  const view = params?.view as ViewIdentifier | undefined;
+  if (!view || !acceptedViews.includes(view)) {
     return { notFound: true };
   }
 
