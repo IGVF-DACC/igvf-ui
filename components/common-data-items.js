@@ -889,19 +889,11 @@ export function FileSetDataItems({
       {item.assay_titles?.length > 0 && (
         <>
           <DataItemLabel>Assay Term Names</DataItemLabel>
-          <DataItemValue>
-            <DataItemValueAnnotated
-              externalAnnotations={assayTitleDescriptionMap}
-            >
-              {item.assay_titles}
-            </DataItemValueAnnotated>
-            {" ("}
-            <Link href={item.assay_term["@id"]}>
-              {item.assay_term.term_id ??
-                item.assay_term["@id"]?.split("/")[2]?.replace("_", ":")}
-            </Link>
-            {")"}
-          </DataItemValue>
+          <DataItemValueAnnotated
+            externalAnnotations={assayTitleDescriptionMap}
+          >
+            {item.assay_titles}
+          </DataItemValueAnnotated>
         </>
       )}
       {item.preferred_assay_titles?.length > 0 && (
