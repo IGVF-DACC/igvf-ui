@@ -95,7 +95,6 @@ AssayDetails.propTypes = {
 
 export default function MeasurementSet({
   measurementSet,
-  assayTerm = null,
   controlFileSets,
   documents,
   publications,
@@ -177,14 +176,6 @@ export default function MeasurementSet({
                     <DataItemLabel>Library Preparation Kit</DataItemLabel>
                     <DataItemValue>
                       {measurementSet.library_preparation_kit}
-                    </DataItemValue>
-                  </>
-                )}
-                {assayTerm && (
-                  <>
-                    <DataItemLabel>Assay Term</DataItemLabel>
-                    <DataItemValue>
-                      <Link href={assayTerm["@id"]}>{assayTerm.term_name}</Link>
                     </DataItemValue>
                   </>
                 )}
@@ -398,8 +389,6 @@ export default function MeasurementSet({
 MeasurementSet.propTypes = {
   // Measurement set to display
   measurementSet: PropTypes.object.isRequired,
-  // Assay term of the measurement set
-  assayTerm: PropTypes.object,
   // Control File Sets of the measurement set
   controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Files to display
@@ -453,10 +442,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     if (canonicalRedirect) {
       return canonicalRedirect;
     }
-
-    const assayTerm = (
-      await request.getObject(measurementSet.assay_term["@id"])
-    ).optional();
     const documents = measurementSet.documents
       ? await requestDocuments(measurementSet.documents, request)
       : [];
@@ -568,7 +553,6 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     return {
       props: {
         measurementSet,
-        assayTerm,
         controlFileSets,
         documents,
         publications,
