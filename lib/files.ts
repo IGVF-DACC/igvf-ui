@@ -4,22 +4,32 @@
 // node_modules
 import _ from "lodash";
 // lib
-import { requestFiles } from "./common-requests";
+import {
+  requestFiles,
+  requestFileSets,
+  requestQualityMetrics,
+} from "./common-requests";
 import {
   type Cell,
   type DataGridFormat,
   type Row,
   type RowComponentProps,
 } from "./data-grid";
+import {
+  isDatabaseObjectArrayOfType,
+  isDatabaseObjectOfType,
+} from "./database-object";
 import type FetchRequest from "./fetch-request";
+import { type QualityMetricObject } from "./quality-metric";
 import { type SampleObject } from "./samples";
+import { isEmbedded, isPath, isPathArray } from "./types";
 // root
 import type {
   DatabaseObject,
   FileObject,
   FileSetObject,
   UploadStatus,
-} from "../globals.d";
+} from "../globals";
 
 /**
  * Flag indicating a missing flowcell ID in a sequencing file group. Uses "z" to ensure
@@ -241,6 +251,36 @@ export async function getAllDerivedFromFiles(
 }
 
 /**
+ * Get all file-set objects referenced by the `file_set` property of the given files.
+ *
+ * @param files - Files from which to retrieve file sets
+ * @param request - Request object
+ * @returns All file-set objects from all the given files, deduplicated
+ */
+export async function getFilesFileSets(
+  files: FileObject[],
+  request: FetchRequest
+): Promise<FileSetObject[]> {
+  if (!files || files.length === 0) {
+    return [];
+  }
+
+  // Collect the paths of all file sets in the `file_set` property of all files.
+  const fileSetPaths = files.reduce((acc, file) => {
+    if (isPath(file.file_set)) {
+      acc.add(file.file_set);
+    } else if (isEmbedded(file.file_set)) {
+      acc.add(file.file_set["@id"]);
+    }
+    return acc;
+  }, new Set<string>());
+
+  return fileSetPaths.size > 0
+    ? await requestFileSets([...fileSetPaths], request)
+    : [];
+}
+
+/**
  * Check if a file is downloadable based on its upload status and its anvil status, as well as
  * not being externally hosted.
  * @param file File object to check
@@ -263,30 +303,6 @@ export function checkFileDownloadable(
 }
 
 /**
- * Type guard to see if a file set is an embedded file-set object in a file object.
- * @param fileSet File set in a file object; could be a string `@id` or an embedded file set object
- * @returns True if the file set is an embedded file set object
- */
-function checkFileSetIsObject(
-  fileSet: string | FileSetObject
-): fileSet is FileSetObject {
-  return (fileSet as FileSetObject).samples !== undefined;
-}
-
-/**
- * Type guard to see if a file set's `samples` property is an array of sample objects or an array of
- * sample `@id` strings.
- * @param samples Samples array in a file set; could be an array of sample objects or an array of
- *     sample `@id` strings
- * @returns True if the samples array is an array of sample objects
- */
-function checkSampleIsObjectArray(
-  samples: string[] | SampleObject[]
-): samples is SampleObject[] {
-  return samples?.length > 0 && typeof samples[0] !== "string";
-}
-
-/**
  * Collect all sample objects from a file object's `file_set` object. Both `file_set` and
  * `file_set.samples` have to be embedded objects in the file object. The returned samples are
  * deduplicated.
@@ -296,10 +312,11 @@ function checkSampleIsObjectArray(
 export function collectFileFileSetSamples(files: FileObject): SampleObject[] {
   // Collect all samples from the file set of the file.
   const samples: SampleObject[] = [];
-  if (checkFileSetIsObject(files.file_set) && files.file_set.samples) {
-    if (checkSampleIsObjectArray(files.file_set.samples)) {
-      samples.push(...files.file_set.samples);
-    }
+  if (
+    isDatabaseObjectOfType(files.file_set, "FileSet") &&
+    isDatabaseObjectArrayOfType(files.file_set.samples, "Sample")
+  ) {
+    samples.push(...files.file_set.samples);
   }
 
   return _.uniqBy(samples, "@id");
@@ -479,4 +496,64 @@ export function extractSeqspecsForFile(
     );
   }
   return _.sortBy(matchingSeqspecs, "accession");
+}
+
+/**
+ * Given an array of files, retrieve all quality metric objects from those files' `quality_metrics`
+ * property.
+ *
+ * @param files - Files from which to request quality metric objects
+ * @param request - FetchRequest instance to use for retrieving database objects
+ * @returns Array of quality-metric objects for the given files
+ */
+export async function requestFilesQualityMetrics(
+  files: FileObject[],
+  request: FetchRequest
+): Promise<QualityMetricObject[]> {
+  if (!isDatabaseObjectArrayOfType(files, "File")) {
+    return [];
+  }
+
+  const qualityMetricsPaths = [
+    ...new Set(
+      files.flatMap((file) =>
+        isPathArray(file.quality_metrics) ? file.quality_metrics : []
+      )
+    ),
+  ];
+
+  return qualityMetricsPaths.length > 0
+    ? await requestQualityMetrics(qualityMetricsPaths, request)
+    : [];
+}
+
+/**
+ * Given an array of files, retrieve all reference files from those files' `reference_files`
+ * property.
+ *
+ * @param files - Files from which to retrieve reference files
+ * @param request - FetchRequest instance to use for retrieving reference files
+ * @returns Reference file objects referenced by the files in the pseudobulk set
+ */
+export async function requestFilesReferenceFiles(
+  files: FileObject[],
+  request: FetchRequest
+): Promise<FileObject[]> {
+  if (!isDatabaseObjectArrayOfType(files, "File")) {
+    return [];
+  }
+
+  // Collect the paths of all reference files in the `reference_files` property of all files, and
+  // deduplicate these paths.
+  const referenceFilePaths = [
+    ...new Set(
+      files.flatMap((file) =>
+        isPathArray(file.reference_files) ? file.reference_files : []
+      )
+    ),
+  ];
+
+  return referenceFilePaths.length > 0
+    ? await requestFiles(referenceFilePaths, request)
+    : [];
 }

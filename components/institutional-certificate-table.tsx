@@ -6,20 +6,20 @@ import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { DataUseLimitationStatus } from "./data-use-limitation-status";
 import Link from "./link-no-prefetch";
 import LinkedIdAndStatus from "./linked-id-and-status";
-import SortableGrid from "./sortable-grid";
+import SortableGrid, { SortableGridConfig } from "./sortable-grid";
 // lib
 import { type InstitutionalCertificateObject } from "../lib/data-use-limitation";
 // root
-import type { DatabaseObject, LabObject } from "../globals";
+import type { LabObject } from "../globals";
 
 /**
  * Defines the columns for the institutional certificate table.
  */
-const icColumns = [
+const icColumns: SortableGridConfig<InstitutionalCertificateObject>[] = [
   {
     id: "certificate_identifier",
     title: "Certificate Identifier",
-    display: ({ source }: { source: InstitutionalCertificateObject }) => (
+    display: ({ source }) => (
       <LinkedIdAndStatus item={source}>
         {source.certificate_identifier}
       </LinkedIdAndStatus>
@@ -28,16 +28,14 @@ const icColumns = [
   {
     id: "data_use_limitation_summary",
     title: "Data Use Limitation",
-    display: ({ source }: { source: InstitutionalCertificateObject }) => (
+    display: ({ source }) => (
       <DataUseLimitationStatus summary={source.data_use_limitation_summary} />
     ),
   },
   {
     id: "controlled_access",
     title: "Controlled Access",
-    display: ({ source }: { source: DatabaseObject }) => (
-      <ControlledAccessIndicator item={source} />
-    ),
+    display: ({ source }) => <ControlledAccessIndicator item={source} />,
     sorter: (item: InstitutionalCertificateObject): number =>
       item.controlled_access ? 0 : 1,
     hide: (items: InstitutionalCertificateObject[]): boolean =>
@@ -47,7 +45,7 @@ const icColumns = [
   {
     id: "lab",
     title: "Lab",
-    display: ({ source }: { source: InstitutionalCertificateObject }) => {
+    display: ({ source }) => {
       const lab = source.lab as LabObject;
       return <Link href={lab["@id"]}>{lab.title}</Link>;
     },

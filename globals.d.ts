@@ -1,6 +1,7 @@
 import { type GeneLocation } from "./lib/genes";
 import { type QualityMetricObject } from "./lib/quality-metric";
 import { type BiosampleObject, type SampleObject } from "./lib/samples";
+import { type LinkTo } from "./lib/types";
 import { type WorkflowObject } from "./lib/workflow";
 
 /**
@@ -65,16 +66,18 @@ export interface DatabaseObject extends DataProviderObject {
   accession?: string;
   actions?: ObjectActions[];
   alternate_accessions?: string[];
-  award?: string | DatabaseObject;
+  award?: LinkTo<AwardObject>;
   audit?: Audits;
   collections?: string[];
   creation_timestamp?: string;
   description?: string;
-  lab?: string | LabObject;
+  documents?: LinkTo<DocumentObject>[];
+  lab?: LinkTo<LabObject>;
   name?: string;
   release_timestamp?: string;
-  status?: string;
-  submitted_by?: string | UserObject;
+  status: string;
+  submitted_by?: LinkTo<UserObject>;
+  submitter_comment?: string;
   summary?: string;
   supersedes?: string[];
   superseded_by?: string[];
@@ -212,8 +215,12 @@ export type Profiles = ProfilesProps & {
 /**
  * Describes the search-results object returned by the data provider.
  */
-export interface SearchResults extends DatabaseObject {
-  "@graph": SearchResultsObject[];
+export interface SearchResults {
+  "@context": string;
+  "@graph": DatabaseObject[];
+  "@id": string;
+  "@type": string[];
+  actions?: ObjectActions[];
   clear_filters: string;
   columns: SearchResultsColumns;
   facet_groups?: SearchResultsFacetGroup[];
@@ -419,19 +426,24 @@ export interface FileObject extends DatabaseObject {
  */
 export interface FileSetObject extends DatabaseObject {
   aliases?: string[];
-  construct_library_sets?: string[] | FileSetObject[];
-  assay_term?: string | OntologyTermObject;
+  construct_library_sets?: LinkTo<FileSetObject>[];
+  assay_term?: LinkTo<OntologyTermObject>;
   assay_titles?: string[];
   cell_qualifier?: string;
-  cell_type?: string | OntologyTermObject;
+  cell_type?: LinkTo<OntologyTermObject>;
   data_use_limitation_summaries?: string[];
+  doi?: string;
+  donors?: LinkTo<DonorObject>[];
   external_image_urls?: string[];
   file_set_type: string;
-  files: string[] | FileObject[];
-  integrated_content_files?: string[] | FileObject[];
+  files: LinkTo<FileObject>[];
+  input_file_sets?: LinkTo<FileSetObject>[];
+  integrated_content_files?: LinkTo<FileObject>[];
   preferred_assay_titles?: string[];
+  publications?: LinkTo<PublicationObject>[];
+  revoke_detail?: string;
   sample_summary?: string;
-  samples?: string[] | SampleObject[];
+  samples?: LinkTo<SampleObject>[];
   summary: string;
 }
 
@@ -475,7 +487,6 @@ export interface AwardObject extends DatabaseObject {
   pis?: string[] | UserObject[];
   project: string;
   start_date?: string;
-  submitter_comment?: string;
   title: string;
   url?: string;
   viewing_group?: string;
@@ -490,7 +501,7 @@ export interface DonorObject extends DatabaseObject {
   aliases?: string[];
   dbxrefs?: string[];
   description?: string;
-  documents: string[] | DocumentObject[];
+  documents?: string[] | DocumentObject[];
 }
 
 export interface HumanDonorObject extends DonorObject {
@@ -614,7 +625,6 @@ export interface UserObject extends DatabaseObject {
   lab?: string | LabObject;
   last_name: string;
   submits_for?: string[];
-  submitter_comment?: string;
   title: string;
   viewing_groups?: string[];
 }
@@ -685,7 +695,6 @@ export interface AnalysisStepObject extends DatabaseObject {
   output_content_types: string[];
   parents?: string[] | AnalysisStepObject[];
   step_label: string;
-  submitter_comment?: string;
   title: string;
 }
 

@@ -1,5 +1,5 @@
 // node_modules
-import type { GetServerSidePropsContext } from "next";
+import type { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
 import {
@@ -19,12 +19,7 @@ import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
 // root
-import type {
-  LabObject,
-  PageComponentProps,
-  ServerSideProps,
-  UserObject,
-} from "../../globals";
+import type { LabObject, PageComponentProps, UserObject } from "../../globals";
 
 /**
  * Props for the User page component.
@@ -93,13 +88,17 @@ export async function getServerSideProps({
   query,
 }: GetServerSidePropsContext<{
   uuid: string;
-}>): Promise<ServerSideProps> {
+}>): Promise<GetServerSidePropsResult<UserProps>> {
+  if (!params) {
+    return { notFound: true };
+  }
+
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const response = (await request.getObject(`/users/${params.uuid}/`)).union();
-  if (FetchRequest.isResponseSuccess(response)) {
-    const user = response as UserObject;
-
+  const user = (
+    await request.getObject<UserObject>(`/users/${params.uuid}/`)
+  ).union();
+  if (FetchRequest.isResponseSuccess(user)) {
     const lab: LabObject | null = user.lab
       ? ((
           await request.getObject(
@@ -114,8 +113,8 @@ export async function getServerSideProps({
         lab,
         pageContext: { title: user.title },
         isJson,
-      } satisfies UserProps,
+      },
     };
   }
-  return errorObjectToProps(response);
+  return errorObjectToProps(user);
 }

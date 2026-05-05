@@ -1,9 +1,5 @@
-import type {
-  DatabaseObject,
-  FileObject,
-  FileSetObject,
-  SampleObject,
-} from "../../globals.d";
+import type { DatabaseObject, FileObject, FileSetObject } from "../../globals";
+import { type SampleObject } from "../samples";
 import {
   requestAnalysisSteps,
   requestAnalysisStepVersions,
@@ -681,7 +677,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFetch).toHaveBeenCalledWith(
-      "/search-quick/?type=FileSet&field=@type&field=accession&field=aliases&field=cell_qualifier&field=cell_type&field=file_set_type&field=lab.title&field=preferred_assay_titles&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
+      "/search-quick/?type=FileSet&field=@type&field=accession&field=aliases&field=cell_qualifier&field=cell_type&field=construct_library_sets&field=file_set_type&field=lab.title&field=preferred_assay_titles&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -1347,30 +1343,66 @@ describe("Test all the common requests", () => {
 
   describe("requestLibraryDesignFiles function", () => {
     test("with embedded construct library sets and integrated content files", async () => {
-      const fileSet = {
+      const fileSet: FileSetObject = {
         "@id": "/measurement-sets/IGVFDS1234TEST/",
         "@type": ["MeasurementSet", "FileSet", "Item"],
         files: [],
+        file_set_type: "experimental data",
         summary: "Test measurement set",
+        status: "in progress",
         construct_library_sets: [
           {
             "@id": "/construct-library-sets/IGVFDS5678CLS/",
-            "@type": ["ConstructLibrarySet", "Item"],
+            "@type": ["ConstructLibrarySet", "FileSet", "Item"],
             files: [],
             summary: "Construct library set",
+            file_set_type: "experimental data",
+            status: "in progress",
             integrated_content_files: [
               {
                 "@id": "/tabular-files/IGVFFI1111TAB/",
                 "@type": ["TabularFile", "File", "Item"],
+                accession: "IGVFFI0003INDX",
+                award: "/awards/HG012012/",
+                content_type: "index plate",
+                controlled_access: false,
+                derived_manually: false,
+                file_format: "tsv",
+                file_set: "/curated-sets/IGVFDS8484BARC/",
+                file_size: 11111111,
+                lab: "/labs/j-michael-cherry/",
+                md5sum: "d01b782a22aed4758d35e271a9529616",
+                status: "in progress",
+                submitted_file_name:
+                  "/Users/igvf/igvf_files/Dual_Index_Kit_NT_Set_A.csv.gz",
+                upload_status: "validated",
               },
               {
-                "@id": "/reference-files/IGVFFI2222REF/",
-                "@type": ["ReferenceFile", "File", "Item"],
+                "@id": "/tabular-files/IGVFFI2222REF/",
+                "@type": ["TabularFile", "File", "Item"],
+                accession: "IGVFFI0012CAMG",
+                aliases: ["igvf:marker_gene_activity"],
+                award: "/awards/HG012012/",
+                content_type: "marker gene activity",
+                controlled_access: false,
+                creation_timestamp: "2026-05-05T21:12:06.342653+00:00",
+                derived_manually: false,
+                file_format: "tsv",
+                file_set: "/curated-sets/IGVFDS0000EXSD/",
+                file_size: 1456000,
+                lab: "/labs/j-michael-cherry/",
+                md5sum: "48a436084420ad6d5470c64e1fa2c526",
+                release_timestamp: "2025-03-06T12:34:56Z",
+                schema_version: "21",
+                status: "released",
+                submitted_file_name:
+                  "/Users/igvf/igvf_files/marker_gene_activity.tsv.gz",
+                upload_status: "validated",
               },
             ],
           },
         ],
-      } as FileSetObject;
+      };
 
       const mockResult = {
         "@graph": [
@@ -1395,7 +1427,7 @@ describe("Test all the common requests", () => {
       const result = await requestLibraryDesignFiles(fileSet, request);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        "/search-quick/?type=TabularFile&type=ReferenceFile&field=@type&field=accession&field=aliases&field=content_summary&field=content_type&field=controlled_access&field=creation_timestamp&field=derived_from&field=derived_manually&field=external_host_url&field=externally_hosted&field=file_format&field=file_size&field=file_set&field=filtered&field=flowcell_id&field=href&field=illumina_read_type&field=imaging_platform&field=index&field=input_file_for&field=lab.@id&field=lab.title&field=lane&field=quality_metrics&field=read_names&field=reference_files&field=seqspecs&field=seqspec_document&field=sequencing_platform&field=sequencing_run&field=submitted_file_name&field=status&field=summary&field=tile&field=workflows&field=upload_status&@id=/tabular-files/IGVFFI1111TAB/&@id=/reference-files/IGVFFI2222REF/&limit=2",
+        "/search-quick/?type=TabularFile&type=ReferenceFile&field=@type&field=accession&field=aliases&field=content_summary&field=content_type&field=controlled_access&field=creation_timestamp&field=derived_from&field=derived_manually&field=external_host_url&field=externally_hosted&field=file_format&field=file_size&field=file_set&field=filtered&field=flowcell_id&field=href&field=illumina_read_type&field=imaging_platform&field=index&field=input_file_for&field=lab.@id&field=lab.title&field=lane&field=quality_metrics&field=read_names&field=reference_files&field=seqspecs&field=seqspec_document&field=sequencing_platform&field=sequencing_run&field=submitted_file_name&field=status&field=summary&field=tile&field=workflows&field=upload_status&@id=/tabular-files/IGVFFI1111TAB/&@id=/tabular-files/IGVFFI2222REF/&limit=2",
         expect.anything()
       );
       expect(result).toHaveLength(2);
@@ -1403,13 +1435,42 @@ describe("Test all the common requests", () => {
       expect(result[1]).toEqual(mockResult["@graph"][1]);
     });
 
-    test("with no construct library sets", async () => {
-      const fileSet = {
+    test("with construct library sets but no integrated content files", async () => {
+      const fileSet: FileSetObject = {
         "@id": "/measurement-sets/IGVFDS1234TEST/",
         "@type": ["MeasurementSet", "FileSet", "Item"],
         files: [],
+        file_set_type: "experimental data",
         summary: "Test measurement set",
-      } as FileSetObject;
+        status: "in progress",
+        construct_library_sets: [
+          {
+            "@id": "/construct-library-sets/IGVFDS5678CLS/",
+            "@type": ["ConstructLibrarySet", "FileSet", "Item"],
+            files: [],
+            file_set_type: "experimental data",
+            status: "in progress",
+            summary: "Construct library set",
+          },
+        ],
+      };
+
+      const request = new FetchRequest();
+      const result = await requestLibraryDesignFiles(fileSet, request);
+
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(result).toHaveLength(0);
+    });
+
+    test("with no construct library sets", async () => {
+      const fileSet: FileSetObject = {
+        "@id": "/measurement-sets/IGVFDS1234TEST/",
+        "@type": ["MeasurementSet", "FileSet", "Item"],
+        files: [],
+        file_set_type: "experimental data",
+        status: "in progress",
+        summary: "Test measurement set",
+      };
 
       const request = new FetchRequest();
       const result = await requestLibraryDesignFiles(fileSet, request);
@@ -1488,47 +1549,116 @@ describe("Test all the common requests", () => {
     });
 
     test("with multiple construct library sets and unique integrated content files", async () => {
-      const fileSet = {
+      const fileSet: FileSetObject = {
         "@id": "/measurement-sets/IGVFDS1234TEST/",
         "@type": ["MeasurementSet", "FileSet", "Item"],
         files: [],
+        file_set_type: "experimental data",
+        status: "in progress",
         summary: "Test measurement set",
         construct_library_sets: [
           {
             "@id": "/construct-library-sets/IGVFDS5678CLS/",
-            "@type": ["ConstructLibrarySet", "Item"],
+            "@type": ["ConstructLibrarySet", "FileSet", "Item"],
             files: [],
+            file_set_type: "experimental data",
+            status: "in progress",
             summary: "Construct library set",
             integrated_content_files: [
               {
                 "@id": "/tabular-files/IGVFFI1111TAB/",
                 "@type": ["TabularFile", "File", "Item"],
+                accession: "IGVFFI0003INDX",
+                award: "/awards/HG012012/",
+                content_type: "index plate",
+                controlled_access: false,
+                derived_manually: false,
+                file_format: "tsv",
+                file_set: "/curated-sets/IGVFDS8484BARC/",
+                file_size: 11111111,
+                lab: "/labs/j-michael-cherry/",
+                md5sum: "d01b782a22aed4758d35e271a9529616",
+                status: "in progress",
+                submitted_file_name:
+                  "/Users/igvf/igvf_files/Dual_Index_Kit_NT_Set_A.csv.gz",
+                upload_status: "validated",
               },
               {
-                "@id": "/reference-files/IGVFFI2222REF/",
-                "@type": ["ReferenceFile", "File", "Item"],
+                "@id": "/tabular-files/IGVFFI2222REF/",
+                "@type": ["TabularFile", "File", "Item"],
+                accession: "IGVFFI0012CAMG",
+                aliases: ["igvf:marker_gene_activity"],
+                award: "/awards/HG012012/",
+                content_type: "marker gene activity",
+                controlled_access: false,
+                creation_timestamp: "2026-05-05T21:12:06.342653+00:00",
+                derived_manually: false,
+                file_format: "tsv",
+                file_set: "/curated-sets/IGVFDS0000EXSD/",
+                file_size: 1456000,
+                lab: "/labs/j-michael-cherry/",
+                md5sum: "48a436084420ad6d5470c64e1fa2c526",
+                release_timestamp: "2025-03-06T12:34:56Z",
+                schema_version: "21",
+                status: "released",
+                submitted_file_name:
+                  "/Users/igvf/igvf_files/marker_gene_activity.tsv.gz",
+                upload_status: "validated",
               },
             ],
           },
           {
             "@id": "/construct-library-sets/IGVFDS9999CLS/",
-            "@type": ["ConstructLibrarySet", "Item"],
+            "@type": ["ConstructLibrarySet", "FileSet", "Item"],
             files: [],
+            file_set_type: "experimental data",
+            status: "in progress",
             summary: "Construct library set",
             integrated_content_files: [
               {
-                // Duplicate - should be deduped
                 "@id": "/tabular-files/IGVFFI1111TAB/",
                 "@type": ["TabularFile", "File", "Item"],
+                accession: "IGVFFI0003INDX",
+                award: "/awards/HG012012/",
+                content_type: "index plate",
+                controlled_access: false,
+                derived_manually: false,
+                file_format: "tsv",
+                file_set: "/curated-sets/IGVFDS8484BARC/",
+                file_size: 11111111,
+                lab: "/labs/j-michael-cherry/",
+                md5sum: "d01b782a22aed4758d35e271a9529616",
+                status: "in progress",
+                submitted_file_name:
+                  "/Users/igvf/igvf_files/Dual_Index_Kit_NT_Set_A.csv.gz",
+                upload_status: "validated",
               },
               {
-                "@id": "/reference-files/IGVFFI3333REF/",
-                "@type": ["ReferenceFile", "File", "Item"],
+                "@id": "/tabular-files/IGVFFI2222REF/",
+                "@type": ["TabularFile", "File", "Item"],
+                accession: "IGVFFI0012CAMG",
+                aliases: ["igvf:marker_gene_activity"],
+                award: "/awards/HG012012/",
+                content_type: "marker gene activity",
+                controlled_access: false,
+                creation_timestamp: "2026-05-05T21:12:06.342653+00:00",
+                derived_manually: false,
+                file_format: "tsv",
+                file_set: "/curated-sets/IGVFDS0000EXSD/",
+                file_size: 1456000,
+                lab: "/labs/j-michael-cherry/",
+                md5sum: "48a436084420ad6d5470c64e1fa2c526",
+                release_timestamp: "2025-03-06T12:34:56Z",
+                schema_version: "21",
+                status: "released",
+                submitted_file_name:
+                  "/Users/igvf/igvf_files/marker_gene_activity.tsv.gz",
+                upload_status: "validated",
               },
             ],
           },
         ],
-      } as FileSetObject;
+      };
 
       const mockResult = {
         "@graph": [
@@ -1559,7 +1689,7 @@ describe("Test all the common requests", () => {
       const result = await requestLibraryDesignFiles(fileSet, request);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        "/search-quick/?type=TabularFile&type=ReferenceFile&field=@type&field=accession&field=aliases&field=content_summary&field=content_type&field=controlled_access&field=creation_timestamp&field=derived_from&field=derived_manually&field=external_host_url&field=externally_hosted&field=file_format&field=file_size&field=file_set&field=filtered&field=flowcell_id&field=href&field=illumina_read_type&field=imaging_platform&field=index&field=input_file_for&field=lab.@id&field=lab.title&field=lane&field=quality_metrics&field=read_names&field=reference_files&field=seqspecs&field=seqspec_document&field=sequencing_platform&field=sequencing_run&field=submitted_file_name&field=status&field=summary&field=tile&field=workflows&field=upload_status&@id=/tabular-files/IGVFFI1111TAB/&@id=/reference-files/IGVFFI2222REF/&@id=/reference-files/IGVFFI3333REF/&limit=3",
+        "/search-quick/?type=TabularFile&type=ReferenceFile&field=@type&field=accession&field=aliases&field=content_summary&field=content_type&field=controlled_access&field=creation_timestamp&field=derived_from&field=derived_manually&field=external_host_url&field=externally_hosted&field=file_format&field=file_size&field=file_set&field=filtered&field=flowcell_id&field=href&field=illumina_read_type&field=imaging_platform&field=index&field=input_file_for&field=lab.@id&field=lab.title&field=lane&field=quality_metrics&field=read_names&field=reference_files&field=seqspecs&field=seqspec_document&field=sequencing_platform&field=sequencing_run&field=submitted_file_name&field=status&field=summary&field=tile&field=workflows&field=upload_status&@id=/tabular-files/IGVFFI1111TAB/&@id=/tabular-files/IGVFFI2222REF/&limit=2",
         expect.anything()
       );
       expect(result).toHaveLength(3);
@@ -1669,12 +1799,13 @@ describe("Test all the common requests", () => {
     });
 
     test("with only superseded_by array", async () => {
-      const item = {
+      const item: DatabaseObject = {
         "@id": "/measurement-sets/IGVFDS1234TEST/",
         "@type": ["MeasurementSet", "FileSet", "Item"],
         accession: "IGVFDS1234TEST",
+        status: "in progress",
         superseded_by: ["/measurement-sets/IGVFDS9999NEW/"],
-      } as DatabaseObject;
+      };
 
       const mockSupersededByResult = {
         "@graph": [
@@ -1682,6 +1813,7 @@ describe("Test all the common requests", () => {
             "@id": "/measurement-sets/IGVFDS9999NEW/",
             "@type": ["MeasurementSet", "FileSet", "Item"],
             accession: "IGVFDS9999NEW",
+            status: "in progress",
           },
         ],
       };

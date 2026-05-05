@@ -13,13 +13,9 @@ import { type DataTableFormat, type Row } from "../lib/data-table";
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { toShishkebabCase } from "../lib/general";
+import { isSearchResults } from "../lib/search-results";
 // root
-import type {
-  DatabaseObject,
-  PublicationObject,
-  SearchResults,
-  SoftwareObject,
-} from "../globals";
+import type { PublicationObject, SoftwareObject } from "../globals";
 
 /**
  * Header row for the DataTable.
@@ -295,13 +291,16 @@ export default function ComputationalTools({
 
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const response = (
+  const softwareResults = (
     await request.getObject(
       "/report/?type=Software&categories=*&field=%40id&field=categories&field=description&field=source_url&field=title&field=publications.@id"
     )
   ).union();
-  if (FetchRequest.isResponseSuccess(response)) {
-    const softwareResults = response as DatabaseObject as SearchResults;
+  if (FetchRequest.isResponseSuccess(softwareResults)) {
+    if (!isSearchResults(softwareResults)) {
+      throw new Error("Expected search results from server");
+    }
+
     const software = softwareResults["@graph"] as SoftwareObject[];
 
     // Get the publication object paths for the software objects.
@@ -331,5 +330,5 @@ export async function getServerSideProps({ req }) {
       },
     };
   }
-  return errorObjectToProps(response);
+  return errorObjectToProps(softwareResults);
 }

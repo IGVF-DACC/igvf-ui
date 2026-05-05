@@ -1,8 +1,13 @@
 // lib
 import { type InstitutionalCertificateObject } from "./data-use-limitation";
+import {
+  isDatabaseObjectArrayOfType,
+  pathsFromDatabaseObjects,
+} from "./database-object";
 import { trimDeprecatedFiles } from "./deprecated-files";
 import FetchRequest from "./fetch-request";
 import { type DatasetSummary } from "./home";
+import { QualityMetricObject } from "./quality-metric";
 import { type BiosampleObject, type SampleObject } from "./samples";
 // root
 import type {
@@ -148,9 +153,9 @@ export async function requestFiles(
   paths: string[],
   request: FetchRequest,
   types = ["File"]
-): Promise<DataProviderObject[]> {
+): Promise<FileObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<FileObject>(
       paths,
       [
         "@type",
@@ -269,6 +274,7 @@ export async function requestFileSets(
         "aliases",
         "cell_qualifier",
         "cell_type",
+        "construct_library_sets",
         "file_set_type",
         "lab.title",
         "preferred_assay_titles",
@@ -651,38 +657,20 @@ export async function requestPages(
  * the properties specifically requested.
  * @param paths Paths to the quality-metrics objects to request
  * @param request Request object to use to make the request
- * @returns Requested quality-metrics objects
+ * @returns Array of quality-metrics objects for the given paths
  */
 export async function requestQualityMetrics(
   paths: string[],
   request: FetchRequest
-): Promise<DataProviderObject[]> {
-  return (await request.getMultipleObjects(paths, { filterErrors: true })).map(
+): Promise<QualityMetricObject[]> {
+  return (
+    await request.getMultipleObjects<QualityMetricObject>(paths, {
+      filterErrors: true,
+    })
+  ).map(
     // getMultipleObjects already filtered out errors, so we can safely unwrap all elements.
     (result) => result.unwrap()
   );
-}
-
-/**
- * Type guard to check if the construct library sets are embedded objects or paths.
- * @param constructLibrarySets - Construct library sets to check embedded objects or paths
- * @returns True if all construct library sets are embedded objects, false if they are paths
- */
-function constructLibrarySetsAreEmbedded(
-  constructLibrarySets: string[] | FileSetObject[]
-): constructLibrarySets is FileSetObject[] {
-  return constructLibrarySets.every((set) => typeof set === "object");
-}
-
-/**
- * Type guard to check if the integrated content files are embedded objects or paths.
- * @param integratedContentFiles - Integrated content files to check if they are embedded or paths
- * @returns True if all integrated content files are embedded objects, false if they are paths
- */
-function integratedContentFilesAreEmbedded(
-  integratedContentFiles: string[] | FileObject[]
-): integratedContentFiles is FileObject[] {
-  return integratedContentFiles.every((file) => typeof file === "object");
 }
 
 /**
@@ -702,19 +690,10 @@ export async function requestLibraryDesignFiles(
   request: FetchRequest
 ): Promise<FileObject[]> {
   const constructLibrarySets = fileSet.construct_library_sets || [];
-  if (
-    constructLibrarySets.length > 0 &&
-    constructLibrarySetsAreEmbedded(constructLibrarySets)
-  ) {
+  if (isDatabaseObjectArrayOfType(constructLibrarySets, "FileSet")) {
     const integratedContentFilePaths = constructLibrarySets.flatMap((cls) => {
       const integratedContentFiles = cls.integrated_content_files || [];
-      if (
-        integratedContentFiles.length > 0 &&
-        integratedContentFilesAreEmbedded(integratedContentFiles)
-      ) {
-        return integratedContentFiles.map((file) => file["@id"]);
-      }
-      return [];
+      return pathsFromDatabaseObjects(integratedContentFiles);
     });
     const uniqueIntegratedContentFilePaths = [
       ...new Set(integratedContentFilePaths),
@@ -735,36 +714,36 @@ export async function requestLibraryDesignFiles(
  * that comprise arrays of unique paths.
  *
  * @param item - Item to request supersedes and superseded_by from
- * @param type - Type of the items that could supersede or be superseded by the item
+ * @param type - `@type` of the items that could supersede or be superseded by the item
  * @param request - Request object to use to make the request
  * @returns Objects that the item supersedes and is superseded by
  */
-export async function requestSupersedes(
+export async function requestSupersedes<T extends DatabaseObject>(
   item: DatabaseObject,
   type: string,
   request: FetchRequest
-): Promise<{ supersedes: DatabaseObject[]; supersededBy: DatabaseObject[] }> {
+): Promise<{ supersedes: T[]; supersededBy: T[] }> {
   const itemSupersedes = item.supersedes || [];
   const itemSupersededBy = item.superseded_by || [];
 
   const [supersedes, supersededBy] = await Promise.all([
     itemSupersedes.length > 0
       ? ((
-          await request.getMultipleObjectsBulk(
+          await request.getMultipleObjectsBulk<T>(
             itemSupersedes,
             ["accession"],
             [type]
           )
-        ).unwrap_or([]) as DatabaseObject[])
+        ).unwrap_or([]) as T[])
       : [],
     itemSupersededBy.length > 0
       ? ((
-          await request.getMultipleObjectsBulk(
+          await request.getMultipleObjectsBulk<T>(
             itemSupersededBy,
             ["accession"],
             [type]
           )
-        ).unwrap_or([]) as DatabaseObject[])
+        ).unwrap_or([]) as T[])
       : [],
   ]);
 

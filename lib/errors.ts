@@ -2,10 +2,12 @@
  * Utility functions to handle errors.
  */
 
+// node_modules
+import type { GetServerSidePropsResult } from "next";
 // lib
 import { HTTP_STATUS_CODE, type ErrorObject } from "./fetch-request";
 // root
-import type { DataProviderObject, ServerSideProps } from "../globals";
+import type { DataProviderObject } from "../globals";
 
 /**
  * Type guard to determine if an object is an ErrorObject.
@@ -43,7 +45,9 @@ export function logError(statusCode: string | number, title: string): void {
  * @param errorObject - Retrieved object containing data-provider error information
  * @returns Error object with message and status code, or notFound for 404
  */
-export function errorObjectToProps(errorObject: ErrorObject): ServerSideProps {
+export function errorObjectToProps<T>(
+  errorObject: ErrorObject
+): GetServerSidePropsResult<T> {
   // NextJS handles 404 separately.
   if (errorObject.code === HTTP_STATUS_CODE.NOT_FOUND) {
     return { notFound: true };
@@ -51,9 +55,7 @@ export function errorObjectToProps(errorObject: ErrorObject): ServerSideProps {
 
   // For all other errors, return an object to get rendered as an error page.
   return {
-    props: {
-      serverSideError: errorObject,
-    },
+    props: { serverSideError: errorObject } as unknown as T,
   };
 }
 

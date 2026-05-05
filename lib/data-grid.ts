@@ -24,8 +24,8 @@ export type RowComponentProps<TExtra> = {
  * Props passed to cell content components.
  */
 export type CellContentProps<TItem = unknown, TMeta = unknown> = {
-  id?: string;
-  source?: TItem;
+  id: string;
+  source: TItem;
   meta?: TMeta;
 };
 
