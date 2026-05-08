@@ -13,6 +13,28 @@ import {
 } from "../globals";
 
 /**
+ * Type guard for search responses returned by the data provider.
+ *
+ * @param response - Potential search response object
+ * @param type - Optional type to check for in the "@type" field of the search response
+ * @returns True if response matches the minimal SearchResults shape used here
+ */
+export function isSearchResults(item: unknown): item is SearchResults {
+  if (!item || typeof item !== "object") {
+    return false;
+  }
+
+  return (
+    "facets" in item &&
+    Array.isArray(item.facets) &&
+    "@id" in item &&
+    typeof item["@id"] === "string" &&
+    "@type" in item &&
+    Array.isArray(item["@type"])
+  );
+}
+
+/**
  * Builds an array of concrete types returned from search results. The profiles object has to have
  * loaded to get results from this function, or else it returns an empty array.
  * @param {SearchResults} searchResults Search results from igvfd

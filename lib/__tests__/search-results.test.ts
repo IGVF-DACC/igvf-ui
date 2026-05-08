@@ -1,5 +1,6 @@
 import {
   generateSearchResultsTypes,
+  isSearchResults,
   stripLimitQueryIfNeeded,
 } from "../search-results";
 import { CollectionTitles, Profiles, SearchResults } from "../../globals.d";
@@ -193,5 +194,36 @@ describe("Test stripLimitQueryIfNeeded()", () => {
       limit: ["1001", "1002"],
     };
     expect(stripLimitQueryIfNeeded(query)).toEqual("type=Item");
+  });
+});
+
+describe("isSearchResults()", () => {
+  it("returns true for a valid SearchResults object", () => {
+    const searchResults: SearchResults = {
+      "@context": "/terms/",
+      "@graph": [],
+      "@id": "/search/?type=Item",
+      "@type": ["Search"],
+      clear_filters: "/search/",
+      columns: {},
+      facets: [],
+      filters: [],
+      notification: "Success",
+      title: "Search Results",
+      total: 0,
+    };
+    expect(isSearchResults(searchResults)).toBe(true);
+  });
+
+  it("returns false for an object that is missing required properties", () => {
+    const invalidObject = {
+      "@context": "/terms/",
+      "@graph": [],
+    };
+    expect(isSearchResults(invalidObject)).toBe(false);
+  });
+
+  it("returns false for a non-object value", () => {
+    expect(isSearchResults("not an object")).toBe(false);
   });
 });

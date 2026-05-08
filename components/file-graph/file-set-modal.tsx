@@ -16,27 +16,35 @@ import { HostedFilePreview } from "../hosted-file-preview";
 import Link from "../link-no-prefetch";
 import Modal from "../modal";
 import SeparatedList from "../separated-list";
-import SortableGrid from "../sortable-grid";
+import SortableGrid, { SortableGridConfig } from "../sortable-grid";
 import Status from "../status";
+import { isEmbeddedArray, isPathArray } from "../../lib/types";
+// lib
+import { isDatabaseObjectOfType } from "../../lib/database-object";
 // local
 import { FileModalTitle } from "./file-modal-title";
 import { type FileSetMetadata } from "./types";
 // root
 import { FileObject } from "../../globals";
 
+type FilesTableMeta = {
+  nativeFiles: FileObject[];
+};
+
 /**
  * Defines the columns for the file table in the file set modal.
  */
-const filesColumns = [
+const filesColumns: SortableGridConfig<FileObject, FilesTableMeta>[] = [
   {
     id: "accession",
     title: "Accession",
-    display: ({ source }) => (
-      <div className="flex items-start gap-1">
-        <FileAccessionAndDownload file={source} />
-        <HostedFilePreview file={source} buttonSize="sm" />
-      </div>
-    ),
+    display: ({ source }) =>
+      isDatabaseObjectOfType(source, "File") ? (
+        <div className="flex items-start gap-1">
+          <FileAccessionAndDownload file={source} />
+          <HostedFilePreview file={source} buttonSize="sm" />
+        </div>
+      ) : null,
   },
   {
     id: "file_format",
@@ -52,15 +60,21 @@ const filesColumns = [
     id: "input_file_for",
     title: "Input File For",
     display: ({ source, meta }) => {
+      if (!isDatabaseObjectOfType(source, "File") || !meta) {
+        return null;
+      }
+
       const { nativeFiles } = meta;
-      const inputFileFor = source.input_file_for;
+      const inputFileFor = isPathArray(source.input_file_for)
+        ? source.input_file_for
+        : [];
       if (inputFileFor.length > 0) {
         // Find the child files that are in the list of native file paths.
         const childFiles = inputFileFor
           .map((inputFileId) =>
             nativeFiles.find((file) => file["@id"] === inputFileId)
           )
-          .filter((file) => file);
+          .filter((file): file is FileObject => file !== undefined);
         if (childFiles.length > 0) {
           return (
             <SeparatedList isCollapsible>
@@ -89,7 +103,8 @@ const filesColumns = [
   {
     id: "upload_status",
     title: "Upload Status",
-    display: ({ source }) => <Status status={source.upload_status} />,
+    display: ({ source }) =>
+      source.upload_status ? <Status status={source.upload_status} /> : null,
   },
 ];
 
@@ -114,7 +129,7 @@ export function FileSetModal({
 
   // Collect all sample summaries and display them as a collapsible list.
   const sampleSummaries =
-    fileSet.samples?.length > 0
+    fileSet.samples?.length && isEmbeddedArray(fileSet.samples)
       ? fileSet.samples.map((sample) => sample.summary)
       : [];
   const uniqueSampleSummaries = [...new Set(sampleSummaries)];
@@ -148,7 +163,7 @@ export function FileSetModal({
               <DataItemList isCollapsible>{uniqueSampleSummaries}</DataItemList>
             </>
           )}
-          {fileSet.aliases?.length > 0 && (
+          {fileSet.aliases && fileSet.aliases.length > 0 && (
             <>
               <DataItemLabel>Aliases</DataItemLabel>
               <DataItemValue>

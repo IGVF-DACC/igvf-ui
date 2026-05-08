@@ -287,7 +287,7 @@ export function getAccessoryDataPaths(
         },
       };
     },
-    {}
+    {} as Record<string, { paths: string[]; fields: string[] }>
   );
 }
 
@@ -345,7 +345,7 @@ function getRenderableItemTypes(searchResults: SearchResults): string[] {
     return itemType && !itemTypesAcc.includes(itemType)
       ? itemTypesAcc.concat(itemType)
       : itemTypesAcc;
-  }, []);
+  }, [] as string[]);
 }
 
 /**
@@ -365,12 +365,15 @@ export function getItemListsByType(
   searchResults: SearchResults
 ): Record<string, DatabaseObject[]> {
   const itemTypes = getRenderableItemTypes(searchResults);
-  return itemTypes.reduce((itemListsByTypeAcc, itemType) => {
-    itemListsByTypeAcc[itemType] = searchResults["@graph"].filter(
-      (item) => item["@type"][0] === itemType
-    );
-    return itemListsByTypeAcc;
-  }, {});
+  return itemTypes.reduce(
+    (itemListsByTypeAcc, itemType) => {
+      itemListsByTypeAcc[itemType] = searchResults["@graph"].filter(
+        (item) => item["@type"][0] === itemType
+      );
+      return itemListsByTypeAcc;
+    },
+    {} as Record<string, DatabaseObject[]>
+  );
 }
 
 /**

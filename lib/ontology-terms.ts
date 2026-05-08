@@ -72,7 +72,7 @@ export async function getAssayTitleDescriptionMap(
  * @returns Map of preferred assay titles to their descriptions
  */
 export function getPreferredAssayTitleDescriptionMap(
-  profiles?: Profiles
+  profiles?: Profiles | null
 ): Record<string, string> {
   const measurementSetSchema = profiles
     ? extractSchema(profiles, "MeasurementSet")

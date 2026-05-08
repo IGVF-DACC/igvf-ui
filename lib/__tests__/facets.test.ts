@@ -1336,6 +1336,8 @@ describe("Test the getAllFacetsFromQuery function", () => {
         ok: true,
         json: () =>
           Promise.resolve({
+            "@id": "/search/",
+            "@type": ["Search"],
             facets: mockFacets,
             "@graph": [],
             total: 0,
@@ -1380,6 +1382,8 @@ describe("Test the getAllFacetsFromQuery function", () => {
         json: () =>
           Promise.resolve({
             facets: mockFacets,
+            "@id": "/search/",
+            "@type": ["Search"],
             "@graph": [],
             total: 0,
           }),
@@ -1426,6 +1430,8 @@ describe("Test the getAllFacetsFromQuery function", () => {
         ok: true,
         json: () =>
           Promise.resolve({
+            "@id": "/search/",
+            "@type": ["Search"],
             facets: mockFacets,
             "@graph": [],
             total: 0,
@@ -1507,6 +1513,8 @@ describe("Test the getAllFacetsFromQuery function", () => {
         ok: true,
         json: () =>
           Promise.resolve({
+            "@id": "/search/",
+            "@type": ["Search"],
             facets: mockFacets,
             "@graph": [],
             total: 0,
@@ -1552,6 +1560,8 @@ describe("Test the getAllFacetsFromQuery function", () => {
         ok: true,
         json: () =>
           Promise.resolve({
+            "@id": "/search/",
+            "@type": ["Search"],
             facets: mockFacets,
             "@graph": [],
             total: 0,

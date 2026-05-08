@@ -7,13 +7,17 @@ import {
   fileGroupsToDataGridFormat,
   generateSequenceFileGroups,
   getAllDerivedFromFiles,
+  getFilesFileSets,
   isFileObject,
   isFileObjectArray,
   paginateSequenceFileGroups,
+  requestFilesQualityMetrics,
+  requestFilesReferenceFiles,
   splitIlluminaSequenceFiles,
 } from "../files";
 import FetchRequest from "../fetch-request";
 import type { Cell, RowComponentProps } from "../data-grid";
+import { type QualityMetricObject } from "../quality-metric";
 import { type SampleObject } from "../samples";
 import type {
   DatabaseObject,
@@ -21,6 +25,19 @@ import type {
   FileSetObject,
   SearchResults,
 } from "../../globals";
+
+const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
+global.fetch = mockFetch;
+
+// Helper to create consistent mock responses.
+function createMockResponse(data: any): Response {
+  return {
+    ok: true,
+    json: () => Promise.resolve(data),
+    status: 200,
+    statusText: "OK",
+  } as Response;
+}
 
 describe("Test the splitIlluminaSequenceFiles function", () => {
   it("returns all arrays when given an array of each types of files", () => {
@@ -398,6 +415,7 @@ describe("Test the generateGraphData function", () => {
         derived_from: ["file2"],
         file_set: "file-set-1",
         file_format: "fastq",
+        status: "released",
       },
       {
         "@id": "file2",
@@ -406,6 +424,7 @@ describe("Test the generateGraphData function", () => {
         content_type: "peaks",
         file_set: "file-set-1",
         file_format: "bam",
+        status: "released",
       },
     ];
     const request = new FetchRequest();
@@ -423,6 +442,7 @@ describe("Test the generateGraphData function", () => {
           accession: "file3",
           file_set: "file-set-2",
           file_format: "bam",
+          status: "released",
         },
       ],
       "@id": "/search/?type=File",
@@ -465,6 +485,7 @@ describe("Test the generateGraphData function", () => {
         derived_from: ["file2"],
         file_set: "file-set-1",
         file_format: "fastq",
+        status: "released",
       },
       {
         "@id": "file2",
@@ -474,6 +495,7 @@ describe("Test the generateGraphData function", () => {
         derived_from: ["file3"],
         file_set: "file-set-1",
         file_format: "bam",
+        status: "released",
       },
     ];
 
@@ -494,6 +516,7 @@ describe("Test the generateGraphData function", () => {
         accession: "file3",
         file_set: "file-set-2",
         file_format: "bam",
+        status: "released",
       },
     ]);
   });
@@ -509,6 +532,7 @@ describe("Test the generateGraphData function", () => {
           derived_from: ["file2"],
           file_set: "file-set-2",
           file_format: "bam",
+          status: "released",
         },
       ],
       "@id": "/search/?type=File",
@@ -551,6 +575,7 @@ describe("Test the generateGraphData function", () => {
         derived_from: ["file2"],
         file_set: "file-set-1",
         file_format: "fastq",
+        status: "released",
       },
       {
         "@id": "file2",
@@ -560,6 +585,7 @@ describe("Test the generateGraphData function", () => {
         derived_from: ["file3"],
         file_set: "file-set-1",
         file_format: "bam",
+        status: "released",
       },
     ];
 
@@ -575,6 +601,138 @@ describe("Test the generateGraphData function", () => {
     await expect(getAllDerivedFromFiles(files, request)).rejects.toThrow(
       "Detected a derived_from loop with file ID: file3"
     );
+  });
+});
+
+describe("getFilesFileSets", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    mockFetch.mockReset();
+    global.fetch = mockFetch;
+    window.fetch = mockFetch;
+  });
+
+  it("returns a list of file sets for a given list of files when the file sets are paths", async () => {
+    const files: FileObject[] = [
+      {
+        "@id": "/files/IGVFFI0000ILRT/",
+        "@type": ["File", "Item"],
+        accession: "IGVFFI0000ILRT",
+        content_type: "peaks",
+        file_format: "fastq",
+        file_set: "/file-sets/IGVFDS0000ILRT/",
+        status: "released",
+      },
+      {
+        "@id": "/files/IGVFFI0001ILRT/",
+        "@type": ["File", "Item"],
+        accession: "IGVFFI0001ILRT",
+        content_type: "peaks",
+        file_format: "bam",
+        file_set: "/file-sets/IGVFDS0001ILRT/",
+        status: "released",
+      },
+    ];
+
+    const fileSets: FileSetObject[] = [
+      {
+        "@id": "/file-sets/IGVFDS0000ILRT/",
+        "@type": ["FileSet", "Item"],
+        file_set_type: "intermediate analysis",
+        files: ["/files/IGVFFI0000ILRT/"],
+        samples: [],
+        status: "released",
+        summary: "Summary of file set 1",
+      },
+      {
+        "@id": "/file-sets/IGVFDS0001ILRT/",
+        "@type": ["FileSet", "Item"],
+        file_set_type: "intermediate analysis",
+        files: ["/files/IGVFFI0001ILRT/"],
+        samples: [],
+        status: "released",
+        summary: "Summary of file set 2",
+      },
+    ];
+
+    const mockResult = {
+      "@graph": fileSets,
+    };
+
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await getFilesFileSets(files, request);
+    expect(result).toEqual(fileSets);
+  });
+
+  it("returns a list of file sets for a given list of files when the file sets are embedded objects", async () => {
+    const fileSet: FileSetObject = {
+      "@id": "/file-sets/IGVFDS0000ILRT/",
+      "@type": ["FileSet", "Item"],
+      file_set_type: "intermediate analysis",
+      files: ["/files/IGVFFI0000ILRT/"],
+      samples: [],
+      status: "released",
+      summary: "Summary of file set 1",
+    };
+
+    const files: FileObject[] = [
+      {
+        "@id": "/files/IGVFFI0000ILRT/",
+        "@type": ["File", "Item"],
+        accession: "IGVFFI0000ILRT",
+        content_type: "peaks",
+        file_format: "fastq",
+        file_set: fileSet,
+        status: "released",
+      },
+    ];
+
+    const mockResult = {
+      "@graph": [fileSet],
+    };
+
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await getFilesFileSets(files, request);
+    expect(result).toEqual([fileSet]);
+  });
+
+  it("returns an empty array when given no files or an empty array of files", async () => {
+    const request = new FetchRequest();
+    const result = await getFilesFileSets([], request);
+    expect(result).toEqual([]);
+
+    const result2 = await getFilesFileSets(undefined, request);
+    expect(result2).toEqual([]);
+  });
+
+  it("returns an empty array when given files with no file sets", async () => {
+    const files = [
+      {
+        "@id": "/files/IGVFFI0000ILRT/",
+        "@type": ["File", "Item"],
+        accession: "IGVFFI0000ILRT",
+        content_type: "peaks",
+        file_format: "fastq",
+        status: "released",
+      },
+      {
+        "@id": "/files/IGVFFI0001ILRT/",
+        "@type": ["File", "Item"],
+        accession: "IGVFFI0001ILRT",
+        content_type: "peaks",
+        file_format: "bam",
+        status: "released",
+      },
+    ] satisfies Array<Omit<FileObject, "file_set">>;
+
+    const request = new FetchRequest();
+    const result = await getFilesFileSets(files as FileObject[], request);
+    expect(result).toEqual([]);
   });
 });
 
@@ -642,10 +800,12 @@ describe("Test collectFileFileSetSamples function", () => {
     const sample1: SampleObject = {
       "@id": "sample-1",
       "@type": ["Sample", "Item"],
+      status: "released",
     };
     const sample2: SampleObject = {
       "@id": "sample-2",
       "@type": ["Sample", "Item"],
+      status: "released",
     };
     const fileSet: FileSetObject = {
       "@id": "file-set-1",
@@ -653,6 +813,7 @@ describe("Test collectFileFileSetSamples function", () => {
       file_set_type: "intermediate analysis",
       files: ["file-1", "file-2"],
       samples: [sample1, sample2],
+      status: "released",
       summary: "Summary of file set 1",
     };
     const file: FileObject = {
@@ -661,6 +822,7 @@ describe("Test collectFileFileSetSamples function", () => {
       content_type: "peaks",
       file_format: "fastq",
       file_set: fileSet,
+      status: "released",
     };
 
     const samples = collectFileFileSetSamples(file);
@@ -2132,5 +2294,178 @@ describe("Test the isFileObjectArray function", () => {
     const notFiles = [{ accession: "TEST123" }, { accession: "TEST456" }];
 
     expect(isFileObjectArray(notFiles)).toBe(false);
+  });
+});
+
+describe("requestFilesQualityMetrics", () => {
+  it("returns quality metrics for a valid file object", async () => {
+    const file: FileObject = {
+      "@context": "/terms/",
+      "@id": "/sequence-files/IGVFFI0000TEST/",
+      "@type": ["SequenceFile", "File", "Item"],
+      accession: "IGVFFI0000TEST",
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/IGVFFI0000TEST/",
+      quality_metrics: [
+        "/quality-metrics/a0696f31-1422-4946-ddea-21da73f7d04a/",
+      ],
+      status: "released",
+      uuid: "00000000-0000-0000-0000-000000000000",
+      creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+    };
+
+    const qualityMetric: QualityMetricObject = {
+      "@id": "/quality-metrics/a0696f31-1422-4946-ddea-21da73f7d04a/",
+      "@type": ["QualityMetric", "Item"],
+      analysis_step_version:
+        "/analysis-step-versions/b270a867-037e-474e-9bb8-4d42cac0dc96/",
+      quality_metric_of: ["/sequence-files/IGVFFI0000TEST/"],
+      status: "in progress",
+    };
+
+    mockFetch.mockResolvedValueOnce(createMockResponse(qualityMetric));
+
+    const request = new FetchRequest();
+    const result = await requestFilesQualityMetrics([file], request);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(qualityMetric);
+  });
+
+  it("returns empty array when file has no quality_metrics property", async () => {
+    const file: FileObject = {
+      "@context": "/terms/",
+      "@id": "/sequence-files/IGVFFI0000TEST/",
+      "@type": ["SequenceFile", "File", "Item"],
+      accession: "IGVFFI0000TEST",
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/IGVFFI0000TEST/",
+      status: "released",
+      uuid: "00000000-0000-0000-0000-000000000000",
+      creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+    };
+
+    const request = new FetchRequest();
+    const result = await requestFilesQualityMetrics([file], request);
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array when file has empty quality_metrics array", async () => {
+    const file: FileObject = {
+      "@context": "/terms/",
+      "@id": "/sequence-files/IGVFFI0000TEST/",
+      "@type": ["SequenceFile", "File", "Item"],
+      accession: "IGVFFI0000TEST",
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/IGVFFI0000TEST/",
+      quality_metrics: [],
+      status: "released",
+      uuid: "00000000-0000-0000-0000-000000000000",
+      creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+    };
+
+    const request = new FetchRequest();
+    const result = await requestFilesQualityMetrics([file], request);
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array when the files are arbitrary objects", async () => {
+    const notAFile = { accession: "TEST123" };
+
+    const request = new FetchRequest();
+    const result = await requestFilesQualityMetrics(
+      [notAFile as unknown as FileObject],
+      request
+    );
+    expect(result).toEqual([]);
+  });
+});
+
+describe("requestFilesReferenceFiles", () => {
+  it("returns reference files for a valid file object", async () => {
+    const file: FileObject = {
+      "@context": "/terms/",
+      "@id": "/sequence-files/IGVFFI0000TEST/",
+      "@type": ["SequenceFile", "File", "Item"],
+      accession: "IGVFFI0000TEST",
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/IGVFFI0000TEST/",
+      reference_files: ["/reference-files/ref1/", "/reference-files/ref2/"],
+      status: "released",
+      uuid: "00000000-0000-0000-0000-000000000000",
+      creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+    };
+
+    const referenceFiles: FileObject[] = [
+      {
+        "@context": "/terms/",
+        "@id": "/reference-files/ref1/",
+        "@type": ["ReferenceFile", "File", "Item"],
+        accession: "REF001",
+        content_type: "reference",
+        file_format: "fasta",
+        file_set: "/file-sets/IGVFFI0000REFS/",
+        status: "released",
+        uuid: "11111111-1111-1111-1111-111111111111",
+        creation_timestamp: "2023-12-01T10:00:00.000000+00:00",
+      },
+      {
+        "@context": "/terms/",
+        "@id": "/reference-files/ref2/",
+        "@type": ["ReferenceFile", "File", "Item"],
+        accession: "REF002",
+        content_type: "reference",
+        file_format: "fasta",
+        file_set: "/file-sets/IGVFFI0000REFS/",
+        status: "released",
+        uuid: "22222222-2222-2222-2222-222222222222",
+        creation_timestamp: "2023-12-01T11:00:00.000000+00:00",
+      },
+    ];
+
+    const mockResult = {
+      "@graph": referenceFiles,
+    };
+
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestFilesReferenceFiles([file], request);
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual(referenceFiles[0]);
+    expect(result[1]).toEqual(referenceFiles[1]);
+  });
+
+  it("returns an empty array when given arbitrary objects instead of file objects", async () => {
+    const notAFile = { accession: "TEST123" };
+
+    const request = new FetchRequest();
+    const result = await requestFilesReferenceFiles(
+      [notAFile as unknown as FileObject],
+      request
+    );
+    expect(result).toEqual([]);
+  });
+
+  it("returns an empty array when file has no reference_files property", async () => {
+    const file: FileObject = {
+      "@context": "/terms/",
+      "@id": "/sequence-files/IGVFFI0000TEST/",
+      "@type": ["SequenceFile", "File", "Item"],
+      accession: "IGVFFI0000TEST",
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/IGVFFI0000TEST/",
+      status: "released",
+      uuid: "00000000-0000-0000-0000-000000000000",
+      creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
+    };
+
+    const request = new FetchRequest();
+    const result = await requestFilesReferenceFiles([file], request);
+    expect(result).toEqual([]);
   });
 });

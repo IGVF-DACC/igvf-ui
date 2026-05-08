@@ -55,9 +55,7 @@ export function isEmbeddedArray<T>(
 ): value is T[] {
   return (
     Array.isArray(value) &&
-    value.every(
-      (item) =>
-        typeof item === "object" && !Array.isArray(item) && item !== null
-    )
+    value.length > 0 &&
+    value.every((item) => isEmbedded(item))
   );
 }

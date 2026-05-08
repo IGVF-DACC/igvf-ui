@@ -2,11 +2,11 @@
 import _ from "lodash";
 import type { ParsedUrlQuery } from "querystring";
 // lib
+import { isSearchResults } from "./search-results";
 import FetchRequest, { isErrorObject, type ErrorObject } from "./fetch-request";
 // root
 import type {
   DataProviderObject,
-  SearchResults,
   SearchResultsFacet,
   SearchResultsFacetTerm,
   SearchResultsFilter,
@@ -511,8 +511,8 @@ export async function getAllFacetsFromQuery(
 
   const response = (
     await request.getObject(`/search/?${typeQuery}&limit=0`)
-  ).optional() as SearchResults;
-  return response?.facets || [];
+  ).optional();
+  return isSearchResults(response) ? response.facets : [];
 }
 
 /**

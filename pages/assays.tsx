@@ -92,7 +92,7 @@ function FixedHeaderCell({
  */
 function CounterHeaderCell({ children }: { children: React.ReactNode }) {
   return (
-    <th className="bg-assay-summary-matrix-data-column-header border-panel sticky top-0 z-2 w-[50px] border-r border-b px-1 py-2 align-bottom font-semibold whitespace-nowrap text-black last:border-r-0">
+    <th className="bg-assay-summary-matrix-data-column-header border-panel sticky top-0 z-2 w-12.5 border-r border-b px-1 py-2 align-bottom font-semibold whitespace-nowrap text-black last:border-r-0">
       <div className="mx-auto inline-flex rotate-180 justify-self-center text-start text-black [writing-mode:vertical-lr] dark:text-white">
         {children}
       </div>
@@ -475,6 +475,23 @@ function getAssayTerms(assaySummary: MatrixResultsObject): string[] {
   return [...terms];
 }
 
+/**
+ * Type guard to check if an item is a MatrixResults object, which is the expected shape of the
+ * response from the backend for the assay summary data.
+ *
+ * @param item - Response from backend to test if it's likely a matrix object or not
+ * @returns True if the item is a MatrixResults object
+ */
+function isMatrixResultsObject(item: unknown): item is MatrixResults {
+  return (
+    typeof item === "object" &&
+    item !== null &&
+    "@type" in item &&
+    typeof item["@type"] === "string" &&
+    item["@type"] === "Omnimatrix"
+  );
+}
+
 export async function getServerSideProps(
   context: GetServerSidePropsContext
 ): Promise<GetServerSidePropsResult<Props>> {
@@ -494,15 +511,20 @@ export async function getServerSideProps(
   // Add any extra query parameters to the request.
   const extraQueryParams = params.toString();
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const results = (
+  const assaySummary = (
     await request.getObject(
       `/omnimatrix/?type=MeasurementSet&config=AssaySummary${
         extraQueryParams ? `&${extraQueryParams}` : ""
       }`
     )
   ).union();
-  if (FetchRequest.isResponseSuccess(results)) {
-    const assaySummary = results as unknown as MatrixResults;
+  if (FetchRequest.isResponseSuccess(assaySummary)) {
+    if (!isMatrixResultsObject(assaySummary)) {
+      throw new Error(
+        `Unexpected response shape for assay summary data: ${JSON.stringify(assaySummary)}`
+      );
+    }
+
     const assayTerms = getAssayTerms(assaySummary.matrix);
     const assayTitleDescriptionMap = await getAssayTitleDescriptionMap(
       assayTerms,
@@ -517,5 +539,5 @@ export async function getServerSideProps(
       },
     };
   }
-  return errorObjectToProps(results) as GetServerSidePropsResult<Props>;
+  return errorObjectToProps(assaySummary);
 }

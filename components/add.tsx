@@ -16,7 +16,7 @@ import FetchRequest from "../lib/fetch-request";
 import { urlWithoutParams, sortObjectProps } from "../lib/general";
 import { collectionToSchema } from "../lib/schema";
 // root
-import type { DatabaseObject, Schema, SearchResults } from "../globals";
+import type { Schema, SearchResults } from "../globals";
 /* istanbul ignore file */
 
 /**
@@ -42,7 +42,7 @@ type ErrorMessage = {
  * @returns Profile path corresponding to an action or null if there are no available actions or if
  *   none of the specified actions are present.
  */
-function actionProfile(item: DatabaseObject, actions: string): string | null {
+function actionProfile(item: SearchResults, actions: string): string | null {
   if ("actions" in item) {
     const act = item.actions.find((act) => actions.includes(act.name));
     if (act !== null) {
@@ -183,7 +183,7 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
 
   useEffect(() => {
     // Grab the schema from profilePath so we can make an empty object template
-    new FetchRequest({ session })
+    void new FetchRequest({ session })
       .getObject(profilePath)
       .then((schemaResult) => {
         // We have the schema, so produce a dummy json from the schema
@@ -215,12 +215,12 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
 
     const value = sortObjectProps(JSON.parse(text));
     const collectPath = urlWithoutParams(collection["@id"]);
-    new FetchRequest({ session })
+    void new FetchRequest({ session })
       .postObject(collectPath, value)
       .then((response) => {
         if (response.status === "success") {
           setSaveErrors([]);
-          router.push(response["@graph"][0]["@id"]);
+          void router.push(response["@graph"][0]["@id"]);
         } else {
           setEditorStatus({
             canEdit: true,
