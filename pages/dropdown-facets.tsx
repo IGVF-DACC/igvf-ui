@@ -1,16 +1,23 @@
+// node_modules
 import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
-import { useState } from "react";
-import { SearchResultsFacet, SearchResultsFacetTerm } from "../globals";
-import FetchRequest from "../lib/fetch-request";
+import { useRouter } from "next/router";
+// lib
 import { errorObjectToProps } from "../lib/errors";
+import FetchRequest from "../lib/fetch-request";
 import { isSearchResults } from "../lib/search-results";
+// root
+import { SearchResultsFacet, SearchResultsFacetTerm } from "../globals";
 
 /**
  * Type definition for the props of the page component, which includes the facets data fetched from
  * the backend to display in the dropdown facets demo.
+ *
+ * @prop facets - Facets data to display on the page fetched from the igvfd server
+ * @prop selections - Currently selected facet-term keys; determines which checkboxes are checked
  */
 type Props = {
   facets: SearchResultsFacet[];
+  selections: string[];
 };
 
 /**
@@ -50,16 +57,24 @@ function ChevronDownIcon() {
  *
  * @param term - Term data to display in the checkbox and dropdown
  */
-function Term({ term }: { term: TermData }) {
-  const [checked, setChecked] = useState(false);
-
+function Term({
+  term,
+  isSelected,
+  selectionHandler,
+}: {
+  term: TermData;
+  isSelected: boolean;
+  selectionHandler: (value: string, isSelected: boolean) => void;
+}) {
   return (
     <div className="my-1 flex justify-between text-sm">
       <label className="flex cursor-pointer gap-1">
         <input
           type="checkbox"
-          checked={checked}
-          onChange={(event) => setChecked(event.target.checked)}
+          checked={isSelected}
+          onChange={(e) => {
+            selectionHandler(term.name, e.target.checked);
+          }}
           className="cursor-pointer"
         />
         {term.name}
@@ -102,7 +117,9 @@ function isTermsDataArray(data: unknown): data is SearchResultsFacetTerm[] {
  *
  * @param facets - Facets data to display on the page fetched from the igvfd server
  */
-export default function App({ facets }: Props) {
+export default function App({ facets, selections }: Props) {
+  const router = useRouter();
+
   const preferredAssaySlimsFacet = facets.find(
     (facet) => facet.field === "preferred_assay_slims"
   );
@@ -114,6 +131,8 @@ export default function App({ facets }: Props) {
     );
   }
 
+  // Get all the terms from the preferred_assay_slims facet and convert them to the simpler
+  // TermData shape used in the demo.
   const termList = terms.map<TermData>((term) => {
     return {
       name: term.key_as_string || String(term.key),
@@ -121,11 +140,33 @@ export default function App({ facets }: Props) {
     };
   });
 
+  // Handle a term-selection click by updating the URL query parameters to reflect the new
+  // selection state.
+  function selectionHandler(value: string, isSelected: boolean) {
+    router.push({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        preferred_assay_slims: isSelected
+          ? [...selections, value]
+          : selections.filter((s) => s !== value),
+      },
+    });
+  }
+
   return (
     <main className="w-100">
-      {termList.map((term) => (
-        <Term key={term.name} term={term} />
-      ))}
+      {termList.map((term) => {
+        const isSelected = selections.includes(term.name);
+        return (
+          <Term
+            key={term.name}
+            term={term}
+            isSelected={isSelected}
+            selectionHandler={selectionHandler}
+          />
+        );
+      })}
     </main>
   );
 }
@@ -169,9 +210,12 @@ export async function getServerSideProps(
       );
     }
 
+    const selections = params.getAll("preferred_assay_slims");
+
     return {
       props: {
         facets: response.facets || [],
+        selections,
       },
     };
   }
