@@ -1,6 +1,8 @@
 // node_modules
 import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import { useRouter } from "next/router";
+// components
+import { Select } from "../components/form-elements";
 // lib
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
@@ -18,25 +20,33 @@ import { SearchResultsFacet, SearchResultsFacetTerm } from "../globals";
 type Props = {
   facets: SearchResultsFacet[];
   slimsSelections: string[];
+  titleSelection: string;
 };
 
-/**
- * Display a down-pointing chevron icon, typically used to indicate that a dropdown can be opened.
- */
-function ChevronDownIcon() {
+function SubFacetDropdown({
+  subTerms,
+  value,
+  parentTermKey,
+  onChange,
+}: {
+  subTerms: SearchResultsFacetTerm[];
+  value: string;
+  parentTermKey: string | number;
+  onChange: (value: string) => void;
+}) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      className="size-5"
+    <Select
+      name={`sub-dropdown-${parentTermKey}`}
+      value={value}
+      size="sm"
+      onChange={(event) => onChange(event.target.value)}
     >
-      <path
-        fillRule="evenodd"
-        d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
-        clipRule="evenodd"
-      />
-    </svg>
+      {subTerms.map((item) => (
+        <option key={item.key} value={item.key_as_string || String(item.key)}>
+          {item.key_as_string || String(item.key)}
+        </option>
+      ))}
+    </Select>
   );
 }
 
@@ -49,32 +59,45 @@ function ChevronDownIcon() {
 function Term({
   term,
   isSelected,
+  selectedSubTermKey,
   selectionHandler,
 }: {
   term: SearchResultsFacetTerm;
   isSelected: boolean;
-  selectionHandler: (value: string, isSelected: boolean) => void;
+  selectedSubTermKey: string;
+  selectionHandler: (
+    value: string,
+    isSelected: boolean,
+    isParent: boolean
+  ) => void;
 }) {
+  const subTerms =
+    term.subfacet && isTermsDataArray(term.subfacet.terms)
+      ? term.subfacet.terms
+      : [];
+
   return (
-    <div className="my-1 flex justify-between text-sm">
+    <div className="align-center my-1 flex justify-between text-sm">
       <label className="flex cursor-pointer gap-1">
         <input
           type="checkbox"
           checked={isSelected}
           onChange={(e) => {
-            selectionHandler(String(term.key), e.target.checked);
+            selectionHandler(String(term.key), e.target.checked, true);
           }}
           className="cursor-pointer"
         />
         {term.key_as_string || String(term.key)}
       </label>
-      <div className="flex gap-1">
-        <button className="rounded-sm border border-gray-600">
-          <ChevronDownIcon />
-        </button>
-        <div className="w-[5ch] shrink-0 text-right tabular-nums">
-          {term.doc_count}
-        </div>
+
+      <div className="flex w-[16ch] shrink-0">
+        <SubFacetDropdown
+          subTerms={subTerms}
+          value={selectedSubTermKey}
+          parentTermKey={term.key}
+          onChange={(value) => selectionHandler(value, true, false)}
+        />
+        <div className="w-[4ch] text-right tabular-nums">{term.doc_count}</div>
       </div>
     </div>
   );
@@ -106,7 +129,11 @@ function isTermsDataArray(data: unknown): data is SearchResultsFacetTerm[] {
  *
  * @param facets - Facets data to display on the page fetched from the igvfd server
  */
-export default function App({ facets, slimsSelections }: Props) {
+export default function App({
+  facets,
+  slimsSelections,
+  titleSelection,
+}: Props) {
   const router = useRouter();
 
   const preferredAssaySlimsFacet = facets.find(
@@ -122,16 +149,33 @@ export default function App({ facets, slimsSelections }: Props) {
 
   // Handle a term-selection click by updating the URL query parameters to reflect the new
   // selection state.
-  function selectionHandler(value: string, isSelected: boolean) {
-    router.push({
-      pathname: router.pathname,
-      query: {
-        ...router.query,
-        preferred_assay_slims: isSelected
-          ? [...slimsSelections, value]
-          : slimsSelections.filter((s) => s !== value),
-      },
-    });
+  function selectionHandler(
+    value: string,
+    isSelected: boolean,
+    isParent: boolean
+  ) {
+    if (isParent) {
+      router.push({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          preferred_assay_slims: isSelected
+            ? [...slimsSelections, value]
+            : slimsSelections.filter((s) => s !== value),
+        },
+      });
+    } else {
+      // For a child-term selection, we want to replace the `preferred_assay_titles` query parameter
+      // with the selected child term value, since the dropdown is meant to select a single child
+      // term at a time.
+      router.push({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          preferred_assay_titles: value,
+        },
+      });
+    }
   }
 
   return (
@@ -143,6 +187,7 @@ export default function App({ facets, slimsSelections }: Props) {
             key={term.key}
             term={term}
             isSelected={isSelected}
+            selectedSubTermKey={titleSelection}
             selectionHandler={selectionHandler}
           />
         );
@@ -191,11 +236,13 @@ export async function getServerSideProps(
     }
 
     const slimsSelections = params.getAll("preferred_assay_slims");
+    const titleSelection = params.get("preferred_assay_titles") || "";
 
     return {
       props: {
         facets: response.facets || [],
         slimsSelections,
+        titleSelection,
       },
     };
   }
