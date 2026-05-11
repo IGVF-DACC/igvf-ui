@@ -17,18 +17,7 @@ import { SearchResultsFacet, SearchResultsFacetTerm } from "../globals";
  */
 type Props = {
   facets: SearchResultsFacet[];
-  selections: string[];
-};
-
-/**
- * Type definition for the term data used in the demo, which is a simplified version of the
- * SearchResultsFacetTerm type from the backend, with only the properties needed for the demo and a
- * recursive children property to allow for nested terms in the dropdown.
- */
-type TermData = {
-  name: string;
-  count: number;
-  children?: TermData[];
+  slimsSelections: string[];
 };
 
 /**
@@ -62,7 +51,7 @@ function Term({
   isSelected,
   selectionHandler,
 }: {
-  term: TermData;
+  term: SearchResultsFacetTerm;
   isSelected: boolean;
   selectionHandler: (value: string, isSelected: boolean) => void;
 }) {
@@ -73,18 +62,18 @@ function Term({
           type="checkbox"
           checked={isSelected}
           onChange={(e) => {
-            selectionHandler(term.name, e.target.checked);
+            selectionHandler(String(term.key), e.target.checked);
           }}
           className="cursor-pointer"
         />
-        {term.name}
+        {term.key_as_string || String(term.key)}
       </label>
       <div className="flex gap-1">
         <button className="rounded-sm border border-gray-600">
           <ChevronDownIcon />
         </button>
         <div className="w-[5ch] shrink-0 text-right tabular-nums">
-          {term.count}
+          {term.doc_count}
         </div>
       </div>
     </div>
@@ -117,7 +106,7 @@ function isTermsDataArray(data: unknown): data is SearchResultsFacetTerm[] {
  *
  * @param facets - Facets data to display on the page fetched from the igvfd server
  */
-export default function App({ facets, selections }: Props) {
+export default function App({ facets, slimsSelections }: Props) {
   const router = useRouter();
 
   const preferredAssaySlimsFacet = facets.find(
@@ -131,15 +120,6 @@ export default function App({ facets, selections }: Props) {
     );
   }
 
-  // Get all the terms from the preferred_assay_slims facet and convert them to the simpler
-  // TermData shape used in the demo.
-  const termList = terms.map<TermData>((term) => {
-    return {
-      name: term.key_as_string || String(term.key),
-      count: term.doc_count,
-    };
-  });
-
   // Handle a term-selection click by updating the URL query parameters to reflect the new
   // selection state.
   function selectionHandler(value: string, isSelected: boolean) {
@@ -148,19 +128,19 @@ export default function App({ facets, selections }: Props) {
       query: {
         ...router.query,
         preferred_assay_slims: isSelected
-          ? [...selections, value]
-          : selections.filter((s) => s !== value),
+          ? [...slimsSelections, value]
+          : slimsSelections.filter((s) => s !== value),
       },
     });
   }
 
   return (
     <main className="w-100">
-      {termList.map((term) => {
-        const isSelected = selections.includes(term.name);
+      {terms.map((term) => {
+        const isSelected = slimsSelections.includes(String(term.key));
         return (
           <Term
-            key={term.name}
+            key={term.key}
             term={term}
             isSelected={isSelected}
             selectionHandler={selectionHandler}
@@ -210,12 +190,12 @@ export async function getServerSideProps(
       );
     }
 
-    const selections = params.getAll("preferred_assay_slims");
+    const slimsSelections = params.getAll("preferred_assay_slims");
 
     return {
       props: {
         facets: response.facets || [],
-        selections,
+        slimsSelections,
       },
     };
   }
