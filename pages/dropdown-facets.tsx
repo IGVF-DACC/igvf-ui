@@ -1,14 +1,16 @@
 // node_modules
 import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import { useRouter } from "next/router";
-// components
-import { Select } from "../components/form-elements";
 // lib
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { isSearchResults } from "../lib/search-results";
 // root
-import { SearchResultsFacet, SearchResultsFacetTerm } from "../globals";
+import {
+  SearchResultsFacet,
+  SearchResultsFacetTerm,
+  SearchResultsFilter,
+} from "../globals";
 
 /**
  * Type definition for the props of the page component, which includes the facets data fetched from
@@ -18,37 +20,11 @@ import { SearchResultsFacet, SearchResultsFacetTerm } from "../globals";
  * @prop selections - Currently selected facet-term keys; determines which checkboxes are checked
  */
 type Props = {
-  facets: SearchResultsFacet[];
-  slimsSelections: string[];
-  titleSelection: string;
+  titlesFacet: SearchResultsFacet | null;
+  titlesFilters: SearchResultsFilter[];
+  slimsFacet: SearchResultsFacet | null;
+  slimsFilters: SearchResultsFilter[];
 };
-
-function SubFacetDropdown({
-  subTerms,
-  value,
-  parentTermKey,
-  onChange,
-}: {
-  subTerms: SearchResultsFacetTerm[];
-  value: string;
-  parentTermKey: string | number;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <Select
-      name={`sub-dropdown-${parentTermKey}`}
-      value={value}
-      size="sm"
-      onChange={(event) => onChange(event.target.value)}
-    >
-      {subTerms.map((item) => (
-        <option key={item.key} value={item.key_as_string || String(item.key)}>
-          {item.key_as_string || String(item.key)}
-        </option>
-      ))}
-    </Select>
-  );
-}
 
 /**
  * Display a single term of the demo facets with a checkbox and a button to open the dropdown for
@@ -59,23 +35,12 @@ function SubFacetDropdown({
 function Term({
   term,
   isSelected,
-  selectedSubTermKey,
   selectionHandler,
 }: {
   term: SearchResultsFacetTerm;
   isSelected: boolean;
-  selectedSubTermKey: string;
-  selectionHandler: (
-    value: string,
-    isSelected: boolean,
-    isParent: boolean
-  ) => void;
+  selectionHandler: (value: string, isSelected: boolean) => void;
 }) {
-  const subTerms =
-    term.subfacet && isTermsDataArray(term.subfacet.terms)
-      ? term.subfacet.terms
-      : [];
-
   return (
     <div className="align-center my-1 flex justify-between text-sm">
       <label className="flex cursor-pointer gap-1">
@@ -83,22 +48,13 @@ function Term({
           type="checkbox"
           checked={isSelected}
           onChange={(e) => {
-            selectionHandler(String(term.key), e.target.checked, true);
+            selectionHandler(String(term.key), e.target.checked);
           }}
           className="cursor-pointer"
         />
         {term.key_as_string || String(term.key)}
       </label>
-
-      <div className="flex w-[16ch] shrink-0">
-        <SubFacetDropdown
-          subTerms={subTerms}
-          value={selectedSubTermKey}
-          parentTermKey={term.key}
-          onChange={(value) => selectionHandler(value, true, false)}
-        />
-        <div className="w-[4ch] text-right tabular-nums">{term.doc_count}</div>
-      </div>
+      <div className="w-[4ch] text-right tabular-nums">{term.doc_count}</div>
     </div>
   );
 }
@@ -129,65 +85,38 @@ function isTermsDataArray(data: unknown): data is SearchResultsFacetTerm[] {
  *
  * @param facets - Facets data to display on the page fetched from the igvfd server
  */
-export default function App({
-  facets,
-  slimsSelections,
-  titleSelection,
-}: Props) {
+export default function App({ titlesFacet, titlesFilters }: Props) {
   const router = useRouter();
 
-  const preferredAssaySlimsFacet = facets.find(
-    (facet) => facet.field === "preferred_assay_slims"
-  );
-
-  const terms = preferredAssaySlimsFacet ? preferredAssaySlimsFacet.terms : [];
-  if (!isTermsDataArray(terms)) {
-    throw new Error(
-      `Unexpected facet terms data shape: ${JSON.stringify(terms)}`
-    );
-  }
+  const selectedTitles = titlesFilters.map((filter) => filter.term);
 
   // Handle a term-selection click by updating the URL query parameters to reflect the new
   // selection state.
-  function selectionHandler(
-    value: string,
-    isSelected: boolean,
-    isParent: boolean
-  ) {
-    if (isParent) {
-      router.push({
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          preferred_assay_slims: isSelected
-            ? [...slimsSelections, value]
-            : slimsSelections.filter((s) => s !== value),
-        },
-      });
-    } else {
-      // For a child-term selection, we want to replace the `preferred_assay_titles` query parameter
-      // with the selected child term value, since the dropdown is meant to select a single child
-      // term at a time.
-      router.push({
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          preferred_assay_titles: value,
-        },
-      });
-    }
+  function selectionHandler(value: string, isSelected: boolean) {
+    router.push({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        preferred_assay_titles: isSelected
+          ? [...selectedTitles, value]
+          : selectedTitles.filter((s) => s !== value),
+      },
+    });
   }
+
+  const titlesTerms = isTermsDataArray(titlesFacet?.terms)
+    ? titlesFacet.terms
+    : [];
 
   return (
     <main className="w-100">
-      {terms.map((term) => {
-        const isSelected = slimsSelections.includes(String(term.key));
+      {titlesTerms.map((term) => {
+        const isSelected = selectedTitles.includes(String(term.key));
         return (
           <Term
             key={term.key}
             term={term}
             isSelected={isSelected}
-            selectedSubTermKey={titleSelection}
             selectionHandler={selectionHandler}
           />
         );
@@ -235,14 +164,25 @@ export async function getServerSideProps(
       );
     }
 
-    const slimsSelections = params.getAll("preferred_assay_slims");
-    const titleSelection = params.get("preferred_assay_titles") || "";
+    const titlesFacet = response.facets.find(
+      (facet) => facet.field === "preferred_assay_titles"
+    );
+    const slimsFacet = response.facets.find(
+      (facet) => facet.field === "preferred_assay_slims"
+    );
+    const titlesFilters = response.filters.filter(
+      (filter) => filter.field === "preferred_assay_titles"
+    );
+    const slimsFilters = response.filters.filter(
+      (filter) => filter.field === "preferred_assay_slims"
+    );
 
     return {
       props: {
-        facets: response.facets || [],
-        slimsSelections,
-        titleSelection,
+        titlesFacet: titlesFacet ?? null,
+        slimsFacet: slimsFacet ?? null,
+        titlesFilters: titlesFilters ?? [],
+        slimsFilters: slimsFilters ?? [],
       },
     };
   }
