@@ -691,7 +691,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="genome-references"
-            href={`/search/?type=CuratedSet&file_set_type=genome&assemblies=GRCm39&assemblies=GRCh38${extraQueries}`}
+            href="/search/?type=CuratedSet&file_set_type=genome&assemblies=GRCm39&assemblies=GRCh38&status=released"
             navigationClick={navigationClick}
             isChildItem
           >
@@ -699,7 +699,7 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="transcriptome-references"
-            href={`/search/?type=CuratedSet&file_set_type=transcriptome&assemblies=GRCm39&assemblies=GRCh38&transcriptome_annotations=GENCODE+43&transcriptome_annotations=GENCODE+M36${extraQueries}`}
+            href="/search/?type=CuratedSet&file_set_type=transcriptome&assemblies=GRCm39&assemblies=GRCh38&transcriptome_annotations=GENCODE+43&transcriptome_annotations=GENCODE+M36&status=released"
             navigationClick={navigationClick}
             isChildItem
           >
