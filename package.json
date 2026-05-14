@@ -86,6 +86,6 @@
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.6.12",
     "pretty-format": "^29.5.0",
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.3.0"
   }
 }

@@ -169,7 +169,7 @@ export function Session({ postLoginRedirectUri, children }) {
         })
         .then((logoutSessionProperties) => {
           if (logoutSessionProperties) {
-            router.push("/");
+            window.location.replace("/");
           }
         });
     }

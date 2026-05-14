@@ -691,11 +691,19 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           </NavigationHrefItem>
           <NavigationHrefItem
             id="genome-references"
-            href={`/search?type=CuratedSet&file_set_type=genome${extraQueries}`}
+            href="/search/?type=CuratedSet&file_set_type=genome&assemblies=GRCm39&assemblies=GRCh38&status=released"
             navigationClick={navigationClick}
             isChildItem
           >
             Genome References
+          </NavigationHrefItem>
+          <NavigationHrefItem
+            id="transcriptome-references"
+            href="/search/?type=CuratedSet&file_set_type=transcriptome&assemblies=GRCm39&assemblies=GRCh38&transcriptome_annotations=GENCODE+43&transcriptome_annotations=GENCODE+M36&status=released"
+            navigationClick={navigationClick}
+            isChildItem
+          >
+            Transcriptome References
           </NavigationHrefItem>
           <NavigationHrefItem
             id="audits"
