@@ -6,6 +6,10 @@ import { AnnotatedValue } from "./annotated-value";
 import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
+import {
+  imageFileHasThumbnail,
+  ImageFileThumbnailAndPreview,
+} from "./image-file-thumbnail";
 import Link from "./link-no-prefetch";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";
@@ -38,6 +42,19 @@ const columns = [
   {
     id: "file_format",
     title: "File Format",
+  },
+  {
+    id: "href",
+    title: "Preview",
+    display: ({ source }) =>
+      imageFileHasThumbnail(source) ? (
+        <ImageFileThumbnailAndPreview imageFile={source} size={120} />
+      ) : null,
+    hide: (data) => {
+      const anyPreviews = data.some((item) => imageFileHasThumbnail(item));
+      return !anyPreviews;
+    },
+    isSortable: false,
   },
   {
     id: "content_type",

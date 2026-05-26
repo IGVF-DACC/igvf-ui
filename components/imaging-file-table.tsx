@@ -8,6 +8,10 @@ import { DataAreaTitle, DataAreaTitleLink, DataPanel } from "./data-area";
 import { DeprecatedFileFilterControl } from "./deprecated-files";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
+import {
+  imageFileHasThumbnail,
+  ImageFileThumbnailAndPreview,
+} from "./image-file-thumbnail";
 import LinkedIdAndStatus from "./linked-id-and-status";
 import SortableGrid, { type SortableGridConfig } from "./sortable-grid";
 import Status from "./status";
@@ -43,6 +47,19 @@ const filesColumns: SortableGridConfig<FileObject>[] = [
     id: "file_format",
     title: "File Format",
     sorter: (item) => item.file_format.toLowerCase(),
+  },
+  {
+    id: "href",
+    title: "Preview",
+    display: ({ source }) =>
+      imageFileHasThumbnail(source) ? (
+        <ImageFileThumbnailAndPreview imageFile={source} size={120} />
+      ) : null,
+    hide: (data) => {
+      const anyPreviews = data.some((item) => imageFileHasThumbnail(item));
+      return !anyPreviews;
+    },
+    isSortable: false,
   },
   {
     id: "content_type",

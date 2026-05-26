@@ -25,7 +25,10 @@ import Link from "./link-no-prefetch";
 import Modal from "./modal";
 import SessionContext from "./session-context";
 // lib
-import { attachmentToServerHref } from "../lib/attachment";
+import {
+  attachmentToServerHref,
+  type AttachmentObject,
+} from "../lib/attachment";
 import {
   isMpraQualityMetric,
   isPerturbSeqQualityMetric,
@@ -41,7 +44,7 @@ import {
   type QualityMetricObject,
 } from "../lib/quality-metric";
 // root
-import type { Attachment, CollectionTitles, FileObject } from "../globals";
+import type { CollectionTitles, FileObject } from "../globals";
 
 /**
  * Display an attachment link for a quality metric attachment.
@@ -56,7 +59,7 @@ function QualityMetricAttachmentLink({
   children = null,
 }: {
   qualityMetric: QualityMetricObject;
-  attachment: Attachment;
+  attachment: AttachmentObject;
   className?: string;
   children?: React.ReactNode;
 }) {
@@ -174,7 +177,7 @@ function Attachment({
       <DataItemValue isSmall={isSmall}>
         <QualityMetricAttachmentLink
           qualityMetric={qualityMetric}
-          attachment={qualityMetric[fieldAttr.name] as Attachment}
+          attachment={qualityMetric[fieldAttr.name] as AttachmentObject}
         />
       </DataItemValue>
     </>
@@ -335,7 +338,7 @@ function QualityMetricContent({
 
   return (
     <>
-      <h2 className="mt-[-4px] mb-2 text-center font-semibold">
+      <h2 className="-mt-1 mb-2 text-center font-semibold">
         <a
           href={qualityMetric["@id"]}
           rel="noopener noreferrer"
@@ -365,9 +368,7 @@ function SubPanelWrapper({
   return (
     <>
       {isInSubPanel ? (
-        <DataPanel className="min-w-[300px] flex-[1_0_auto]">
-          {children}
-        </DataPanel>
+        <DataPanel className="min-w-75 flex-[1_0_auto]">{children}</DataPanel>
       ) : (
         <div className="w-full">{children}</div>
       )}
@@ -447,7 +448,7 @@ export function QualityMetricPanel({
                 key={metric["@id"]}
                 isInSubPanel={qualityMetrics.length > 1}
               >
-                <h2 className="mt-[-4px] mb-2 text-center font-semibold">
+                <h2 className="-mt-1 mb-2 text-center font-semibold">
                   <Link href={metric["@id"]}>{title}</Link>
                 </h2>
                 <QCMetricPanel qualityMetric={metric} />

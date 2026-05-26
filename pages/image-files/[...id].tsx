@@ -1,5 +1,3 @@
-// node_modules
-import PropTypes from "prop-types";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
@@ -17,6 +15,10 @@ import { EditableItem } from "../../components/edit";
 import { FileHeaderDownload } from "../../components/file-download";
 import FileTable from "../../components/file-table";
 import { HostedFilePreview } from "../../components/hosted-file-preview";
+import {
+  imageFileHasThumbnail,
+  ImageFileThumbnailAndPreview,
+} from "../../components/image-file-thumbnail";
 import JsonDisplay from "../../components/json-display";
 import LinkedIdAndStatus from "../../components/linked-id-and-status";
 import ObjectPageHeader from "../../components/object-page-header";
@@ -27,8 +29,7 @@ import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 import WorkflowTable from "../../components/workflow-table";
 // lib
-import buildAttribution from "../../lib/attribution";
-import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
+import buildAttribution, { type AttributionData } from "../../lib/attribution";
 import {
   requestDocuments,
   requestFiles,
@@ -36,17 +37,59 @@ import {
   requestSupersedes,
   requestWorkflows,
 } from "../../lib/common-requests";
+import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
+import {
+  isDatabaseObject,
+  isDatabaseObjectArrayOfType,
+  pathsFromDatabaseObjects,
+} from "../../lib/database-object";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
   convertFileDownloadPathToFilePagePath,
 } from "../../lib/files";
+import { type QualityMetricObject } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
+import { isPathArray } from "../../lib/types";
+import { type WorkflowObject } from "../../lib/workflow";
+// root
+import type { DatabaseObject, DocumentObject, FileObject } from "../../globals";
 
+/**
+ * Props for the ImageFile page component.
+ *
+ * @property imageFile - File object representing the image file to display
+ * @property attribution - Attribution data for the image file
+ * @property documents - Document objects associated with the image file
+ * @property derivedFrom - File objects that this image file derives from
+ * @property inputFileFor - File objects that derive from this image file
+ * @property fileFormatSpecifications - Document objects specifying the file format
+ * @property workflows - Workflow objects that processed this image file
+ * @property qualityMetrics - QualityMetric objects associated with this image file
+ * @property supersedes - FileSet objects that this image file supersedes
+ * @property supersededBy - FileSet objects that supersede this image file
+ * @property isJson - Boolean indicating whether the page is being viewed in JSON format
+ */
+interface ThisPageProps {
+  imageFile: FileObject;
+  attribution: AttributionData;
+  documents: DocumentObject[];
+  derivedFrom: FileObject[];
+  inputFileFor: FileObject[];
+  fileFormatSpecifications: DocumentObject[];
+  workflows: WorkflowObject[];
+  qualityMetrics: QualityMetricObject[];
+  supersedes: DatabaseObject[];
+  supersededBy: DatabaseObject[];
+  isJson: boolean;
+}
+
+/**
+ * ImageFile page component.
+ */
 export default function ImageFile({
   imageFile,
-  attribution,
   documents,
   derivedFrom,
   inputFileFor,
@@ -55,9 +98,19 @@ export default function ImageFile({
   qualityMetrics,
   supersedes,
   supersededBy,
+  attribution,
   isJson,
-}) {
+}: ThisPageProps) {
   const sections = useSecDir({ isJson });
+
+  // Get the embedded samples from the file set, if they exist and are valid.
+  const fileSet = isDatabaseObject(imageFile.file_set)
+    ? imageFile.file_set
+    : null;
+  const samples =
+    fileSet && isDatabaseObjectArrayOfType(fileSet.samples, "Sample")
+      ? fileSet.samples
+      : [];
 
   return (
     <>
@@ -90,6 +143,14 @@ export default function ImageFile({
                       </DataItemValue>
                     </>
                   )}
+                {imageFileHasThumbnail(imageFile) && (
+                  <>
+                    <DataItemLabel>Preview</DataItemLabel>
+                    <DataItemValue>
+                      <ImageFileThumbnailAndPreview imageFile={imageFile} />
+                    </DataItemValue>
+                  </>
+                )}
               </FileDataItems>
               <Attribution attribution={attribution} />
             </DataArea>
@@ -103,9 +164,7 @@ export default function ImageFile({
               panelId="file-format-specifications"
             />
           )}
-          {imageFile.file_set.samples?.length > 0 && (
-            <SampleTable samples={imageFile.file_set.samples} />
-          )}
+          {samples.length > 0 && <SampleTable samples={samples} />}
           {derivedFrom.length > 0 && (
             <DerivedFromTable
               derivedFrom={derivedFrom}
@@ -131,31 +190,6 @@ export default function ImageFile({
   );
 }
 
-ImageFile.propTypes = {
-  // ImageFile object to display
-  imageFile: PropTypes.object.isRequired,
-  // Documents set associate with this file
-  documents: PropTypes.array.isRequired,
-  // The file is derived from
-  derivedFrom: PropTypes.array.isRequired,
-  // Files that derive from this file
-  inputFileFor: PropTypes.array.isRequired,
-  // Set of documents for file specifications
-  fileFormatSpecifications: PropTypes.arrayOf(PropTypes.object),
-  // Workflows that processed this file
-  workflows: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Quality metrics for this file
-  qualityMetrics: PropTypes.arrayOf(PropTypes.object),
-  // Files that this file supersedes
-  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Files that supersede this file
-  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Attribution for this file
-  attribution: PropTypes.object.isRequired,
-  // Is the format JSON?
-  isJson: PropTypes.bool.isRequired,
-};
-
 export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   // Redirect to the file page if the URL is a file download link.
   const isPathForFileDownload = checkForFileDownloadPath(resolvedUrl);
@@ -171,7 +205,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const imageFile = (
-    await request.getObject(`/image-files/${params.id}/`)
+    await request.getObject<FileObject>(`/image-files/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(imageFile)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
@@ -183,42 +217,41 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       return canonicalRedirect;
     }
 
-    const documents = imageFile.documents
+    const documents = isPathArray(imageFile.documents)
       ? await requestDocuments(imageFile.documents, request)
       : [];
-    const derivedFrom = imageFile.derived_from
+    const derivedFrom = isPathArray(imageFile.derived_from)
       ? await requestFiles(imageFile.derived_from, request)
       : [];
-    const inputFileFor =
-      imageFile.input_file_for?.length > 0
-        ? await requestFiles(imageFile.input_file_for, request)
+    const inputFileFor = isPathArray(imageFile.input_file_for)
+      ? await requestFiles(imageFile.input_file_for, request)
+      : [];
+
+    const fileFormatSpecificationsPaths = pathsFromDatabaseObjects(
+      imageFile.file_format_specifications
+    );
+    const fileFormatSpecifications =
+      fileFormatSpecificationsPaths.length > 0
+        ? await requestDocuments(fileFormatSpecificationsPaths, request)
         : [];
-    let fileFormatSpecifications = [];
-    if (imageFile.file_format_specifications?.length > 0) {
-      const fileFormatSpecificationsPaths =
-        imageFile.file_format_specifications.map((document) => document["@id"]);
-      fileFormatSpecifications = await requestDocuments(
-        fileFormatSpecificationsPaths,
-        request
-      );
-    }
-    let workflows = [];
-    if (imageFile.workflows?.length > 0) {
-      const workflowPaths = imageFile.workflows.map(
-        (workflow) => workflow["@id"]
-      );
-      workflows = await requestWorkflows(workflowPaths, request);
-    }
-    const qualityMetrics =
-      imageFile.quality_metrics?.length > 0
-        ? await requestQualityMetrics(imageFile.quality_metrics, request)
+
+    const workflowPaths = pathsFromDatabaseObjects(imageFile.workflows);
+    const workflows =
+      workflowPaths.length > 0
+        ? await requestWorkflows(workflowPaths, request)
         : [];
+
+    const qualityMetrics = isPathArray(imageFile.quality_metrics)
+      ? await requestQualityMetrics(imageFile.quality_metrics, request)
+      : [];
+
     const { supersedes, supersededBy } = await requestSupersedes(
       imageFile,
       "File",
       request
     );
     const attribution = await buildAttribution(imageFile, req.headers.cookie);
+
     return {
       props: {
         imageFile,
@@ -227,13 +260,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileFor,
         fileFormatSpecifications,
         workflows,
+        qualityMetrics,
         supersedes,
         supersededBy,
-        pageContext: { title: imageFile.accession },
-        qualityMetrics,
         attribution,
         isJson,
-      },
+        pageContext: { title: imageFile.accession },
+      } satisfies ThisPageProps & { pageContext: { title: string } },
     };
   }
   return errorObjectToProps(imageFile);

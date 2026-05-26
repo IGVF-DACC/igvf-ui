@@ -3,6 +3,7 @@ import {
   arbitraryTypeToText,
   convertTextToTitleCase,
   dataSize,
+  fileNameFromPath,
   isObjectArrayProperty,
   isStringArrayProperty,
   isValidPath,
@@ -214,6 +215,13 @@ describe("Test the truncateText function", () => {
     expect(truncateText("Supercalifragilisticexpialidocious", 10)).toBe(
       "Supercalif…"
     );
+  });
+});
+
+describe("Test the fileNameFromPath function", () => {
+  it("Should extract the file name from a path correctly", () => {
+    expect(fileNameFromPath("/path/to/file.txt")).toBe("file.txt");
+    expect(fileNameFromPath("file.txt")).toBe("");
   });
 });
 

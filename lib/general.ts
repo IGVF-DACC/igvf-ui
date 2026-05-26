@@ -31,6 +31,25 @@ export function pathToId(path: string): string {
 }
 
 /**
+ * Given a path to a file, return the file name, meaning the last part of the path. For example
+ * given the path /file/orange.png, this function would return `orange.png`. If the path doesn't
+ * match the expected format, this function returns an empty string.
+ *
+ * This can be expanded to handle isolated file name or file names at the root level, but we just
+ * don't have that case right now and likely never will.
+ *
+ * @param path - Path that includes the file name to extract
+ * @returns File name extracted from the path
+ */
+export function fileNameFromPath(path: string): string {
+  const matched = path.match(/^\/.+\/(.+)$/);
+  if (matched && matched.length === 2) {
+    return matched[1];
+  }
+  return "";
+}
+
+/**
  * Check whether the input string is a path or not.
  * @param input String to check if it is a path
  * @returns True if the input is a valid path
