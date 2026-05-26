@@ -99,17 +99,6 @@ export default function MatrixFile({
               <Attribution attribution={attribution} />
             </DataArea>
           </DataPanel>
-          <DataAreaTitle id="matrix-details">Matrix Details</DataAreaTitle>
-          <DataPanel>
-            <DataArea>
-              <DataItemLabel>Principal Dimension</DataItemLabel>
-              <DataItemValue>{matrixFile.principal_dimension}</DataItemValue>
-              <DataItemLabel>Secondary Dimensions</DataItemLabel>
-              <DataItemValue>
-                {matrixFile.secondary_dimensions.join(", ")}
-              </DataItemValue>
-            </DataArea>
-          </DataPanel>
           {referenceFiles.length > 0 && (
             <ReferenceFileTable files={referenceFiles} />
           )}
