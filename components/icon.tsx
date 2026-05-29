@@ -3,11 +3,22 @@
  * component and specifying the icon name as a property of Icon.
  */
 
-import PropTypes from "prop-types";
 /* istanbul ignore file */
 
+type IconProps = {
+  className?: string;
+  testid?: string;
+};
+
+type IconPropsWithSize = IconProps & {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+};
+
 const Icon = {
-  Award: ({ className = null, testid = "icon-award" }) => (
+  Award: ({ className = undefined, testid = "icon-award" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -27,7 +38,7 @@ const Icon = {
       <polygon points="10,3.6 11.4,6.5 14.4,6.9 12.2,9 12.7,12.1 10,10.6 7.3,12.1 7.8,9 5.6,6.9 8.6,6.5 " />
     </svg>
   ),
-  Brand: ({ className = null, testid = "icon-brand" }) => (
+  Brand: ({ className = undefined, testid = "icon-brand" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -50,7 +61,7 @@ const Icon = {
       />
     </svg>
   ),
-  Catalog: ({ className = null, testid = "icon-catalog" }) => (
+  Catalog: ({ className = undefined, testid = "icon-catalog" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -66,7 +77,7 @@ const Icon = {
       />
     </svg>
   ),
-  CCBY: ({ className = null, testid = "icon-ccby" }) => (
+  CCBY: ({ className = undefined, testid = "icon-ccby" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -77,7 +88,7 @@ const Icon = {
       <path d="M31.9,0c9,0,16.6,3.1,22.7,9.3,6.2,6.2,9.3,13.8,9.3,22.7s-3,16.5-9.1,22.5c-6.5,6.4-14.1,9.5-22.9,9.5s-16.2-3.1-22.5-9.4C3.1,48.3,0,40.8,0,32S3.1,15.7,9.4,9.3C15.6,3.1,23.1,0,31.9,0ZM32.1,5.8c-7.3,0-13.4,2.6-18.5,7.7-5.2,5.3-7.8,11.5-7.8,18.6s2.6,13.2,7.8,18.4c5.2,5.2,11.4,7.8,18.5,7.8s13.3-2.6,18.6-7.8c5-4.8,7.5-11,7.5-18.3s-2.6-13.5-7.7-18.6c-5.1-5.1-11.3-7.7-18.5-7.7ZM40.6,24.1v13.1h-3.7v15.5h-9.9v-15.5h-3.7v-13.1c0-.6.2-1.1.6-1.5.4-.4.9-.6,1.5-.6h13.1c.5,0,1,.2,1.4.6.4.4.6.9.6,1.5ZM27.5,15.8c0-3,1.5-4.5,4.5-4.5s4.5,1.5,4.5,4.5-1.5,4.5-4.5,4.5-4.5-1.5-4.5-4.5Z" />
     </svg>
   ),
-  Circle: ({ className = null, testid = "icon-circle" }) => (
+  Circle: ({ className = undefined, testid = "icon-circle" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -88,7 +99,10 @@ const Icon = {
       <circle cx="10" cy="10" r="10" />
     </svg>
   ),
-  Collapse: ({ className = null, testid = "icon-collapse" }) => (
+  Collapse: ({
+    className = undefined,
+    testid = "icon-collapse",
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -101,7 +115,7 @@ const Icon = {
       <path d="M10,8.5c-.19,0-.38-.07-.53-.22L4.47,3.28c-.29-.29-.29-.77,0-1.06s.77-.29,1.06,0l4.47,4.47,4.47-4.47c.29-.29.77-.29,1.06,0s.29.77,0,1.06l-5,5c-.15.15-.34.22-.53.22Z" />
     </svg>
   ),
-  Data: ({ className = null, testid = "icon-data" }) => (
+  Data: ({ className = undefined, testid = "icon-data" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -126,7 +140,10 @@ const Icon = {
       <path d="M15.5,7.6H14c-0.3,0-0.5-0.2-0.5-0.5v0c0-0.3,0.2-0.5,0.5-0.5h1.5c0.3,0,0.5,0.2,0.5,0.5v0C16,7.4,15.8,7.6,15.5,7.6z" />
     </svg>
   ),
-  DataModel: ({ className = null, testid = "icon-data-model" }) => (
+  DataModel: ({
+    className = undefined,
+    testid = "icon-data-model",
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -142,7 +159,7 @@ const Icon = {
       />
     </svg>
   ),
-  Donor: ({ className = null, testid = "icon-donor" }) => (
+  Donor: ({ className = undefined, testid = "icon-donor" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -157,9 +174,9 @@ const Icon = {
     </svg>
   ),
   EllipsisHorizontal: ({
-    className = null,
+    className = undefined,
     testid = "icon-ellipsis-horizontal",
-  }) => (
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -172,7 +189,7 @@ const Icon = {
       <circle cx="4.4" cy="4" r="3.4" />
     </svg>
   ),
-  Eraser: ({ className = null, testid = "icon-eraser" }) => (
+  Eraser: ({ className = undefined, testid = "icon-eraser" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -183,7 +200,7 @@ const Icon = {
       <path d="M17.5,6.5l-4-4c-.7-.7-1.9-.7-2.6,0l-6.2,6.2.7.7-2.8,2.8c-.7.7-.7,1.9,0,2.6l2.7,2.7c.4.4.8.5,1.3.5s.9-.2,1.3-.5l2.8-2.8.7.7,6.2-6.2c.7-.7.7-1.9,0-2.6ZM6.7,16.4c0,0-.2,0-.2,0s-.2,0-.2,0l-2.7-2.7c0,0,0-.2,0-.2s0-.2,0-.2l2.8-2.8,3.1,3.1-2.8,2.8Z" />
     </svg>
   ),
-  Expand: ({ className = null, testid = "icon-expand" }) => (
+  Expand: ({ className = undefined, testid = "icon-expand" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -197,13 +214,13 @@ const Icon = {
     </svg>
   ),
   FileSet: ({
-    className = null,
+    className = undefined,
     testid = "icon-fileset",
     x = undefined,
     y = undefined,
     width = undefined,
     height = undefined,
-  }) => (
+  }: IconPropsWithSize) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -218,7 +235,7 @@ const Icon = {
       <path d="M16.2,5h-4.8c0,0-.1,0-.2,0l-1.4-1.4c-.3-.3-.8-.5-1.2-.5H3.8c-1,0-1.8.8-1.8,1.8v10.5c0,1,.8,1.8,1.8,1.8h12.5c1,0,1.8-.8,1.8-1.8V6.8c0-1-.8-1.8-1.8-1.8ZM5.3,6.5h5.3v6h-5.3v-6ZM13.8,15h-5.3v-1.7h2.9v-4.4h2.5v6Z" />
     </svg>
   ),
-  Filter: ({ className = null, testid = "icon-filter" }) => (
+  Filter: ({ className = undefined, testid = "icon-filter" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -236,7 +253,7 @@ const Icon = {
       </g>
     </svg>
   ),
-  Gene: ({ className = null, testid = "icon-gene" }) => (
+  Gene: ({ className = undefined, testid = "icon-gene" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -256,9 +273,9 @@ const Icon = {
     </svg>
   ),
   ResourcesStandards: ({
-    className = null,
+    className = undefined,
     testid = "icon-resources-standards",
-  }) => (
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -273,7 +290,10 @@ const Icon = {
       <path d="M16,16H4V4h12V16z M5,15h10V5H5V15z" />
     </svg>
   ),
-  PencilSlash: ({ className = null, testid = "icon-pencil-slash" }) => (
+  PencilSlash: ({
+    className = undefined,
+    testid = "icon-pencil-slash",
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -292,7 +312,7 @@ const Icon = {
       <path d="M17.7,5.29c2-2-1-4.99-2.99-2.99l-4.62,4.62l2.99,2.99L17.7,5.29z" />
     </svg>
   ),
-  Repo: ({ className = null, testid = "icon-repo" }) => (
+  Repo: ({ className = undefined, testid = "icon-repo" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -307,7 +327,7 @@ const Icon = {
       <path d="M12.1,8.6l-3.3-2.9c-.2.5-.6.9-1,1.1l3.4,2.9c.2-.5.5-.9.9-1.2Z" />
     </svg>
   ),
-  Reset: ({ className = null, testid = "icon-reset" }) => (
+  Reset: ({ className = undefined, testid = "icon-reset" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -318,7 +338,7 @@ const Icon = {
       <path d="M10,3c-1.9,0-3.7.8-5,2.1v-1.4c0-.4-.3-.8-.8-.8s-.8.3-.8.8v3.4c0,.4.3.6.6.6h3.4c.4,0,.8-.3.8-.8s-.3-.8-.8-.8h-1.5c1-1.1,2.4-1.7,3.9-1.7,3,0,5.5,2.5,5.5,5.5s-2.5,5.5-5.5,5.5-3.9-1.1-4.8-2.9c-.2-.4-.7-.5-1-.3-.4.2-.5.7-.3,1,1.2,2.3,3.6,3.7,6.2,3.7,3.9,0,7-3.1,7-7s-3.1-7-7-7Z" />
     </svg>
   ),
-  Sample: ({ className = null, testid = "icon-sample" }) => (
+  Sample: ({ className = undefined, testid = "icon-sample" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -333,9 +353,9 @@ const Icon = {
     </svg>
   ),
   SectionDirectory: ({
-    className = null,
+    className = undefined,
     testid = "icon-section-directory",
-  }) => (
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -348,7 +368,7 @@ const Icon = {
       <path d="M6.6,7.9c0-.4.3-.8.8-.8h9.9c.4,0,.8.3.8.8s-.3.8-.8.8H7.3c-.4,0-.8-.3-.8-.8Z" />
     </svg>
   ),
-  Splat: ({ className = null, testid = "icon-splat" }) => (
+  Splat: ({ className = undefined, testid = "icon-splat" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -371,9 +391,9 @@ const Icon = {
     </svg>
   ),
   TableColumnsHidden: ({
-    className = null,
+    className = undefined,
     testid = "icon-table-columns-hidden",
-  }) => (
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -387,9 +407,9 @@ const Icon = {
     </svg>
   ),
   TableColumnsVisible: ({
-    className = null,
+    className = undefined,
     testid = "icon-table-columns-visible",
-  }) => (
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -402,7 +422,10 @@ const Icon = {
       <rect x="14" y="8" width="6" height="4" />
     </svg>
   ),
-  Treatment: ({ className = null, testid = "icon-treatment" }) => (
+  Treatment: ({
+    className = undefined,
+    testid = "icon-treatment",
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -418,7 +441,7 @@ const Icon = {
       />
     </svg>
   ),
-  Twitter: ({ className = null, testid = "icon-twitter" }) => (
+  Twitter: ({ className = undefined, testid = "icon-twitter" }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -432,7 +455,10 @@ const Icon = {
       />
     </svg>
   ),
-  UserSignedIn: ({ className = null, testid = "icon-user-signed-out" }) => (
+  UserSignedIn: ({
+    className = undefined,
+    testid = "icon-user-signed-out",
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -448,7 +474,10 @@ const Icon = {
       <circle cx="10" cy="7.3" r="2.4" />
     </svg>
   ),
-  UserSignedOut: ({ className = null, testid = "icon-user-signed-out" }) => (
+  UserSignedOut: ({
+    className = undefined,
+    testid = "icon-user-signed-out",
+  }: IconProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       className={className}
@@ -463,126 +492,6 @@ const Icon = {
       <circle cx="10" cy="7.3" r="2.4" />
     </svg>
   ),
-};
-
-/**
- * List all icon PropTypes here.
- */
-Icon.Award.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Brand.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Catalog.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.CCBY.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Circle.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Collapse.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Data.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.DataModel.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Donor.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.EllipsisHorizontal.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Eraser.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Expand.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.FileSet.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-  x: PropTypes.number,
-  y: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
-};
-Icon.Filter.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Gene.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.ResourcesStandards.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.PencilSlash.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Repo.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Reset.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Sample.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.SectionDirectory.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Splat.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.TableColumnsHidden.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.TableColumnsVisible.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Treatment.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.Twitter.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.UserSignedIn.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
-};
-Icon.UserSignedOut.propTypes = {
-  className: PropTypes.string,
-  testid: PropTypes.string,
 };
 
 export default Icon;

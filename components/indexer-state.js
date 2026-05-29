@@ -3,7 +3,6 @@ import { ArrowPathIcon, CheckIcon } from "@heroicons/react/20/solid";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
 // components
-import GlobalContext from "./global-context";
 import SessionContext from "./session-context";
 import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
@@ -207,7 +206,6 @@ IndexerStateCollapsed.propTypes = {
  */
 export default function IndexerState({ isCollapsed = false }) {
   const { sessionProperties } = useContext(SessionContext);
-  const { indexerStateTooltip } = useContext(GlobalContext);
   const isAdmin = !!sessionProperties?.admin;
   const request = new FetchRequest({ backend: true });
 
@@ -263,7 +261,6 @@ export default function IndexerState({ isCollapsed = false }) {
           indexingCount={indexingCount}
           isAdmin={isAdmin}
           onClick={triggerIndexerStateRequest}
-          indexerStateTooltip={indexerStateTooltip}
         />
       ) : (
         <IndexerStateExpanded
@@ -272,7 +269,6 @@ export default function IndexerState({ isCollapsed = false }) {
           indexingCount={indexingCount}
           isAdmin={isAdmin}
           onClick={triggerIndexerStateRequest}
-          indexerStateTooltip={indexerStateTooltip}
         />
       )}
     </>

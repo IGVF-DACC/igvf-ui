@@ -22,6 +22,7 @@ import {
   computeFileDisplayData,
   resolveDeprecatedFileProps,
 } from "../lib/deprecated-files";
+import { type FileSetObject } from "../lib/file-sets";
 import {
   extractSeqspecsForFile,
   fileGroupsToDataGridFormat,
@@ -32,7 +33,6 @@ import {
 import type {
   DocumentObject,
   FileObject,
-  FileSetObject,
   LabObject,
   OntologyTermObject,
 } from "../globals";

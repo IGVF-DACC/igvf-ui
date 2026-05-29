@@ -46,7 +46,9 @@ async function fetchHomePageData(
 ): Promise<LabData | null> {
   const request = new FetchRequest({ cookie: cookie || undefined });
   const datasetSummary = await requestDatasetSummary(request, queryString);
-  return datasetSummary.matrix?.y || null;
+  return datasetSummary && datasetSummary.matrix
+    ? datasetSummary.matrix.y
+    : null;
 }
 
 /**

@@ -19,11 +19,7 @@ export function isDataProviderErrorObject(
   obj: DataProviderObject | ErrorObject
 ): obj is ErrorObject {
   return (
-    obj &&
-    typeof obj === "object" &&
-    "isError" in obj &&
-    obj.isError === true &&
-    "errors" in obj
+    obj && typeof obj === "object" && "isError" in obj && obj.isError === true
   );
 }
 

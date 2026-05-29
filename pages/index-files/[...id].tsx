@@ -198,8 +198,8 @@ export async function getServerSideProps(
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const indexFile = (
-    await request.getObject(`/index-files/${params!.id}/`)
-  ).union() as IndexFileObject;
+    await request.getObject<IndexFileObject>(`/index-files/${params!.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(indexFile)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
       indexFile,

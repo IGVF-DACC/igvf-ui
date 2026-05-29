@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 // lib
 import buildAttribution from "../lib/attribution";
 import { getBreadcrumbMeta } from "../lib/breadcrumbs";
-import { errorObjectToProps } from "../lib/errors";
+import { errorObjectToProps, isDataProviderErrorObject } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { isJsonFormat } from "../lib/query-utils";
 // components
@@ -134,7 +134,7 @@ export async function getServerSideProps({ req, resolvedUrl, query }) {
     }
   }
 
-  if (FetchRequest.isResponseSuccess(generic)) {
+  if (!isDataProviderErrorObject(generic)) {
     let awards = null;
     let labs = null;
     let pages = null;

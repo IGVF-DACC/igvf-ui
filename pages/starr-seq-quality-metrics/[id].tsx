@@ -19,7 +19,6 @@ import {
   starrSeqFields,
   qualityMetricTitle,
   type StarrSeqQualityMetricObject,
-  type QualityMetricObject,
 } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
 // root
@@ -77,12 +76,12 @@ export default function PerturbSeqQualityMetric({
 export async function getServerSideProps({ params, req, query }) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const item = (
-    await request.getObject(`/starr-seq-quality-metrics/${params.id}/`)
+  const qualityMetric = (
+    await request.getObject<StarrSeqQualityMetricObject>(
+      `/starr-seq-quality-metrics/${params.id}/`
+    )
   ).union();
-  if (FetchRequest.isResponseSuccess(item)) {
-    const qualityMetric = item as QualityMetricObject;
-
+  if (FetchRequest.isResponseSuccess(qualityMetric)) {
     const qualityMetricOf =
       qualityMetric.quality_metric_of?.length > 0
         ? await requestFiles(
@@ -102,5 +101,5 @@ export async function getServerSideProps({ params, req, query }) {
       },
     };
   }
-  return errorObjectToProps(item);
+  return errorObjectToProps(qualityMetric);
 }

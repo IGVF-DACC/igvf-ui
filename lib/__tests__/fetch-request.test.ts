@@ -32,7 +32,7 @@ describe("Test improper authentications get detected", () => {
     expect(() => {
       new FetchRequest({
         cookie: "mockcookie",
-        session: { _csfrt_: "mocktoken" },
+        session: { _csrft_: "mocktoken" },
       });
     }).toThrow(/Must authenticate with/);
 
@@ -61,7 +61,7 @@ describe("Test improper authentications get detected", () => {
       // Shouldn't supply a session on the server.
       expect(() => {
         new FetchRequest({
-          session: { _csfrt_: "mocktoken" },
+          session: { _csrft_: "mocktoken" },
         });
       }).toThrow(/Server-side requests/);
     });
@@ -483,7 +483,7 @@ describe("Test GET requests to the data provider", () => {
     });
 
     // Retrieve multiple lab items without filtering error results.
-    const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
     let labItems = await request.getMultipleObjects([
       "/labs/j-michael-cherry/",
       "/labs/jesse-engreitz/",
@@ -814,6 +814,9 @@ describe("POST fetch requests", () => {
       airplane: "Daher",
     });
     expect(labItem).toBeTruthy();
+    if (!isErrorObject(labItem)) {
+      throw new Error("Expected postObject to return an ErrorObject");
+    }
     expect(labItem["@type"]).toContain("NetworkError");
     expect(labItem.status).toEqual("error");
     expect(labItem.code).toEqual(503);
@@ -945,7 +948,7 @@ describe("Test getMultipleObjectsBulk()", () => {
       })
     );
 
-    const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
       ["name"]
@@ -979,7 +982,7 @@ describe("Test getMultipleObjectsBulk()", () => {
       })
     );
 
-    const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
       []
@@ -1029,7 +1032,7 @@ describe("Test getMultipleObjectsBulk()", () => {
       });
     });
 
-    const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(paths, ["name"]);
     expect(labItems.isOk()).toBeTruthy();
     expect(labItems.unwrap()).toHaveLength(100);
@@ -1037,7 +1040,7 @@ describe("Test getMultipleObjectsBulk()", () => {
 
   it("retrieves no items from an empty array", async () => {
     // Make sure passing an empty array returns an empty array.
-    const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
     const noLabItems = await request.getMultipleObjectsBulk([], ["name"]);
     expect(noLabItems.isOk()).toBeTruthy();
     expect(noLabItems.unwrap()).toHaveLength(0);
@@ -1048,7 +1051,7 @@ describe("Test getMultipleObjectsBulk()", () => {
       throw "Mock request error";
     });
 
-    const request = new FetchRequest({ session: { _csfrt_: "mocktoken" } });
+    const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
     const labItems = await request.getMultipleObjectsBulk(
       ["/labs/j-michael-cherry/", "/labs/jesse-engreitz/", "/labs/unknown/"],
       ["name"]
@@ -1096,9 +1099,32 @@ describe("Test getMultipleObjectsBulk()", () => {
 describe("Test static isResponseSuccess function", () => {
   it("returns true for a successful response", () => {
     const response = {
-      status: "success",
+      "@id": "/labs/j-michael-cherry/",
+      "@type": ["Lab", "Item"],
     };
     expect(FetchRequest.isResponseSuccess(response)).toBeTruthy();
+  });
+
+  it("returns false for an error response", () => {
+    const response = {
+      "@type": ["HTTPNotFound", "Error"],
+      code: 404,
+      description: "The resource could not be found.",
+      errors: [],
+      detail: "URL",
+      status: "error",
+      title: "Not Found",
+    };
+    expect(FetchRequest.isResponseSuccess(response)).toBeFalsy();
+  });
+
+  it("returns false for a non-object response", () => {
+    expect(
+      FetchRequest.isResponseSuccess("This is a string, not an object" as any)
+    ).toBeTruthy();
+    expect(FetchRequest.isResponseSuccess(12345 as any)).toBeTruthy();
+    expect(FetchRequest.isResponseSuccess(null)).toBeTruthy();
+    expect(FetchRequest.isResponseSuccess(undefined)).toBeTruthy();
   });
 });
 
@@ -1109,6 +1135,7 @@ describe("Test isErrorObject function", () => {
       "@type": ["HTTPNotFound", "Error"],
       code: 404,
       description: "The resource could not be found.",
+      errors: [],
       detail: "URL",
       status: "error",
       title: "Not Found",
@@ -1332,11 +1359,11 @@ describe("Test getMultipleObjectsBySearch()", () => {
     );
 
     const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
-    const result = await request.getMultipleObjectsBySearch(
-      "AssayTerm",
-      ["term_name", "definition"],
-      { query: "term_name=RNA-seq&term_name=ChIP-seq" }
-    );
+    const result = await request.getMultipleObjectsBySearch<{
+      term_name: string;
+    }>("AssayTerm", ["term_name", "definition"], {
+      query: "term_name=RNA-seq&term_name=ChIP-seq",
+    });
 
     expect(result.isOk()).toBeTruthy();
     expect(result.unwrap()).toHaveLength(2);
@@ -1361,11 +1388,12 @@ describe("Test getMultipleObjectsBySearch()", () => {
     );
 
     const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
-    const result = await request.getMultipleObjectsBySearch(
-      "AssayTerm",
-      ["term_name", "definition"],
-      { property: "term_name", values: ["RNA-seq", "ChIP-seq"] }
-    );
+    const result = await request.getMultipleObjectsBySearch<{
+      term_name: string;
+    }>("AssayTerm", ["term_name", "definition"], {
+      property: "term_name",
+      values: ["RNA-seq", "ChIP-seq"],
+    });
 
     expect(result.isOk()).toBeTruthy();
     expect(result.unwrap()).toHaveLength(2);
@@ -1673,11 +1701,12 @@ describe("Test getMultipleObjectsBySearch()", () => {
     );
 
     const request = new FetchRequest({ session: { _csrft_: "mocktoken" } });
-    const result = await request.getMultipleObjectsBySearch(
-      "AssayTerm",
-      ["term_name", "definition"],
-      { property: "term_name", values: ["RNA-seq"] }
-    );
+    const result = await request.getMultipleObjectsBySearch<{
+      term_name: string;
+    }>("AssayTerm", ["term_name", "definition"], {
+      property: "term_name",
+      values: ["RNA-seq"],
+    });
 
     expect(result.isOk()).toBeTruthy();
     expect(result.unwrap()).toHaveLength(1);

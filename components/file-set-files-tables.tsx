@@ -5,8 +5,9 @@ import FileTable from "./file-table";
 import SequencingFileTable from "./sequencing-file-table";
 // lib
 import { isDeprecatedStatus } from "../lib/deprecated-files";
+import { type FileSetObject } from "../lib/file-sets";
 // root
-import type { FileObject, FileSetObject, DocumentObject } from "../globals";
+import type { FileObject, DocumentObject } from "../globals";
 
 /**
  * Display tables of files associated with a file set for those file-set types that need different

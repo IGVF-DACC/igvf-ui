@@ -1,16 +1,15 @@
 import FetchRequest from "../fetch-request";
 import {
+  isFileSetObjectType,
   requestAssociatedFileSets,
   requestFileSetDonors,
   requestFileSetPublications,
   requestFileSetSamples,
+  type CuratedSetObject,
+  type PseudobulkSetObject,
 } from "../file-sets";
 import { type SampleObject } from "../samples";
-import type {
-  FileSetObject,
-  DonorObject,
-  PublicationObject,
-} from "../../globals";
+import type { HumanDonorObject, PublicationObject } from "../../globals";
 
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 global.fetch = mockFetch;
@@ -33,7 +32,7 @@ describe("requestAssociatedFileSets", () => {
   });
 
   it("returns an an array of two file sets given an array of two file sets", async () => {
-    const fileSet1: FileSetObject = {
+    const fileSet1: PseudobulkSetObject = {
       "@id": "/file-sets/IGVFDS0001PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0001PSBK",
@@ -47,7 +46,7 @@ describe("requestAssociatedFileSets", () => {
       status: "in progress",
       summary: "A file set for pseudobulk analysis.",
     };
-    const fileSet2: FileSetObject = {
+    const fileSet2: PseudobulkSetObject = {
       "@id": "/file-sets/IGVFDS0002PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0002PSBK",
@@ -62,11 +61,10 @@ describe("requestAssociatedFileSets", () => {
       summary: "A file set for pseudobulk analysis.",
     };
 
-    const resultFileSet1: FileSetObject = {
+    const resultFileSet1: PseudobulkSetObject = {
       "@id": "/curated-sets/IGVFDS0000PSBK/",
       "@type": ["CuratedSet", "FileSet", "Item"],
       accession: "IGVFDS0000EXSD",
-      assay_term: "/assay-terms/OBI_0002041/",
       award: "/awards/HG012012/",
       description:
         "A curated set to store sequencing data from an external source.",
@@ -77,11 +75,10 @@ describe("requestAssociatedFileSets", () => {
       status: "in progress",
       summary: "A file set for pseudobulk analysis.",
     };
-    const resultFileSet2: FileSetObject = {
+    const resultFileSet2: CuratedSetObject = {
       "@id": "/curated-sets/IGVFDS0001PSBK/",
       "@type": ["CuratedSet", "FileSet", "Item"],
       accession: "IGVFDS0001EXSD",
-      assay_term: "/assay-terms/OBI_0002041/",
       award: "/awards/HG012012/",
       description:
         "A curated set to store sequencing data from an external source.",
@@ -111,7 +108,7 @@ describe("requestAssociatedFileSets", () => {
   });
 
   it("returns an an array of one file set given two file sets with the same input file set", async () => {
-    const fileSet1: FileSetObject = {
+    const fileSet1: PseudobulkSetObject = {
       "@id": "/file-sets/IGVFDS0001PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0001PSBK",
@@ -125,7 +122,7 @@ describe("requestAssociatedFileSets", () => {
       status: "in progress",
       summary: "A file set for pseudobulk analysis.",
     };
-    const fileSet2: FileSetObject = {
+    const fileSet2: PseudobulkSetObject = {
       "@id": "/file-sets/IGVFDS0002PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0002PSBK",
@@ -140,7 +137,7 @@ describe("requestAssociatedFileSets", () => {
       summary: "A file set for pseudobulk analysis.",
     };
 
-    const resultFileSet1: FileSetObject = {
+    const resultFileSet1: CuratedSetObject = {
       "@id": "/curated-sets/IGVFDS0000PSBK/",
       "@type": ["CuratedSet", "FileSet", "Item"],
       accession: "IGVFDS0000EXSD",
@@ -174,7 +171,7 @@ describe("requestAssociatedFileSets", () => {
   });
 
   it("returns an empty array given file sets with no associated file sets", async () => {
-    const fileSet1: FileSetObject = {
+    const fileSet1: PseudobulkSetObject = {
       "@id": "/file-sets/IGVFDS0001PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0001PSBK",
@@ -220,7 +217,7 @@ describe("requestAssociatedFileSets", () => {
 
     const request = new FetchRequest();
     const result = await requestAssociatedFileSets(
-      [fileSet1, fileSet2 as unknown as FileSetObject],
+      [fileSet1, fileSet2 as unknown as PseudobulkSetObject],
       "input_file_sets",
       request
     );
@@ -238,8 +235,8 @@ describe("requestFileSetDonors", () => {
   });
 
   it("returns an array of donor objects given a file set with donor paths", async () => {
-    const fileSet: FileSetObject = {
-      "@id": "/file-sets/IGVFDS0001PSBK/",
+    const fileSet: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0001PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0001PSBK",
       award: "/awards/HG012012/",
@@ -254,17 +251,16 @@ describe("requestFileSetDonors", () => {
       summary: "A file set for pseudobulk analysis.",
     };
 
-    const resultDonor: DonorObject = {
+    const resultDonor: HumanDonorObject = {
       "@id": "/donors/IGVFDN0000DDDD/",
       "@type": ["Donor", "Item"],
       accession: "IGVFDN0000DDDD",
-      age: 45,
       description: "A donor with a disease.",
-      disease_term: "/disease-terms/DOID_1234567/",
       documents: ["/documents/IGVFDO0000DDDD/"],
       lab: "/labs/j-michael-cherry/",
       sex: "female",
       status: "in progress",
+      taxa: "Homo sapiens",
     };
 
     const mockResult = {
@@ -280,8 +276,8 @@ describe("requestFileSetDonors", () => {
   });
 
   it("returns an empty array given a file set with no donors", async () => {
-    const fileSet: FileSetObject = {
-      "@id": "/file-sets/IGVFDS0001PSBK/",
+    const fileSet: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0001PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0001PSBK",
       award: "/awards/HG012012/",
@@ -311,8 +307,8 @@ describe("requestFileSetPublications", () => {
   });
 
   it("returns an array of publication objects given a file set with publication paths", async () => {
-    const fileSet: FileSetObject = {
-      "@id": "/file-sets/IGVFDS0001PSBK/",
+    const fileSet: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0001PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0001PSBK",
       award: "/awards/HG012012/",
@@ -334,7 +330,6 @@ describe("requestFileSetPublications", () => {
       description: "A publication about the file set.",
       lab: "/labs/j-michael-cherry/",
       publication_identifiers: ["doi:10.1234/igvf.56789"],
-      publication_type: "journal article",
       title: "A scientific paper about the file set.",
       status: "in progress",
     };
@@ -352,8 +347,8 @@ describe("requestFileSetPublications", () => {
   });
 
   it("returns an empty array given a file set with no publications", async () => {
-    const fileSet: FileSetObject = {
-      "@id": "/file-sets/IGVFDS0001PSBK/",
+    const fileSet: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0001PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0001PSBK",
       award: "/awards/HG012012/",
@@ -383,8 +378,8 @@ describe("requestFileSetSamples", () => {
   });
 
   it("returns an array of sample objects given file sets with sample paths", async () => {
-    const fileSet1: FileSetObject = {
-      "@id": "/file-sets/IGVFDS0001PSBK/",
+    const fileSet1: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0001PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0001PSBK",
       award: "/awards/HG012012/",
@@ -397,8 +392,8 @@ describe("requestFileSetSamples", () => {
       status: "in progress",
       summary: "A file set for pseudobulk analysis.",
     };
-    const fileSet2: FileSetObject = {
-      "@id": "/file-sets/IGVFDS0002PSBK/",
+    const fileSet2: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0002PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0002PSBK",
       award: "/awards/HG012012/",
@@ -418,7 +413,6 @@ describe("requestFileSetSamples", () => {
       accession: "IGVFSM0000EEEE",
       description: "A sample of primary cells.",
       lab: "/labs/j-michael-cherry/",
-      sample_type: "/sample-terms/SAMP_0000001/",
       status: "in progress",
     };
 
@@ -436,8 +430,8 @@ describe("requestFileSetSamples", () => {
   });
 
   it("returns an empty array given file sets with no samples", async () => {
-    const fileSet1: FileSetObject = {
-      "@id": "/file-sets/IGVFDS0001PSBK/",
+    const fileSet1: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0001PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0001PSBK",
       award: "/awards/HG012012/",
@@ -449,8 +443,8 @@ describe("requestFileSetSamples", () => {
       status: "in progress",
       summary: "A file set for pseudobulk analysis.",
     };
-    const fileSet2: FileSetObject = {
-      "@id": "/file-sets/IGVFDS0002PSBK/",
+    const fileSet2: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0002PSBK/",
       "@type": ["PseudobulkSet", "FileSet", "Item"],
       accession: "IGVFDS0002PSBK",
       award: "/awards/HG012012/",
@@ -484,5 +478,46 @@ describe("requestFileSetSamples", () => {
 
     expect(result).toEqual([]);
     expect(mockFetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("isFileSetObjectType", () => {
+  it("returns true for objects with FileSet in their @type", () => {
+    const fileSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0001PSBK/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS0001PSBK",
+      award: "/awards/HG012012/",
+      cell_type: "/sample-terms/CL_0000787/",
+      file_set_type: "pseudobulk analysis",
+      files: ["/files/IGVFFL0000FFFF/"],
+      input_file_sets: ["/curated-sets/IGVFDS0000EXSD/"],
+      lab: "/labs/j-michael-cherry/",
+      samples: ["/primary-cells/IGVFSM0000EEEE/"],
+      status: "in progress",
+      summary: "A file set for pseudobulk analysis.",
+    };
+
+    expect(isFileSetObjectType(fileSetObject, "PseudobulkSet")).toBe(true);
+  });
+
+  it("returns false for objects without FileSet in their @type", () => {
+    const nonFileSetObject = {
+      "@id": "/samples/IGVFSM0000EEEE/",
+      "@type": ["PrimaryCell", "Sample", "Item"],
+      accession: "IGVFSM0000EEEE",
+      description: "A sample of primary cells.",
+      lab: "/labs/j-michael-cherry/",
+      status: "in progress",
+    };
+
+    expect(isFileSetObjectType(nonFileSetObject as any, "PseudobulkSet")).toBe(
+      false
+    );
+  });
+
+  it("returns false for null or undefined objects", () => {
+    expect(isFileSetObjectType(null as any, "PseudobulkSet")).toBe(false);
+    expect(isFileSetObjectType(undefined as any, "PseudobulkSet")).toBe(false);
   });
 });

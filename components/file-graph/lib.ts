@@ -5,22 +5,26 @@ import XXH from "xxhashjs";
 import { type Edge, type Node } from "@xyflow/react";
 // lib
 import { colorVariableToColorHex } from "../../lib/color";
+import { type FileSetObject } from "../../lib/file-sets";
 import { pathToId } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
+import { groupingPipelineRunner, type GroupNodeMap } from "./grouping-pipeline";
 import {
   fileSetTypeColorMap,
   fileTypeColorMap,
   isFileSetNodeMetadata,
+  isGroupNodeMetadata,
   NODE_KINDS,
   type ElkNodeEx,
   type FileMetadata,
   type FileSetMetadata,
+  type FileSetNode,
   type FileSetStats,
   type NodeMetadata,
 } from "./types";
 // root
-import { FileObject, FileSetObject } from "../../globals.d";
+import { FileObject } from "../../globals";
 
 /**
  * Width of a node in the graph in pixels.
@@ -57,13 +61,15 @@ const rootElkNode: ElkNodeEx = {
     "org.eclipse.elk.layered.edgeRouting": "POLYLINE",
     "org.eclipse.elk.direction": "RIGHT",
     "org.eclipse.elk.layered.hierarchyHandling": "INCLUDE_CHILDREN",
-    "org.eclipse.elk.layered.nodePlacement.favorStraightEdges": "true",
-    "org.eclipse.elk.layered.nodePlacement.bk.fixedAlignment": "BALANCED",
+    "org.eclipse.elk.layered.nodePlacement.favorStraightEdges": "false",
+    "org.eclipse.elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+    "org.eclipse.elk.layered.crossingMinimization.semiInteractive": "true",
+    "org.eclipse.elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
     "org.eclipse.elk.padding": "[top=4,left=4,bottom=4,right=4]",
-    "org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": "100", // Horizontal gaps
-    "org.eclipse.elk.spacing.componentComponent": "30", // Vertical gaps between disconnected groups of nodes
-    "org.eclipse.elk.spacing.nodeNode": "30", // Vertical gaps between nodes in a group
-    "org.eclipse.elk.layered.spacing.edgeNode": "50", // Space between edges and nodes
+    "org.eclipse.elk.layered.spacing.nodeNodeBetweenLayers": "100",
+    "org.eclipse.elk.spacing.componentComponent": "30",
+    "org.eclipse.elk.spacing.nodeNode": "30",
+    "org.eclipse.elk.layered.spacing.edgeNode": "50",
   },
   children: [],
   edges: [],
@@ -255,6 +261,8 @@ function generateFileSetNodeId(
   return `${pathToId(fileSetPath)}-${hash}`;
 }
 
+type FileElkNode = ElkNodeEx & { metadata: FileMetadata };
+
 /**
  * Generate ELK file nodes for the graph.
  *
@@ -269,7 +277,7 @@ function generateFileNodes(
   externalFiles: FileObject[],
   referenceFiles: FileObject[],
   qualityMetrics: QualityMetricObject[]
-): ElkNodeEx[] {
+): FileElkNode[] {
   return nativeFiles.map((nativeFile) => {
     // Get the native and external files that the current file derives from.
     const { upstreamNativeFiles, upstreamExternalFiles } = getUpstreamFiles(
@@ -314,7 +322,7 @@ function generateFileNodes(
  * @returns File-set nodes to add to the ELK graph
  */
 function generateFileSetNodes(
-  fileNodes: ElkNodeEx[],
+  fileNodes: FileElkNode[],
   fileFileSets: FileSetObject[]
 ): ElkNodeEx[] {
   // Map a file-set path to its file-set object for easy lookup.
@@ -324,11 +332,11 @@ function generateFileSetNodes(
 
   // This map accumulates file-set nodes to return as a function result. It uses the calculated
   // file-set node ID to map to the corresponding ElkNodeEx value.
-  const fileSetNodes = new Map<string, ElkNodeEx>();
+  const fileSetNodes = new Map<string, FileSetNode>();
 
   // Each file node serves as a basis for generating its upstream file-set nodes.
   fileNodes.forEach((fileNode) => {
-    const fileNodeMetadata = fileNode.metadata as FileMetadata;
+    const fileNodeMetadata = fileNode.metadata;
     const upstreamExternalFiles = fileNodeMetadata.upstreamExternalFiles;
 
     // Easy look-up table for each added file-set node ID.
@@ -347,7 +355,8 @@ function generateFileSetNodes(
       ([fileSetPath, externalFiles]) => {
         // Find an already-added file-set node with a matching path and combination of external
         // files. Do this through the file-set node ID which combines the file-set path and all the
-        // external files' IDs combined into a single hash.
+        // external files' IDs combined into a single hash. Use the hash for lookup here, and they
+        // become the ELK node IDs for file-set nodes in the graph.
         const fileSetNodeId = generateFileSetNodeId(fileSetPath, externalFiles);
         let fileSetNode = fileSetNodes.get(fileSetNodeId);
 
@@ -362,10 +371,21 @@ function generateFileSetNodes(
               kind: NODE_KINDS.FILESET,
               fileSet: fileSetMap.get(fileSetPath),
               externalFiles,
-              downstreamFile: (fileNode.metadata as FileMetadata).file,
+              downstreamFiles: [fileNode.metadata.file],
             } satisfies FileSetMetadata,
           };
           fileSetNodes.set(fileSetNodeId, fileSetNode);
+        } else if (isFileSetNodeMetadata(fileSetNode.metadata)) {
+          // The file-set node already exists; add this file to its downstream files if not already
+          // present.
+          const existingFiles = fileSetNode.metadata.downstreamFiles;
+          if (
+            !existingFiles.some(
+              (f) => f["@id"] === fileNode.metadata.file["@id"]
+            )
+          ) {
+            existingFiles.push(fileNode.metadata.file);
+          }
         }
 
         // Update the current file node's upstream file-set nodes with this new or updated file-set
@@ -377,7 +397,56 @@ function generateFileSetNodes(
       }
     );
   });
-  return [...fileSetNodes.values()];
+
+  // The file set nodes are accumulated in a flat map at this stage. Convert them to an array of
+  // ELK nodes and run them through the grouping pipeline.
+  const pipelineOutput = groupingPipelineRunner([...fileSetNodes.values()]);
+
+  // Convert the groups into a form we can include in the ELK graph, and append the ungrouped nodes
+  // for rendering as individual nodes.
+  const groupedFileSetNodes = convertGroupsToElkNodes(pipelineOutput.groups);
+  const allFileSetNodes = [
+    ...groupedFileSetNodes,
+    ...pipelineOutput.remainingNodes,
+  ];
+
+  /**
+   * At this stage `fileSetNodes` maps a file-set node ID (calculated along with its external files)
+   * to the corresponding ElkNodeEx value. At this stage we can group the nodes.
+   */
+  return allFileSetNodes;
+}
+
+/**
+ * Convert grouped file-set nodes into ELK group nodes.
+ *
+ * @param groups - Mapping of group IDs to grouped file-set nodes
+ * @returns Group ELK nodes ready for inclusion in graph children
+ */
+export function convertGroupsToElkNodes(groups: GroupNodeMap): ElkNodeEx[] {
+  const elkNodes: ElkNodeEx[] = [];
+
+  for (const [groupId, group] of groups) {
+    const targetFileIdSet = group.reduce((ids, node) => {
+      const metadata = node.metadata;
+      if (metadata && isFileSetNodeMetadata(metadata)) {
+        metadata.downstreamFiles.forEach((file) => ids.add(file["@id"]));
+      }
+      return ids;
+    }, new Set<string>());
+
+    const groupNode: ElkNodeEx = {
+      id: groupId,
+      children: group,
+      metadata: {
+        kind: NODE_KINDS.GROUP,
+        targetFileIds: [...targetFileIdSet],
+      },
+    };
+    elkNodes.push(groupNode);
+  }
+
+  return elkNodes;
 }
 
 /**
@@ -387,10 +456,10 @@ function generateFileSetNodes(
  * @param nodes - The file and file-set nodes to generate edges for
  * @returns Edges connecting the file nodes
  */
-function generateEdges(fileNodes: ElkNodeEx[]): ElkExtendedEdge[] {
+function generateEdges(fileNodes: FileElkNode[]): ElkExtendedEdge[] {
   const edges: ElkExtendedEdge[] = [];
   fileNodes.forEach((fileNode) => {
-    const fileNodeMetadata = fileNode.metadata as FileMetadata;
+    const fileNodeMetadata = fileNode.metadata;
 
     // Create edges from upstream native files to this file.
     fileNodeMetadata.upstreamNativeFiles.forEach((nativeFile) => {
@@ -409,6 +478,39 @@ function generateEdges(fileNodes: ElkNodeEx[]): ElkExtendedEdge[] {
         targets: [fileNode.id],
       });
     });
+  });
+  return edges;
+}
+
+/**
+ * Generate edges between group nodes and file nodes based on the group metadata. This is necessary to
+ * help ELK lay out the group nodes with their member file nodes. The edges are generated from the
+ * group node to the file nodes, but they don't represent any real relationships in the data -- they're
+ * just for layout purposes. We can identify them by their IDs which start with `layout-`. We skip these
+ * edges when converting ELK edges to React Flow edges, so they don't get rendered in the final graph.
+ *
+ * @param fileSetNodes - All file-set and file-set group nodes in the graph
+ * @returns ELK edge objects representing edges from group nodes to file nodes
+ */
+export function generateGroupEdges(
+  fileSetNodes: ElkNodeEx[]
+): ElkExtendedEdge[] {
+  const edges: ElkExtendedEdge[] = [];
+  fileSetNodes.forEach((fileSetNode) => {
+    const groupMetadata = isGroupNodeMetadata(fileSetNode.metadata)
+      ? fileSetNode.metadata
+      : null;
+
+    // Create edges from group nodes to file nodes.
+    if (groupMetadata) {
+      groupMetadata.targetFileIds.forEach((targetFileId) => {
+        edges.push({
+          id: generateLayoutEdgeId(fileSetNode.id, targetFileId),
+          sources: [fileSetNode.id],
+          targets: [targetFileId],
+        });
+      });
+    }
   });
   return edges;
 }
@@ -436,7 +538,7 @@ export function generateGraphData(
     // the graph -- the file sets they belong to do.
     const usedExternalFiles = findUsedExternalFiles(externalFiles, nativeFiles);
 
-    // Generate the graph node data for the native files and file sets.
+    // Generate the graph node data for the native files and file sets (including file-set groups).
     const fileNodes = generateFileNodes(
       nativeFiles,
       usedExternalFiles,
@@ -447,12 +549,13 @@ export function generateGraphData(
 
     // Generate the graph edges between the file nodes and file-set nodes.
     const edges = generateEdges(fileNodes);
+    const additionalEdges = generateGroupEdges(fileSetNodes);
 
     // Add nodes and edges to a copy of the static root node.
     return {
       ...rootElkNode,
       children: [...fileNodes, ...fileSetNodes],
-      edges,
+      edges: [...edges, ...additionalEdges],
     } as ElkNode;
   }
 
@@ -490,33 +593,53 @@ export function getFileMetrics(
  * @param parentId - ID of the parent node if `elkNodes` are children of a node
  * @returns Array of React Flow nodes ready to pass to <ReactFlow />
  */
-function elkToReactFlowNodes(
+export function elkToReactFlowNodes(
   elkNodes: ElkNodeEx[],
   parentId = ""
 ): Node<NodeMetadata>[] {
   const rfNodes: Node<NodeMetadata>[] = [];
   elkNodes.forEach((elkNode) => {
-    const elkNodeMetadata = elkNode.metadata;
+    if (isGroupNodeMetadata(elkNode.metadata)) {
+      const groupNode: Node<NodeMetadata> = {
+        id: elkNode.id!,
+        type: elkNode.metadata.kind,
+        data: elkNode.metadata,
+        position: { x: elkNode.x, y: elkNode.y },
+        style: { width: elkNode.width, height: elkNode.height },
+        draggable: false,
+        selectable: false,
+      };
+      rfNodes.push(groupNode);
 
-    // Generate a React Flow node and add it to the cumulative array.
-    const rfNode: Node<NodeMetadata> = {
-      id: elkNode.id,
-      type: elkNodeMetadata.kind,
-      data: elkNode.metadata,
-      position: { x: elkNode.x, y: elkNode.y },
-      width: elkNode.width,
-      height: elkNode.height,
-      style: { width: elkNode.width, height: elkNode.height },
-      draggable: false,
-      selectable: false,
-      ...(parentId ? { parentId } : {}),
-    };
-    rfNodes.push(rfNode);
+      // Add the group node's children to the cumulative array, recursively processing them to maintain
+      // correct parent-child relationships.
+      if (elkNode.children) {
+        const childNodes = elkToReactFlowNodes(elkNode.children, elkNode.id!);
+        rfNodes.push(...childNodes);
+      }
+    } else {
+      const elkNodeMetadata = elkNode.metadata;
 
-    // If the node has children, recursively process them and add them to the cumulative array.
-    if (elkNode.children) {
-      const childNodes = elkToReactFlowNodes(elkNode.children, elkNode.id);
-      rfNodes.push(...childNodes);
+      // Generate a React Flow node and add it to the cumulative array.
+      const rfNode: Node<NodeMetadata> = {
+        id: elkNode.id,
+        type: elkNodeMetadata.kind,
+        data: elkNode.metadata,
+        position: { x: elkNode.x, y: elkNode.y },
+        width: elkNode.width,
+        height: elkNode.height,
+        style: { width: elkNode.width, height: elkNode.height },
+        draggable: false,
+        selectable: false,
+        ...(parentId ? { parentId } : {}),
+      };
+      rfNodes.push(rfNode);
+
+      // If the node has children, recursively process them and add them to the cumulative array.
+      if (elkNode.children) {
+        const childNodes = elkToReactFlowNodes(elkNode.children, elkNode.id);
+        rfNodes.push(...childNodes);
+      }
     }
   });
   return rfNodes;
@@ -532,7 +655,7 @@ function elkToReactFlowEdges(elkNodes: ElkNode) {
   const rfEdges: Edge[] = [];
   elkNodes.edges.forEach((edge) => {
     // Skip edges belonging to groups. We don't yet support this, but we will.
-    if (!edge.id.startsWith("__layout__")) {
+    if (!isLayoutEdgeId(edge.id)) {
       const rfEdge: Edge = {
         id: edge.id,
         source: edge.sources[0],
@@ -686,4 +809,27 @@ export function generateSVGContent(graphId: string): string | undefined {
   // Close the SVG element. We now have the entire SVG to download as a string.
   svgContent += "</svg>";
   return svgContent;
+}
+
+/**
+ * Generate a unique ID for a layout edge between a group node and a file node. This is necessary to
+ * help ELK lay out the group nodes with their member file nodes.
+ *
+ * @param groupId - Node ID of the group that has a layout edge to a file node
+ * @param targetFileId - Node ID of the file node that has a layout edge from a group node
+ * @returns Layout edge ID
+ */
+function generateLayoutEdgeId(groupId: string, targetFileId: string): string {
+  return `layout-${groupId}-${targetFileId}`;
+}
+
+/**
+ * Check if an edge ID represents a layout edge between a group node and a file node. This is necessary
+ * to help ELK lay out the group nodes with their member file nodes.
+ *
+ * @param edgeId - ELK ID of an edge to test
+ * @returns True if the ID represents a layout edge.
+ */
+function isLayoutEdgeId(edgeId: string): boolean {
+  return edgeId.startsWith("layout-");
 }

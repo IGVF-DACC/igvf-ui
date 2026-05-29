@@ -1,4 +1,45 @@
-import { jsonLineDiff } from "../history";
+import { isHistoryObject, jsonLineDiff } from "../history";
+
+describe("Test isHistoryObject", () => {
+  it("should return true for an object with the required properties", () => {
+    const obj = {
+      rid: "/example/object",
+      latest: {
+        timestamp: "2024-01-01T00:00:00Z",
+        userid: "user1",
+        props: { key: "value" },
+      },
+      history: [
+        {
+          timestamp: "2023-12-31T23:00:00Z",
+          userid: "user2",
+          props: { key: "old value" },
+        },
+      ],
+    };
+
+    expect(isHistoryObject(obj)).toBe(true);
+  });
+
+  it("should return false for an object missing required properties", () => {
+    const obj = {
+      rid: "/example/object",
+      latest: {
+        timestamp: "2024-01-01T00:00:00Z",
+        userid: "user1",
+        props: { key: "value" },
+      },
+    };
+
+    expect(isHistoryObject(obj)).toBe(false);
+  });
+
+  it("should return false for a non-object value", () => {
+    const notAnObject = "This is a string, not an object";
+
+    expect(isHistoryObject(notAnObject)).toBe(false);
+  });
+});
 
 describe("Test jsonLineDiff", () => {
   it("should return an empty array when comparing identical JSON strings", () => {

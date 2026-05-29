@@ -6,23 +6,31 @@ import {
 } from "./database-object";
 import { trimDeprecatedFiles } from "./deprecated-files";
 import FetchRequest from "./fetch-request";
+import { type FileSetObject } from "./file-sets";
 import { type DatasetSummary } from "./home";
-import { QualityMetricObject } from "./quality-metric";
+import { type QualityMetricObject } from "./quality-metric";
 import { type BiosampleObject, type SampleObject } from "./samples";
+import { type WorkflowObject } from "./workflow";
 // root
 import type {
+  AnalysisStepObject,
   AnalysisStepVersionObject,
+  AwardObject,
   BiomarkerObject,
   DatabaseObject,
-  DataProviderObject,
   DocumentObject,
   DonorObject,
   FileObject,
-  FileSetObject,
+  GeneObject,
   LabObject,
   OntologyTermObject,
+  PageObject,
+  PhenotypicFeatureObject,
   PublicationObject,
   SessionPropertiesObject,
+  SoftwareObject,
+  SoftwareVersionObject,
+  SourceObject,
   TreatmentObject,
   UserObject,
 } from "../globals";
@@ -34,11 +42,11 @@ import type {
  * @returns {Array<object>} The analysis step objects requested
  */
 export async function requestAnalysisSteps(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<AnalysisStepObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<AnalysisStepObject>(
       paths,
       [
         "aliases",
@@ -63,11 +71,11 @@ export async function requestAnalysisSteps(
  * @returns - Analysis step version objects requested
  */
 export async function requestAnalysisStepVersions(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<AnalysisStepVersionObject>> {
+): Promise<AnalysisStepVersionObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<AnalysisStepVersionObject>(
       paths,
       [
         "analysis_step.analysis_step_types",
@@ -88,11 +96,15 @@ export async function requestAnalysisStepVersions(
  * @returns {Array<object>} The award objects requested
  */
 export async function requestAwards(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<AwardObject[]> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["name", "url"], ["Award"])
+    await request.getMultipleObjectsBulk<AwardObject>(
+      paths,
+      ["name", "url"],
+      ["Award"]
+    )
   ).unwrap_or([]);
 }
 
@@ -104,7 +116,7 @@ export async function requestAwards(
  * @returns The biomarker objects requested
  */
 export async function requestBiomarkers(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
 ): Promise<BiomarkerObject[]> {
   return (
@@ -130,9 +142,9 @@ export async function requestBiomarkers(
  * @returns {Array<object>} The biosample objects requested
  */
 export async function requestBiosamples(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<BiosampleObject>> {
+): Promise<BiosampleObject[]> {
   return (
     await request.getMultipleObjectsBulk<BiosampleObject>(
       paths,
@@ -224,10 +236,10 @@ export async function requestLabs(
  * @returns The seqspec files requested; [] if no seqspec files found
  */
 export async function requestSeqspecFiles(
-  files: DatabaseObject[],
+  files: FileObject[],
   request: FetchRequest
-): Promise<DataProviderObject[]> {
-  let seqspecFiles: DataProviderObject[] = [];
+): Promise<FileObject[]> {
+  let seqspecFiles: FileObject[] = [];
   if (files.length > 0) {
     const seqspecPaths: string[] = files.reduce((acc: string[], file) => {
       const fileSeqspecs = file.seqspecs as string[] | undefined;
@@ -272,12 +284,15 @@ export async function requestFileSets(
         "@type",
         "accession",
         "aliases",
+        "auxiliary_sets",
         "cell_qualifier",
         "cell_type",
         "construct_library_sets",
+        "control_file_sets",
         "file_set_type",
         "lab.title",
         "preferred_assay_titles",
+        "related_measurement_sets",
         "samples",
         "status",
         "summary",
@@ -294,9 +309,9 @@ export async function requestFileSets(
  * @returns {Array<object>} The document objects requested
  */
 export async function requestDocuments(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<DocumentObject>> {
+): Promise<DocumentObject[]> {
   return (
     await request.getMultipleObjectsBulk<DocumentObject>(
       paths,
@@ -319,9 +334,9 @@ export async function requestDocuments(
  * @returns {Array<DonorObject>} The donor objects requested
  */
 export async function requestDonors(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<DonorObject>> {
+): Promise<DonorObject[]> {
   return (
     await request.getMultipleObjectsBulk<DonorObject>(
       paths,
@@ -346,11 +361,15 @@ export async function requestDonors(
  * @returns {Array<object>} The gene objects requested
  */
 export async function requestGenes(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<GeneObject[]> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["geneid", "symbol"], ["Gene"])
+    await request.getMultipleObjectsBulk<GeneObject>(
+      paths,
+      ["geneid", "symbol"],
+      ["Gene"]
+    )
   ).unwrap_or([]);
 }
 
@@ -382,14 +401,15 @@ export async function requestInstitutionalCertificates(
 
 /**
  * Retrieve the ontology-term objects for the given donor paths from the data provider.
- * @param {Array<string>} paths Paths to the ontology-term objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The ontology term objects requested
+ *
+ * @param - paths Paths to the ontology-term objects to request
+ * @param - request The request object to use to make the request
+ * @returns The ontology term objects requested
  */
 export async function requestOntologyTerms(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<OntologyTermObject>> {
+): Promise<OntologyTermObject[]> {
   return (
     await request.getMultipleObjectsBulk<OntologyTermObject>(
       paths,
@@ -402,16 +422,17 @@ export async function requestOntologyTerms(
 /**
  * Retrieve the phenotype objects for the given phenotype paths from the data provider. This
  * includes a partial embed of the associated ontology-term object.
- * @param paths Paths to the phenotypic feature objects to request
- * @param request The request object to use to make the request
+ *
+ * @param paths - Paths to the phenotypic feature objects to request
+ * @param request - The request object to use to make the request
  * @returns The phenotypic feature objects requested
  */
 export async function requestPhenotypicFeatures(
   paths: Array<string>,
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<PhenotypicFeatureObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<PhenotypicFeatureObject>(
       paths,
       [
         "feature.@id",
@@ -458,16 +479,17 @@ export async function requestSamples(
 
 /**
  * Retrieve the software objects for the given paths from the data provider.
- * @param paths Paths to the software objects to request
- * @param request The request object to use to make the request
+ *
+ * @param paths - Paths to the software objects to request
+ * @param request - The request object to use to make the request
  * @returns The software version objects requested
  */
 export async function requestSoftware(
   paths: string[],
   request: FetchRequest
-): Promise<DataProviderObject[]> {
+): Promise<SoftwareObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<SoftwareObject>(
       paths,
       [
         "aliases",
@@ -486,16 +508,17 @@ export async function requestSoftware(
 /**
  * Retrieve the software-version objects for the given software-version paths from the data
  * provider.
- * @param {Array<string>} paths Paths to the software-version objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The software version objects requested
+ *
+ * @param paths - Paths to the software-version objects to request
+ * @param request - The request object to use to make the request
+ * @returns The software version objects requested
  */
 export async function requestSoftwareVersions(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<SoftwareVersionObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<SoftwareVersionObject>(
       paths,
       ["downloaded_url", "name", "status", "version"],
       ["SoftwareVersion"]
@@ -525,31 +548,33 @@ export async function requestTreatments(
 
 /**
  * Retrieve the user objects for the given user paths from the data provider.
- * @param {Array<string>} paths Paths to the user objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The user objects requested
+ *
+ * @param paths - Paths to the user objects to request
+ * @param request - The request object to use to make the request
+ * @returns The user objects requested
  */
 export async function requestUsers(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<UserObject[]> {
   return (
-    await request.getMultipleObjectsBulk(paths, ["title"], ["User"])
+    await request.getMultipleObjectsBulk<UserObject>(paths, ["title"], ["User"])
   ).unwrap_or([]);
 }
 
 /**
  * Retrieve the sources objects for the given award paths from the data provider.
- * @param {Array<string>} paths Paths to the award objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The award objects requested
+ *
+ * @param paths - Paths to the award objects to request
+ * @param request - The request object to use to make the request
+ * @returns The award objects requested
  */
 export async function requestSources(
-  paths: Array<string>,
+  paths: string[],
   request: FetchRequest
-): Promise<Array<DataProviderObject>> {
+): Promise<SourceObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<SourceObject>(
       paths,
       ["name", "url", "lab.title"],
       ["Source"]
@@ -559,30 +584,34 @@ export async function requestSources(
 
 /**
  * Retrieve the search results from the `/dataset-summary` endpoint.
+ *
  * @param request The request object to use to make the request
  * @returns The dataset summary object requested
  */
 export async function requestDatasetSummary(
   request: FetchRequest,
   queryString: string = ""
-): Promise<DatasetSummary> {
+): Promise<DatasetSummary | null> {
   return (
-    await request.getObject(`/dataset-summary-agg/?${queryString}`)
-  ).unwrap_or({}) as unknown as DatasetSummary;
+    await request.getObject<DatasetSummary | null>(
+      `/dataset-summary-agg/?${queryString}`
+    )
+  ).optional();
 }
 
 /**
  * Retrieve the workflow objects for the given paths from the data provider.
- * @param paths Paths to the workflow objects to request
- * @param request The request object to use to make the request
+ *
+ * @param paths - Paths to the workflow objects to request
+ * @param request - The request object to use to make the request
  * @returns The workflow objects requested, or an empty array if none found
  */
 export async function requestWorkflows(
   paths: string[],
   request: FetchRequest
-): Promise<DataProviderObject[]> {
+): Promise<WorkflowObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<WorkflowObject>(
       paths,
       [
         "accession",
@@ -632,16 +661,17 @@ export async function requestPublications(
 /**
  * Retrieve the page objects for the given page paths from the data provider. Typically used to
  * retrieve the parent page objects for a given page.
- * @param paths Path to each Page object to request
- * @param request The request object to use to make the request
+ *
+ * @param paths - Path to each Page object to request
+ * @param request - The request object to use to make the request
  * @returns Requested Page objects
  */
 export async function requestPages(
   paths: string[],
   request: FetchRequest
-): Promise<DataProviderObject[]> {
+): Promise<PageObject[]> {
   return (
-    await request.getMultipleObjectsBulk(
+    await request.getMultipleObjectsBulk<PageObject>(
       paths,
       ["name", "title", "status"],
       ["Page"]
@@ -655,9 +685,10 @@ export async function requestPages(
  * for each object. We have to use getMultipleObjects instead of getMultipleObjectsBulk because the
  * former returns full objects regardless of the properties within, while the latter only returns
  * the properties specifically requested.
- * @param paths Paths to the quality-metrics objects to request
- * @param request Request object to use to make the request
- * @returns Array of quality-metrics objects for the given paths
+ *
+ * @param paths - Paths to the quality-metrics objects to request
+ * @param request - Request object to use to make the request
+ * @returns Requested quality-metrics objects
  */
 export async function requestQualityMetrics(
   paths: string[],
@@ -681,6 +712,7 @@ export async function requestQualityMetrics(
  * completed indexing, `construct_library_sets` might not be present or might exist as an array of
  * paths instead of embedded objects, so treat this condition as if no construct library sets
  * exist within the file set.
+ *
  * @param fileSet - FileSet object to request the library design files from
  * @param request - Request object to use to make the request
  * @returns Requested library design files, or an empty array if none found

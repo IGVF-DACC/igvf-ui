@@ -46,6 +46,7 @@ import { UC } from "../../lib/constants";
 import { type InstitutionalCertificateObject } from "../../lib/data-use-limitation";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { FileSetObject } from "../../lib/file-sets";
 import { isJsonFormat } from "../../lib/query-utils";
 import { Ok } from "../../lib/result";
 import type {
@@ -64,7 +65,6 @@ import type {
   BiomarkerObject,
   DocumentObject,
   DonorObject,
-  FileSetObject,
   LabObject,
   OntologyTermObject,
   PublicationObject,
@@ -336,12 +336,12 @@ export async function getServerSideProps({
 }: GetServerSidePropsContext) {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const response = (
-    await request.getObject(`/in-vitro-systems/${params.id}/`)
+  const inVitroSystem = (
+    await request.getObject<InVitroSystemObject>(
+      `/in-vitro-systems/${params.id}/`
+    )
   ).union();
-  if (FetchRequest.isResponseSuccess(response)) {
-    const inVitroSystem = response as InVitroSystemObject;
-
+  if (FetchRequest.isResponseSuccess(inVitroSystem)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
       inVitroSystem,
       resolvedUrl,
@@ -518,5 +518,5 @@ export async function getServerSideProps({
       },
     };
   }
-  return errorObjectToProps(response);
+  return errorObjectToProps(inVitroSystem);
 }

@@ -2,11 +2,11 @@
 import _ from "lodash";
 import type { ParsedUrlQuery } from "querystring";
 // lib
-import { isSearchResults } from "./search-results";
 import FetchRequest, { isErrorObject, type ErrorObject } from "./fetch-request";
 // root
 import type {
-  DataProviderObject,
+  DatabaseObject,
+  SearchResults,
   SearchResultsFacet,
   SearchResultsFacetTerm,
   SearchResultsFilter,
@@ -336,7 +336,7 @@ export async function setFacetConfig(
   selectedType: string,
   facetConfig: FacetOpenState,
   request: FetchRequest
-): Promise<DataProviderObject | ErrorObject> {
+): Promise<DatabaseObject | ErrorObject> {
   const apiPath = generateFacetConfigApiPath(userUuid, selectedType);
   return await request.postObject(apiPath, facetConfig);
 }
@@ -510,9 +510,9 @@ export async function getAllFacetsFromQuery(
   }
 
   const response = (
-    await request.getObject(`/search/?${typeQuery}&limit=0`)
+    await request.getObject<SearchResults>(`/search/?${typeQuery}&limit=0`)
   ).optional();
-  return isSearchResults(response) ? response.facets : [];
+  return response?.facets || [];
 }
 
 /**

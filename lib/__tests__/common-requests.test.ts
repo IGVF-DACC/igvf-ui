@@ -1,4 +1,5 @@
-import type { DatabaseObject, FileObject, FileSetObject } from "../../globals";
+import type { DatabaseObject, FileObject } from "../../globals";
+import { ConstructLibrarySetObject, type FileSetObject } from "../file-sets";
 import { type SampleObject } from "../samples";
 import {
   requestAnalysisSteps,
@@ -428,7 +429,7 @@ describe("Test all the common requests", () => {
 
     const request = new FetchRequest();
     const result = await requestSeqspecFiles(
-      seqspecFiles as unknown as DatabaseObject[],
+      seqspecFiles as unknown as FileObject[],
       request
     );
     expect(result).toHaveLength(1);
@@ -494,7 +495,7 @@ describe("Test all the common requests", () => {
 
     const request = new FetchRequest();
     const result = await requestSeqspecFiles(
-      seqspecFiles as unknown as DatabaseObject[],
+      seqspecFiles as unknown as FileObject[],
       request
     );
     expect(result).toHaveLength(0);
@@ -576,7 +577,7 @@ describe("Test all the common requests", () => {
 
     const request = new FetchRequest();
     const result = await requestSeqspecFiles(
-      seqspecFiles as unknown as DatabaseObject[],
+      seqspecFiles as unknown as FileObject[],
       request
     );
     expect(result).toHaveLength(1);
@@ -677,7 +678,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFetch).toHaveBeenCalledWith(
-      "/search-quick/?type=FileSet&field=@type&field=accession&field=aliases&field=cell_qualifier&field=cell_type&field=construct_library_sets&field=file_set_type&field=lab.title&field=preferred_assay_titles&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
+      "/search-quick/?type=FileSet&field=@type&field=accession&field=aliases&field=auxiliary_sets&field=cell_qualifier&field=cell_type&field=construct_library_sets&field=control_file_sets&field=file_set_type&field=lab.title&field=preferred_assay_titles&field=related_measurement_sets&field=samples&field=status&field=summary&@id=/auxiliary-sets/IGVFDS0001AUXI/&@id=/measurement-sets/IGVFDS4649TBFS/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -1185,43 +1186,87 @@ describe("Test all the common requests", () => {
 
   test("requestDatasetSummary function", async () => {
     const mockResult = {
-      "@graph": [
-        {
-          "@id": "/measurement-sets/IGVFDS6082UZFE/",
-          "@type": ["MeasurementSet", "FileSet", "Item"],
-          assay_term: {
-            term_name: "single-cell ATAC-seq",
+      matrix: {
+        y: {
+          group_by: ["lab.title", ["assay_titles", "no_assay_titles"]],
+          label: "Assay titles",
+          doc_count: 11,
+          "lab.title": {
+            doc_count_error_upper_bound: 0,
+            sum_other_doc_count: 0,
+            buckets: [
+              {
+                key: "J. Michael Cherry, Stanford",
+                doc_count: 11,
+                assay_titles: {
+                  doc_count_error_upper_bound: 0,
+                  sum_other_doc_count: 0,
+                  buckets: [
+                    {
+                      key: "no_assay_titles",
+                      doc_count: 8,
+                      status: {
+                        doc_count_error_upper_bound: 0,
+                        sum_other_doc_count: 0,
+                        buckets: [
+                          {
+                            key: "released",
+                            doc_count: 6,
+                          },
+                          {
+                            key: "in progress",
+                            doc_count: 2,
+                          },
+                        ],
+                      },
+                    },
+                    {
+                      key: "single-cell ATAC-seq",
+                      doc_count: 1,
+                      status: {
+                        doc_count_error_upper_bound: 0,
+                        sum_other_doc_count: 0,
+                        buckets: [
+                          {
+                            key: "released",
+                            doc_count: 1,
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
           },
-          creation_timestamp: "2024-07-29T18:12:21.398753+00:00",
-          lab: {
-            title: "Danwei Huangfu, MSKCC",
-          },
-          preferred_assay_title: "10x multiome",
-          release_timestamp: "2024-03-06T12:34:56Z",
-          status: "released",
         },
-        {
-          "@id": "/measurement-sets/IGVFDS7183YILI/",
-          "@type": ["MeasurementSet", "FileSet", "Item"],
-          assay_term: {
-            term_name: "single-cell RNA sequencing assay",
+        x: {
+          group_by: "status",
+          label: "Status",
+          doc_count: 11,
+          status: {
+            doc_count_error_upper_bound: 0,
+            sum_other_doc_count: 0,
+            buckets: [
+              {
+                key: "released",
+                doc_count: 9,
+              },
+              {
+                key: "in progress",
+                doc_count: 2,
+              },
+            ],
           },
-          creation_timestamp: "2024-07-29T18:12:21.571347+00:00",
-          lab: {
-            title: "Danwei Huangfu, MSKCC",
-          },
-          preferred_assay_title: "10x multiome",
-          release_timestamp: "2024-03-06T12:34:56Z",
-          status: "released",
         },
-      ],
+      },
     };
 
     mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
 
     const request = new FetchRequest();
     const result = await requestDatasetSummary(request);
-    expect(result["@graph"]).toEqual(mockResult["@graph"]);
+    expect(result.matrix).toEqual(mockResult.matrix);
   });
 
   test("requestWorkflows function", async () => {
@@ -1393,7 +1438,6 @@ describe("Test all the common requests", () => {
                 lab: "/labs/j-michael-cherry/",
                 md5sum: "48a436084420ad6d5470c64e1fa2c526",
                 release_timestamp: "2025-03-06T12:34:56Z",
-                schema_version: "21",
                 status: "released",
                 submitted_file_name:
                   "/Users/igvf/igvf_files/marker_gene_activity.tsv.gz",
@@ -1401,7 +1445,7 @@ describe("Test all the common requests", () => {
               },
             ],
           },
-        ],
+        ] as ConstructLibrarySetObject[],
       };
 
       const mockResult = {
@@ -1452,7 +1496,7 @@ describe("Test all the common requests", () => {
             status: "in progress",
             summary: "Construct library set",
           },
-        ],
+        ] as ConstructLibrarySetObject[],
       };
 
       const request = new FetchRequest();
@@ -1599,13 +1643,12 @@ describe("Test all the common requests", () => {
                 lab: "/labs/j-michael-cherry/",
                 md5sum: "48a436084420ad6d5470c64e1fa2c526",
                 release_timestamp: "2025-03-06T12:34:56Z",
-                schema_version: "21",
                 status: "released",
                 submitted_file_name:
                   "/Users/igvf/igvf_files/marker_gene_activity.tsv.gz",
                 upload_status: "validated",
               },
-            ],
+            ] as FileObject[],
           },
           {
             "@id": "/construct-library-sets/IGVFDS9999CLS/",
@@ -1657,7 +1700,7 @@ describe("Test all the common requests", () => {
               },
             ],
           },
-        ],
+        ] as ConstructLibrarySetObject[],
       };
 
       const mockResult = {
@@ -1941,6 +1984,7 @@ describe("requestSampleBarcodeMaps", () => {
     content_type: "barcode to element mapping",
     file_format: "tsv",
     file_set: "/measurement-sets/IGVFDS1234TEST/",
+    md5sum: "d01b782a22aed4758d35e271a9529616",
     status: "released",
     upload_status: "validated",
   };
@@ -2180,6 +2224,7 @@ describe("requestSampleBarcodeMaps", () => {
       content_type: "barcode to element mapping",
       file_format: "tsv",
       file_set: "/measurement-sets/IGVFDS1234TEST/",
+      md5sum: "d01b782a22aed4758d35e271a9529616",
       status: "deleted",
       upload_status: "validated",
     };
@@ -2220,6 +2265,7 @@ describe("requestSampleBarcodeMaps", () => {
       content_type: "barcode to element mapping",
       file_format: "tsv",
       file_set: "/measurement-sets/IGVFDS1234TEST/",
+      md5sum: "d01b782a22aed4758d35e271a9529616",
       status: "deleted",
       upload_status: "validated",
     };
@@ -2260,6 +2306,7 @@ describe("requestSampleBarcodeMaps", () => {
       file_format: "tsv",
       file_set: "/measurement-sets/IGVFDS1234TEST/",
       status: "archived",
+      md5sum: "d01b782a22aed4758d35e271a9529616",
       upload_status: "validated",
     };
     const revokedFile: FileObject = {
@@ -2270,6 +2317,7 @@ describe("requestSampleBarcodeMaps", () => {
       file_format: "tsv",
       file_set: "/measurement-sets/IGVFDS1234TEST/",
       status: "revoked",
+      md5sum: "d01b782a22aed4758d35e271a9529616",
       upload_status: "validated",
     };
 

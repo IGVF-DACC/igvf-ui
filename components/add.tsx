@@ -11,8 +11,7 @@ import FlashMessage from "./flash-message";
 import { ButtonLink } from "./form-elements";
 import SessionContext from "./session-context";
 // lib
-import { isDataProviderErrorObject } from "../lib/errors";
-import FetchRequest from "../lib/fetch-request";
+import FetchRequest, { isErrorObject } from "../lib/fetch-request";
 import { urlWithoutParams, sortObjectProps } from "../lib/general";
 import { collectionToSchema } from "../lib/schema";
 // root
@@ -45,7 +44,7 @@ type ErrorMessage = {
 function actionProfile(item: SearchResults, actions: string): string | null {
   if ("actions" in item) {
     const act = item.actions.find((act) => actions.includes(act.name));
-    if (act !== null) {
+    if (act) {
       return act.profile;
     }
   }
@@ -74,13 +73,14 @@ function convertOptionalIntoRequiredSchema(schema: Schema): Schema {
       return p.notSubmittable ? !p.notSubmittable : true;
     })
     .filter(([, p]) => {
-      return !["array", "object"].includes(p.type);
+      const types = Array.isArray(p.type) ? p.type : [p.type];
+      return !types.includes("array") && !types.includes("object");
     })
     .map(([k]) => {
       return k;
     });
   const newschema = schema;
-  newschema.required = [...topProperties, ...schema.required];
+  newschema.required = [...topProperties, ...(schema.required || [])];
   return newschema;
 }
 
@@ -156,7 +156,7 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
       return [];
     } catch (err) {
       // Save the error
-      return [err.message];
+      return [err instanceof Error ? err.message : String(err)];
     }
   }
 
@@ -175,19 +175,24 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
   const [editorStatus, setEditorStatus] = useState({
     canEdit: isAddable,
     canSave: isAddable,
-    errors: [],
+    errors: [] as string[],
   });
 
   // Profile Path for the "add" action in this collection
   const profilePath = actionProfile(collection, "add");
 
   useEffect(() => {
+    if (!profilePath) {
+      return;
+    }
     // Grab the schema from profilePath so we can make an empty object template
-    void new FetchRequest({ session })
-      .getObject(profilePath)
+    void new FetchRequest({ session: session ?? undefined })
+      .getObject<Schema>(profilePath)
       .then((schemaResult) => {
-        // We have the schema, so produce a dummy json from the schema
-        const schema = schemaResult.optional() as unknown as Schema;
+        if (schemaResult.isErr()) {
+          return;
+        }
+        const schema = schemaResult.unwrap();
         const biggerSchema = convertOptionalIntoRequiredSchema(schema);
         const basic = empty(biggerSchema);
         setText(JSON.stringify(basic, null, 4));
@@ -215,12 +220,14 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
 
     const value = sortObjectProps(JSON.parse(text));
     const collectPath = urlWithoutParams(collection["@id"]);
-    void new FetchRequest({ session })
+    void new FetchRequest({ session: session ?? undefined })
       .postObject(collectPath, value)
       .then((response) => {
-        if (response.status === "success") {
+        if (!isErrorObject(response)) {
           setSaveErrors([]);
-          void router.push(response["@graph"][0]["@id"]);
+          void router.push(
+            (response as unknown as SearchResults)["@graph"][0]["@id"]
+          );
         } else {
           setEditorStatus({
             canEdit: true,
@@ -228,8 +235,8 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
             errors: [],
           });
 
-          let errors: ErrorMessage[] = [];
-          if (isDataProviderErrorObject(response)) {
+          let errors: ErrorMessage[];
+          if (response.errors.length > 0) {
             errors = response.errors.map((err): ErrorMessage => {
               // Surround each err name with ``, and separate by comma
               const keys = err.name
@@ -245,7 +252,7 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
                 key,
               };
             });
-          } else if ("description" in response && response.description) {
+          } else if (response.description) {
             // Conflict errors show up as single messages.
             errors = [
               {

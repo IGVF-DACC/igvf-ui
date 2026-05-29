@@ -3,14 +3,13 @@ import FetchRequest from "./fetch-request";
 // types
 import {
   CollectionTitles,
-  DataProviderObject,
   ProfileHierarchy,
   Profiles,
   ProfilesProps,
   Schema,
   SchemaProperties,
   SchemaProperty,
-} from "../globals.d";
+} from "../globals";
 
 /**
  * The search mode for the search term. This specifies either the title of the schema or the
@@ -25,9 +24,9 @@ export type SearchMode = "SEARCH_MODE_TITLE" | "SEARCH_MODE_PROPERTIES";
  * @param dataProviderUrl URL of the data provider instance
  * @returns Promise that resolves to the /profiles object
  */
-export async function getProfiles(): Promise<DataProviderObject | null> {
+export async function getProfiles(): Promise<Profiles | null> {
   const request = new FetchRequest({ backend: true });
-  return (await request.getObject("/api/profiles/")).optional();
+  return (await request.getObject<Profiles>("/api/profiles/")).optional();
 }
 
 /**

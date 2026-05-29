@@ -5,7 +5,8 @@ import {
   isDatabaseObjectOfType,
   pathsFromDatabaseObjects,
 } from "../database-object";
-import type { FileSetObject, LabObject, UserObject } from "../../globals";
+import { type FileSetObject } from "../file-sets";
+import type { LabObject, UserObject } from "../../globals";
 
 describe("isDatabaseObject", () => {
   test("that an object without `@type` is a database object without checking `@type` but isn't when checking `@type`", () => {
@@ -70,6 +71,20 @@ describe("isDatabaseObject", () => {
         "checkType"
       )
     ).toBe(false);
+  });
+
+  test("that it returns false for an error object", () => {
+    const errorObj = {
+      "@type": ["HTTPNotFound", "Error"],
+      code: 404,
+      description: "The resource could not be found.",
+      detail: "/some/path/",
+      status: "error",
+      title: "Not Found",
+      isError: true,
+    };
+    expect(isDatabaseObject(errorObj)).toBe(false);
+    expect(isDatabaseObject(errorObj, "checkType")).toBe(false);
   });
 });
 
@@ -150,7 +165,6 @@ describe("isDatabaseObjectOfType", () => {
       file_set_type: "reporter library",
       files: [],
       lab: "/labs/j-micael-cherry",
-      preferred_assay_titles: ["STARR-seq"],
       samples: [
         {
           "@id": "/tissues/IGVFS5436ABCD/",
@@ -161,9 +175,9 @@ describe("isDatabaseObjectOfType", () => {
               "@id": "/human-donors/IGVFD5436ABCD/",
               "@type": ["HumanDonor", "Donor", "Item"],
               award: "/awards/HG002497/",
+              documents: [],
               lab: "/labs/j-michael-cherry",
               status: "in progress",
-              taxa: "Homo sapiens",
             },
           ],
           status: "in progress",

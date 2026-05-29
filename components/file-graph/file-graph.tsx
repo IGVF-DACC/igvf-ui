@@ -31,6 +31,7 @@ import {
   trimDeprecatedFiles,
   type DeprecatedFileFilterProps,
 } from "../../lib/deprecated-files";
+import { type FileSetObject } from "../../lib/file-sets";
 import { truncateText } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
 // local
@@ -52,6 +53,7 @@ import {
 import { NodeStatus } from "./status";
 import {
   fileSetTypeColorMap,
+  groupTypeColorMap,
   isFileNodeMetadata,
   isFileSetNodeMetadata,
   NODE_KINDS,
@@ -60,7 +62,7 @@ import {
   type NodeMetadata,
 } from "./types";
 // root
-import type { FileObject, FileSetObject } from "../../globals";
+import type { FileObject } from "../../globals";
 import "@xyflow/react/dist/style.css";
 
 /**
@@ -69,6 +71,7 @@ import "@xyflow/react/dist/style.css";
 const nodeTypes = {
   [NODE_KINDS.FILE]: FileNodeContent,
   [NODE_KINDS.FILESET]: FileSetNodeContent,
+  [NODE_KINDS.GROUP]: GroupNodeContent,
 };
 
 /**
@@ -310,6 +313,17 @@ function FileSetNodeContent(props: NodeProps) {
       </div>
       <NodeHandles />
     </>
+  );
+}
+
+/**
+ * Group node component.
+ */
+function GroupNodeContent() {
+  return (
+    <div
+      className={`relative h-full w-full border ${groupTypeColorMap.bg} ${groupTypeColorMap.border}`}
+    />
   );
 }
 
@@ -751,6 +765,7 @@ export function FileGraph({
           qualityMetrics
         )
       : null;
+  console.log("Graph data:", JSON.stringify(graphData, (key, value) => key === "metadata" ? undefined : value, 2));
 
   if (graphData || cycles.length > 0 || isEmptyGraphAfterFiltering) {
     return (

@@ -17,9 +17,10 @@ import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { sortObjectProps } from "../lib/general";
 import {
+  isHistoryObject,
+  jsonLineDiff,
   type HistoryEntry,
   type HistoryObject,
-  jsonLineDiff,
 } from "../lib/history";
 
 /**
@@ -202,8 +203,8 @@ export default function History({ history }: { history: HistoryObject }) {
 export async function getServerSideProps({ req, query }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const url = `/${query.prefix}/${query.id}/@@history`;
-  const history = (await request.getObject(url)).union();
-  if (FetchRequest.isResponseSuccess(history)) {
+  const history = (await request.getObject<HistoryObject>(url)).union();
+  if (isHistoryObject(history)) {
     return {
       props: {
         history,

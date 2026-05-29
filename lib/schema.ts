@@ -7,6 +7,24 @@ import type {
 import { extractSchema } from "./profiles";
 
 /**
+ * Type guard to check if a given object appears to be a schema based on the presence of key schema
+ * properties.
+ *
+ * @param object - Object from backend to test if it appears to be an individual schema
+ * @returns True if the given object appears to be a schema
+ */
+export function isIndividualSchema(object: unknown): object is Schema {
+  return (
+    typeof object === "object" &&
+    object !== null &&
+    "$schema" in object &&
+    "@type" in object &&
+    Array.isArray(object["@type"]) &&
+    object["@type"].includes("JSONSchema")
+  );
+}
+
+/**
  * Given a database item object, return the schema that matches its @type. The first @type that
  * matches a schema in the profiles object gets used. If no match is found or `profiles` hasn't yet
  * loaded, return null.
@@ -37,7 +55,7 @@ export function itemToSchema(
  */
 export function collectionToSchema(
   collection: SearchResults,
-  profiles: Profiles
+  profiles: Profiles | null
 ): Schema | null {
   if (profiles && collection && collection["@type"]) {
     const collectionType = collection["@type"][0];

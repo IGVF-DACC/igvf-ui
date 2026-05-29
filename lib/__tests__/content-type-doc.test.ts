@@ -9,11 +9,20 @@ jest.mock("next/config", () => () => ({
 }));
 
 jest.mock("../fetch-request", () => {
-  const actual = jest.requireActual("../fetch-request");
+  function isResponseSuccess(response: { "@id"?: unknown; "@type"?: unknown }) {
+    return (
+      typeof response === "object" &&
+      response !== null &&
+      typeof response["@id"] === "string" &&
+      (!Array.isArray(response["@type"]) ||
+        !response["@type"].includes("Error"))
+    );
+  }
+
   return {
     __esModule: true,
     default: Object.assign(jest.fn(), {
-      isResponseSuccess: actual.default.isResponseSuccess,
+      isResponseSuccess,
     }),
   };
 });

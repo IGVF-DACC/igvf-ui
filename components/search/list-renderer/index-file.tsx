@@ -19,13 +19,10 @@ import {
   SearchListItemSupplementLabel,
   SearchListItemSupplementContent,
 } from "./search-list-item";
+// lib
+import { type FileSetObject } from "../../../lib/file-sets";
 // root
-import type {
-  LabObject,
-  FileObject,
-  FileSetObject,
-  CollectionTitles,
-} from "../../../globals";
+import type { LabObject, FileObject, CollectionTitles } from "../../../globals";
 
 export default function IndexFile({ item: indexFile }: { item: FileObject }) {
   // During indexing, `file_set` can contain a path instead of the expected object.

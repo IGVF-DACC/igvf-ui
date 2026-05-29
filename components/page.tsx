@@ -1125,9 +1125,7 @@ export default function Page({
   }
 
   // Get the displayable page title.
-  const { title, codes } = getPageTitleAndCodes(
-    page as unknown as DataProviderObject
-  );
+  const { title, codes } = getPageTitleAndCodes(page);
 
   // Determine whether to display the page border or not.
   const isPanelHidden = codes.includes("nopanel");

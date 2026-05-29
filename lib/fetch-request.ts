@@ -28,10 +28,10 @@
 // TYPES
 // root
 import type {
-  DatabaseObject,
   DataProviderObject,
+  DatabaseObject,
   SessionObject,
-} from "../globals.d";
+} from "../globals";
 // lib
 import { ok, err, Result, Ok } from "./result";
 
@@ -273,10 +273,13 @@ export function isHttpMethod(
  * @param item Item to check whether it's an ErrorObject or actual data
  * @returns True if `item` is an `ErrorObject`
  */
-export function isErrorObject(
-  item: DataProviderObject | ErrorObject
-): item is ErrorObject {
-  return (item as ErrorObject).isError === true;
+export function isErrorObject<T>(item: T | ErrorObject): item is ErrorObject {
+  return (
+    typeof item === "object" &&
+    item !== null &&
+    "@type" in item &&
+    item["@type"].includes("Error")
+  );
 }
 
 /**
@@ -308,16 +311,14 @@ export default class FetchRequest {
    * @param {DataProviderObject|ErrorObject} response Response object from fetch()
    * @returns {boolean} True if response is a successful response
    */
-  static isResponseSuccess(
-    response: DataProviderObject | ErrorObject
-  ): response is DataProviderObject {
+  static isResponseSuccess<T>(response: T | ErrorObject): response is T {
     if (
       typeof response === "object" &&
       response !== null &&
       "@type" in response
     ) {
-      const types = (response as DatabaseObject)["@type"];
-      return !types.includes("Error");
+      const types = response["@type"];
+      return !(Array.isArray(types) && types.includes("Error"));
     }
     return true;
   }
@@ -596,7 +597,7 @@ export default class FetchRequest {
    * @returns - Requested object, error object, or `defaultErrorValue` if given and the request
    *            fails
    */
-  public async getObject<T extends DataProviderObject = DataProviderObject>(
+  public async getObject<T = DataProviderObject>(
     path: string,
     options = { isDbRequest: false }
   ): Promise<Result<T, ErrorObject>> {
@@ -674,9 +675,7 @@ export default class FetchRequest {
    * @param options.filterErrors - True to filter errored requests from the returned array
    * @returns Array of requested objects
    */
-  public async getMultipleObjects<
-    T extends DataProviderObject = DataProviderObject,
-  >(
+  public async getMultipleObjects<T>(
     paths: string[],
     options = { filterErrors: false }
   ): Promise<Array<Result<T, ErrorObject>>> {
@@ -709,9 +708,7 @@ export default class FetchRequest {
    * @param types - Type of objects to request; if given, adds `type=` to the query string
    * @returns {Promise<Result<Array<T>, ErrorObject>>} Array of requested objects
    */
-  async getMultipleObjectsBulk<
-    T extends DataProviderObject = DataProviderObject,
-  >(
+  async getMultipleObjectsBulk<T>(
     paths: Array<string>,
     fields: Array<string>,
     types: string[] = []
@@ -776,11 +773,11 @@ export default class FetchRequest {
    * @param options.values - Array of values for `property` to search for
    * @returns Promise that resolves to an array of requested objects or an error
    */
-  async getMultipleObjectsBySearch(
+  async getMultipleObjectsBySearch<T>(
     type: string,
     fields: string[],
     options: { query: string } | { property: string; values: string[] }
-  ): Promise<Result<Array<DataProviderObject>, ErrorObject>> {
+  ): Promise<Result<T[], ErrorObject>> {
     if (!type.trim()) {
       throw new Error("`type` parameter required");
     }
@@ -836,9 +833,7 @@ export default class FetchRequest {
 
     // Make the request to the search endpoint and extract the searched objects from the response.
     const response = await this.getObject(finalUri);
-    return response.map(
-      (data) => (data["@graph"] || []) as Array<DataProviderObject>
-    );
+    return response.map((data) => (data["@graph"] || []) as Array<T>);
   }
 
   /**
@@ -962,14 +957,15 @@ export default class FetchRequest {
 
   /**
    * Send a POST request with the given object.
-   * @param {string} path Path to resource to post to
-   * @param {object} payload Object to post
-   * @returns {Promise<DataProviderObject|ErrorObject>} Response from POST request
+   *
+   * @param path - Path to resource to post to
+   * @param payload - Object to post
+   * @returns Response from POST request
    */
   public async postObject(
     path: string,
     payload: object
-  ): Promise<DataProviderObject | ErrorObject> {
+  ): Promise<DatabaseObject | ErrorObject> {
     const url = this.pathUrl(path);
     logRequest("postObject", path, this.usingPersistentConnections);
     const options = this.buildOptionsWithAgent(url, "POST", {

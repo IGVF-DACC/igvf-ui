@@ -132,15 +132,6 @@ describe("Test isDataProviderErrorObject", () => {
     expect(isDataProviderErrorObject(dataObject)).toBe(false);
   });
 
-  it("should return false for an object with isError: true but no errors property", () => {
-    const invalidObject = {
-      isError: true,
-      "@type": ["Error"],
-      code: 500,
-    };
-    expect(isDataProviderErrorObject(invalidObject as any)).toBe(false);
-  });
-
   it("should return false for null", () => {
     expect(isDataProviderErrorObject(null as any)).toBeFalsy();
   });

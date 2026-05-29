@@ -161,6 +161,7 @@ const tailwindConfig: Config = {
         "file-graph-file-count": "var(--color-file-graph-file-count)",
         "file-graph-qc-trigger": "var(--color-file-graph-qc-trigger-bg)",
         "file-graph-qc-trigger-text": "var(--color-file-graph-qc-trigger-text)",
+        "file-graph-group": "var(--color-file-graph-group)",
 
         "tissue-matrix-data-homo-sapiens":
           "var(--color-tissue-matrix-data-homo-sapiens)",
@@ -333,6 +334,7 @@ const tailwindConfig: Config = {
         "file-graph-prediction": "var(--color-file-graph-prediction-border)",
         "file-graph-unknown": "var(--color-file-graph-unknown-border)",
         "file-graph-file": "var(--color-file-graph-file-border)",
+        "file-graph-group": "var(--color-file-graph-group-border)",
       },
       fontSize: {
         xxs: "0.7rem",

@@ -21,11 +21,12 @@ import {
   resolveDeprecatedFileProps,
   type DeprecatedFileFilterProps,
 } from "../lib/deprecated-files";
+import { type FileSetObject } from "../lib/file-sets";
 import { dataSize } from "../lib/general";
 import QueryString from "../lib/query-string";
 import { type WorkflowObject } from "../lib/workflow";
 // root
-import type { FileObject, FileSetObject } from "../globals";
+import type { FileObject } from "../globals";
 
 const filesColumns: SortableGridConfig<FileObject>[] = [
   {

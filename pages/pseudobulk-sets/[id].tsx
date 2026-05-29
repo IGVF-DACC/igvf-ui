@@ -52,6 +52,8 @@ import {
   requestFileSetDonors,
   requestFileSetPublications,
   requestFileSetSamples,
+  type FileSetObject,
+  type PseudobulkSetObject,
 } from "../../lib/file-sets";
 import {
   getAllDerivedFromFiles,
@@ -67,11 +69,10 @@ import {
 import { isJsonFormat } from "../../lib/query-utils";
 import { isEmbedded, isPathArray } from "../../lib/types";
 // root
-import {
+import type {
   DocumentObject,
   DonorObject,
   FileObject,
-  FileSetObject,
   PublicationObject,
 } from "../../globals";
 import { SampleObject } from "../../lib/samples";
@@ -85,7 +86,7 @@ import { QualityMetricObject } from "../../lib/quality-metric";
  * after the page loads.
  */
 interface ThisPageProps extends PageProps {
-  pseudobulkSet: FileSetObject;
+  pseudobulkSet: PseudobulkSetObject;
   files: FileObject[];
   fileFileSets: FileSetObject[];
   referenceFiles: FileObject[];
@@ -391,7 +392,9 @@ export async function getServerSideProps({
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const pseudobulkSet = (
-    await request.getObject<FileSetObject>(`/pseudobulk-sets/${params.id}/`)
+    await request.getObject<PseudobulkSetObject>(
+      `/pseudobulk-sets/${params.id}/`
+    )
   ).union();
   if (FetchRequest.isResponseSuccess(pseudobulkSet)) {
     // If the pseudobulk set's canonical URL doesn't match the resolved URL, redirect to the

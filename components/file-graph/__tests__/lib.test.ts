@@ -1,8 +1,11 @@
 import {
   collectRelevantFileSetStats,
+  convertGroupsToElkNodes,
   countFileNodes,
   elkToReactFlow,
+  elkToReactFlowNodes,
   generateGraphData,
+  generateGroupEdges,
   generateIncludedFiles,
   generateSVGContent,
   getFileMetrics,
@@ -10,11 +13,18 @@ import {
   NODE_HEIGHT,
   trimIsolatedFiles,
 } from "../lib";
-import { NODE_KINDS } from "../types";
-import type { FileObject, FileSetObject } from "../../../globals";
-import type { QualityMetricObject } from "../../../lib/quality-metric";
+import type { FileObject } from "../../../globals";
+import { type FileSetObject } from "../../../lib/file-sets";
+import { type QualityMetricObject } from "../../../lib/quality-metric";
 import type { Node } from "@xyflow/react";
-import type { NodeMetadata } from "../types";
+import {
+  FileSetNode,
+  isFileSetNodeMetadata,
+  NODE_KINDS,
+  type ElkNodeEx,
+  type NodeMetadata,
+} from "../types";
+import { GroupNodeId } from "../grouping-pipeline/types";
 
 jest.mock("../../../lib/color", () => ({
   colorVariableToColorHex: jest.fn((colorVar: string) => {
@@ -44,6 +54,8 @@ describe("trimIsolatedFiles", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/file2"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
       {
         "@id": "/files/file2",
@@ -52,6 +64,8 @@ describe("trimIsolatedFiles", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
     const externalFiles: FileObject[] = [];
@@ -73,6 +87,8 @@ describe("trimIsolatedFiles", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
       {
         "@id": "/files/file2",
@@ -81,6 +97,8 @@ describe("trimIsolatedFiles", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/file1"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
     const externalFiles: FileObject[] = [];
@@ -98,6 +116,8 @@ describe("trimIsolatedFiles", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
       {
         "@id": "/files/connected1",
@@ -106,6 +126,8 @@ describe("trimIsolatedFiles", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/connected2"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
       {
         "@id": "/files/connected2",
@@ -114,6 +136,8 @@ describe("trimIsolatedFiles", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
     const externalFiles: FileObject[] = [];
@@ -135,6 +159,8 @@ describe("trimIsolatedFiles", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/external"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
     const externalFiles: FileObject[] = [
@@ -145,6 +171,8 @@ describe("trimIsolatedFiles", () => {
         file_format: "fastq",
         file_set: "/file-sets/other",
         derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
 
@@ -184,6 +212,8 @@ describe("trimIsolatedFiles", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/missing"], // This file doesn't exist in either array
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
     const externalFiles: FileObject[] = [];
@@ -235,13 +265,15 @@ describe("collectRelevantFileSetStats", () => {
             summary: "Test set 1",
           } as FileSetObject,
           externalFiles: [],
-          downstreamFile: {
-            "@id": "/files/file1",
-            "@type": ["File", "Item"],
-            content_type: "reads",
-            file_format: "fastq",
-            file_set: "/file-sets/test",
-          } as FileObject,
+          downstreamFiles: [
+            {
+              "@id": "/files/file1",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+            } as FileObject,
+          ],
         },
       },
       {
@@ -258,13 +290,15 @@ describe("collectRelevantFileSetStats", () => {
             summary: "Test set 2",
           } as FileSetObject,
           externalFiles: [],
-          downstreamFile: {
-            "@id": "/files/file2",
-            "@type": ["File", "Item"],
-            content_type: "reads",
-            file_format: "fastq",
-            file_set: "/file-sets/test",
-          } as FileObject,
+          downstreamFiles: [
+            {
+              "@id": "/files/file2",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+            } as FileObject,
+          ],
         },
       },
       {
@@ -281,13 +315,15 @@ describe("collectRelevantFileSetStats", () => {
             summary: "Test set 3",
           } as FileSetObject,
           externalFiles: [],
-          downstreamFile: {
-            "@id": "/files/file3",
-            "@type": ["File", "Item"],
-            content_type: "reads",
-            file_format: "fastq",
-            file_set: "/file-sets/test",
-          } as FileObject,
+          downstreamFiles: [
+            {
+              "@id": "/files/file3",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+            } as FileObject,
+          ],
         },
       },
       {
@@ -361,7 +397,9 @@ describe("getFileMetrics", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/test",
+      md5sum: "02d89923100d9385f7fa351e9c35d4ca",
       quality_metrics: ["/quality-metrics/metric1", "/quality-metrics/metric2"],
+      status: "released",
     };
 
     const qualityMetrics: QualityMetricObject[] = [
@@ -370,18 +408,21 @@ describe("getFileMetrics", () => {
         "@type": ["QualityMetric", "Item"],
         quality_metric_of: ["/files/file1"],
         analysis_step_version: "/analysis-step-versions/test",
+        status: "released",
       },
       {
         "@id": "/quality-metrics/metric2",
         "@type": ["QualityMetric", "Item"],
         quality_metric_of: ["/files/file1"],
         analysis_step_version: "/analysis-step-versions/test",
+        status: "released",
       },
       {
         "@id": "/quality-metrics/metric3",
         "@type": ["QualityMetric", "Item"],
         quality_metric_of: ["/files/other"],
         analysis_step_version: "/analysis-step-versions/test",
+        status: "released",
       },
     ];
 
@@ -400,7 +441,9 @@ describe("getFileMetrics", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/test",
+      md5sum: "02d89923100d9385f7fa351e9c35d4ca",
       quality_metrics: [],
+      status: "released",
     };
 
     const qualityMetrics: QualityMetricObject[] = [
@@ -409,6 +452,7 @@ describe("getFileMetrics", () => {
         "@type": ["QualityMetric", "Item"],
         quality_metric_of: ["/files/other"],
         analysis_step_version: "/analysis-step-versions/test",
+        status: "released",
       },
     ];
 
@@ -423,6 +467,8 @@ describe("getFileMetrics", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/test",
+      md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+      status: "released",
       // quality_metrics is undefined
     };
 
@@ -432,6 +478,7 @@ describe("getFileMetrics", () => {
         "@type": ["QualityMetric", "Item"],
         quality_metric_of: ["/files/file1"],
         analysis_step_version: "/analysis-step-versions/test",
+        status: "released",
       },
     ];
 
@@ -446,7 +493,9 @@ describe("getFileMetrics", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/test",
+      md5sum: "02d89923100d9385f7fa351e9c35d4ca",
       quality_metrics: ["/quality-metrics/metric1"],
+      status: "released",
     };
 
     const result = getFileMetrics(file, []);
@@ -464,6 +513,8 @@ describe("generateGraphData", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/file2"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
       {
         "@id": "/files/file2",
@@ -472,10 +523,22 @@ describe("generateGraphData", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
     const externalFiles: FileObject[] = [];
-    const fileFileSets: FileSetObject[] = [];
+    const fileFileSets: FileSetObject[] = [
+      {
+        "@id": "/file-sets/reference",
+        "@type": ["ReferenceFileSet", "FileSet", "Item"],
+        accession: "REF001",
+        file_set_type: "reference data",
+        files: [],
+        summary: "Reference file set",
+        status: "released",
+      },
+    ];
     const referenceFiles: FileObject[] = [];
     const qualityMetrics: QualityMetricObject[] = [];
 
@@ -502,6 +565,8 @@ describe("generateGraphData", () => {
         file_format: "fastq",
         file_set: "/file-sets/native",
         derived_from: ["/files/external1"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
     const externalFiles: FileObject[] = [
@@ -510,17 +575,23 @@ describe("generateGraphData", () => {
         "@type": ["File", "Item"],
         content_type: "reads",
         file_format: "fastq",
-        file_set: "/file-sets/external",
+        file_set: {
+          "@id": "/file-sets/external",
+        },
         derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
-    ];
+    ] as FileObject[];
     const fileFileSets: FileSetObject[] = [
       {
         "@id": "/file-sets/external",
         "@type": ["AnalysisSet", "FileSet", "Item"],
         accession: "EXT001",
+        file_set_type: "reference data",
         files: [],
         summary: "External file set",
+        status: "released",
       },
     ];
     const referenceFiles: FileObject[] = [];
@@ -538,6 +609,82 @@ describe("generateGraphData", () => {
     expect(result?.children?.length).toBeGreaterThan(0);
   });
 
+  it("should reuse an external file-set node and append downstream files", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/native1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/native",
+        derived_from: ["/files/external1"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
+      },
+      {
+        "@id": "/files/native2",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/native",
+        derived_from: ["/files/external1"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
+      },
+    ];
+    const externalFiles: FileObject[] = [
+      {
+        "@id": "/files/external1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: {
+          "@id": "/file-sets/external",
+        },
+        derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
+      },
+    ] as FileObject[];
+    const fileFileSets: FileSetObject[] = [
+      {
+        "@id": "/file-sets/external",
+        "@type": ["AnalysisSet", "FileSet", "Item"],
+        accession: "EXT001",
+        file_set_type: "reference data",
+        files: [],
+        summary: "External file set",
+        status: "released",
+      },
+    ];
+
+    const result = generateGraphData(
+      nativeFiles,
+      externalFiles,
+      fileFileSets,
+      [],
+      []
+    );
+
+    expect(result).not.toBeNull();
+    const externalFileSetNode = (
+      result?.children as ElkNodeEx[] | undefined
+    )?.find(
+      (node) =>
+        isFileSetNodeMetadata(node.metadata) &&
+        node.metadata.fileSet?.["@id"] === "/file-sets/external"
+    );
+    expect(externalFileSetNode).toBeDefined();
+    expect(isFileSetNodeMetadata(externalFileSetNode?.metadata)).toBe(true);
+
+    const downstreamIds = (
+      externalFileSetNode as FileSetNode
+    ).metadata.downstreamFiles
+      .map((file) => file["@id"])
+      .sort();
+    expect(downstreamIds).toEqual(["/files/native1", "/files/native2"]);
+  });
+
   it("should generate graph data with reference files", () => {
     const nativeFiles: FileObject[] = [
       {
@@ -548,6 +695,8 @@ describe("generateGraphData", () => {
         file_set: "/file-sets/test",
         derived_from: ["/files/file2"],
         reference_files: ["/files/reference1"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
       {
         "@id": "/files/file2",
@@ -556,19 +705,35 @@ describe("generateGraphData", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
     const externalFiles: FileObject[] = [];
-    const fileFileSets: FileSetObject[] = [];
+    const fileFileSets: FileSetObject[] = [
+      {
+        "@id": "/file-sets/reference",
+        "@type": ["ReferenceFileSet", "FileSet", "Item"],
+        accession: "REF001",
+        file_set_type: "reference data",
+        files: [],
+        summary: "Reference file set",
+        status: "released",
+      },
+    ];
     const referenceFiles: FileObject[] = [
       {
         "@id": "/files/reference1",
         "@type": ["ReferenceFile", "File", "Item"],
         content_type: "genome reference",
         file_format: "fasta",
-        file_set: "/file-sets/reference",
+        file_set: {
+          "@id": "/file-sets/reference",
+        },
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
-    ];
+    ] as FileObject[];
     const qualityMetrics: QualityMetricObject[] = [];
 
     const result = generateGraphData(
@@ -593,6 +758,8 @@ describe("generateGraphData", () => {
         file_set: "/file-sets/test",
         derived_from: ["/files/file2"],
         quality_metrics: ["/quality-metrics/metric1"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
       {
         "@id": "/files/file2",
@@ -601,6 +768,8 @@ describe("generateGraphData", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
     const externalFiles: FileObject[] = [];
@@ -612,6 +781,7 @@ describe("generateGraphData", () => {
         "@type": ["QualityMetric", "Item"],
         quality_metric_of: ["/files/file1"],
         analysis_step_version: "/analysis-step-versions/test",
+        status: "released",
       },
     ];
 
@@ -669,6 +839,139 @@ describe("generateGraphData", () => {
   });
 });
 
+describe("generateGroupEdges", () => {
+  it("should return empty array when no group nodes are provided", () => {
+    const nonGroupNodes = [
+      {
+        id: "/files/file1",
+        metadata: {
+          kind: NODE_KINDS.FILE,
+          file: {
+            "@id": "/files/file1",
+            "@type": ["File", "Item"],
+            content_type: "reads",
+            file_format: "fastq",
+            file_set: "/file-sets/test",
+          } as FileObject,
+          upstreamNativeFiles: [],
+          upstreamExternalFiles: [],
+          upstreamFileSetNodes: [],
+          referenceFiles: [],
+          qualityMetrics: [],
+        },
+      },
+      {
+        id: "set-1",
+        metadata: {
+          kind: NODE_KINDS.FILESET,
+          fileSet: {
+            "@id": "/file-sets/set-1/",
+            "@type": ["AnalysisSet", "FileSet", "Item"],
+            accession: "SET001",
+            file_set_type: "analysis",
+            summary: "test set",
+          } as FileSetObject,
+          downstreamFiles: [
+            {
+              "@id": "/files/file1",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+            } as FileObject,
+          ],
+          externalFiles: [],
+        },
+      },
+    ];
+
+    const result = generateGroupEdges(nonGroupNodes as any);
+
+    expect(result).toEqual([]);
+  });
+
+  it("should return empty array when group node has no target file ids", () => {
+    const groupNodes = [
+      {
+        id: "group-empty",
+        metadata: {
+          kind: NODE_KINDS.GROUP,
+          targetFileIds: [],
+        },
+      },
+    ];
+
+    const result = generateGroupEdges(groupNodes as any);
+
+    expect(result).toEqual([]);
+  });
+
+  it("should generate one edge per target file id for each group", () => {
+    const groupNodes = [
+      {
+        id: "group-a",
+        metadata: {
+          kind: NODE_KINDS.GROUP,
+          targetFileIds: ["/files/file1", "/files/file2"],
+        },
+      },
+      {
+        id: "group-b",
+        metadata: {
+          kind: NODE_KINDS.GROUP,
+          targetFileIds: ["/files/file3"],
+        },
+      },
+      {
+        id: "not-a-group",
+        metadata: {
+          kind: NODE_KINDS.FILESET,
+          fileSet: {
+            "@id": "/file-sets/set-2/",
+            "@type": ["AnalysisSet", "FileSet", "Item"],
+            accession: "SET002",
+            file_set_type: "analysis",
+            summary: "test set 2",
+          } as FileSetObject,
+          downstreamFiles: [
+            {
+              "@id": "/files/file3",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+            } as FileObject,
+          ],
+          externalFiles: [],
+        },
+      },
+    ];
+
+    const result = generateGroupEdges(groupNodes as any);
+
+    expect(result).toHaveLength(3);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        {
+          id: "layout-group-a-/files/file1",
+          sources: ["group-a"],
+          targets: ["/files/file1"],
+        },
+        {
+          id: "layout-group-a-/files/file2",
+          sources: ["group-a"],
+          targets: ["/files/file2"],
+        },
+        {
+          id: "layout-group-b-/files/file3",
+          sources: ["group-b"],
+          targets: ["/files/file3"],
+        },
+      ])
+    );
+  });
+});
+
 describe("Test generateIncludedFiles function", () => {
   it("should return empty array when no files are included", () => {
     const result = generateIncludedFiles([], []);
@@ -684,6 +987,8 @@ describe("Test generateIncludedFiles function", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/file2"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
       {
         "@id": "/files/file2",
@@ -692,6 +997,8 @@ describe("Test generateIncludedFiles function", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: [],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
     const derivedFromFiles = [files[0]];
@@ -713,6 +1020,8 @@ describe("Test generateIncludedFiles function", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/file2"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
       {
         "@id": "/files/file2",
@@ -721,6 +1030,8 @@ describe("Test generateIncludedFiles function", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/file3"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
     ];
 
@@ -740,6 +1051,8 @@ describe("Test generateIncludedFiles function", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/file2"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
       },
       {
         "@id": "/files/file2",
@@ -747,6 +1060,8 @@ describe("Test generateIncludedFiles function", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/test",
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
         // No derived_from property at all
       },
     ];
@@ -842,13 +1157,15 @@ describe("elkToReactFlow", () => {
               summary: "Parent file set",
             } as FileSetObject,
             externalFiles: [],
-            downstreamFile: {
-              "@id": "/files/downstream",
-              "@type": ["File", "Item"],
-              content_type: "reads",
-              file_format: "fastq",
-              file_set: "/file-sets/test",
-            } as FileObject,
+            downstreamFiles: [
+              {
+                "@id": "/files/downstream",
+                "@type": ["File", "Item"],
+                content_type: "reads",
+                file_format: "fastq",
+                file_set: "/file-sets/test",
+              } as FileObject,
+            ],
           },
           children: [
             {
@@ -953,6 +1270,215 @@ describe("elkToReactFlow", () => {
   });
 });
 
+describe("elkToReactFlowNodes", () => {
+  it("should convert a top-level non-group node without parentId", () => {
+    const elkNodes = [
+      {
+        id: "file-node-1",
+        x: 10,
+        y: 20,
+        width: 100,
+        height: 50,
+        metadata: {
+          kind: NODE_KINDS.FILE,
+          file: {
+            "@id": "/files/file-node-1/",
+            "@type": ["File", "Item"],
+            content_type: "reads",
+            file_format: "fastq",
+            file_set: "/file-sets/test/",
+          } as FileObject,
+          upstreamNativeFiles: [],
+          upstreamExternalFiles: [],
+          upstreamFileSetNodes: [],
+          referenceFiles: [],
+          qualityMetrics: [],
+        },
+      },
+    ];
+
+    const result = elkToReactFlowNodes(elkNodes as any);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(
+      expect.objectContaining({
+        id: "file-node-1",
+        type: NODE_KINDS.FILE,
+        position: { x: 10, y: 20 },
+        width: 100,
+        height: 50,
+        style: { width: 100, height: 50 },
+        draggable: false,
+        selectable: false,
+      })
+    );
+    expect(result[0]).not.toHaveProperty("parentId");
+  });
+
+  it("should include parentId for non-group children nested under a group", () => {
+    const elkNodes = [
+      {
+        id: "parent-group",
+        x: 0,
+        y: 0,
+        width: 90,
+        height: 70,
+        metadata: {
+          kind: NODE_KINDS.GROUP,
+          targetFileIds: ["/files/file-node-child/"],
+        },
+        children: [
+          {
+            id: "file-node-child",
+            x: 1,
+            y: 2,
+            width: 50,
+            height: 30,
+            metadata: {
+              kind: NODE_KINDS.FILE,
+              file: {
+                "@id": "/files/file-node-child/",
+                "@type": ["File", "Item"],
+                content_type: "reads",
+                file_format: "fastq",
+                file_set: "/file-sets/test/",
+              } as FileObject,
+              upstreamNativeFiles: [],
+              upstreamExternalFiles: [],
+              upstreamFileSetNodes: [],
+              referenceFiles: [],
+              qualityMetrics: [],
+            },
+          },
+        ],
+      },
+    ];
+
+    const result = elkToReactFlowNodes(elkNodes as any);
+
+    expect(result).toHaveLength(2);
+    const childNode = result.find((node) => node.id === "file-node-child");
+    expect(childNode?.parentId).toBe("parent-group");
+  });
+
+  it("should place group nodes before descendants and recurse through children", () => {
+    const elkNodes = [
+      {
+        id: "group-1",
+        x: 0,
+        y: 0,
+        width: 300,
+        height: 200,
+        metadata: {
+          kind: NODE_KINDS.GROUP,
+          targetFileIds: ["/files/target-1/"],
+        },
+        children: [
+          {
+            id: "fileset-1",
+            x: 10,
+            y: 10,
+            width: 150,
+            height: 60,
+            metadata: {
+              kind: NODE_KINDS.FILESET,
+              fileSet: {
+                "@id": "/file-sets/fileset-1/",
+                "@type": ["AnalysisSet", "FileSet", "Item"],
+                accession: "FS001",
+                file_set_type: "analysis",
+                summary: "file set",
+              } as FileSetObject,
+              externalFiles: [],
+              downstreamFiles: [
+                {
+                  "@id": "/files/downstream-1/",
+                  "@type": ["File", "Item"],
+                  content_type: "reads",
+                  file_format: "fastq",
+                  file_set: "/file-sets/fileset-1/",
+                } as FileObject,
+              ],
+            },
+            children: [
+              {
+                id: "file-1",
+                x: 20,
+                y: 20,
+                width: 120,
+                height: 55,
+                metadata: {
+                  kind: NODE_KINDS.FILE,
+                  file: {
+                    "@id": "/files/file-1/",
+                    "@type": ["File", "Item"],
+                    content_type: "reads",
+                    file_format: "fastq",
+                    file_set: "/file-sets/fileset-1/",
+                  } as FileObject,
+                  upstreamNativeFiles: [],
+                  upstreamExternalFiles: [],
+                  upstreamFileSetNodes: [],
+                  referenceFiles: [],
+                  qualityMetrics: [],
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const result = elkToReactFlowNodes(elkNodes as any);
+
+    expect(result.map((node) => node.id)).toEqual([
+      "group-1",
+      "fileset-1",
+      "file-1",
+    ]);
+
+    expect(result[0]).toEqual(
+      expect.objectContaining({
+        id: "group-1",
+        type: NODE_KINDS.GROUP,
+        position: { x: 0, y: 0 },
+        style: { width: 300, height: 200 },
+        draggable: false,
+        selectable: false,
+      })
+    );
+    expect(result[0]).not.toHaveProperty("parentId");
+
+    const fileSetNode = result.find((node) => node.id === "fileset-1");
+    expect(fileSetNode?.parentId).toBe("group-1");
+
+    const fileNode = result.find((node) => node.id === "file-1");
+    expect(fileNode?.parentId).toBe("fileset-1");
+  });
+
+  it("should convert a group node with no children", () => {
+    const elkNodes = [
+      {
+        id: "group-no-children",
+        x: 5,
+        y: 6,
+        width: 111,
+        height: 112,
+        metadata: {
+          kind: NODE_KINDS.GROUP,
+          targetFileIds: [],
+        },
+      },
+    ];
+
+    const result = elkToReactFlowNodes(elkNodes as any);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe("group-no-children");
+    expect(result[0].type).toBe(NODE_KINDS.GROUP);
+  });
+});
+
 describe("countFileNodes", () => {
   it("should return 0 for empty node array", () => {
     const result = countFileNodes([]);
@@ -1012,13 +1538,15 @@ describe("countFileNodes", () => {
             "@type": ["FileSet", "Item"],
           } as FileSetObject,
           externalFiles: [],
-          downstreamFile: {
-            "@id": "/files/downstream",
-            "@type": ["File", "Item"],
-            content_type: "reads",
-            file_format: "fastq",
-            file_set: "/file-sets/test",
-          } as FileObject,
+          downstreamFiles: [
+            {
+              "@id": "/files/downstream",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+            } as FileObject,
+          ],
         },
       },
     ];
@@ -1672,5 +2200,45 @@ describe("generateSVGContent", () => {
 
     // Unknown variable falls back to the original when colorVariableToColorHex returns falsy.
     expect(result).toContain('fill="var(--color-unknown-variable)"');
+  });
+});
+
+describe("convertGroupsToElkNodes", () => {
+  it("should convert groups to ELK nodes with correct metadata", () => {
+    const groupNodeMap = new Map<GroupNodeId, FileSetNode[]>();
+    groupNodeMap.set("group-1", [
+      {
+        id: "fileset-node-1",
+        metadata: {
+          kind: NODE_KINDS.FILESET,
+          fileSet: {
+            "@id": "/file-sets/test",
+            "@type": ["FileSet", "Item"],
+            accession: "TEST001",
+            file_set_type: "measurement",
+            files: [],
+            status: "released",
+            summary: "Test file set",
+          },
+          externalFiles: [],
+          downstreamFiles: [
+            {
+              "@id": "/files/downstream",
+              "@type": ["File", "Item"],
+              content_type: "reads",
+              file_format: "fastq",
+              file_set: "/file-sets/test",
+              md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+              status: "released",
+            },
+          ],
+        },
+      },
+    ]);
+
+    const result = convertGroupsToElkNodes(groupNodeMap);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe("group-1");
+    expect(result[0].metadata.kind).toBe(NODE_KINDS.GROUP);
   });
 });

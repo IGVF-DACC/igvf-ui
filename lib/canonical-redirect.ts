@@ -3,27 +3,11 @@ import type { ParsedUrlQuery } from "querystring";
 // node_modules
 import { type Redirect } from "next";
 // lib
+import { isDatabaseObject } from "./database-object";
 import {
   getQueryStringFromServerQuery,
   splitPathAndQueryString,
 } from "./query-utils";
-// root
-import type { DatabaseObject, DataProviderObject } from "../globals";
-
-/**
- * Type guard to check if a DataProviderObject is a DatabaseObject.
- *
- * @param obj - Database object to check
- * @returns True if the object is a DatabaseObject, false otherwise
- */
-function isDatabaseObject(obj: DataProviderObject): obj is DatabaseObject {
-  return (
-    obj &&
-    typeof obj === "object" &&
-    "@id" in obj &&
-    typeof obj["@id"] === "string"
-  );
-}
 
 /**
  * Creates a canonical URL redirect if the object's `@id` doesn't match the resolved URL.
@@ -44,8 +28,8 @@ function isDatabaseObject(obj: DataProviderObject): obj is DatabaseObject {
  * @param excludedKeys - Additional query parameter keys to exclude from the redirect URL
  * @returns Next.js redirect object (temporary) if redirect is needed, null otherwise
  */
-export function createCanonicalUrlRedirect(
-  serverObject: DataProviderObject,
+export function createCanonicalUrlRedirect<T>(
+  serverObject: T,
   resolvedUrl: string,
   query: ParsedUrlQuery,
   excludedKeys: string[] = []

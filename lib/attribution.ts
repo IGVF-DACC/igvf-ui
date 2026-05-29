@@ -55,14 +55,14 @@ export default async function buildAttribution(
   const lab = (
     await fromOption(obj.lab).and_then_async(async (x) => {
       const id = itemId(x);
-      return (await request.getObject(id)).map_err((_x) => null);
+      return (await request.getObject<LabObject>(id)).map_err((_x) => null);
     })
   ).optional();
 
   const award = (
     await fromOption(obj.award).and_then_async(async (x) => {
       const id = itemId(x);
-      return (await request.getObject(id)).map_err((_x) => null);
+      return (await request.getObject<AwardObject>(id)).map_err((_x) => null);
     })
   ).optional();
 
@@ -70,7 +70,7 @@ export default async function buildAttribution(
     await fromOption(award)
       .and_then((a) => fromOption(a.contact_pi as string))
       .and_then_async(async (p) => {
-        return (await request.getObject(p)).map_err((_e) => null);
+        return (await request.getObject<UserObject>(p)).map_err((_e) => null);
       })
   ).optional();
 
@@ -80,9 +80,9 @@ export default async function buildAttribution(
 
   return {
     type: obj["@type"][0],
-    lab: lab as LabObject | null,
-    award: award as AwardObject | null,
-    contactPi: contactPi as UserObject | null,
+    lab,
+    award,
+    contactPi,
     collections,
   };
 }

@@ -1,9 +1,8 @@
 // lib
+import { type FileSetObject } from "../file-sets";
 import QueryString from "../query-string";
 // batch-download
 import BaseController from "./base-controller";
-// types
-import type { FileSetObject } from "../../globals";
 
 /**
  * Batch-download controller for downloading all files associated with a file set. This mostly gets

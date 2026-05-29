@@ -1,7 +1,8 @@
+import { type FileSetObject } from "./lib/file-sets";
 import { type GeneLocation } from "./lib/genes";
 import { type QualityMetricObject } from "./lib/quality-metric";
-import { type BiosampleObject, type SampleObject } from "./lib/samples";
-import { type LinkTo } from "./lib/types";
+import { type BiosampleObject } from "./lib/samples";
+import { type LinkTo, LinkToArray } from "./lib/types";
 import { type WorkflowObject } from "./lib/workflow";
 
 /**
@@ -59,7 +60,7 @@ export interface ObjectActions {
 /**
  * Standard properties for all objects in the database.
  */
-export interface DatabaseObject extends DataProviderObject {
+export interface DatabaseObject {
   "@context"?: string;
   "@id": string;
   "@type": string[];
@@ -96,21 +97,6 @@ export interface ServerSideProps {
 }
 
 /**
- * Search result object; similar to `DatabaseObject` but without some properties.
- */
-export type SearchResultsObject = SearchResultsObjectProps &
-  SearchResultsObjectGenerics;
-
-interface SearchResultsObjectProps {
-  "@id": string;
-  "@type": string[];
-}
-
-interface SearchResultsObjectGenerics {
-  [key: string]: unknown;
-}
-
-/**
  * Object with a required property containing an array of strings, used for schemas with more than
  * one possible set of required properties.
  */
@@ -126,7 +112,7 @@ export interface SchemaProperty {
   title: string;
   description?: string;
   comment?: string;
-  type: string;
+  type: string | string[];
   items?: SchemaProperty;
   linkTo?: string;
   linkSubmitsFor?: boolean;
@@ -154,11 +140,7 @@ export interface Schema {
   "@type": string[];
   additionalProperties: boolean;
   changelog?: string;
-  dependentSchemas?: {
-    [key: string]: {
-      [key: string]: unknown;
-    };
-  };
+  dependentSchemas?: Record<string, SchemaProperty>;
   description?: string;
   exact_searchable_fields?: string[];
   fuzzy_searchable_fields?: string[];
@@ -217,10 +199,9 @@ export type Profiles = ProfilesProps & {
  */
 export interface SearchResults {
   "@context": string;
-  "@graph": DatabaseObject[];
   "@id": string;
   "@type": string[];
-  actions?: ObjectActions[];
+  "@graph": DatabaseObject[];
   clear_filters: string;
   columns: SearchResultsColumns;
   facet_groups?: SearchResultsFacetGroup[];
@@ -231,6 +212,7 @@ export interface SearchResults {
   sort?: SearchResultsSort;
   title: string;
   total: number;
+  actions?: ObjectActions[];
 }
 
 export interface SearchResultsColumns {
@@ -392,13 +374,15 @@ export interface FileObject extends DatabaseObject {
   checkfiles_version?: string;
   content_summary?: string;
   content_type: string;
+  controlled_access?: boolean;
   derived_from?: string[];
   derived_manually?: boolean;
+  documents?: LinkToArray<DocumentObject>;
   external_host_url?: string;
   externally_hosted?: boolean;
   file_format: string;
-  file_format_specifications?: string[] | DocumentObject[];
-  file_set: string | FileSetObject;
+  file_format_specifications?: LinkToArray<DocumentObject>;
+  file_set: LinkTo<FileSetObject>;
   file_size?: number;
   file_type?: string;
   filtered?: boolean;
@@ -407,44 +391,20 @@ export interface FileObject extends DatabaseObject {
   illumina_read_type?: string;
   imaging_platform?: string | OntologyTermObject;
   index?: string;
-  input_file_for?: string[] | FileObject[];
+  input_file_for?: LinkToArray<FileObject>;
   lane?: number;
-  quality_metrics?: string[] | QualityMetricObject[];
-  reference_files?: string[] | FileObject[];
-  seqspec_document?: string | DocumentObject;
-  seqspecs?: string[] | FileObject[];
-  sequencing_platform?: string | OntologyTermObject;
+  md5sum: string;
+  quality_metrics?: LinkToArray<QualityMetricObject>;
+  reference_files?: LinkToArray<FileObject>;
+  seqspec_document?: LinkTo<DocumentObject>;
+  seqspecs?: LinkToArray<FileObject>;
+  sequencing_platform?: LinkTo<OntologyTermObject>;
   sequencing_run?: number;
+  submitted_file_name?: string;
   summary?: string;
   tile?: number;
   upload_status?: UploadStatus;
-  workflows?: string[] | WorkflowObject[];
-}
-
-/**
- * Data structure common to all file set object types.
- */
-export interface FileSetObject extends DatabaseObject {
-  aliases?: string[];
-  construct_library_sets?: LinkTo<FileSetObject>[];
-  assay_term?: LinkTo<OntologyTermObject>;
-  assay_titles?: string[];
-  cell_qualifier?: string;
-  cell_type?: LinkTo<OntologyTermObject>;
-  data_use_limitation_summaries?: string[];
-  doi?: string;
-  donors?: LinkTo<DonorObject>[];
-  external_image_urls?: string[];
-  file_set_type: string;
-  files: LinkTo<FileObject>[];
-  input_file_sets?: LinkTo<FileSetObject>[];
-  integrated_content_files?: LinkTo<FileObject>[];
-  preferred_assay_titles?: string[];
-  publications?: LinkTo<PublicationObject>[];
-  revoke_detail?: string;
-  sample_summary?: string;
-  samples?: LinkTo<SampleObject>[];
-  summary: string;
+  workflows?: LinkToArray<WorkflowObject>;
 }
 
 export interface GeneObject extends DatabaseObject {
@@ -501,7 +461,7 @@ export interface DonorObject extends DatabaseObject {
   aliases?: string[];
   dbxrefs?: string[];
   description?: string;
-  documents?: string[] | DocumentObject[];
+  documents: LinkToArray<DocumentObject>;
 }
 
 export interface HumanDonorObject extends DonorObject {
@@ -509,7 +469,7 @@ export interface HumanDonorObject extends DonorObject {
   human_donor_identifiers?: string[];
   notes?: string;
   phenotypic_features?: string[];
-  publications?: string[] | PublicationObject[];
+  publications?: LinkToArray<PublicationObject>;
   related_donors?: RelatedDonorObject[];
   sex?: string;
   taxa: string;
@@ -529,7 +489,7 @@ export interface SourceObject extends DatabaseObject {
 export interface TreatmentObject extends DatabaseObject {
   amount?: number;
   amount_units?: string;
-  biosamples_treated?: string[] | BiosampleObject[];
+  biosamples_treated?: LinkToArray<BiosampleObject>;
   depletion: boolean;
   description?: string;
   duration?: number;
@@ -540,7 +500,7 @@ export interface TreatmentObject extends DatabaseObject {
   post_treatment_time_units?: string;
   product_id?: string;
   purpose: string;
-  sources?: string[] | (SourceObject | LabObject)[];
+  sources?: LinkToArray<SourceObject | LabObject>;
   summary?: string;
   temperature?: number;
   temperature_units?: string;
@@ -560,7 +520,7 @@ export interface OntologyTermObject extends DatabaseObject {
   definition?: string;
   deprecated_ntr_terms?: string[];
   description?: string;
-  is_a?: string[] | OntologyTermObject[];
+  is_a?: LinkToArray<OntologyTermObject>;
   name?: string;
   notes?: string;
   objective_slims?: string[];
@@ -594,6 +554,15 @@ export interface PageObject extends DatabaseObject {
   parent?: string;
   summary?: string;
   title: string;
+}
+
+export interface PhenotypicFeatureObject extends DatabaseObject {
+  feature: LinkTo<OntologyTermObject>;
+  notes?: string;
+  observation_date?: string;
+  quality?: string;
+  quantity?: number;
+  quantity_units?: string;
 }
 
 /**
@@ -680,8 +649,8 @@ export interface SoftwareVersionObject extends DatabaseObject {
   description?: string;
   download_id?: string;
   name: string;
-  publications?: string[] | PublicationObject[];
-  software: string | SoftwareObject;
+  publications?: LinkToArray<PublicationObject>;
+  software: LinkTo<SoftwareObject>;
   source_url?: string;
   version: string;
 }
@@ -689,19 +658,19 @@ export interface SoftwareVersionObject extends DatabaseObject {
 export interface AnalysisStepObject extends DatabaseObject {
   aliases?: string[];
   analysis_step_types: string[];
-  analysis_step_versions?: string[] | AnalysisStepVersionObject[];
+  analysis_step_versions?: LinkToArray<AnalysisStepVersionObject>;
   description?: string;
   input_content_types: string[];
   output_content_types: string[];
-  parents?: string[] | AnalysisStepObject[];
+  parents?: LinkToArray<AnalysisStepObject>;
   step_label: string;
   title: string;
 }
 
 export interface AnalysisStepVersionObject extends DatabaseObject {
-  analysis_step: string | AnalysisStepObject;
-  software_versions: string[] | SoftwareVersionObject[];
-  workflows?: string[] | WorkflowObject[];
+  analysis_step: LinkTo<AnalysisStepObject>;
+  software_versions: LinkToArray<SoftwareVersionObject>;
+  workflows?: LinkToArray<WorkflowObject>;
 }
 
 /**
@@ -731,4 +700,14 @@ export interface BiomarkerObject extends DatabaseObject {
   notes?: string;
   quantification: string;
   summary?: string;
+}
+
+export interface OpenReadingFrameObject extends DatabaseObject {
+  dbxrefs?: string[];
+  genes: string[] | GeneObject[];
+  orf_id: string;
+  pct_coverage_orf?: number;
+  pct_coverage_protein?: number;
+  pct_identical_protein?: number;
+  protein_id?: string;
 }

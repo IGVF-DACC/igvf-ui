@@ -24,7 +24,11 @@ import {
 import SessionContext from "../components/session-context";
 // lib
 import { UC } from "../lib/constants";
-import { errorObjectToProps, generateErrorObject } from "../lib/errors";
+import {
+  errorObjectToProps,
+  generateErrorObject,
+  isDataProviderErrorObject,
+} from "../lib/errors";
 import FetchRequest, { HTTP_STATUS_CODE } from "../lib/fetch-request";
 import { toShishkebabCase } from "../lib/general";
 import QueryString from "../lib/query-string";
@@ -324,7 +328,7 @@ export async function getServerSideProps({ req, query }) {
   const topHitsResults = (
     await request.getObject(`/top-hits-raw?query=${term}`)
   ).union();
-  if (FetchRequest.isResponseSuccess(topHitsResults)) {
+  if (!isDataProviderErrorObject(topHitsResults)) {
     const itemListsByType = getTopHitsItemListsByType(topHitsResults);
     const accessoryData = await getAccessoryData(
       itemListsByType,

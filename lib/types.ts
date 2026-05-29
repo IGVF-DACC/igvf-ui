@@ -7,6 +7,14 @@
 export type LinkTo<T> = string | T;
 
 /**
+ * Use this type to represent a property that can either be an array of links to other objects
+ * (represented as an array of strings) or an array of embedded objects (represented as a generic
+ * type T). This is useful for handling cases where an API might return either references to
+ * multiple resources or the full resource data.
+ */
+export type LinkToArray<T> = string[] | T[];
+
+/**
  * Type guard to check if a LinkTo<T> value is a string (i.e., a link) or an embedded object (T).
  *
  * @param value - Object property to check if it is a link (string)

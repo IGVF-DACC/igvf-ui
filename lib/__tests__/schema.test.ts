@@ -1,5 +1,9 @@
-import type { DatabaseObject, Profiles, SearchResults } from "../../globals.d";
-import { itemToSchema, collectionToSchema } from "../schema";
+import type { DatabaseObject, Profiles, SearchResults } from "../../globals";
+import {
+  collectionToSchema,
+  itemToSchema,
+  isIndividualSchema,
+} from "../schema";
 
 const testProfiles: Profiles = {
   "@type": ["JSONSchemas"],
@@ -25,7 +29,11 @@ const testProfiles: Profiles = {
 
 describe("Test itemToSchema function", () => {
   it("returns null if profiles is null", () => {
-    const item = { "@id": "/item/1", "@type": ["ItemType", "ParentType"] };
+    const item = {
+      "@id": "/item/1",
+      "@type": ["ItemType", "ParentType"],
+      status: "released",
+    };
     expect(itemToSchema(item, null)).toBeNull();
   });
 
@@ -48,12 +56,16 @@ describe("Test itemToSchema function", () => {
   });
 
   it("returns null if item has empty @type", () => {
-    const item = { "@id": "/item/1", "@type": [] };
+    const item = { "@id": "/item/1", "@type": [], status: "released" };
     expect(itemToSchema(item, testProfiles)).toBeNull();
   });
 
   it("returns null if item has no matching @type", () => {
-    const item = { "@id": "/item/1", "@type": ["UnusedType", "ParentType"] };
+    const item = {
+      "@id": "/item/1",
+      "@type": ["UnusedType", "ParentType"],
+      status: "released",
+    };
     expect(itemToSchema(item, testProfiles)).toBeNull();
   });
 
@@ -62,7 +74,11 @@ describe("Test itemToSchema function", () => {
       ...testProfiles,
       InvalidType: "not a schema" as any,
     };
-    const item = { "@id": "/item/1", "@type": ["InvalidType", "ParentType"] };
+    const item = {
+      "@id": "/item/1",
+      "@type": ["InvalidType", "ParentType"],
+      status: "released",
+    };
     expect(itemToSchema(item, profilesWithInvalidSchema)).toBeNull();
   });
 
@@ -75,18 +91,30 @@ describe("Test itemToSchema function", () => {
         "@type": ["Bad"],
       } as any,
     };
-    const item = { "@id": "/item/1", "@type": ["BadSchema"] };
+    const item = {
+      "@id": "/item/1",
+      "@type": ["BadSchema"],
+      status: "released",
+    };
     expect(itemToSchema(item, profilesWithBadSchema)).toBeNull();
   });
 
   it("returns schema if item has matching @type", () => {
-    const item = { "@id": "/item/1", "@type": ["ItemType", "ParentType"] };
+    const item = {
+      "@id": "/item/1",
+      "@type": ["ItemType", "ParentType"],
+      status: "released",
+    };
     const matchingSchema = itemToSchema(item, testProfiles);
     expect(matchingSchema.$id).toEqual("/profiles/test.json");
   });
 
   it("itemToSchema returns parent schema if item type matches none", () => {
-    const item = { "@id": "/item/1", "@type": ["ChildType", "ItemType"] };
+    const item = {
+      "@id": "/item/1",
+      "@type": ["ChildType", "ItemType"],
+      status: "released",
+    };
     const matchingSchema = itemToSchema(item, testProfiles);
     expect(matchingSchema.$id).toEqual("/profiles/test.json");
   });
@@ -140,7 +168,10 @@ describe("Test collectionToSchema function", () => {
   });
 
   it("returns null if collection @type doesn't follow naming convention", () => {
-    const collection = { "@type": ["ItemType", "Collection"] };
+    const collection = {
+      "@type": ["ItemType", "Collection"],
+      status: "released",
+    };
     expect(
       collectionToSchema(collection as unknown as SearchResults, testProfiles)
     ).toBeNull();
@@ -167,5 +198,44 @@ describe("Test collectionToSchema function", () => {
 
     const matchingSchema = collectionToSchema(testCollection, testProfiles);
     expect(matchingSchema.$id).toEqual("/profiles/test.json");
+  });
+});
+
+describe("isIndividualSchema", () => {
+  it("returns true for an object that appears to be a schema", () => {
+    const schemaObject = {
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      "@type": ["JSONSchema"],
+    };
+    expect(isIndividualSchema(schemaObject)).toBe(true);
+  });
+
+  it("returns false for an object that is missing $schema", () => {
+    const notSchemaObject = {
+      "@type": ["JSONSchema"],
+    };
+    expect(isIndividualSchema(notSchemaObject)).toBe(false);
+  });
+
+  it("returns false for an object that is missing @type", () => {
+    const notSchemaObject = {
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+    };
+    expect(isIndividualSchema(notSchemaObject)).toBe(false);
+  });
+
+  it("returns false for an object whose @type does not include JSONSchema", () => {
+    const notSchemaObject = {
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      "@type": ["NotASchema"],
+    };
+    expect(isIndividualSchema(notSchemaObject)).toBe(false);
+  });
+
+  it("returns false for a non-object value", () => {
+    expect(isIndividualSchema("not an object")).toBe(false);
+    expect(isIndividualSchema(123)).toBe(false);
+    expect(isIndividualSchema(null)).toBe(false);
+    expect(isIndividualSchema(undefined)).toBe(false);
   });
 });

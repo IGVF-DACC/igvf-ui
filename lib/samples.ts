@@ -1,5 +1,6 @@
 // lib
 import { type InstitutionalCertificateObject } from "./data-use-limitation";
+import { type FileSetObject } from "./file-sets";
 // Note: circular import type with ./modifications.ts. This is a deliberate, safe choice.
 import { type ModificationObject } from "./modifications";
 import { type LinkTo } from "./types";
@@ -11,7 +12,6 @@ import type {
   DocumentObject,
   DonorObject,
   FileObject,
-  FileSetObject,
   LabObject,
   OntologyTermObject,
   PublicationObject,

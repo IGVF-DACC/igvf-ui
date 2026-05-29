@@ -15,7 +15,11 @@ import FetchRequest from "../lib/fetch-request";
 import { toShishkebabCase } from "../lib/general";
 import { isSearchResults } from "../lib/search-results";
 // root
-import type { PublicationObject, SoftwareObject } from "../globals";
+import type {
+  PublicationObject,
+  SearchResults,
+  SoftwareObject,
+} from "../globals";
 
 /**
  * Header row for the DataTable.
@@ -292,7 +296,7 @@ export default function ComputationalTools({
 export async function getServerSideProps({ req }) {
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const softwareResults = (
-    await request.getObject(
+    await request.getObject<SearchResults>(
       "/report/?type=Software&categories=*&field=%40id&field=categories&field=description&field=source_url&field=title&field=publications.@id"
     )
   ).union();

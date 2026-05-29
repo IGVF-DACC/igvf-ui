@@ -11,6 +11,7 @@ describe("WorkflowTitle component", () => {
         name: "Test Workflow",
         source_url: "https://example.com",
         uniform_pipeline: true,
+        status: "released",
       };
       render(<WorkflowTitle workflow={workflow} />);
 
@@ -26,6 +27,7 @@ describe("WorkflowTitle component", () => {
         source_url: "https://example.com",
         uniform_pipeline: true,
         workflow_version: "v1.2.0",
+        status: "released",
       };
       render(<WorkflowTitle workflow={workflow} />);
 
@@ -60,6 +62,7 @@ describe("WorkflowList component", () => {
           name: "Single Workflow",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
       ];
 
@@ -82,6 +85,7 @@ describe("WorkflowList component", () => {
           source_url: "https://example.com",
           workflow_version: "v1.5.0",
           uniform_pipeline: true,
+          status: "released",
         },
       ];
 
@@ -103,6 +107,7 @@ describe("WorkflowList component", () => {
           name: "Uniform Workflow",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
       ];
 
@@ -123,6 +128,7 @@ describe("WorkflowList component", () => {
           name: "Zebra Workflow",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
         {
           "@id": "/workflows/alpha/",
@@ -130,6 +136,7 @@ describe("WorkflowList component", () => {
           name: "Alpha Workflow",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
         {
           "@id": "/workflows/beta/",
@@ -137,6 +144,7 @@ describe("WorkflowList component", () => {
           name: "Beta Workflow",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
       ];
 
@@ -158,6 +166,7 @@ describe("WorkflowList component", () => {
           name: "lowercase workflow",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
         {
           "@id": "/workflows/uppercase/",
@@ -165,6 +174,7 @@ describe("WorkflowList component", () => {
           name: "UPPERCASE WORKFLOW",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
         {
           "@id": "/workflows/mixedcase/",
@@ -172,6 +182,7 @@ describe("WorkflowList component", () => {
           name: "MixedCase Workflow",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
       ];
 
@@ -193,6 +204,7 @@ describe("WorkflowList component", () => {
           name: "Test Workflow",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
       ];
 
@@ -211,6 +223,7 @@ describe("WorkflowList component", () => {
           source_url: "https://example.com",
           uniform_pipeline: true,
           workflow_version: undefined,
+          status: "released",
         },
       ];
 
@@ -230,6 +243,7 @@ describe("WorkflowList component", () => {
           source_url: "https://example.com",
           uniform_pipeline: true,
           workflow_version: "v2.0.0",
+          status: "released",
         },
       ];
 
@@ -252,6 +266,7 @@ describe("WorkflowList component", () => {
           name: "No Version",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
         {
           "@id": "/workflows/with-version/",
@@ -260,6 +275,7 @@ describe("WorkflowList component", () => {
           source_url: "https://example.com",
           uniform_pipeline: true,
           workflow_version: "v1.0.0",
+          status: "released",
         },
       ];
 
@@ -278,6 +294,7 @@ describe("WorkflowList component", () => {
           source_url: "https://example.com",
           uniform_pipeline: true,
           workflow_version: "",
+          status: "released",
         },
       ];
 
@@ -296,6 +313,7 @@ describe("WorkflowList component", () => {
           name: "Uniform Workflow",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
       ];
 
@@ -314,6 +332,7 @@ describe("WorkflowList component", () => {
           name: "Not Uniform Workflow",
           source_url: "https://example.com",
           uniform_pipeline: false,
+          status: "released",
         },
       ];
 
@@ -335,6 +354,7 @@ describe("WorkflowList component", () => {
           name: `Workflow ${i}`,
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         })
       );
 
@@ -353,6 +373,7 @@ describe("WorkflowList component", () => {
           name: "Key Test 1",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
         {
           "@id": "/workflows/key-test-2/",
@@ -360,6 +381,7 @@ describe("WorkflowList component", () => {
           name: "Key Test 2",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
       ];
 
@@ -380,6 +402,7 @@ describe("WorkflowList component", () => {
           source_url: "https://example.com",
           workflow_version: "v2.1.0",
           uniform_pipeline: true,
+          status: "released",
         },
       ];
 
@@ -405,6 +428,7 @@ describe("WorkflowList component", () => {
           name: "Minimal Workflow",
           source_url: "https://example.com",
           uniform_pipeline: true,
+          status: "released",
         },
       ];
 

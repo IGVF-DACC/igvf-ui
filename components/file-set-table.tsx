@@ -12,14 +12,13 @@ import SortableGrid, { type SortableGridConfig } from "./sortable-grid";
 import { AliasesCell } from "./table-cells";
 // lib
 import { isFileObjectArray } from "../lib/files";
+import {
+  type ConcreteFileSetObject,
+  type FileSetObject,
+} from "../lib/file-sets";
 import { isEmbedded } from "../lib/types";
 // root
-import type {
-  CollectionTitles,
-  FileObject,
-  FileSetObject,
-  LabObject,
-} from "../globals";
+import type { CollectionTitles, FileObject, LabObject } from "../globals";
 
 /**
  * Used to pass metadata to the sortable grid for file set table rendering. `options` comes from
@@ -37,139 +36,154 @@ type FileSetMeta = {
 /**
  * Columns configuration for the file set sortable grid.
  */
-const fileSetColumns: SortableGridConfig<FileSetObject, FileSetMeta>[] = [
-  {
-    id: "accession",
-    title: "Accession",
-    display: ({ source }) => (
-      <LinkedIdAndStatus item={source}>{source.accession}</LinkedIdAndStatus>
-    ),
-  },
-  {
-    id: "file_set_type",
-    title: "File Set Type",
-    sorter: (item) => item.file_set_type.toLowerCase(),
-  },
-  {
-    id: "preferred_assay_titles",
-    title: "Preferred Assay Titles",
-    display: ({ source }) => {
-      if (source.preferred_assay_titles?.length > 0) {
-        const uniqueTitles = new Set(source.preferred_assay_titles);
-        const sortedTitles = _.sortBy(Array.from(uniqueTitles), [
-          (title) => title.toLowerCase(),
-        ]);
-        return <>{sortedTitles.join(", ")}</>;
-      }
-      return null;
+const fileSetColumns: SortableGridConfig<ConcreteFileSetObject, FileSetMeta>[] =
+  [
+    {
+      id: "accession",
+      title: "Accession",
+      display: ({ source }) => (
+        <LinkedIdAndStatus item={source}>{source.accession}</LinkedIdAndStatus>
+      ),
     },
-    isSortable: false,
-  },
-  {
-    id: "cell_type",
-    title: "Cell Type",
-    display: ({ source }) => {
-      const cellType = isEmbedded(source.cell_type) ? source.cell_type : null;
-      return cellType ? (
-        <Link href={cellType["@id"]}>{cellType.term_name}</Link>
-      ) : null;
+    {
+      id: "file_set_type",
+      title: "File Set Type",
+      sorter: (item) => item.file_set_type.toLowerCase(),
     },
-    sorter: (item) => {
-      const cellType = isEmbedded(item.cell_type) ? item.cell_type : null;
-      return cellType?.term_name.toLowerCase() || "\uffff";
+    {
+      id: "preferred_assay_titles",
+      title: "Preferred Assay Titles",
+      display: ({ source }) => {
+        if (
+          "preferred_assay_titles" in source &&
+          source.preferred_assay_titles?.length > 0
+        ) {
+          const uniqueTitles = new Set(source.preferred_assay_titles);
+          const sortedTitles = _.sortBy(Array.from(uniqueTitles), [
+            (title) => title.toLowerCase(),
+          ]);
+          return <>{sortedTitles.join(", ")}</>;
+        }
+        return null;
+      },
+      isSortable: false,
     },
-    hide: (data, columns, meta) => {
-      // Hide the column if the client didn't request it, or if they did but there are no cell
-      // types to display.
-      if (meta.options?.showCellColumns) {
-        const hasCellTypes = data.some((fileSet) => {
-          const cellType = isEmbedded(fileSet.cell_type)
-            ? fileSet.cell_type
+    {
+      id: "cell_type",
+      title: "Cell Type",
+      display: ({ source }) => {
+        const cellType =
+          "cell_type" in source && isEmbedded(source.cell_type)
+            ? source.cell_type
             : null;
-          return Boolean(cellType);
-        });
-        return !hasCellTypes;
-      }
-      return true;
+        return cellType ? (
+          <Link href={cellType["@id"]}>{cellType.term_name}</Link>
+        ) : null;
+      },
+      sorter: (item) => {
+        const cellType =
+          "cell_type" in item && isEmbedded(item.cell_type)
+            ? item.cell_type
+            : null;
+        return cellType?.term_name.toLowerCase() || "\uffff";
+      },
+      hide: (data, columns, meta) => {
+        // Hide the column if the client didn't request it, or if they did but there are no cell
+        // types to display.
+        if (meta.options?.showCellColumns) {
+          const hasCellTypes = data.some((fileSet) => {
+            const cellType =
+              "cell_type" in fileSet && isEmbedded(fileSet.cell_type)
+                ? fileSet.cell_type
+                : null;
+            return Boolean(cellType);
+          });
+          return !hasCellTypes;
+        }
+        return true;
+      },
     },
-  },
-  {
-    id: "cell_qualifier",
-    title: "Cell Qualifier",
-    sorter: (item) => item.cell_qualifier?.toLowerCase() || "\uffff",
-    hide: (data, columns, meta) => {
-      // Hide the column if the client didn't request it, or if they did but there are no cell
-      // qualifiers to display.
-      if (meta.options?.showCellColumns) {
-        const hasCellQualifiers = data.some(
-          (fileSet) =>
-            fileSet.cell_qualifier && fileSet.cell_qualifier.trim() !== ""
-        );
-        return !hasCellQualifiers;
-      }
-      return true;
+    {
+      id: "cell_qualifier",
+      title: "Cell Qualifier",
+      sorter: (item) =>
+        "cell_qualifier" in item && item.cell_qualifier
+          ? item.cell_qualifier.toLowerCase()
+          : "\uffff",
+      hide: (data, columns, meta) => {
+        // Hide the column if the client didn't request it, or if they did but there are no cell
+        // qualifiers to display.
+        if (meta.options?.showCellColumns) {
+          const hasCellQualifiers = data.some(
+            (fileSet) =>
+              "cell_qualifier" in fileSet &&
+              fileSet.cell_qualifier.trim() !== ""
+          );
+          return !hasCellQualifiers;
+        }
+        return true;
+      },
     },
-  },
-  {
-    id: "files",
-    title: "Files",
-    display: ({ source, meta }) => {
-      if (source.files && isFileObjectArray(source.files)) {
-        const files = meta.options?.fileFilter
-          ? meta.options.fileFilter(source.files)
-          : source.files;
-        return (
-          <SeparatedList>
-            {files.map((file) => (
-              <Link key={file["@id"]} href={file["@id"]}>
-                {file.accession}
-              </Link>
-            ))}
-          </SeparatedList>
-        );
-      }
-      return null;
+    {
+      id: "files",
+      title: "Files",
+      display: ({ source, meta }) => {
+        if (source.files && isFileObjectArray(source.files)) {
+          const files = meta.options?.fileFilter
+            ? meta.options.fileFilter(source.files)
+            : source.files;
+          return (
+            <SeparatedList>
+              {files.map((file) => (
+                <Link key={file["@id"]} href={file["@id"]}>
+                  {file.accession}
+                </Link>
+              ))}
+            </SeparatedList>
+          );
+        }
+        return null;
+      },
+      hide: (data, columns, meta) => {
+        if (meta.options?.showFileSetFiles) {
+          // Hide the column if the client didn't request it, or if they did but there are no files
+          // to display after filtering, if the client provided a filter function.
+          const allFiles = data.reduce<FileObject[]>((acc, fileSet) => {
+            if (fileSet.files && isFileObjectArray(fileSet.files)) {
+              return acc.concat(fileSet.files);
+            }
+            return acc;
+          }, []);
+          const filteredFiles = meta.options?.fileFilter
+            ? meta.options.fileFilter(allFiles)
+            : allFiles;
+          return filteredFiles.length === 0;
+        }
+        return true;
+      },
+      isSortable: false,
     },
-    hide: (data, columns, meta) => {
-      if (meta.options?.showFileSetFiles) {
-        // Hide the column if the client didn't request it, or if they did but there are no files
-        // to display after filtering, if the client provided a filter function.
-        const allFiles = data.reduce<FileObject[]>((acc, fileSet) => {
-          if (fileSet.files && isFileObjectArray(fileSet.files)) {
-            return acc.concat(fileSet.files);
-          }
-          return acc;
-        }, []);
-        const filteredFiles = meta.options?.fileFilter
-          ? meta.options.fileFilter(allFiles)
-          : allFiles;
-        return filteredFiles.length === 0;
-      }
-      return true;
+    {
+      id: "aliases",
+      title: "Aliases",
+      display: ({ source }) => <AliasesCell source={source} />,
     },
-    isSortable: false,
-  },
-  {
-    id: "aliases",
-    title: "Aliases",
-    display: ({ source }) => <AliasesCell source={source} />,
-  },
-  {
-    id: "lab",
-    title: "Lab",
-    display: ({ source }) => {
-      if (source.lab && typeof source.lab === "object") {
-        const lab = source.lab as LabObject;
-        return <>{lab.title}</>;
-      }
-      return null;
+    {
+      id: "lab",
+      title: "Lab",
+      display: ({ source }) => {
+        if (source.lab && typeof source.lab === "object") {
+          const lab = source.lab as LabObject;
+          return <>{lab.title}</>;
+        }
+        return null;
+      },
+      sorter: (item) => {
+        const lab = item.lab as LabObject | undefined;
+        return lab?.title ? lab.title.toLowerCase() : "";
+      },
     },
-    sorter: (item) => {
-      const lab = item.lab as LabObject | undefined;
-      return lab?.title ? lab.title.toLowerCase() : "";
-    },
-  },
-];
+  ];
 
 /**
  * Display a sortable table of the given file sets. Optionally display a link to a report page of
