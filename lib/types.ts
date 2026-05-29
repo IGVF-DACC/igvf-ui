@@ -36,7 +36,9 @@ export function isPathArray<T>(
   value: LinkTo<T>[] | undefined | null
 ): value is string[] {
   return (
-    Array.isArray(value) && value.every((item) => typeof item === "string")
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every((item) => typeof item === "string")
   );
 }
 

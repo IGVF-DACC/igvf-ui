@@ -86,6 +86,7 @@
       }
     ],
     "react-hooks/exhaustive-deps": "off",
+    "@next/next/no-img-element": "off", // Too many cases where we want to use <img> instead of Next's Image component
     "semi": ["error", "always"],
     "space-before-blocks": ["error", "always"],
     "space-before-function-paren": [

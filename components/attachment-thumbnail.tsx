@@ -9,18 +9,35 @@
 
 // node_modules
 import { Dialog } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
 import { useState } from "react";
 // components
 import CloseButton from "./close-button";
 // lib
-import { attachmentToServerHref } from "../lib/attachment";
+import {
+  attachmentToServerHref,
+  type AttachmentObject,
+  type MimeTypes,
+} from "../lib/attachment";
+
+/**
+ * Allowed keys for the thumbnail icons. Corresponds roughly to MIME types. Update this list as you
+ * add or remove thumbnail icons in the `thumbnailIcons` object below.
+ */
+type ThumbnailIconKey =
+  | "default"
+  | "autosql"
+  | "html"
+  | "json"
+  | "pdf"
+  | "svs"
+  | "tiff"
+  | "tsv"
+  | "txt";
 
 /**
  * Thumbnail icon SVGs.
  */
-const thumbnailIcons = {
+const thumbnailIcons: Record<ThumbnailIconKey, JSX.Element> = {
   default: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -442,7 +459,7 @@ const thumbnailIcons = {
  * Maps attachment types to thumbnail icons. Viewable image attachments have the string "image" here
  * to indicate that the attachment itself should appear as the thumbnail.
  */
-const thumbnailIconMap = {
+const thumbnailIconMap: Record<MimeTypes, JSX.Element | "image"> = {
   "application/json": thumbnailIcons.json,
   "application/pdf": thumbnailIcons.pdf,
   "image/gif": "image",
@@ -464,8 +481,23 @@ const DEFAULT_SIZE = 100;
 /**
  * Display an image thumbnail for an attachment that's viewable in the browser. When the user
  * clicks the thumbnail, display the attachment image preview as a modal overlay on the page.
+ *
+ * @param attachment - Attachment object to display
+ * @param ownerPath - Path of the object that owns the attachment (no protocol; no domain)
+ * @param alt - Alt text for the thumbnail image
+ * @param size - Size of the square thumbnail area in pixels
  */
-function ImageThumbnailAndPreview({ attachment, ownerPath, alt, size }) {
+function ImageThumbnailAndPreview({
+  attachment,
+  ownerPath,
+  alt,
+  size,
+}: {
+  attachment: AttachmentObject;
+  ownerPath: string;
+  alt: string;
+  size: number;
+}) {
   // True if the attachment image preview is visible.
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
@@ -499,9 +531,7 @@ function ImageThumbnailAndPreview({ attachment, ownerPath, alt, size }) {
             className="absolute top-1 right-1"
             onClick={() => setIsPreviewOpen(false)}
             label="Close the full-size preview image"
-          >
-            <XMarkIcon />
-          </CloseButton>
+          />
           <Dialog.Panel className="mx-auto inline-block max-w-3xl">
             <picture className="block border border-gray-200">
               <img
@@ -517,25 +547,24 @@ function ImageThumbnailAndPreview({ attachment, ownerPath, alt, size }) {
   );
 }
 
-ImageThumbnailAndPreview.propTypes = {
-  // The attachment to display
-  attachment: PropTypes.object.isRequired,
-  // The path to the owner of the attachment
-  ownerPath: PropTypes.string.isRequired,
-  // The alt text to use for the thumbnail image
-  alt: PropTypes.string.isRequired,
-  // Size of the thumbnail in pixels
-  size: PropTypes.number,
-};
-
 /**
  * Display the thumbnail for the given attachment.
+ *
+ * @param attachment - Attachment object to display
+ * @param ownerPath - Path of the object that owns the attachment (no protocol; no domain)
+ * @param alt - Alt text for the thumbnail image
+ * @param size - Size of the square thumbnail area in pixels
  */
 export default function AttachmentThumbnail({
   attachment,
   ownerPath,
   alt,
   size = DEFAULT_SIZE,
+}: {
+  attachment: AttachmentObject;
+  ownerPath: string;
+  alt: string;
+  size?: number;
 }) {
   const thumbnailIcon =
     thumbnailIconMap[attachment.type] || thumbnailIcons.default;
@@ -565,17 +594,3 @@ export default function AttachmentThumbnail({
     </a>
   );
 }
-
-AttachmentThumbnail.propTypes = {
-  // Attachment object to display
-  attachment: PropTypes.shape({
-    type: PropTypes.string.isRequired,
-    download: PropTypes.string.isRequired,
-  }).isRequired,
-  // Path of the object that owns the attachment (no protocol; no domain)
-  ownerPath: PropTypes.string.isRequired,
-  // Alt text for the preview
-  alt: PropTypes.string.isRequired,
-  // Size of the thumbnail in pixels
-  size: PropTypes.number,
-};

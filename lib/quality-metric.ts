@@ -1,11 +1,12 @@
 // node_modules
 import _ from "lodash";
 // lib
+import { type AttachmentObject } from "./attachment";
 import { truncateText } from "./general";
+import { type LinkTo } from "./types";
 // root
 import type {
   AnalysisStepVersionObject,
-  Attachment,
   DatabaseObject,
   FileObject,
 } from "../globals";
@@ -16,10 +17,10 @@ import type {
 const MAX_TITLE_LENGTH = 60;
 
 export interface QualityMetricObject extends DatabaseObject {
-  analysis_step_version: string | AnalysisStepVersionObject;
-  attachment?: Attachment;
+  analysis_step_version: LinkTo<AnalysisStepVersionObject>;
+  attachment?: AttachmentObject;
   description?: string;
-  quality_metric_of: string[] | FileObject[];
+  quality_metric_of: LinkTo<FileObject>[];
   summary?: string;
 }
 
@@ -48,11 +49,10 @@ export interface PerturbSeqQualityMetricObject extends QualityMetricObject {
   total_targets?: number;
 }
 
-export interface SingleCellAtacSeqQualityMetricObject
-  extends QualityMetricObject {
-  atac_bam_summary_stats?: Attachment;
-  atac_fragment_summary_stats?: Attachment;
-  atac_fragments_alignment_stats?: Attachment;
+export interface SingleCellAtacSeqQualityMetricObject extends QualityMetricObject {
+  atac_bam_summary_stats?: AttachmentObject;
+  atac_fragment_summary_stats?: AttachmentObject;
+  atac_fragments_alignment_stats?: AttachmentObject;
   multi_mappings?: number;
   n_barcodes_on_onlist?: number;
   n_candidates?: number;
@@ -70,8 +70,7 @@ export interface SingleCellAtacSeqQualityMetricObject
   uni_mappings?: number;
 }
 
-export interface SingleCellRnaSeqQualityMetricObject
-  extends QualityMetricObject {
+export interface SingleCellRnaSeqQualityMetricObject extends QualityMetricObject {
   gt_records?: number;
   index_version?: number;
   kmer_length?: number;
@@ -94,7 +93,7 @@ export interface SingleCellRnaSeqQualityMetricObject
   p_unique?: number;
   percentage_barcodes_on_onlist?: number;
   percentage_reads_on_onlist?: number;
-  rnaseq_kb_info?: Attachment;
+  rnaseq_kb_info?: AttachmentObject;
   total_umis?: number;
 }
 

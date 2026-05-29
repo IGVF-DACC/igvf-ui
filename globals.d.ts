@@ -1,3 +1,4 @@
+import { type AttachmentObject } from "./lib/attachment";
 import { type FileSetObject } from "./lib/file-sets";
 import { type GeneLocation } from "./lib/genes";
 import { type QualityMetricObject } from "./lib/quality-metric";
@@ -608,34 +609,11 @@ export type UserActionObject = {
   notSubmittable: boolean;
 };
 
-export type MimeType =
-  | "application/json"
-  | "application/pdf"
-  | "image/gif"
-  | "image/jpeg"
-  | "image/png"
-  | "image/svs"
-  | "image/tiff"
-  | "text/autosql"
-  | "text/html"
-  | "text/plain"
-  | "text/tab-separated-values";
-
-export type Attachment = {
-  download: string;
-  href: string;
-  type: MimeType;
-  md5sum?: string;
-  size?: number;
-  width?: number;
-  height?: number;
-};
-
 /**
  * Data structure common to all document object types.
  */
 export interface DocumentObject extends DatabaseObject {
-  attachment: Attachment;
+  attachment: AttachmentObject;
   characterization_method?: string;
   description: string;
   document_type?: string;

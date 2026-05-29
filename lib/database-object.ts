@@ -4,7 +4,7 @@ import { type FileSetObject } from "./file-sets";
 import { type SampleObject } from "./samples";
 import { isPathArray } from "./types";
 // root
-import {
+import type {
   AnalysisStepObject,
   AnalysisStepVersionObject,
   AwardObject,

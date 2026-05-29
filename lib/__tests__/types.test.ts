@@ -45,6 +45,10 @@ describe("LinkTo type guards", () => {
         false
       );
     });
+
+    it("should return false for empty arrays", () => {
+      expect(isPathArray([])).toBe(false);
+    });
   });
 
   describe("isEmbedded", () => {
