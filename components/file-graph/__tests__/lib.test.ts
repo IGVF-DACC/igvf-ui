@@ -1584,6 +1584,10 @@ describe("generateSVGContent", () => {
     };
   }
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("should return undefined when ReactFlow renderer is not found", () => {
     const consoleSpy = jest
       .spyOn(console, "error")
@@ -1795,7 +1799,11 @@ describe("generateSVGContent", () => {
 
   it("should include file set nodes with rounded corners", () => {
     const mockFileSetNode = createMockElement("div");
-    mockFileSetNode.style = { transform: "translate(50px, 100px)" };
+    mockFileSetNode.style = {
+      transform: "translate(50px, 100px)",
+      width: "156px",
+      height: "60px",
+    };
 
     const mockFileSetSvg = createMockElement("svg");
     mockFileSetSvg.getAttribute = jest.fn().mockImplementation((attr) => {
@@ -1849,9 +1857,74 @@ describe("generateSVGContent", () => {
     expect(result).toContain(`rx="${NODE_HEIGHT / 2}"`);
   });
 
+  it("should use rendered dimensions for file set nodes", () => {
+    const mockFileSetNode = createMockElement("div");
+    mockFileSetNode.style = {
+      transform: "translate(50px, 100px)",
+      width: "156px",
+      height: "60px",
+    };
+
+    const mockFileSetSvg = createMockElement("svg");
+    mockFileSetSvg.getAttribute = jest.fn().mockImplementation((attr) => {
+      if (attr === "data-fileset-type") {
+        return "measurement";
+      }
+      return null;
+    });
+    mockFileSetSvg.hasAttribute = jest.fn().mockImplementation((attr) => {
+      return attr === "data-fileset-type";
+    });
+    mockFileSetSvg.innerHTML = "<text>Measurement FileSet</text>";
+
+    mockFileSetNode.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === "svg") {
+        return mockFileSetSvg;
+      }
+      return null;
+    });
+
+    const mockRenderer = createMockElement("div");
+    mockRenderer.querySelectorAll = jest.fn().mockImplementation((selector) => {
+      if (selector === "[data-id]") {
+        return [mockFileSetNode];
+      }
+      if (selector === ".react-flow__edge path") {
+        return [];
+      }
+      if (selector === ".react-flow__edge polygon") {
+        return [];
+      }
+      return [];
+    });
+    mockRenderer.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === ".react-flow__viewport") {
+        return createMockElement("div");
+      }
+      return null;
+    });
+
+    const mockContainer = createMockElement("div");
+    mockContainer.querySelector = jest.fn().mockReturnValue(mockRenderer);
+
+    jest
+      .spyOn(document, "getElementById")
+      .mockReturnValue(mockContainer as any);
+
+    const result = generateSVGContent("test-graph-id");
+
+    expect(result).toContain('width="156"');
+    expect(result).toContain('height="60"');
+    expect(result).toContain('rx="30"');
+  });
+
   it("should handle file set nodes with unknown type", () => {
     const mockFileSetNode = createMockElement("div");
-    mockFileSetNode.style = { transform: "translate(0px, 0px)" };
+    mockFileSetNode.style = {
+      transform: "translate(0px, 0px)",
+      width: "156px",
+      height: "60px",
+    };
 
     const mockFileSetSvg = createMockElement("svg");
     mockFileSetSvg.getAttribute = jest.fn().mockImplementation((attr) => {
@@ -1907,7 +1980,11 @@ describe("generateSVGContent", () => {
 
   it("should handle file set nodes without data-fileset-type attribute", () => {
     const mockFileSetNode = createMockElement("div");
-    mockFileSetNode.style = { transform: "translate(0px, 0px)" };
+    mockFileSetNode.style = {
+      transform: "translate(0px, 0px)",
+      width: "156px",
+      height: "60px",
+    };
 
     const mockFileSetSvg = createMockElement("svg");
     mockFileSetSvg.getAttribute = jest.fn().mockReturnValue(""); // Empty data-fileset-type
@@ -2200,6 +2277,261 @@ describe("generateSVGContent", () => {
 
     // Unknown variable falls back to the original when colorVariableToColorHex returns falsy.
     expect(result).toContain('fill="var(--color-unknown-variable)"');
+  });
+
+  it("should render group nodes behind edges and regular nodes in SVG output", () => {
+    const mockGroupNode = createMockElement("div");
+    mockGroupNode.style = {
+      transform: "translate(5px, 10px)",
+      width: "300px",
+      height: "180px",
+    };
+
+    const mockGroupSvg = createMockElement("svg");
+    mockGroupSvg.hasAttribute = jest.fn().mockImplementation((attr) => {
+      return attr === "data-group-node";
+    });
+    mockGroupSvg.innerHTML = "";
+    mockGroupNode.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === "svg") {
+        return mockGroupSvg;
+      }
+      return null;
+    });
+
+    const mockFileNode = createMockElement("div");
+    mockFileNode.style = { transform: "translate(50px, 60px)" };
+    const mockFileSvg = createMockElement("svg");
+    mockFileSvg.innerHTML = "<text>Regular Node</text>";
+    mockFileNode.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === "svg") {
+        return mockFileSvg;
+      }
+      return null;
+    });
+
+    const mockPath = createMockElement("path");
+    mockPath.getAttribute = jest.fn().mockImplementation((attr) => {
+      if (attr === "d") {
+        return "M0,0 L100,100";
+      }
+      if (attr === "stroke") {
+        return "#000000";
+      }
+      return null;
+    });
+
+    const mockRenderer = createMockElement("div");
+    mockRenderer.querySelectorAll = jest.fn().mockImplementation((selector) => {
+      if (selector === "[data-id]") {
+        return [mockGroupNode, mockFileNode];
+      }
+      if (selector === ".react-flow__edge path") {
+        return [mockPath];
+      }
+      if (selector === ".react-flow__edge polygon") {
+        return [];
+      }
+      return [];
+    });
+    mockRenderer.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === ".react-flow__viewport") {
+        return createMockElement("div");
+      }
+      return null;
+    });
+
+    const mockContainer = createMockElement("div");
+    mockContainer.querySelector = jest.fn().mockReturnValue(mockRenderer);
+
+    jest
+      .spyOn(document, "getElementById")
+      .mockReturnValue(mockContainer as any);
+
+    const result = generateSVGContent("test-graph-id") as string;
+
+    const groupIndex = result.indexOf('transform="translate(5, 10)"');
+    const edgeIndex = result.indexOf('<path d="M0,0 L100,100"');
+    const regularNodeIndex = result.indexOf("Regular Node");
+
+    expect(groupIndex).toBeGreaterThan(-1);
+    expect(edgeIndex).toBeGreaterThan(-1);
+    expect(regularNodeIndex).toBeGreaterThan(-1);
+    expect(groupIndex).toBeLessThan(edgeIndex);
+    expect(edgeIndex).toBeLessThan(regularNodeIndex);
+    expect(result).toContain('width="300"');
+    expect(result).toContain('height="180"');
+  });
+
+  it("should use computedStyle size for real group node elements", () => {
+    const realGroupNode = document.createElement("div");
+    realGroupNode.style.transform = "translate(1px, 2px)";
+
+    const realGroupSvg = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg"
+    );
+    realGroupSvg.setAttribute("data-group-node", "true");
+    realGroupNode.appendChild(realGroupSvg);
+
+    const computedStyleSpy = jest
+      .spyOn(window, "getComputedStyle")
+      .mockReturnValue({
+        width: "321px",
+        height: "123px",
+      } as CSSStyleDeclaration);
+
+    const mockRenderer = createMockElement("div");
+    mockRenderer.querySelectorAll = jest.fn().mockImplementation((selector) => {
+      if (selector === "[data-id]") {
+        return [realGroupNode];
+      }
+      if (selector === ".react-flow__edge path") {
+        return [];
+      }
+      if (selector === ".react-flow__edge polygon") {
+        return [];
+      }
+      return [];
+    });
+    mockRenderer.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === ".react-flow__viewport") {
+        return createMockElement("div");
+      }
+      return null;
+    });
+
+    const mockContainer = createMockElement("div");
+    mockContainer.querySelector = jest.fn().mockReturnValue(mockRenderer);
+
+    jest
+      .spyOn(document, "getElementById")
+      .mockReturnValue(mockContainer as any);
+
+    const result = generateSVGContent("test-graph-id");
+
+    expect(result).toContain('width="321"');
+    expect(result).toContain('height="123"');
+    computedStyleSpy.mockRestore();
+  });
+
+  it("should fall back to boundingClientRect size for group nodes", () => {
+    const realGroupNode = document.createElement("div");
+    realGroupNode.style.transform = "translate(3px, 4px)";
+    jest.spyOn(realGroupNode, "getBoundingClientRect").mockReturnValue({
+      width: 444,
+      height: 222,
+      x: 0,
+      y: 0,
+      top: 0,
+      right: 444,
+      bottom: 222,
+      left: 0,
+      toJSON: () => ({}),
+    });
+
+    const realGroupSvg = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "svg"
+    );
+    realGroupSvg.setAttribute("data-group-node", "true");
+    realGroupNode.appendChild(realGroupSvg);
+
+    const computedStyleSpy = jest
+      .spyOn(window, "getComputedStyle")
+      .mockReturnValue({ width: "", height: "" } as CSSStyleDeclaration);
+
+    const mockRenderer = createMockElement("div");
+    mockRenderer.querySelectorAll = jest.fn().mockImplementation((selector) => {
+      if (selector === "[data-id]") {
+        return [realGroupNode];
+      }
+      if (selector === ".react-flow__edge path") {
+        return [];
+      }
+      if (selector === ".react-flow__edge polygon") {
+        return [];
+      }
+      return [];
+    });
+    mockRenderer.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === ".react-flow__viewport") {
+        return createMockElement("div");
+      }
+      return null;
+    });
+
+    const mockContainer = createMockElement("div");
+    mockContainer.querySelector = jest.fn().mockReturnValue(mockRenderer);
+
+    jest
+      .spyOn(document, "getElementById")
+      .mockReturnValue(mockContainer as any);
+
+    const result = generateSVGContent("test-graph-id");
+
+    expect(result).toContain('width="444"');
+    expect(result).toContain('height="222"');
+    computedStyleSpy.mockRestore();
+  });
+
+  it("should fall back to default group size when style, computedStyle, and rect dimensions are zero", () => {
+    const mockGroupNode = createMockElement("div");
+    mockGroupNode.style = { transform: "translate(7px, 8px)" };
+    mockGroupNode.getBoundingClientRect = jest.fn().mockReturnValue({
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      toJSON: () => ({}),
+    });
+
+    const mockGroupSvg = createMockElement("svg");
+    mockGroupSvg.hasAttribute = jest.fn().mockImplementation((attr) => {
+      return attr === "data-group-node";
+    });
+    mockGroupNode.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === "svg") {
+        return mockGroupSvg;
+      }
+      return null;
+    });
+
+    const mockRenderer = createMockElement("div");
+    mockRenderer.querySelectorAll = jest.fn().mockImplementation((selector) => {
+      if (selector === "[data-id]") {
+        return [mockGroupNode];
+      }
+      if (selector === ".react-flow__edge path") {
+        return [];
+      }
+      if (selector === ".react-flow__edge polygon") {
+        return [];
+      }
+      return [];
+    });
+    mockRenderer.querySelector = jest.fn().mockImplementation((selector) => {
+      if (selector === ".react-flow__viewport") {
+        return createMockElement("div");
+      }
+      return null;
+    });
+
+    const mockContainer = createMockElement("div");
+    mockContainer.querySelector = jest.fn().mockReturnValue(mockRenderer);
+
+    jest
+      .spyOn(document, "getElementById")
+      .mockReturnValue(mockContainer as any);
+
+    const result = generateSVGContent("test-graph-id");
+
+    expect(result).toContain(`width="${NODE_WIDTH - 2}"`);
+    expect(result).toContain(`height="${NODE_HEIGHT - 2}"`);
   });
 });
 

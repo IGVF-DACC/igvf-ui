@@ -13,6 +13,7 @@ import { groupingPipelineRunner, type GroupNodeMap } from "./grouping-pipeline";
 import {
   fileSetTypeColorMap,
   fileTypeColorMap,
+  groupTypeColorMap,
   isFileSetNodeMetadata,
   isGroupNodeMetadata,
   NODE_KINDS,
@@ -50,6 +51,48 @@ const HASH_SEED = 0xe8c0f852;
  * Padding (in pixels) added around SVG export content for visual spacing.
  */
 const SVG_CONTENT_PADDING = 5;
+
+/**
+ * Resolve rendered node dimensions so exported geometry matches the browser rendering.
+ *
+ * @param nodeElement - The HTML element of the node to get dimensions for
+ * @param fallbackWidth - Fallback width to use if rendered dimensions resolve to 0
+ * @param fallbackHeight - Fallback height to use if rendered dimensions resolve to 0
+ * @return Object containing the resolved width and height for the node
+ */
+function getRenderedNodeSize(
+  nodeElement: HTMLElement,
+  fallbackWidth: number,
+  fallbackHeight: number
+): { width: number; height: number } {
+  // Try to get dimensions from the node's inline styles first, as these are most likely to reflect
+  // the actual rendered size.
+  const styleWidth = parseFloat(nodeElement.style?.width || "");
+  const styleHeight = parseFloat(nodeElement.style?.height || "");
+  if (styleWidth && styleHeight) {
+    return { width: styleWidth, height: styleHeight };
+  }
+
+  // If inline styles don't provide valid dimensions, try to get computed styles. This is a more
+  // expensive operation, but it can capture dimensions set by CSS classes.
+  if (nodeElement instanceof Element) {
+    const computedStyle = getComputedStyle(nodeElement);
+    const computedWidth = parseFloat(computedStyle.width) || 0;
+    const computedHeight = parseFloat(computedStyle.height) || 0;
+    if (computedWidth && computedHeight) {
+      return { width: computedWidth, height: computedHeight };
+    }
+  }
+
+  // If computed styles don't provide valid dimensions, use the bounding client rect. This is a
+  // last resort because it can be affected by transforms.
+  const rect = nodeElement.getBoundingClientRect();
+  if (rect.width && rect.height) {
+    return { width: rect.width, height: rect.height };
+  }
+
+  return { width: fallbackWidth, height: fallbackHeight };
+}
 
 /**
  * Static root node of ELK graph.
@@ -728,34 +771,11 @@ export function generateSVGContent(graphId: string): string | undefined {
   const height = contentHeight + SVG_CONTENT_PADDING * 2;
 
   // Generate SVG header with calculated dimensions and viewBox starting at negative padding.
-  let svgContent = `<?xml version="1.0" encoding="UTF-8"?><svg width="${width}px" height="${height}px" viewBox="${-SVG_CONTENT_PADDING} ${-SVG_CONTENT_PADDING} ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+  const svgHeader = `<?xml version="1.0" encoding="UTF-8"?><svg width="${width}px" height="${height}px" viewBox="${-SVG_CONTENT_PADDING} ${-SVG_CONTENT_PADDING} ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
 
-  // Add edge paths to the accumulating SVG text.
-  const edgePathElements = reactFlowRenderer.querySelectorAll(
-    ".react-flow__edge path"
-  );
-  const edgePathElementArray = Array.from(edgePathElements);
-  svgContent += edgePathElementArray.reduce((acc, pathElement) => {
-    const d = pathElement.getAttribute("d");
-    const stroke = pathElement.getAttribute("stroke") || "#6b7280";
-    const strokeWidth = pathElement.getAttribute("stroke-width") || "1";
-    return d
-      ? `${acc} <path d="${d}" stroke="${stroke}" stroke-width="${strokeWidth}" fill="none"/>\n`
-      : acc;
-  }, "");
-
-  // Add arrowheads to the accumulating SVG text.
-  const edgeArrowheadElements = reactFlowRenderer.querySelectorAll(
-    ".react-flow__edge polygon"
-  );
-  const edgeArrowheadElementArray = Array.from(edgeArrowheadElements);
-  svgContent += edgeArrowheadElementArray.reduce((acc, polygonElement) => {
-    const points = polygonElement.getAttribute("points");
-    const fill = "#6b7280";
-    return points
-      ? `${acc}  <polygon points="${points}" fill="${fill}"/>\n`
-      : acc;
-  }, "");
+  // Build node layers separately so group nodes can be painted behind edges and regular nodes.
+  let groupNodeLayer = "";
+  let regularNodeLayer = "";
 
   // Add nodes by copying the rendered SVG node elements from the DOM.
   const nodeElements = reactFlowRenderer.querySelectorAll("[data-id]");
@@ -771,8 +791,10 @@ export function generateSVGContent(graphId: string): string | undefined {
     const x = match ? parseFloat(match[1]) : 0;
     const y = match ? parseFloat(match[2]) : 0;
 
-    // Check if this is a file set node by looking for the data attribute.
+    // Check node kind markers on rendered SVG roots.
     const isFileSetNode = svgElement.hasAttribute("data-fileset-type");
+    const isGroupNode =
+      !isFileSetNode && svgElement.hasAttribute("data-group-node");
 
     // Determine colors based on node type.
     let nodeColors;
@@ -780,6 +802,8 @@ export function generateSVGContent(graphId: string): string | undefined {
       const fileSetType = svgElement.getAttribute("data-fileset-type") || "";
       nodeColors =
         fileSetTypeColorMap[fileSetType] || fileSetTypeColorMap.unknown;
+    } else if (isGroupNode) {
+      nodeColors = groupTypeColorMap;
     } else {
       nodeColors = fileTypeColorMap;
     }
@@ -798,13 +822,64 @@ export function generateSVGContent(graphId: string): string | undefined {
       return colorVariableToColorHex(colorVar) || colorVar;
     });
 
-    // Add background rect and content.
-    const cleanSvg = isFileSetNode
-      ? `<rect x="0" y="0" width="${NODE_WIDTH - 2}" height="${NODE_HEIGHT - 2}" rx="${NODE_HEIGHT / 2}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>${svgContentInner}`
-      : `<rect x="0" y="0" width="${NODE_WIDTH - 2}" height="${NODE_HEIGHT - 2}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>${svgContentInner}`;
+    const nodeElementAsHtml = nodeElement as HTMLElement;
+    const { width: renderedNodeWidth, height: renderedNodeHeight } =
+      getRenderedNodeSize(nodeElementAsHtml, NODE_WIDTH - 2, NODE_HEIGHT - 2);
 
-    svgContent += `  <g transform="translate(${x}, ${y})">${cleanSvg}</g>\n`;
+    // Add background rect and content.
+    let cleanSvg = "";
+    if (isGroupNode) {
+      cleanSvg = `<rect x="0" y="0" width="${renderedNodeWidth}" height="${renderedNodeHeight}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>`;
+    } else if (isFileSetNode) {
+      cleanSvg = `<rect x="0" y="0" width="${renderedNodeWidth}" height="${renderedNodeHeight}" rx="${renderedNodeHeight / 2}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>${svgContentInner}`;
+    } else {
+      cleanSvg = `<rect x="0" y="0" width="${renderedNodeWidth}" height="${renderedNodeHeight}" fill="${nodeColors.bgColor}" stroke="${nodeColors.borderColor}" stroke-width="1"/>${svgContentInner}`;
+    }
+
+    const nodeSvg = `  <g transform="translate(${x}, ${y})">${cleanSvg}</g>\n`;
+    if (isGroupNode) {
+      groupNodeLayer += nodeSvg;
+    } else {
+      regularNodeLayer += nodeSvg;
+    }
   });
+
+  // Add edge paths.
+  const edgePathElements = reactFlowRenderer.querySelectorAll(
+    ".react-flow__edge path"
+  );
+  const edgePathElementArray = Array.from(edgePathElements);
+  const edgePathLayer = edgePathElementArray.reduce((acc, pathElement) => {
+    const d = pathElement.getAttribute("d");
+    const stroke = pathElement.getAttribute("stroke") || "#6b7280";
+    const strokeWidth = pathElement.getAttribute("stroke-width") || "1";
+    return d
+      ? `${acc} <path d="${d}" stroke="${stroke}" stroke-width="${strokeWidth}" fill="none"/>\n`
+      : acc;
+  }, "");
+
+  // Add arrowheads.
+  const edgeArrowheadElements = reactFlowRenderer.querySelectorAll(
+    ".react-flow__edge polygon"
+  );
+  const edgeArrowheadElementArray = Array.from(edgeArrowheadElements);
+  const edgeArrowheadLayer = edgeArrowheadElementArray.reduce(
+    (acc, polygonElement) => {
+      const points = polygonElement.getAttribute("points");
+      const fill = "#6b7280";
+      return points
+        ? `${acc}  <polygon points="${points}" fill="${fill}"/>\n`
+        : acc;
+    },
+    ""
+  );
+
+  let svgContent =
+    svgHeader +
+    groupNodeLayer +
+    edgePathLayer +
+    edgeArrowheadLayer +
+    regularNodeLayer;
 
   // Close the SVG element. We now have the entire SVG to download as a string.
   svgContent += "</svg>";
