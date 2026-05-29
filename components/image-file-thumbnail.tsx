@@ -156,10 +156,10 @@ export function ImageFileThumbnailAndPreview({
             onClick={() => setIsPreviewOpen(false)}
             label="Close the full-size preview image"
           />
-          <Dialog.Panel className="mx-auto inline-block max-w-3xl">
-            <picture className="block border border-gray-200">
+          <Dialog.Panel className="mx-auto w-full max-w-5xl">
+            <picture className="flex max-h-[calc(100vh-4rem)] w-full items-center justify-center border border-gray-200 bg-white">
               <img
-                className="border-data-border block h-full w-full border"
+                className="border-data-border block max-h-[calc(100vh-4rem)] w-auto max-w-full border object-contain"
                 src={url}
                 alt={alt}
                 onError={handleImageError}
