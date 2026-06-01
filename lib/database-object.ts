@@ -1,8 +1,10 @@
 // lib
 import { isErrorObject } from "./fetch-request";
 import { type FileSetObject } from "./file-sets";
+import { type OntologyTermObject } from "./ontology-terms";
 import { type SampleObject } from "./samples";
 import { isPathArray } from "./types";
+import { type WorkflowObject } from "./workflow";
 // root
 import type {
   AnalysisStepObject,
@@ -15,7 +17,6 @@ import type {
   GeneObject,
   HumanDonorObject,
   LabObject,
-  OntologyTermObject,
   PageObject,
   PublicationObject,
   SoftwareObject,
@@ -45,6 +46,7 @@ type DatabaseTypeMap = {
   Software: SoftwareObject;
   SoftwareVersion: SoftwareVersionObject;
   User: UserObject;
+  Workflow: WorkflowObject;
 };
 
 /**

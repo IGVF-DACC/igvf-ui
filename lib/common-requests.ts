@@ -8,8 +8,13 @@ import { trimDeprecatedFiles } from "./deprecated-files";
 import FetchRequest from "./fetch-request";
 import { type FileSetObject } from "./file-sets";
 import { type DatasetSummary } from "./home";
+import { type OntologyTermObject } from "./ontology-terms";
 import { type QualityMetricObject } from "./quality-metric";
-import { type BiosampleObject, type SampleObject } from "./samples";
+import {
+  type BiosampleObject,
+  type MultiplexedSampleObject,
+  type SampleObject,
+} from "./samples";
 import { type WorkflowObject } from "./workflow";
 // root
 import type {
@@ -23,7 +28,6 @@ import type {
   FileObject,
   GeneObject,
   LabObject,
-  OntologyTermObject,
   PageObject,
   PhenotypicFeatureObject,
   PublicationObject,
@@ -413,7 +417,7 @@ export async function requestOntologyTerms(
   return (
     await request.getMultipleObjectsBulk<OntologyTermObject>(
       paths,
-      ["term_id", "term_name"],
+      ["definition", "term_id", "term_name"],
       ["OntologyTerm"]
     )
   ).unwrap_or([]);
@@ -783,9 +787,9 @@ export async function requestSupersedes<T extends DatabaseObject>(
 }
 
 /**
- * Request the barcode_map tabular files for a given set of samples. You can optionally exclude
- * files with deleted or deprecated status by setting the `exclude` parameter to "deleted" or
- * "deprecated", respectively. By default, no files get excluded based on status.
+ * Request the barcode_map tabular files for a given set of multiplexed samples. You can optionally
+ * exclude files with deleted or deprecated status by setting the `exclude` parameter to "deleted"
+ * or "deprecated", respectively. By default, no files get excluded based on status.
  *
  * @param samples - Samples from which to request barcode_map tabular files
  * @param request - Request object to use to make the request
@@ -793,7 +797,7 @@ export async function requestSupersedes<T extends DatabaseObject>(
  * @returns Requested barcode_map tabular files, or an empty array if none found
  */
 export async function requestSampleBarcodeMaps(
-  samples: SampleObject[],
+  samples: MultiplexedSampleObject[],
   request: FetchRequest,
   exclude: "deleted" | "deprecated" | "none" = "none"
 ): Promise<FileObject[]> {

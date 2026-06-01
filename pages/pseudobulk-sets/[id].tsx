@@ -4,7 +4,6 @@ import { useContext, useEffect, useState } from "react";
 // components
 import AliasList from "../../components/alias-list";
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
-import { AnnotatedValue } from "../../components/annotated-value";
 import Attribution from "../../components/attribution";
 import { BatchDownloadFileSet } from "../../components/batch-download-fileset";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -31,6 +30,7 @@ import JsonDisplay from "../../components/json-display";
 import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { SampleAnnotatedSummary } from "../../components/sample-annotated-summary";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SessionContext from "../../components/session-context";
@@ -65,8 +65,11 @@ import { type PageProps } from "../../lib/next-js";
 import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
+  type SampleTermObject,
 } from "../../lib/ontology-terms";
+import { QualityMetricObject } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
+import { getSamplesTerms, type SampleObject } from "../../lib/samples";
 import { isEmbedded, isPathArray } from "../../lib/types";
 // root
 import type {
@@ -75,8 +78,6 @@ import type {
   FileObject,
   PublicationObject,
 } from "../../globals";
-import { SampleObject } from "../../lib/samples";
-import { QualityMetricObject } from "../../lib/quality-metric";
 
 /**
  * Props for the pseudobulk set page component. This includes the pseudobulk set object itself, as well
@@ -97,6 +98,7 @@ interface ThisPageProps extends PageProps {
   controlFor: FileSetObject[];
   constructLibrarySets: FileSetObject[];
   samples: SampleObject[];
+  samplesTerms: SampleTermObject[];
   donors: DonorObject[];
   qualityMetrics: QualityMetricObject[];
   assayTitleDescriptionMap: Record<string, string>;
@@ -124,6 +126,7 @@ export default function PseudobulkSet({
   controlFor,
   constructLibrarySets,
   samples,
+  samplesTerms,
   donors,
   qualityMetrics,
   assayTitleDescriptionMap,
@@ -136,6 +139,11 @@ export default function PseudobulkSet({
   const { profiles } = useContext(SessionContext);
   const preferredAssayTitleDescriptionMap =
     getPreferredAssayTitleDescriptionMap(profiles);
+
+  // Combine all sample-associated terms to pass to the SampleAnnotatedSummary component, ensuring that if the pseudobulk set has a cell type, it is included as a term (since the cell annotation may reference the cell type), along with all terms from the samples.
+  const allSampleTerms = isEmbedded(pseudobulkSet.cell_type)
+    ? [pseudobulkSet.cell_type, ...samplesTerms]
+    : samplesTerms;
 
   // State for whether to include deprecated files in the file table and graph.
   const [areDeprecatedFilesVisible, setAreDeprecatedFilesVisible] = useState(
@@ -222,32 +230,27 @@ export default function PseudobulkSet({
                     </DataItemValueAnnotated>
                   </>
                 )}
-              {pseudobulkSet.cell_type &&
-                isEmbedded(pseudobulkSet.cell_type) && (
-                  <>
-                    <DataItemLabel>Cell Annotation</DataItemLabel>
-                    <DataItemValue>
-                      {pseudobulkSet.cell_qualifier && (
-                        <>{pseudobulkSet.cell_qualifier} </>
-                      )}
-                      <AnnotatedValue
-                        externalAnnotations={{
-                          [pseudobulkSet.cell_type.term_name]:
-                            pseudobulkSet.cell_type.definition || "",
-                        }}
-                      >
-                        {pseudobulkSet.cell_type.term_name}
-                      </AnnotatedValue>
-                    </DataItemValue>
-
-                    <DataItemLabel>Cell Ontology ID</DataItemLabel>
-                    <DataItemValue>
-                      <Link href={pseudobulkSet.cell_type["@id"]}>
-                        {pseudobulkSet.cell_type.term_id}
-                      </Link>
-                    </DataItemValue>
-                  </>
-                )}
+              {pseudobulkSet.cell_annotation && (
+                <>
+                  <DataItemLabel>Cell Annotation</DataItemLabel>
+                  <DataItemValue>
+                    <SampleAnnotatedSummary
+                      summary={pseudobulkSet.cell_annotation}
+                      terms={allSampleTerms}
+                    />
+                  </DataItemValue>
+                </>
+              )}
+              {isEmbedded(pseudobulkSet.cell_type) && (
+                <>
+                  <DataItemLabel>Cell Ontology ID</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={pseudobulkSet.cell_type["@id"]}>
+                      {pseudobulkSet.cell_type.term_id}
+                    </Link>
+                  </DataItemValue>
+                </>
+              )}
               {referenceFiles.length > 0 && (
                 <>
                   <DataItemLabel>Reference Files</DataItemLabel>
@@ -420,6 +423,7 @@ export async function getServerSideProps({
     const combinedFiles = files.concat(derivedFromFiles);
     const fileFileSets = await getFilesFileSets(combinedFiles, request);
     const samples = await requestFileSetSamples([pseudobulkSet], request);
+    const samplesTerms = await getSamplesTerms(samples, request);
     const donors = await requestFileSetDonors(pseudobulkSet, request);
     const publications = await requestFileSetPublications(
       pseudobulkSet,
@@ -488,6 +492,7 @@ export async function getServerSideProps({
         constructLibrarySets,
         controlFor,
         samples,
+        samplesTerms,
         donors,
         qualityMetrics,
         assayTitleDescriptionMap,

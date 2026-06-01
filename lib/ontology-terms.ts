@@ -2,26 +2,61 @@
 import FetchRequest from "./fetch-request";
 import { extractSchema } from "./profiles";
 import { isFileSetObjectType, type FileSetObject } from "./file-sets";
+import { type LinkToArray } from "./types";
 // root
-import { DatabaseObject, OntologyTermObject, Profiles } from "../globals";
+import { DatabaseObject, Profiles } from "../globals";
 
-export interface AssayTermObject extends DatabaseObject {
+/**
+ * Base interface for ontology term objects.
+ */
+export interface OntologyTermObject extends DatabaseObject {
+  aliases?: string[];
   ancestors?: string[];
-  assay_slims?: string[];
-  category_slims?: string[];
   comments?: string[];
   definition?: string;
   deprecated_ntr_terms?: string[];
   description?: string;
-  is_a?: string[] | DatabaseObject[];
-  name?: string;
-  notes?: string[];
-  objective_slims?: string[];
+  is_a?: LinkToArray<OntologyTermObject>;
+  notes?: string;
   ontology?: string;
-  preferred_assay_titles?: string[];
+  summary?: string;
   synonyms?: string[];
   term_id: string;
   term_name: string;
+}
+
+/**
+ * Interface for assay term objects, which have an @type of `AssayTerm`.
+ */
+export interface AssayTermObject extends OntologyTermObject {
+  assay_slims?: string[];
+  category_slims?: string[];
+  objective_slims?: string[];
+  preferred_assay_titles?: string[];
+}
+
+/**
+ * Interface for phenotype term objects, which have an @type of `PhenotypeTerm`.
+ */
+export interface PhenotypeTermObject extends OntologyTermObject {}
+
+/**
+ * Interface for platform term objects, which have an @type of `PlatformTerm`.
+ */
+export interface PlatformTermObject extends OntologyTermObject {
+  company?: string;
+  sequencing_kits?: string[];
+}
+
+/**
+ * Interface for sample term objects, which have an @type of `SampleTerm`.
+ */
+export interface SampleTermObject extends OntologyTermObject {
+  cell_slims?: string[];
+  dbxrefs?: string[];
+  developmental_slims?: string[];
+  organ_slims?: string[];
+  system_slims?: string[];
 }
 
 /**

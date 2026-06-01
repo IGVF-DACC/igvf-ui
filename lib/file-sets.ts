@@ -10,7 +10,10 @@ import {
   pathsFromDatabaseObjects,
 } from "./database-object";
 import FetchRequest from "./fetch-request";
-import { type AssayTermObject } from "./ontology-terms";
+import {
+  type AssayTermObject,
+  type OntologyTermObject,
+} from "./ontology-terms";
 import { type SampleObject } from "./samples";
 import { type LinkTo, type LinkToArray } from "./types";
 import { type WorkflowObject } from "./workflow";
@@ -22,7 +25,6 @@ import type {
   FileObject,
   GeneObject,
   LabObject,
-  OntologyTermObject,
   OpenReadingFrameObject,
   PublicationObject,
   SourceObject,
@@ -216,6 +218,7 @@ export interface PredictionSetObject extends FileSetObject {
 
 export interface PseudobulkSetObject extends FileSetObject {
   assay_titles?: string[];
+  cell_annotation?: string;
   cell_qualifier?: string;
   cell_type?: LinkTo<OntologyTermObject>;
   dbxrefs?: string[];

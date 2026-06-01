@@ -1,6 +1,5 @@
 // node_modules
 import _ from "lodash";
-import PropTypes from "prop-types";
 // components/search/list-renderer
 import {
   SearchListItemContent,
@@ -20,34 +19,71 @@ import {
 import { UniformlyProcessedBadge } from "../../common-pill-badges";
 import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
+import { SampleAnnotatedSummary } from "../../sample-annotated-summary";
 // lib
+import { isDatabaseObjectArrayOfType } from "../../../lib/database-object";
+import { type PseudobulkSetObject } from "../../../lib/file-sets";
 import { truncateText } from "../../../lib/general";
+import { isEmbedded } from "../../../lib/types";
 
+/**
+ * A subset of the `PseudobulkSetObject` fields that appears in accessory data for the pseudobulk
+ * set list renderer.
+ */
+type PseudobulkSetSubset = Pick<
+  PseudobulkSetObject,
+  "@id" | "@type" | "cell_annotation" | "cell_type" | "workflows"
+>;
+
+/**
+ * List renderer for pseudobulk sets.
+ *
+ * @param item - A pseudobulk set search-result object to display on a search-result list page.
+ * @param accessoryData - Accessory data to display for all search-result objects, which may include
+ *                        additional fields not present in the main search result object.
+ */
 export default function PseudobulkSet({
   item: pseudobulkSet,
   accessoryData = null,
+}: {
+  item: PseudobulkSetObject;
+  accessoryData?: Record<string, PseudobulkSetSubset> | null;
 }) {
-  const samplesSummary =
-    pseudobulkSet.samples?.length > 0
-      ? _.sortBy(
-          [...new Set(pseudobulkSet.samples.map((sample) => sample.summary))],
-          (item) => item.toLowerCase()
-        )
-      : [];
+  const samplesSummary = isDatabaseObjectArrayOfType(
+    pseudobulkSet.samples,
+    "Sample"
+  )
+    ? _.sortBy(
+        [...new Set(pseudobulkSet.samples.map((sample) => sample.summary))],
+        (item) => item.toLowerCase()
+      )
+    : [];
 
   // Determine if at least one workflow in the analysis set has `uniform_pipeline` set.
-  const accessoryAnalysisSet = accessoryData?.[pseudobulkSet["@id"]];
-  const workflows = accessoryAnalysisSet?.workflows || [];
+  const accessoryPseudobulkSet = accessoryData?.[pseudobulkSet["@id"]];
+  const workflows =
+    accessoryPseudobulkSet &&
+    isDatabaseObjectArrayOfType(accessoryPseudobulkSet.workflows, "Workflow")
+      ? accessoryPseudobulkSet.workflows
+      : [];
   const isUniformPipeline = workflows.some(
     (workflow) => workflow.uniform_pipeline
   );
 
-  const isSupplementsVisible =
+  // If the accessory data has a `cell_type` property, use it to get definitions for tooltips on
+  // `cell_annotation` summary. We eventually need to also retrieve sample terms to get more
+  // complete tooltips.
+  const allSampleTerms = isEmbedded(accessoryPseudobulkSet?.cell_type)
+    ? [accessoryPseudobulkSet.cell_type]
+    : [];
+
+  const isSupplementsVisible = Boolean(
     pseudobulkSet.alternate_accessions ||
     pseudobulkSet.description ||
-    pseudobulkSet.cell_type ||
+    pseudobulkSet.cell_annotation ||
     samplesSummary.length > 0 ||
-    isUniformPipeline;
+    isUniformPipeline
+  );
 
   return (
     <SearchListItemContent>
@@ -58,7 +94,11 @@ export default function PseudobulkSet({
         </SearchListItemUniqueId>
         <SearchListItemTitle>{pseudobulkSet.summary}</SearchListItemTitle>
         <SearchListItemMeta>
-          <span key="lab">{pseudobulkSet.lab.title}</span>
+          <span key="lab">
+            {isEmbedded(pseudobulkSet.lab)
+              ? pseudobulkSet.lab.title
+              : pseudobulkSet.lab}
+          </span>
         </SearchListItemMeta>
         {isSupplementsVisible && (
           <SearchListItemSupplement>
@@ -73,18 +113,16 @@ export default function PseudobulkSet({
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {pseudobulkSet.cell_type && (
+            {accessoryPseudobulkSet?.cell_annotation && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Cell Annotation
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  {[
-                    pseudobulkSet.cell_qualifier,
-                    pseudobulkSet.cell_type.term_name,
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
+                  <SampleAnnotatedSummary
+                    summary={accessoryPseudobulkSet.cell_annotation}
+                    terms={allSampleTerms}
+                  />
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
@@ -112,20 +150,12 @@ export default function PseudobulkSet({
   );
 }
 
-PseudobulkSet.propTypes = {
-  // Single pseudobulk set search-result object to display on a search-result list page
-  item: PropTypes.object.isRequired,
-  // Accessory data to display for all search-result objects
-  accessoryData: PropTypes.object,
-};
-
 PseudobulkSet.getAccessoryDataPaths = (items) => {
-  // Get the `workflows` arrays for all analysis sets in the results.
   return [
     {
       type: "PseudobulkSet",
       paths: items.map((item) => item["@id"]),
-      fields: ["workflows"],
+      fields: ["cell_annotation", "cell_type", "workflows"],
     },
   ];
 };
