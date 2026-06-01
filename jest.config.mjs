@@ -24,7 +24,6 @@ const customJestConfig = {
     "<rootDir>/styles",
     "<rootDir>/cdk/",
   ],
-  transformIgnorePatterns: ["/node_modules/(?!marked)/"],
 };
 
 export default createJestConfig(customJestConfig);

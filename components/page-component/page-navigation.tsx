@@ -2,6 +2,7 @@
 import Link from "../link-no-prefetch";
 // lib
 import { isValidUrl } from "../../lib/general";
+import { PluginProps } from "./types";
 
 /**
  * Displays a horizontal navigation bar with links to other pages, other website pages, or anchors
@@ -11,8 +12,7 @@ import { isValidUrl } from "../../lib/general";
  *
  * See ./docs/page-navigation.md for more information.
  */
-export default function PageNavigation(items) {
-  // Get the titles of each link the page editor has entered.
+export default function PageNavigation(items: PluginProps) {
   const itemTitles = Object.keys(items);
   if (itemTitles.length > 0) {
     const className =

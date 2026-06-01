@@ -66,4 +66,37 @@ describe("Content-Change Tests", () => {
       cy.contains("released");
     });
   });
+
+  it("should not execute or render script tags from markdown content", () => {
+    cy.loginAuth0(Cypress.env("AUTH_USERNAME"), Cypress.env("AUTH_PASSWORD"));
+    cy.contains("Cypress Testing");
+    cy.wait(2000);
+
+    // Make a new top-level page.
+    const now = new Date().getTime();
+    cy.get("[data-testid=navigation-data-model]").click();
+    cy.get("[data-testid=navigation-schemas]").click();
+    cy.get(`[aria-label="Add Page"]`).click();
+    cy.get("#block1").type(
+      "Test content with a script tag. <script>window.hacked = true;</script>"
+    );
+    cy.get("#name").type(`dangerous-test-page-${now}`);
+    cy.get("#title").type(`Test Page With Dangerous HTML ${now}`);
+    cy.get("#status").select("In Progress");
+    cy.get(`[aria-label="Save edits to page"]`).click();
+    cy.get(`[aria-label="Save edits to page"]`).should("not.exist");
+    cy.delayForIndexing();
+
+    // Verify the rendered page is safe: script tags are not rendered and script content does not execute.
+    cy.visit(`/search/?type=Page&limit=300`);
+    cy.get(
+      `[aria-label="View details for /dangerous-test-page-${now}/"]`
+    ).click();
+    cy.get("#page-content script").should("not.exist");
+    cy.get("#page-content").should(
+      "contain.text",
+      "Test content with a script tag."
+    );
+    cy.window().its("hacked").should("not.exist");
+  });
 });

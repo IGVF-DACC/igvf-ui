@@ -27,27 +27,18 @@
  * sense. Generally, any Component block contents that can't be parsed get ignored.
  */
 
-// node_modules
-import type { ComponentType } from "react";
 // components/page-components
+import { type PluginProps, type PluginComponent } from "./types";
+
+// Page plugin component unnamed exports go here. When adding a new page plugin component, define
+// the corresponding React component in this directory -- likely in a new file though not
+// necessarily -- and then export it here.
 import ButtonNavigation from "./button-navigation";
 import ChevronNavigation from "./chevron-navigation";
 import ImageAligned from "./image-aligned";
 import PageNavigation from "./page-navigation";
 import SampleCount from "./sample-count";
 import VideoYouTube from "./video-youtube";
-
-/**
- * The page plugin components in this directory can take any properties, but they must all be
- * strings because the content creator enters them as text in the editor.
- */
-type PluginProps = Record<string, string>;
-
-/**
- * The type of all page components in this directory. Each page component must be a React component
- * that takes a `PluginProps` object as its props.
- */
-type PluginComponent = ComponentType<PluginProps>;
 
 /**
  * When adding new page plugin components, define the corresponding React components in this

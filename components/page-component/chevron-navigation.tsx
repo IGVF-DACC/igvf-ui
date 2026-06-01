@@ -1,21 +1,33 @@
 // node_modules
-import PropTypes from "prop-types";
+import { ReactNode } from "react";
 // lib
 import { isLight } from "../../lib/color";
+import { PluginProps } from "./types";
 
 /**
  * Displays a single chevron link in the chevron navigation menu. The `color` prop is the CSS hex
  * color to use for the chevron background. The text that appears within the chevron is this
  * component's children. styles/globals.css defines the chevron shape.
+ *
+ * @param href - URL that the chevron should link to when clicked
+ * @param color - CSS hex color for the background of the chevron link
  */
-function ChevronLink({ href, color, children }) {
+function ChevronLink({
+  href,
+  color,
+  children,
+}: {
+  href: string;
+  color: string;
+  children: ReactNode;
+}) {
   const textColor = isLight(color) ? "#000000" : "#ffffff";
 
   return (
-    <li className="mx-[-14px] my-0 flex grow basis-0">
+    <li className="-mx-3.5 my-0 flex grow basis-0">
       <a
         href={href}
-        className="chevron-shape flex h-14 w-full min-w-[100px] items-center bg-black px-7 text-xs no-underline @lg/chevronMenu:text-sm @4xl/chevronMenu:text-base"
+        className="chevron-shape flex h-14 w-full min-w-25 items-center bg-black px-7 text-xs no-underline @lg/chevronMenu:text-sm @4xl/chevronMenu:text-base"
         style={{ color: textColor, backgroundColor: color }}
       >
         {children}
@@ -23,13 +35,6 @@ function ChevronLink({ href, color, children }) {
     </li>
   );
 }
-
-ChevronLink.propTypes = {
-  // URI to link to
-  href: PropTypes.string.isRequired,
-  // CSS hex color to use for the chevron background, including the #
-  color: PropTypes.string.isRequired,
-};
 
 /**
  * Displays a horizontal navigation bar in which each link looks like a sideways chevron. It's
@@ -39,7 +44,7 @@ ChevronLink.propTypes = {
  *
  * See ./docs/chevron-navigation.md for more information.
  */
-export default function ChevronNavigation(items) {
+export default function ChevronNavigation(items: PluginProps) {
   const itemTitles = Object.keys(items);
   if (itemTitles.length > 0) {
     return (

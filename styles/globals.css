@@ -122,6 +122,9 @@
   --color-radio-card-outline: var(--color-gray-300);
   --color-radio-card-outline-checked: var(--color-blue-500);
   --color-radio-card-button: var(--color-blue-500);
+
+  /** Markdown prose styles */
+  --color-prose-title-border: oklch(0.8812 0.013 244.27 / 70%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -159,6 +162,9 @@
     --color-radio-card-outline: var(--color-gray-700);
     --color-radio-card-outline-checked: var(--color-blue-500);
     --color-radio-card-button: var(--color-blue-500);
+
+    /** Markdown prose styles */
+    --color-prose-title-border: oklch(0.3334 0.013 244.27 / 70%);
   }
 }
 
@@ -406,8 +412,9 @@
   --color-modal-backdrop: oklch(0 0 0 / 30%);
 
   /** Typography */
-  --color-code-background: #e0e0e0;
-  --color-code-text: #1e1e1f;
+  --color-code-background: oklch(0.9551 0 0);
+  --color-code-border: oklch(0.7966 0.0392 257.29);
+  --color-code-text: oklch(0.2354 0.0019 286.25);
 
   --color-button-text-info: #000000;
 
@@ -661,7 +668,8 @@
 
   --color-nav-collapse: #4b627a;
 
-  --color-code-background: #334155;
+  --color-code-background: oklch(0.2454 0.0392 257.29);
+  --color-code-border: oklch(0.3952 0.0392 257.29);
   --color-code-text: #e5e7eb;
 
   /** File graph node and legend colors */
@@ -751,9 +759,16 @@
  * #page-content styles apply to the markdown content of Page objects.
  */
 
-/* Remove the top margin from the first h2 element of the first block */
-.prose > div:first-child h2:first-of-type {
+/* Remove the top margin from the first h2 when the block appears at the top of the page. Only
+   apply to MarkdownSection components that opt in via the `suppressLeadingMargin` prop. */
+.suppress-leading-margin h2:first-of-type {
   @apply mt-0;
+}
+
+/* Add a subtle bottom border to h2 elements within the markdown content to visually separate
+   sections. */
+.prose h2 {
+  @apply border-prose-title-border border-b pb-1.5;
 }
 
 .prose p:first-of-type {
@@ -765,15 +780,22 @@
 }
 
 .prose table {
-  border: 1px solid gray;
-}
-
-.prose .markdown-table {
-  overflow-x: auto;
+  @apply my-0;
 }
 
 .prose table th {
   background-color: #c0d0f0;
+}
+
+.prose li {
+  /* Use default leading from regular paragraphs for li */
+  @apply my-0 leading-5.5;
+}
+
+/** Add top margin to all but the first list item for spacing between list items, but avoid adding
+    spacing before the first list item because previous items likely have bottom spacing. */
+.prose li + li {
+  margin-top: 0.25rem;
 }
 
 .dark .prose table th {

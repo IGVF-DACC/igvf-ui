@@ -1158,12 +1158,13 @@ export default function Page({
           {isAuthenticated && <EditPageTrigger href={router.asPath} />}
           <PanelComponent>
             <div data-testid="page-blocks" id="page-content">
-              {editableBlocks.map((block) => {
+              {editableBlocks.map((block, i) => {
                 if (block["@type"] === BLOCK_TYPE.MARKDOWN) {
                   return (
                     <MarkdownSection
                       key={block["@id"]}
                       direction={block.direction}
+                      suppressLeadingMargin={i === 0}
                     >
                       {block.body}
                     </MarkdownSection>

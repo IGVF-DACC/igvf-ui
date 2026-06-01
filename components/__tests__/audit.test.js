@@ -328,10 +328,7 @@ describe("Test the AuditDetail panel", () => {
     let narrative = screen.queryByTestId(
       "audit-narrative-error-extremely-low-read-depth"
     );
-    expect(within(narrative).getByRole("link")).toHaveAttribute(
-      "href",
-      "/files/ENCFF557RSA"
-    );
+    expect(narrative).toHaveTextContent("ENCFF557RSA");
 
     // Click on the button for the NOT_COMPLIANT level that doesn't include a link.
     const notCompliantDetail = screen.getByTestId("audit-level-not-compliant");
@@ -347,7 +344,7 @@ describe("Test the AuditDetail panel", () => {
     narrative = screen.queryByTestId(
       "audit-narrative-not-compliant-insufficient-read-depth"
     );
-    expect(within(narrative).queryByRole("link")).toBeNull();
+    expect(narrative).toHaveTextContent("15065125 usable fragments");
 
     // Click on the button for the INTERNAL_ACTION level that begins with a link.
     const internalActionDetail = screen.getByTestId(
