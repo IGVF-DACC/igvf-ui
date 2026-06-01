@@ -215,6 +215,7 @@ export interface PredictionSetObject extends FileSetObject {
 
 export interface PseudobulkSetObject extends FileSetObject {
   assay_titles?: string[];
+  cell_annotation: string;
   cell_qualifier?: string;
   cell_type?: LinkTo<OntologyTermObject>;
   dbxrefs?: string[];
