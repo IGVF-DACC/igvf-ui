@@ -321,9 +321,16 @@ function FileSetNodeContent(props: NodeProps) {
  */
 function GroupNodeContent() {
   return (
-    <div
-      className={`relative h-full w-full border ${groupTypeColorMap.bg} ${groupTypeColorMap.border}`}
-    />
+    <svg width="100%" height="100%" data-group-node>
+      <rect
+        x="0"
+        y="0"
+        width="100%"
+        height="100%"
+        className={`${groupTypeColorMap.bg} ${groupTypeColorMap.border}`}
+        strokeWidth="1"
+      />
+    </svg>
   );
 }
 
@@ -358,6 +365,9 @@ function CustomArrowEdge({
     targetY,
     targetPosition,
   });
+  const edgeStroke =
+    (style as (CSSProperties & { stroke?: string }) | undefined)?.stroke ||
+    "#6b7280";
 
   return (
     <g>
@@ -370,7 +380,7 @@ function CustomArrowEdge({
       />
       <polygon
         points={`${targetX},${targetY} ${targetX - 5},${targetY - 5} ${targetX - 5},${targetY + 5}`}
-        fill={style?.stroke || "#6b7280"}
+        fill={edgeStroke}
         className="react-flow__edge-arrowhead"
       />
     </g>
@@ -765,7 +775,6 @@ export function FileGraph({
           qualityMetrics
         )
       : null;
-  console.log("Graph data:", JSON.stringify(graphData, (key, value) => key === "metadata" ? undefined : value, 2));
 
   if (graphData || cycles.length > 0 || isEmptyGraphAfterFiltering) {
     return (

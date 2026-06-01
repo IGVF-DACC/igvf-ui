@@ -210,11 +210,11 @@ export const fileTypeColorMap: ColorMapSpec = {
  * Tailwind CSS classes have names we can use directly.
  */
 export const groupTypeColorMap: ColorMapSpec = {
-  bg: "bg-file-graph-group",
+  bg: "fill-file-graph-group",
   bgCount: "",
-  border: "border-file-graph-group",
-  bgColor: "#d0d0d0",
-  borderColor: "#505050",
+  border: "stroke-file-graph-node",
+  bgColor: "#F8F8F8",
+  borderColor: "#212938",
 };
 
 /**
