@@ -83,44 +83,6 @@ function isTermsDataArray(data: unknown): data is SearchResultsFacetTerm[] {
 }
 
 /**
- * Filter the slims facet terms to only those that appear as children of the given titles terms
- * via their subfacets.
- *
- * @param slimsFacet - Facet for preferred_assay_slims
- * @param titlesTerms - Currently selected terms for the preferred_assay_titles facet
- * @returns `slimFacet` terms that merge the subfacets of the selected `titlesTerms`
- */
-function extractRelevantSlimsFacets(
-  slimsFacet: SearchResultsFacet,
-  titlesTerms: SearchResultsFacetTerm[]
-): SearchResultsFacetTerm[] {
-  if (!isTermsDataArray(slimsFacet.terms)) {
-    return [];
-  }
-
-  // Collect all preferred_assay_slims keys that are children of the currently selected
-  // preferred_assay_titles terms.
-  const relevantSlimsKeys = titlesTerms.reduce<string[]>((acc, titleTerm) => {
-    if (
-      titleTerm.subfacet &&
-      typeof titleTerm.subfacet === "object" &&
-      isTermsDataArray(titleTerm.subfacet.terms)
-    ) {
-      return acc.concat(
-        titleTerm.subfacet.terms.map((slimsTerm) => String(slimsTerm.key))
-      );
-    }
-    return acc;
-  }, []);
-
-  return relevantSlimsKeys.length > 0
-    ? slimsFacet.terms.filter((slimsTerm) =>
-        relevantSlimsKeys.includes(String(slimsTerm.key))
-      )
-    : slimsFacet.terms;
-}
-
-/**
  * Main page component for the dropdown facets demo page.
  *
  * @param facets - Facets data to display on the page fetched from the igvfd server
@@ -141,14 +103,15 @@ export default function App({
   const titlesTerms = isTermsDataArray(titlesFacet.terms)
     ? titlesFacet.terms
     : [];
-  const selectedTitleTerms = titlesTerms.filter((term) =>
-    selectedTitles.includes(String(term.key))
-  );
-  const relevantSlimsFacets = slimsFacet
-    ? extractRelevantSlimsFacets(slimsFacet, selectedTitleTerms)
-    : [];
 
   const selectedSlims = slimsFilters.map((filter) => filter.term);
+  const slimsTerms = [
+    { key: "none", key_as_string: "Categories", doc_count: 0 },
+    { key: "__separator__", key_as_string: "", doc_count: 0 },
+    ...(slimsFacet && isTermsDataArray(slimsFacet.terms)
+      ? slimsFacet.terms
+      : []),
+  ];
 
   // Handle a term-selection click by updating the URL query parameters to reflect the new
   // selection state.
@@ -170,7 +133,7 @@ export default function App({
       pathname: router.pathname,
       query: {
         ...restQuery,
-        preferred_assay_slims: value,
+        ...(value !== "none" && { preferred_assay_slims: value }),
       },
     });
     close();
@@ -187,17 +150,23 @@ export default function App({
                 : selectedSlims[0] || "Categories"}
             </SelectMenu.Trigger>
             <SelectMenu.Items>
-              {relevantSlimsFacets.map((term) => {
+              {slimsTerms.map((term) => {
                 return (
-                  <SelectMenu.Item
-                    key={term.key}
-                    onClick={() => onItemClick(String(term.key), close)}
-                  >
-                    <div className="flex w-full justify-between gap-4">
-                      <div>{term.key_as_string || String(term.key)}</div>
-                      <div>{term.doc_count}</div>
-                    </div>
-                  </SelectMenu.Item>
+                  <>
+                    {term.key === "__separator__" ? (
+                      <SelectMenu.Separator key={term.key} />
+                    ) : (
+                      <SelectMenu.Item
+                        key={term.key}
+                        onClick={() => onItemClick(String(term.key), close)}
+                      >
+                        <div className="flex w-full justify-between gap-4">
+                          <div>{term.key_as_string || String(term.key)}</div>
+                          <div>{term.doc_count! > 0 ? term.doc_count : ""}</div>
+                        </div>
+                      </SelectMenu.Item>
+                    )}
+                  </>
                 );
               })}
             </SelectMenu.Items>
