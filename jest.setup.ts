@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { TextDecoder, TextEncoder } from "util";
-
+import { createElement } from "react";
 import { setConfig } from "next/config";
 
 // Suppress act() warnings from Headless UI's FloatingProvider. These are internal to Headless UI
@@ -58,6 +58,21 @@ Object.assign(navigator, {
   },
 });
 jest.spyOn(navigator.clipboard, "writeText");
+
+jest.mock("./components/markdown-section", () => ({
+  __esModule: true,
+  default: function MockMarkdownSection({
+    children,
+  }: {
+    children?: React.ReactNode;
+  }) {
+    return createElement(
+      "div",
+      { "data-testid": "markdown-section" },
+      children
+    );
+  },
+}));
 
 // Create the tooltip portal root element for all tests.
 // This prevents "Target container is not a DOM element" errors in tooltip tests.

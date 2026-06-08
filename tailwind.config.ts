@@ -561,6 +561,9 @@ const tailwindConfig: Config = {
             },
             code: {
               "background-color": "var(--color-code-background)",
+              "border-color": "var(--color-code-border)",
+              "border-width": "1px",
+              "border-style": "solid",
               padding: "0.1rem 0.4rem",
               "word-break": "break-all",
               "border-radius": "0.2rem",

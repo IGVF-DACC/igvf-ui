@@ -30,6 +30,7 @@
 import type {
   DataProviderObject,
   DatabaseObject,
+  SearchResults,
   SessionObject,
 } from "../globals";
 // lib
@@ -838,12 +839,13 @@ export default class FetchRequest {
 
   /**
    * Request the collection (e.g. "users") with the given path.
-   * @param {string} collection Name of the collection to request
-   * @returns {Promise<Result<DataProviderObject, ErrorObject>>} Collection data including all its members in @graph
+   *
+   * @param collection - Name of the collection to request
+   * @returns Collection data including all its members in @graph
    */
   public async getCollection(
     collection: string
-  ): Promise<Result<DataProviderObject, ErrorObject>> {
+  ): Promise<Result<SearchResults, ErrorObject>> {
     return this.getObject(`/${collection}/?limit=all`);
   }
 

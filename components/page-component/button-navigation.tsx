@@ -1,40 +1,45 @@
 // node_modules
 import DOMPurify from "isomorphic-dompurify";
-import PropTypes from "prop-types";
+import { ReactNode } from "react";
 // components
 import Link from "../link-no-prefetch";
+import { type PluginProps } from "./types";
 // lib
 import { isValidPath, isValidUrl } from "../../lib/general";
 import MarkdownSection from "../markdown-section";
 
 /**
  * Display the contents of a single pad navigation item. The contents include an icon, title, and
- * description. The icon comprises an SVG string that we sanitize to remove potentially dangerous
- * Javascript before rendering.
+ * description. The icon comprises an SVG string that we render directly.
+ *
+ * Note: The icon is rendered using `dangerouslySetInnerHTML` because the SVG string may contain
+ * complex SVG elements that are difficult to represent in JSX. We ensure that the SVG strings are
+ * from a trusted source (the page editor) to mitigate security risks.
+ *
+ * @param icon - SVG string for the icon to display above the title
+ * @param title - Title for the button
+ * @param description - Description of the linked page's contents
  */
-function ButtonContent({ icon, title, description }) {
-  const sanitizedSvg = DOMPurify.sanitize(icon);
-
+function ButtonContent({
+  icon,
+  title,
+  description,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+}) {
   return (
     <>
       <div
         className="h-8 w-8"
-        dangerouslySetInnerHTML={{ __html: sanitizedSvg }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(icon) }}
       />
       <h2 className="text-md my-2 text-lg font-bold">{title}</h2>
       <MarkdownSection className="text-sm">{description}</MarkdownSection>
     </>
   );
 }
-
-ButtonContent.propTypes = {
-  // ID of the icon to display above the title
-  icon: PropTypes.string.isRequired,
-  // Title for the button
-  title: PropTypes.string.isRequired,
-  // Description of the linked page's contents
-  description: PropTypes.string.isRequired,
-};
 
 /**
  * Tailwind CSS classes for the pad links.
@@ -53,8 +58,19 @@ const linkClasses =
  * They should fix this in the editor before releasing the page publicly.
  *
  * See ./docs/button-navigation.md for more information.
+ *
+ * @param href - URL or path that the pad should link to when clicked
+ * @param label - aria-label for the link, used for screen readers
  */
-function ButtonItem({ href, label, children }) {
+function ButtonItem({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: ReactNode;
+}) {
   return (
     <li className="my-3 p-0 drop-shadow-none transition ease-in-out first:mt-0 last:mb-0 hover:scale-105 hover:drop-shadow-md @lg:m-0">
       {isValidUrl(href) ? (
@@ -78,20 +94,13 @@ function ButtonItem({ href, label, children }) {
   );
 }
 
-ButtonItem.propTypes = {
-  // URI to link to
-  href: PropTypes.string.isRequired,
-  // Screen reader label for the button; usually button's title
-  label: PropTypes.string.isRequired,
-};
-
 /**
  * Displays side-by-side (if the browser width allows it) navigation links to other pages or sites.
  * The links are displayed as a grid of buttons, each with required icon, title, and description.
  *
  * Page editors can read ./docs/pad-navigation.md for information on how to use this page component.
  */
-export default function ButtonNavigation(items) {
+export default function ButtonNavigation(items: PluginProps) {
   // filter out any items starting with a #; those represent icon identifiers.
   const itemTitles = Object.keys(items).filter(
     (itemTitle) => !itemTitle.startsWith("#")

@@ -1,6 +1,3 @@
-// node_modules
-import PropTypes from "prop-types";
-
 /**
  * For each of the allowed "align=" values, map it to Tailwind CSS classes.
  */
@@ -28,6 +25,12 @@ export default function ImageAligned({
   align = "center",
   width = "100%",
   caption = "",
+}: {
+  src?: string;
+  alt?: string;
+  align?: "left" | "center" | "right";
+  width?: string;
+  caption?: string;
 }) {
   if (src && alt) {
     const alignClassName = ` ${alignClassNames[align]}`;
@@ -53,16 +56,3 @@ export default function ImageAligned({
   }
   return null;
 }
-
-ImageAligned.propTypes = {
-  // Path or URL to the image; required
-  src: PropTypes.string,
-  // Alt text for the image; required
-  alt: PropTypes.string,
-  // Alignment of the image. Can be "left", "center", or "right"
-  align: PropTypes.string,
-  // Width of the image in px or %, e.g. "80%" or "300px"; % preferred
-  width: PropTypes.string,
-  // Caption that appears below the image
-  caption: PropTypes.string,
-};
