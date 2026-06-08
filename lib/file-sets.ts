@@ -46,7 +46,7 @@ export type FileSetObjectType =
  * a specific interface that extends `FileSetObject`, containing additional properties specific to
  * that type. Add to this map for any new file-set types and their corresponding interfaces.
  */
-type FileSetTypeMap = {
+export type FileSetTypeMap = {
   AnalysisSet: AnalysisSetObject;
   AuxiliarySet: AuxiliarySetObject;
   ConstructLibrarySet: ConstructLibrarySetObject;
