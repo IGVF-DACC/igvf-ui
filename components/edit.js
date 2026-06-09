@@ -132,6 +132,17 @@ export default function EditPage({ item }) {
   });
 
   useEffect(() => {
+    // The authentication and profiles can be loading asynchronously, so we have to wait for those
+    // to determine if the user can use the editor or not.
+    const isEditable = editable(item);
+    setEditorStatus((current) => ({
+      ...current,
+      canEdit: isEditable,
+      canSave: isEditable && current.errors.length === 0,
+    }));
+  }, [isAuthenticated, profiles, path]);
+
+  useEffect(() => {
     const getRequest = new FetchRequest({ session });
     getRequest.getObject(`${path}?frame=edit`).then((value) => {
       setText(JSON.stringify(sortObjectProps(value.union()), null, 4));
