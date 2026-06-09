@@ -801,11 +801,13 @@ describe("Test collectFileFileSetSamples function", () => {
       "@id": "sample-1",
       "@type": ["Sample", "Item"],
       status: "released",
+      summary: "Summary of sample 1",
     };
     const sample2: SampleObject = {
       "@id": "sample-2",
       "@type": ["Sample", "Item"],
       status: "released",
+      summary: "Summary of sample 2",
     };
     const fileSet: FileSetObject = {
       "@id": "file-set-1",

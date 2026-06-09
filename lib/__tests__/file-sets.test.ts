@@ -414,6 +414,7 @@ describe("requestFileSetSamples", () => {
       description: "A sample of primary cells.",
       lab: "/labs/j-michael-cherry/",
       status: "in progress",
+      summary: "A sample of primary cells.",
     };
 
     const mockResult = {

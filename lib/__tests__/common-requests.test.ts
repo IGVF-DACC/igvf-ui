@@ -2009,12 +2009,14 @@ describe("requestSampleBarcodeMaps", () => {
         "@type": ["PrimaryCell", "Sample", "Item"],
         accession: "IGVFSM1111AAAA",
         status: "released",
+        summary: "A sample of primary cells.",
       },
       {
         "@id": "/primary-cells/IGVFSM2222BBBB/",
         "@type": ["PrimaryCell", "Sample", "Item"],
         accession: "IGVFSM2222BBBB",
         status: "released",
+        summary: "Another sample of primary cells.",
       },
     ] as SampleObject[];
 
@@ -2033,6 +2035,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM1111AAAA",
         barcode_map: "/tabular-files/IGVFFI1111AAAA/",
         status: "released",
+        summary: "A sample of primary cells.",
       },
     ] as SampleObject[];
 
@@ -2068,6 +2071,7 @@ describe("requestSampleBarcodeMaps", () => {
           status: "released",
         },
         status: "released",
+        summary: "A sample of primary cells.",
       },
     ] as SampleObject[];
 
@@ -2094,6 +2098,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM1111AAAA",
         barcode_map: "/tabular-files/IGVFFI1111AAAA/",
         status: "released",
+        summary: "A sample of primary cells.",
       },
       {
         "@id": "/primary-cells/IGVFSM2222BBBB/",
@@ -2101,6 +2106,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM2222BBBB",
         barcode_map: "/tabular-files/IGVFFI1111AAAA/",
         status: "released",
+        summary: "Another sample of primary cells.",
       },
     ] as SampleObject[];
 
@@ -2136,6 +2142,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM1111AAAA",
         barcode_map: "/tabular-files/IGVFFI1111AAAA/",
         status: "released",
+        summary: "A sample of primary cells.",
       },
       {
         "@id": "/primary-cells/IGVFSM2222BBBB/",
@@ -2143,6 +2150,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM2222BBBB",
         barcode_map: "/tabular-files/IGVFFI2222BBBB/",
         status: "released",
+        summary: "Another sample of primary cells.",
       },
     ] as SampleObject[];
 
@@ -2171,6 +2179,7 @@ describe("requestSampleBarcodeMaps", () => {
         "@type": ["PrimaryCell", "Sample", "Item"],
         accession: "IGVFSM1111AAAA",
         status: "released",
+        summary: "A sample of primary cells.",
       },
       {
         "@id": "/primary-cells/IGVFSM2222BBBB/",
@@ -2178,6 +2187,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM2222BBBB",
         barcode_map: "/tabular-files/IGVFFI1111AAAA/",
         status: "released",
+        summary: "Another sample of primary cells.",
       },
     ] as SampleObject[];
 
@@ -2200,6 +2210,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM1111AAAA",
         barcode_map: "/tabular-files/IGVFFI1111AAAA/",
         status: "released",
+        summary: "A sample of primary cells.",
       },
     ] as SampleObject[];
 
@@ -2236,6 +2247,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM1111AAAA",
         barcode_map: "/tabular-files/IGVFFI1111AAAA/",
         status: "released",
+        summary: "A sample of primary cells.",
       },
       {
         "@id": "/primary-cells/IGVFSM2222BBBB/",
@@ -2243,6 +2255,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM2222BBBB",
         barcode_map: "/tabular-files/IGVFFI2222BBBB/",
         status: "released",
+        summary: "Another sample of primary cells.",
       },
     ] as SampleObject[];
 
@@ -2277,6 +2290,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM1111AAAA",
         barcode_map: "/tabular-files/IGVFFI1111AAAA/",
         status: "released",
+        summary: "A sample of primary cells.",
       },
       {
         "@id": "/primary-cells/IGVFSM2222BBBB/",
@@ -2284,6 +2298,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM2222BBBB",
         barcode_map: "/tabular-files/IGVFFI2222BBBB/",
         status: "released",
+        summary: "Another sample of primary cells.",
       },
     ] as SampleObject[];
 
@@ -2328,6 +2343,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM1111AAAA",
         barcode_map: "/tabular-files/IGVFFI1111AAAA/",
         status: "released",
+        summary: "A sample of primary cells.",
       },
       {
         "@id": "/primary-cells/IGVFSM2222BBBB/",
@@ -2335,6 +2351,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM2222BBBB",
         barcode_map: "/tabular-files/IGVFFI2222BBBB/",
         status: "released",
+        summary: "Another sample of primary cells.",
       },
       {
         "@id": "/primary-cells/IGVFSM3333CCCC/",
@@ -2342,6 +2359,7 @@ describe("requestSampleBarcodeMaps", () => {
         accession: "IGVFSM3333CCCC",
         barcode_map: "/tabular-files/IGVFFI3333CCCC/",
         status: "released",
+        summary: "Yet another sample of primary cells.",
       },
     ] as SampleObject[];
 

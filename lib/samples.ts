@@ -46,7 +46,7 @@ export interface SampleObject extends DatabaseObject {
   sources?: LinkTo<SourceObject | LabObject>[];
   study_sets?: string[];
   submitter_comment?: string;
-  summary?: string;
+  summary: string;
   taxa?: string;
   title?: string;
   transcriptome_annotation?: string;
