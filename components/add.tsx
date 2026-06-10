@@ -3,7 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { empty } from "empty-schema";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 // components
 import { SaveCancelControl, useEditor } from "./edit";
 import EditJson, { canEdit } from "./edit-func";
@@ -134,20 +134,12 @@ export function AddLink({
 export function AddInstancePage({ collection }: { collection: SearchResults }) {
   const { profiles, session } = useContext(SessionContext);
   const { isAuthenticated } = useAuth0();
-
-  /**
-   * The text is the current editor text of the underlying Ace editor component.
-   */
-  const [text, setText] = useState(() => JSON.stringify({}, null, 4));
-
   const router = useRouter();
 
-  // Cannot add if not logged in or "add" not an action
-  function addable(collection: SearchResults): boolean {
-    const itemSchema = collectionToSchema(collection, profiles);
-    const canAdd = Boolean(itemSchema && canEdit(itemSchema));
-    return isAuthenticated && canAdd;
-  }
+  // The text is the current editor text of the underlying Ace editor component.
+  const [text, setText] = useState(() => JSON.stringify({}, null, 4));
+  // True if the user is allowed to add an object to this collection.
+  const [isAddable, setIsAddable] = useState(false);
 
   function jsonErrors(json: string): string[] {
     // cannot save if we cannot edit or if the JSON is wrong
@@ -163,7 +155,6 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
   // When attempting to save the edited text to the backend, if there are any errors that come back
   // from the server, this list will contain the error objects
   const [saveErrors, setSaveErrors] = useState<ErrorMessage[]>([]);
-  const isAddable = addable(collection);
 
   // Interactivity properties of the underlying Ace editor. `canEdit` implies the user may modify
   // the text field. `canSave` means that the Save button is active. errors list indicates that the
@@ -180,6 +171,20 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
 
   // Profile Path for the "add" action in this collection
   const profilePath = actionProfile(collection, "add");
+
+  useEffect(() => {
+    // The authentication and profiles can be loading asynchronously, so we have to wait for those
+    // to determine if the user can use the editor or not.
+    const itemSchema = collectionToSchema(collection, profiles);
+    const canAdd = Boolean(itemSchema && canEdit(itemSchema));
+    const isEditable = isAuthenticated && canAdd;
+    setIsAddable(isEditable);
+    setEditorStatus((current) => ({
+      ...current,
+      canEdit: isEditable,
+      canSave: isEditable && current.errors.length === 0,
+    }));
+  }, [isAuthenticated, profiles, collection]);
 
   useEffect(() => {
     if (!profilePath) {
@@ -202,7 +207,6 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
   function onChange(newValue: string): void {
     setText(newValue);
     const errors = jsonErrors(newValue);
-    const isAddable = addable(collection);
     const status = {
       canEdit: isAddable,
       canSave: errors.length === 0 && isAddable,
@@ -236,7 +240,7 @@ export function AddInstancePage({ collection }: { collection: SearchResults }) {
           });
 
           let errors: ErrorMessage[];
-          if (response.errors.length > 0) {
+          if (response.errors && response.errors.length > 0) {
             errors = response.errors.map((err): ErrorMessage => {
               // Surround each err name with ``, and separate by comma
               const keys = err.name
