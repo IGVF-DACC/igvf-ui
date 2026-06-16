@@ -147,7 +147,8 @@ export interface ConstructLibrarySetObject extends FileSetObject {
   large_scale_loci_list?: LinkTo<FileObject>;
   lower_bound_guide_coverage?: number;
   lower_bound_insert_size?: number;
-  orf_list?: LinkToArray<OpenReadingFrameObject>;
+  small_scale_orf_list?: LinkToArray<OpenReadingFrameObject>;
+  large_scale_orf_list?: LinkTo<FileObject>;
   preferred_assay_titles?: string[];
   scope: string;
   selection_criteria: string[];

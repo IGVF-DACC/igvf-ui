@@ -122,17 +122,30 @@ function LibraryDetails({ library }) {
               </DataItemValue>
             </>
           )}
-          {library.orf_list && (
+          {library.small_scale_orf_list && (
             <>
-              <DataItemLabel>Open Reading Frame List</DataItemLabel>
+              <DataItemLabel>Smalle Scale ORF List</DataItemLabel>
               <DataItemValue>
                 <SeparatedList isCollapsible>
-                  {library.orf_list.map((orf) => (
+                  {library.small_scale_orf_list.map((orf) => (
                     <Link href={orf["@id"]} key={orf["@id"]}>
                       {orf.orf_id}
                     </Link>
                   ))}
                 </SeparatedList>
+              </DataItemValue>
+            </>
+          )}
+          {library.large_scale_orf_list && (
+            <>
+              <DataItemLabel>Large Scale ORF List</DataItemLabel>
+              <DataItemValue>
+                <Link
+                  href={library.large_scale_orf_list["@id"]}
+                  key={library.large_scale_orf_list["@id"]}
+                >
+                  {library.large_scale_orf_list.accession}
+                </Link>
               </DataItemValue>
             </>
           )}
