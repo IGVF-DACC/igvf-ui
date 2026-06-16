@@ -11,6 +11,7 @@ import {
 import DbxrefList from "../../components/dbxref-list";
 import { EditableItem } from "../../components/edit";
 import EnsemblLink from "../../components/ensemble-link";
+import TranscriptLink from "../../components/transcript-link";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
@@ -54,6 +55,21 @@ export default function OpenReadingFrame({ orf, isJson }) {
                   </DataItemValue>
                 </>
               )}
+              {orf.transcript_ids?.length > 0 && (
+                <>
+                  <DataItemLabel>Ensembl Transcript IDs</DataItemLabel>
+                  <DataItemValue>
+                    <SeparatedList isCollapsible>
+                      {orf.transcript_ids.map((transcript) => (
+                        <TranscriptLink
+                          key={transcript}
+                          transcriptid={transcript}
+                        />
+                      ))}
+                    </SeparatedList>
+                  </DataItemValue>
+                </>
+              )}
               {orf.protein_id && (
                 <>
                   <DataItemLabel>ENSEMBL ProteinID</DataItemLabel>
@@ -90,6 +106,24 @@ export default function OpenReadingFrame({ orf, isJson }) {
                     Percentage of Ensembl Protein Covered by ORF
                   </DataItemLabel>
                   <DataItemValue>{orf.pct_coverage_orf}</DataItemValue>
+                </>
+              )}
+              {orf.orf_sequence && (
+                <>
+                  <DataItemLabel>ORF Sequence</DataItemLabel>
+                  <DataItemValue>{orf.orf_sequence}</DataItemValue>
+                </>
+              )}
+              {orf.barcode_sequence && (
+                <>
+                  <DataItemLabel>Barcode Sequence</DataItemLabel>
+                  <DataItemValue>{orf.barcode_sequence}</DataItemValue>
+                </>
+              )}
+              {orf.insert_sequence && (
+                <>
+                  <DataItemLabel>Insert Sequence</DataItemLabel>
+                  <DataItemValue>{orf.insert_sequence}</DataItemValue>
                 </>
               )}
               {orf.aliases?.length > 0 && (
