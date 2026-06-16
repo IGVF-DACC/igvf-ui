@@ -124,7 +124,7 @@ function LibraryDetails({ library }) {
           )}
           {library.small_scale_orf_list && (
             <>
-              <DataItemLabel>Smalle Scale ORF List</DataItemLabel>
+              <DataItemLabel>Small Scale ORF List</DataItemLabel>
               <DataItemValue>
                 <SeparatedList isCollapsible>
                   {library.small_scale_orf_list.map((orf) => (
