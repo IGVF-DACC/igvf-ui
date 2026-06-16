@@ -140,10 +140,7 @@ function LibraryDetails({ library }) {
             <>
               <DataItemLabel>Large Scale ORF List</DataItemLabel>
               <DataItemValue>
-                <Link
-                  href={library.large_scale_orf_list["@id"]}
-                  key={library.large_scale_orf_list["@id"]}
-                >
+                <Link href={library.large_scale_orf_list["@id"]}>
                   {library.large_scale_orf_list.accession}
                 </Link>
               </DataItemValue>
