@@ -1,8 +1,16 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import type { SearchResultsFacetTerm } from "../../../globals";
 import FacetTerm from "../facet-term";
 
 describe("Test the <FacetTerms> component", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it("renders an unchecked facet term with a result count of 1", () => {
     const term: SearchResultsFacetTerm = {
       doc_count: 1,
@@ -34,8 +42,7 @@ describe("Test the <FacetTerms> component", () => {
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
 
-    fireEvent.mouseDown(checkbox);
-    fireEvent.mouseUp(checkbox);
+    fireEvent.click(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
     expect(onClick).toHaveBeenCalledWith("assay_slims", term, false, "", null);
   });
@@ -71,8 +78,7 @@ describe("Test the <FacetTerms> component", () => {
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).toBeChecked();
 
-    fireEvent.mouseDown(checkbox);
-    fireEvent.mouseUp(checkbox);
+    fireEvent.click(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
@@ -107,11 +113,13 @@ describe("Test the <FacetTerms> component", () => {
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
 
-    // Send a mousedown event to the checkbox, wait 500ms, then send a mouseup.
+    // Send a pointerdown event to the checkbox, wait 500ms, then send a pointerup.
     // This should trigger a long click event.
-    fireEvent.mouseDown(checkbox);
-    await new Promise((r) => setTimeout(r, 500));
-    fireEvent.mouseUp(checkbox);
+    fireEvent.pointerDown(checkbox);
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+    fireEvent.pointerUp(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
     expect(onClick).toHaveBeenCalledWith("assay_slims", term, true, "", null);
   });
@@ -193,8 +201,7 @@ describe("Test the <FacetTerms> component", () => {
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
 
-    fireEvent.mouseDown(checkbox);
-    fireEvent.mouseUp(checkbox);
+    fireEvent.click(checkbox);
     expect(onClick).toHaveBeenCalledTimes(1);
     expect(onClick).toHaveBeenCalledWith(
       "assay_slims",

@@ -60,6 +60,7 @@
     "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.4.0",
     "typescript": "^5.8.3",
+    "use-long-press": "^3.3.0",
     "xxhashjs": "^0.2.2"
   },
   "devDependencies": {

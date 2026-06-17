@@ -1,5 +1,6 @@
 import { MouseEvent } from "react";
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -359,122 +360,133 @@ describe("Test <FacetList> component", () => {
     );
   });
 
-  it("reacts correctly to clicking a term", async () => {
+  it("reacts correctly to clicking a positive selected term", async () => {
     mockUseAuth0.mockReturnValue({
       isAuthenticated: false,
     } as any);
+    jest.useFakeTimers();
 
-    const searchResults = {
-      "@graph": [
-        {
-          "@id": "/human-donors/IGVFDO9494FQMY/",
-          "@type": ["HumanDonor", "Donor", "Item"],
-          accession: "IGVFDO9494FQMY",
-          aliases: ["igvf:alias_human_donor_child"],
-          award: {
-            "@id": "/awards/HG012012/",
-            component: "data coordination",
-          },
-          collections: ["ENCODE"],
-          ethnicities: ["Eskimo", "Arab"],
-          lab: {
-            "@id": "/labs/j-michael-cherry/",
-            title: "J. Michael Cherry, Stanford",
-          },
-          sex: "female",
-          status: "released",
-          taxa: "Homo sapiens",
-          uuid: "38d6630f-5b87-47a1-ae7d-174eab5758d2",
-          virtual: false,
-        },
-      ],
-      "@id": "/search/?type=HumanDonor&sex=female",
-      "@type": ["Search"],
-      clear_filters: "/search/?type=HumanDonor",
-      columns: {},
-      notification: "",
-      title: "Search",
-      total: 4,
-      facet_groups: [],
-      facets: [
-        {
-          appended: false,
-          field: "sex",
-          open_on_load: false,
-          terms: [
-            {
-              doc_count: 3,
-              key: "female",
+    try {
+      const searchResults = {
+        "@graph": [
+          {
+            "@id": "/human-donors/IGVFDO9494FQMY/",
+            "@type": ["HumanDonor", "Donor", "Item"],
+            accession: "IGVFDO9494FQMY",
+            aliases: ["igvf:alias_human_donor_child"],
+            award: {
+              "@id": "/awards/HG012012/",
+              component: "data coordination",
             },
-            {
-              doc_count: 1,
-              key: "male",
+            collections: ["ENCODE"],
+            ethnicities: ["Eskimo", "Arab"],
+            lab: {
+              "@id": "/labs/j-michael-cherry/",
+              title: "J. Michael Cherry, Stanford",
             },
-          ],
-          title: "Sex",
-          total: 4,
-          type: "terms",
-        },
-      ],
-      filters: [
-        {
-          field: "sex",
-          remove: "/search/?type=HumanDonor",
-          term: "female",
-        },
-        {
-          field: "type",
-          remove: "/search/?sex=female",
-          term: "HumanDonor",
-        },
-      ],
-    };
+            sex: "female",
+            status: "released",
+            taxa: "Homo sapiens",
+            uuid: "38d6630f-5b87-47a1-ae7d-174eab5758d2",
+            virtual: false,
+          },
+        ],
+        "@id": "/search/?type=HumanDonor&sex=female",
+        "@type": ["Search"],
+        clear_filters: "/search/?type=HumanDonor",
+        columns: {},
+        notification: "",
+        title: "Search",
+        total: 4,
+        facet_groups: [],
+        facets: [
+          {
+            appended: false,
+            field: "sex",
+            open_on_load: false,
+            terms: [
+              {
+                doc_count: 3,
+                key: "female",
+              },
+              {
+                doc_count: 1,
+                key: "male",
+              },
+            ],
+            title: "Sex",
+            total: 4,
+            type: "terms",
+          },
+        ],
+        filters: [
+          {
+            field: "sex",
+            remove: "/search/?type=HumanDonor",
+            term: "female",
+          },
+          {
+            field: "type",
+            remove: "/search/?sex=female",
+            term: "HumanDonor",
+          },
+        ],
+      };
 
-    render(
-      <FacetSection
-        searchResults={searchResults}
-        types={["HumanDonor"]}
-        allFacets={searchResults.facets}
-      />
-    );
+      render(
+        <FacetSection
+          searchResults={searchResults}
+          types={["HumanDonor"]}
+          allFacets={searchResults.facets}
+        />
+      );
 
-    // Wait for async state updates to complete
-    await waitFor(() => {
-      expect(screen.getByTestId(/^facettrigger-sex$/)).toBeInTheDocument();
-    });
+      // Wait for async state updates to complete
+      await waitFor(() => {
+        expect(screen.getByTestId(/^facettrigger-sex$/)).toBeInTheDocument();
+      });
 
-    // Open the sex facet by clicking its trigger.
-    const facetTrigger = screen.getByTestId(/^facettrigger-sex$/);
-    fireEvent.click(facetTrigger);
+      // Open the sex facet by clicking its trigger.
+      const facetTrigger = screen.getByTestId(/^facettrigger-sex$/);
+      fireEvent.click(facetTrigger);
 
-    // Click the female term and check that the router push function was called with the correct URL.
-    const termItem = screen.getByTestId(/^facetterm-sex-female$/);
-    const term = within(termItem).getByRole("checkbox");
-    fireEvent.mouseDown(term);
-    fireEvent.mouseUp(term);
-    expect(window.location.href).toBe(
-      "https://www.example.com/search/?type=HumanDonor"
-    );
+      // Click the female term and check that the router push function was called with the correct URL.
+      const termItem = screen.getByTestId(/^facetterm-sex-female$/);
+      const term = within(termItem).getByTestId("checkbox-label");
+      const checkbox = within(term).getByRole("checkbox");
+      fireEvent.click(checkbox);
+      expect(window.location.href).toBe(
+        "https://www.example.com/search/?type=HumanDonor"
+      );
 
-    // Click the female term again as a negative selection.
-    fireEvent.mouseDown(term);
-    await new Promise((r) => setTimeout(r, 500));
-    fireEvent.mouseUp(term);
-    expect(window.location.href).toBe(
-      "https://www.example.com/search/?type=HumanDonor&sex!=female"
-    );
+      // Long-press the same term to make it negative.
+      fireEvent.pointerDown(checkbox);
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+      fireEvent.pointerUp(checkbox);
+      expect(window.location.href).toBe(
+        "https://www.example.com/search/?type=HumanDonor&sex!=female"
+      );
 
-    // Deselect the female term and select it again.
-    fireEvent.mouseDown(term);
-    fireEvent.mouseUp(term);
-    expect(window.location.href).toBe(
-      "https://www.example.com/search/?type=HumanDonor"
-    );
-    fireEvent.mouseDown(term);
-    fireEvent.mouseUp(term);
-    expect(window.location.href).toBe(
-      "https://www.example.com/search/?type=HumanDonor&sex=female"
-    );
+      // New pointer interaction: negative -> cleared.
+      fireEvent.pointerDown(checkbox);
+      fireEvent.pointerUp(checkbox);
+      fireEvent.click(checkbox);
+      expect(window.location.href).toBe(
+        "https://www.example.com/search/?type=HumanDonor"
+      );
+
+      // New pointer interaction: cleared -> positive.
+      fireEvent.pointerDown(checkbox);
+      fireEvent.pointerUp(checkbox);
+      fireEvent.click(checkbox);
+      expect(window.location.href).toBe(
+        "https://www.example.com/search/?type=HumanDonor&sex=female"
+      );
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it("displays no facets if no facets are visible", async () => {

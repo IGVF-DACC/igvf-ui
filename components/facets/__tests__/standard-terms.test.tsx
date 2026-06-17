@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { SearchResults } from "../../../globals";
 import StandardTerms from "../custom-facets/standard-terms";
@@ -556,89 +556,100 @@ describe("Test the StandardTerms component", () => {
   });
 
   test("handles negative term selection with long click", async () => {
-    const searchResults: SearchResults = {
-      "@context": "/terms/",
-      "@graph": [],
-      "@id": "/search/?type=Gene&taxa=Homo+sapiens",
-      "@type": ["Search"],
-      clear_filters: "/search/?type=Gene",
-      facets: [
-        {
-          field: "type",
-          title: "Data Type",
-          terms: [
-            {
-              key: "Gene",
-              doc_count: 11,
-            },
-          ],
-          total: 11,
-          type: "terms",
-          appended: false,
-        },
-        {
-          field: "taxa",
-          title: "Taxa",
-          terms: [
-            {
-              key: "Homo sapiens",
-              doc_count: 8,
-            },
-            {
-              key: "Mus musculus",
-              doc_count: 3,
-            },
-          ],
-          total: 11,
-          type: "terms",
-          appended: false,
-        },
-      ],
-      filters: [
-        {
-          field: "taxa",
-          term: "Homo sapiens",
-          remove: "/search/?type=Gene",
-        },
-        {
-          field: "type",
-          term: "Gene",
-          remove: "/search/?taxa=Homo+sapiens",
-        },
-      ],
-      columns: {
-        "@id": {
-          title: "ID",
-        },
-      },
-      notification: "Success",
-      title: "Search",
-      total: 11,
-    };
-    const facet = searchResults.facets[1];
-    const updateQuery = jest.fn();
+    jest.useFakeTimers();
 
-    render(
-      <StandardTerms
-        searchResults={searchResults}
-        facet={facet}
-        updateQuery={updateQuery}
-      />
-    );
+    try {
+      const searchResults: SearchResults = {
+        "@context": "/terms/",
+        "@graph": [],
+        "@id": "/search/?type=Gene&taxa=Homo+sapiens",
+        "@type": ["Search"],
+        clear_filters: "/search/?type=Gene",
+        facets: [
+          {
+            field: "type",
+            title: "Data Type",
+            terms: [
+              {
+                key: "Gene",
+                doc_count: 11,
+              },
+            ],
+            total: 11,
+            type: "terms",
+            appended: false,
+          },
+          {
+            field: "taxa",
+            title: "Taxa",
+            terms: [
+              {
+                key: "Homo sapiens",
+                doc_count: 8,
+              },
+              {
+                key: "Mus musculus",
+                doc_count: 3,
+              },
+            ],
+            total: 11,
+            type: "terms",
+            appended: false,
+          },
+        ],
+        filters: [
+          {
+            field: "taxa",
+            term: "Homo sapiens",
+            remove: "/search/?type=Gene",
+          },
+          {
+            field: "type",
+            term: "Gene",
+            remove: "/search/?taxa=Homo+sapiens",
+          },
+        ],
+        columns: {
+          "@id": {
+            title: "ID",
+          },
+        },
+        notification: "Success",
+        title: "Search",
+        total: 11,
+      };
+      const facet = searchResults.facets[1];
+      const updateQuery = jest.fn();
 
-    const musMusculusTerm = screen.getByTestId(/^facetterm-taxa-mus-musculus$/);
-    const checkbox = within(musMusculusTerm).getByRole("checkbox");
+      render(
+        <StandardTerms
+          searchResults={searchResults}
+          facet={facet}
+          updateQuery={updateQuery}
+        />
+      );
 
-    // Simulate a long click by using fireEvent for mouseDown, waiting, then mouseUp
-    const { fireEvent } = await import("@testing-library/react");
-    fireEvent.mouseDown(checkbox);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    fireEvent.mouseUp(checkbox);
+      const musMusculusTerm = screen.getByTestId(
+        /^facetterm-taxa-mus-musculus$/
+      );
+      const checkbox = within(musMusculusTerm).getByRole("checkbox");
 
-    // Should add the term with negative polarity (taxa!=Mus+musculus)
-    expect(updateQuery).toHaveBeenCalledWith(
-      "type=Gene&taxa=Homo+sapiens&taxa!=Mus+musculus"
-    );
+      // Simulate a long click by using fireEvent for pointerDown, waiting, then pointerUp
+      const { fireEvent } = await import("@testing-library/react");
+      fireEvent.pointerDown(checkbox);
+      act(() => {
+        jest.advanceTimersByTime(500);
+      });
+      fireEvent.pointerUp(checkbox);
+
+      // Should add the term with negative polarity (taxa!=Mus+musculus)
+      expect(updateQuery).toHaveBeenCalledWith(
+        "type=Gene&taxa=Homo+sapiens&taxa!=Mus+musculus"
+      );
+    } finally {
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    }
   });
 
   test("handles numeric term keys", async () => {
