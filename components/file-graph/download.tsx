@@ -1,4 +1,5 @@
 // node_modules
+import { type Rect } from "@floating-ui/react";
 import { ArrowDownTrayIcon } from "@heroicons/react/20/solid";
 // components
 import { Button } from "../form-elements";
@@ -12,18 +13,25 @@ import { generateSVGContent } from "./lib";
  *
  * @param graphId - ID of the HTML element containing the ReactFlow graph
  * @param fileId - ID of the file the graph is for; used to customize download filename
+ * @param graphBounds - Bounds of the graph, used to determine SVG dimensions
  */
 export function DownloadTrigger({
   graphId,
   fileId = "",
+  graphBounds,
   isDisabled = false,
 }: {
   graphId: string;
   fileId?: string;
+  graphBounds: Rect | null;
   isDisabled?: boolean;
 }) {
   function downloadSVG() {
-    const svgContent = generateSVGContent(graphId);
+    if (!graphBounds) {
+      return;
+    }
+
+    const svgContent = generateSVGContent(graphId, graphBounds);
     if (svgContent) {
       // Create download link and "click" it to start the download.
       const blob = new Blob([svgContent], { type: "image/svg+xml" });

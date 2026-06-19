@@ -2,7 +2,7 @@
 import type { ElkNode, ElkExtendedEdge } from "elkjs/lib/elk-api";
 import _ from "lodash";
 import XXH from "xxhashjs";
-import { type Edge, type Node } from "@xyflow/react";
+import { type Edge, type Node, type Rect } from "@xyflow/react";
 // lib
 import { colorVariableToColorHex } from "../../lib/color";
 import { type FileSetObject } from "../../lib/file-sets";
@@ -50,7 +50,7 @@ const HASH_SEED = 0xe8c0f852;
 /**
  * Padding (in pixels) added around SVG export content for visual spacing.
  */
-const SVG_CONTENT_PADDING = 5;
+const SVG_CONTENT_PADDING = 10;
 
 /**
  * Resolve rendered node dimensions so exported geometry matches the browser rendering.
@@ -648,6 +648,8 @@ export function elkToReactFlowNodes(
         type: elkNode.metadata.kind,
         data: elkNode.metadata,
         position: { x: elkNode.x, y: elkNode.y },
+        width: elkNode.width,
+        height: elkNode.height,
         style: { width: elkNode.width, height: elkNode.height },
         draggable: false,
         selectable: false,
@@ -742,9 +744,13 @@ export function countFileNodes(nodes: Node<NodeMetadata>[]): number {
  * to extract SVG content.
  *
  * @param graphId - ID of the graph container element in case we have multiple graphs on the page
+ * @param graphBounds - Bounds of the graph, used to determine SVG dimensions
  * @returns SVG content as a string that can be downloaded
  */
-export function generateSVGContent(graphId: string): string | undefined {
+export function generateSVGContent(
+  graphId: string,
+  graphBounds: Rect
+): string | undefined {
   // Get ReactFlow's rendered SVG elements within the specified container.
   const graphContainer = document.getElementById(graphId);
   const reactFlowRenderer = graphContainer?.querySelector(
@@ -756,22 +762,16 @@ export function generateSVGContent(graphId: string): string | undefined {
     return;
   }
 
-  // Get all node elements and calculate viewport bounds from ReactFlow.
-  const viewportElement = reactFlowRenderer.querySelector(
-    ".react-flow__viewport"
-  );
-
-  // Use the viewport's bounding box for dimensions (it contains all positioned content).
-  const viewportBounds = viewportElement?.getBoundingClientRect();
-  const contentWidth = viewportBounds?.width || 800;
-  const contentHeight = viewportBounds?.height || 600;
-
-  // Add padding to all sides: left/right and top/bottom
-  const width = contentWidth + SVG_CONTENT_PADDING * 2;
-  const height = contentHeight + SVG_CONTENT_PADDING * 2;
-
   // Generate SVG header with calculated dimensions and viewBox starting at negative padding.
-  const svgHeader = `<?xml version="1.0" encoding="UTF-8"?><svg width="${width}px" height="${height}px" viewBox="${-SVG_CONTENT_PADDING} ${-SVG_CONTENT_PADDING} ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+  const viewBoxWidth = graphBounds.width + SVG_CONTENT_PADDING * 2;
+  const viewBoxHeight = graphBounds.height + SVG_CONTENT_PADDING * 2;
+  const svgHeader =
+    `<?xml version="1.0" encoding="UTF-8"?>` +
+    `<svg width="${viewBoxWidth}px" height="${viewBoxHeight}px"` +
+    ` viewBox="${graphBounds.x - SVG_CONTENT_PADDING} ${
+      graphBounds.y - SVG_CONTENT_PADDING
+    } ${viewBoxWidth} ${viewBoxHeight}"` +
+    ` xmlns="http://www.w3.org/2000/svg">`;
 
   // Build node layers separately so group nodes can be painted behind edges and regular nodes.
   let groupNodeLayer = "";
