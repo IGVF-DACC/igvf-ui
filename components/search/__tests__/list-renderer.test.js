@@ -3679,6 +3679,41 @@ describe("Test IndexFile component", () => {
 });
 
 describe("Test the PseudobulkSet component", () => {
+  it("renders a PseudobulkSet item with non-embedded lab", () => {
+    const item = {
+      "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS1111PBST",
+      aliases: ["igvf:basic_pseudobulk_set"],
+      award: "/awards/HG012012/",
+      files: [],
+      file_set_type: "pseudobulk analysis",
+      lab: "/labs/j-michael-cherry-stanford/",
+      status: "released",
+      summary: "pseudobulk set of data",
+      uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PseudobulkSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    expect(screen.getByTestId("search-list-item-unique-id")).toHaveTextContent(
+      /^Pseudobulk Set IGVFDS1111PBST$/
+    );
+    expect(screen.getByTestId("search-list-item-title")).toHaveTextContent(
+      /^pseudobulk set of data$/
+    );
+    expect(screen.getByTestId("search-list-item-meta")).toHaveTextContent(
+      "/labs/j-michael-cherry-stanford/"
+    );
+    expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
+      "released"
+    );
+  });
+
   it("renders a PseudobulkSet item with alternate accession", () => {
     const item = {
       "@id": "/pseudobulk-sets/IGVFDS1111PBST/",
@@ -3687,6 +3722,7 @@ describe("Test the PseudobulkSet component", () => {
       alternate_accessions: ["IGVFDS1111PBSU"],
       aliases: ["igvf:basic_pseudobulk_set"],
       award: "/awards/HG012012/",
+      cell_type: "/sample-terms/CL_0000000/",
       files: [],
       file_set_type: "pseudobulk analysis",
       lab: {
@@ -3697,9 +3733,26 @@ describe("Test the PseudobulkSet component", () => {
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
     };
 
+    const accessoryData = {
+      "/pseudobulk-sets/IGVFDS1111PBST/": {
+        "@id": "/sample-terms/CL_0000000/",
+        "@type": ["SampleTerm", "Item"],
+        cell_annotation: "H9 cell type",
+        cell_type: {
+          "@id": "/sample-terms/UBERON_0002048/",
+          definition:
+            "Respiration organ that develops as an outpocketing of the esophagus.",
+          status: "released",
+          term_id: "UBERON:0002048",
+          term_name: "lung",
+        },
+        workflows: [],
+      },
+    };
+
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <PseudobulkSet item={item} />
+        <PseudobulkSet item={item} accessoryData={accessoryData} />
       </SessionContext.Provider>
     );
 
@@ -3727,6 +3780,7 @@ describe("Test the PseudobulkSet component", () => {
       accession: "IGVFDS1111PBST",
       aliases: ["igvf:basic_pseudobulk_set"],
       award: "/awards/HG012012/",
+      cell_type: { term_name: "H9" },
       description: "This is my description",
       files: [],
       file_set_type: "pseudobulk analysis",
@@ -3738,9 +3792,26 @@ describe("Test the PseudobulkSet component", () => {
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
     };
 
+    const accessoryData = {
+      "/pseudobulk-sets/IGVFDS1111PBST/": {
+        "@id": "/sample-terms/CL_0000000/",
+        "@type": ["SampleTerm", "Item"],
+        cell_annotation: "H9 cell type",
+        cell_type: {
+          "@id": "/sample-terms/UBERON_0002048/",
+          definition:
+            "Respiration organ that develops as an outpocketing of the esophagus.",
+          status: "released",
+          term_id: "UBERON:0002048",
+          term_name: "lung",
+        },
+        workflows: [],
+      },
+    };
+
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <PseudobulkSet item={item} />
+        <PseudobulkSet item={item} accessoryData={accessoryData} />
       </SessionContext.Provider>
     );
 
@@ -3757,9 +3828,7 @@ describe("Test the PseudobulkSet component", () => {
     expect(screen.getByTestId("search-list-item-supplement")).toHaveTextContent(
       "Description"
     );
-    expect(
-      screen.getByTestId("search-list-item-supplement-content")
-    ).toHaveTextContent("This is my description");
+    expect(screen.getByText("This is my description")).toBeInTheDocument();
 
     expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
       "released"
@@ -3773,6 +3842,7 @@ describe("Test the PseudobulkSet component", () => {
       accession: "IGVFDS1111PBST",
       aliases: ["igvf:basic_pseudobulk_set"],
       award: "/awards/HG012012/",
+      cell_annotation: "H9 cell type",
       files: [],
       cell_type: { term_name: "H9" },
       file_set_type: "pseudobulk analysis",
@@ -3784,9 +3854,26 @@ describe("Test the PseudobulkSet component", () => {
       uuid: "609869e7-cbd9-4d06-9569-d3fdb4604ccd",
     };
 
+    const accessoryData = {
+      "/pseudobulk-sets/IGVFDS1111PBST/": {
+        "@id": "/sample-terms/CL_0000000/",
+        "@type": ["SampleTerm", "Item"],
+        cell_annotation: "H9 cell type",
+        cell_type: {
+          "@id": "/sample-terms/UBERON_0002048/",
+          definition:
+            "Respiration organ that develops as an outpocketing of the esophagus.",
+          status: "released",
+          term_id: "UBERON:0002048",
+          term_name: "H9",
+        },
+        workflows: [],
+      },
+    };
+
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <PseudobulkSet item={item} />
+        <PseudobulkSet item={item} accessoryData={accessoryData} />
       </SessionContext.Provider>
     );
 
@@ -3803,9 +3890,9 @@ describe("Test the PseudobulkSet component", () => {
     expect(screen.getByTestId("search-list-item-supplement")).toHaveTextContent(
       "Cell Annotation"
     );
-    expect(
-      screen.getByTestId("search-list-item-supplement-content")
-    ).toHaveTextContent("H9");
+    expect(screen.getByTestId("search-list-item-supplement")).toHaveTextContent(
+      "H9 cell type"
+    );
 
     expect(screen.getByTestId("search-list-item-quality")).toHaveTextContent(
       "released"
@@ -3819,9 +3906,17 @@ describe("Test the PseudobulkSet component", () => {
       accession: "IGVFDS1111PBST",
       aliases: ["igvf:basic_pseudobulk_set"],
       award: "/awards/HG012012/",
+      cell_type: { term_name: "H9" },
+      cell_annotation: "H9 cell type",
       files: [],
       file_set_type: "pseudobulk analysis",
-      samples: [{ summary: "test samples.summary" }],
+      samples: [
+        {
+          "@id": "/samples/IGVFSM0000TEST/",
+          "@type": ["Sample", "Item"],
+          summary: "test samples.summary",
+        },
+      ],
       lab: {
         title: "J. Michael Cherry, Stanford",
       },
@@ -3887,6 +3982,7 @@ describe("Test the PseudobulkSet component", () => {
         workflows: [
           {
             "@id": "/workflows/IGVFWF0000WORK/",
+            "@type": ["Workflow", "Item"],
             accession: "IGVFWF0000WORK",
             name: "Perturb-seq Pipeline",
             uniform_pipeline: true,
@@ -3926,7 +4022,7 @@ describe("Test the PseudobulkSet component", () => {
       {
         type: "PseudobulkSet",
         paths: ["/pseudobulk-sets/IGVFDS1111PBST/"],
-        fields: ["workflows"],
+        fields: ["cell_annotation", "cell_type", "workflows"],
       },
     ]);
   });

@@ -1,6 +1,6 @@
 import type { DatabaseObject, FileObject } from "../../globals";
 import { ConstructLibrarySetObject, type FileSetObject } from "../file-sets";
-import { type SampleObject } from "../samples";
+import { type MultiplexedSampleObject, type SampleObject } from "../samples";
 import {
   requestAnalysisSteps,
   requestAnalysisStepVersions,
@@ -867,7 +867,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFetch).toHaveBeenCalledWith(
-      "/search-quick/?type=OntologyTerm&field=term_id&field=term_name&@id=/phenotype-terms/NCIT_C92648/&@id=/sample-terms/UBERON_0005439/&limit=2",
+      "/search-quick/?type=OntologyTerm&field=definition&field=term_id&field=term_name&@id=/phenotype-terms/NCIT_C92648/&@id=/sample-terms/UBERON_0005439/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);
@@ -2003,7 +2003,7 @@ describe("requestSampleBarcodeMaps", () => {
   });
 
   it("returns empty array when no samples have a barcode_map", async () => {
-    const samples: SampleObject[] = [
+    const samples: MultiplexedSampleObject[] = [
       {
         "@id": "/primary-cells/IGVFSM1111AAAA/",
         "@type": ["PrimaryCell", "Sample", "Item"],
@@ -2028,7 +2028,7 @@ describe("requestSampleBarcodeMaps", () => {
   });
 
   it("requests barcode map when barcode_map is a string path", async () => {
-    const samples: SampleObject[] = [
+    const samples: MultiplexedSampleObject[] = [
       {
         "@id": "/primary-cells/IGVFSM1111AAAA/",
         "@type": ["PrimaryCell", "Sample", "Item"],
@@ -2037,7 +2037,7 @@ describe("requestSampleBarcodeMaps", () => {
         status: "released",
         summary: "A sample of primary cells.",
       },
-    ] as SampleObject[];
+    ] as MultiplexedSampleObject[];
 
     const mockResult = { "@graph": [mockBarcodeMapFile] };
     mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
@@ -2059,7 +2059,7 @@ describe("requestSampleBarcodeMaps", () => {
   });
 
   it("requests barcode map when barcode_map is an embedded FileObject", async () => {
-    const samples: SampleObject[] = [
+    const samples: MultiplexedSampleObject[] = [
       {
         "@id": "/primary-cells/IGVFSM1111AAAA/",
         "@type": ["PrimaryCell", "Sample", "Item"],
@@ -2073,7 +2073,7 @@ describe("requestSampleBarcodeMaps", () => {
         status: "released",
         summary: "A sample of primary cells.",
       },
-    ] as SampleObject[];
+    ] as MultiplexedSampleObject[];
 
     const mockResult = { "@graph": [mockBarcodeMapFile] };
     mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
@@ -2091,7 +2091,7 @@ describe("requestSampleBarcodeMaps", () => {
   });
 
   it("deduplicates barcode map paths across multiple samples", async () => {
-    const samples: SampleObject[] = [
+    const samples: MultiplexedSampleObject[] = [
       {
         "@id": "/primary-cells/IGVFSM1111AAAA/",
         "@type": ["PrimaryCell", "Sample", "Item"],
@@ -2108,7 +2108,7 @@ describe("requestSampleBarcodeMaps", () => {
         status: "released",
         summary: "Another sample of primary cells.",
       },
-    ] as SampleObject[];
+    ] as MultiplexedSampleObject[];
 
     const mockResult = { "@graph": [mockBarcodeMapFile] };
     mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
@@ -2135,7 +2135,7 @@ describe("requestSampleBarcodeMaps", () => {
       upload_status: "validated",
     };
 
-    const samples: SampleObject[] = [
+    const samples: MultiplexedSampleObject[] = [
       {
         "@id": "/primary-cells/IGVFSM1111AAAA/",
         "@type": ["PrimaryCell", "Sample", "Item"],
@@ -2152,7 +2152,7 @@ describe("requestSampleBarcodeMaps", () => {
         status: "released",
         summary: "Another sample of primary cells.",
       },
-    ] as SampleObject[];
+    ] as MultiplexedSampleObject[];
 
     const mockResult = { "@graph": [mockBarcodeMapFile, mockBarcodeMapFile2] };
     mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
@@ -2173,7 +2173,7 @@ describe("requestSampleBarcodeMaps", () => {
   });
 
   it("skips samples without barcode_map while collecting from those that have one", async () => {
-    const samples: SampleObject[] = [
+    const samples: MultiplexedSampleObject[] = [
       {
         "@id": "/primary-cells/IGVFSM1111AAAA/",
         "@type": ["PrimaryCell", "Sample", "Item"],
@@ -2189,7 +2189,7 @@ describe("requestSampleBarcodeMaps", () => {
         status: "released",
         summary: "Another sample of primary cells.",
       },
-    ] as SampleObject[];
+    ] as MultiplexedSampleObject[];
 
     const mockResult = { "@graph": [mockBarcodeMapFile] };
     mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
@@ -2203,7 +2203,7 @@ describe("requestSampleBarcodeMaps", () => {
   });
 
   it("returns empty array when API request fails", async () => {
-    const samples: SampleObject[] = [
+    const samples: MultiplexedSampleObject[] = [
       {
         "@id": "/primary-cells/IGVFSM1111AAAA/",
         "@type": ["PrimaryCell", "Sample", "Item"],
@@ -2212,7 +2212,7 @@ describe("requestSampleBarcodeMaps", () => {
         status: "released",
         summary: "A sample of primary cells.",
       },
-    ] as SampleObject[];
+    ] as MultiplexedSampleObject[];
 
     mockFetch.mockResolvedValueOnce({
       ok: false,
@@ -2240,7 +2240,7 @@ describe("requestSampleBarcodeMaps", () => {
       upload_status: "validated",
     };
 
-    const samples: SampleObject[] = [
+    const samples: MultiplexedSampleObject[] = [
       {
         "@id": "/primary-cells/IGVFSM1111AAAA/",
         "@type": ["PrimaryCell", "Sample", "Item"],
@@ -2257,7 +2257,7 @@ describe("requestSampleBarcodeMaps", () => {
         status: "released",
         summary: "Another sample of primary cells.",
       },
-    ] as SampleObject[];
+    ] as MultiplexedSampleObject[];
 
     const mockResult = { "@graph": [mockBarcodeMapFile, deletedFile] };
     mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
@@ -2283,7 +2283,7 @@ describe("requestSampleBarcodeMaps", () => {
       upload_status: "validated",
     };
 
-    const samples: SampleObject[] = [
+    const samples: MultiplexedSampleObject[] = [
       {
         "@id": "/primary-cells/IGVFSM1111AAAA/",
         "@type": ["PrimaryCell", "Sample", "Item"],
@@ -2300,7 +2300,7 @@ describe("requestSampleBarcodeMaps", () => {
         status: "released",
         summary: "Another sample of primary cells.",
       },
-    ] as SampleObject[];
+    ] as MultiplexedSampleObject[];
 
     const mockResult = { "@graph": [mockBarcodeMapFile, deletedFile] };
     mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
@@ -2336,7 +2336,7 @@ describe("requestSampleBarcodeMaps", () => {
       upload_status: "validated",
     };
 
-    const samples: SampleObject[] = [
+    const samples: MultiplexedSampleObject[] = [
       {
         "@id": "/primary-cells/IGVFSM1111AAAA/",
         "@type": ["PrimaryCell", "Sample", "Item"],
@@ -2361,7 +2361,7 @@ describe("requestSampleBarcodeMaps", () => {
         status: "released",
         summary: "Yet another sample of primary cells.",
       },
-    ] as SampleObject[];
+    ] as MultiplexedSampleObject[];
 
     const mockResult = {
       "@graph": [mockBarcodeMapFile, archivedFile, revokedFile],

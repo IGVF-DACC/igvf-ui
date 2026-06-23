@@ -36,7 +36,6 @@ import {
   requestDonors,
   requestFileSets,
   requestInstitutionalCertificates,
-  requestOntologyTerms,
   requestPublications,
   requestSamples,
   requestSupersedes,
@@ -66,7 +65,6 @@ import type {
   DocumentObject,
   DonorObject,
   LabObject,
-  OntologyTermObject,
   PublicationObject,
   SourceObject,
   TreatmentObject,
@@ -78,7 +76,6 @@ export default function InVitroSystem({
   constructLibrarySets,
   demultiplexedFrom,
   demultiplexedTo,
-  diseaseTerms,
   annotatedFrom,
   documents,
   donors,
@@ -104,7 +101,6 @@ export default function InVitroSystem({
   constructLibrarySets: FileSetObject[];
   demultiplexedFrom: SampleObject | null;
   demultiplexedTo: SampleObject[];
-  diseaseTerms: OntologyTermObject[];
   annotatedFrom: BiosampleObject | null;
   documents: DocumentObject[];
   donors: DonorObject[];
@@ -146,7 +142,6 @@ export default function InVitroSystem({
                 item={inVitroSystem}
                 classifications={inVitroSystem.classifications}
                 constructLibrarySets={constructLibrarySets}
-                diseaseTerms={diseaseTerms}
                 annotatedFrom={annotatedFrom}
                 partOf={partOf}
                 publications={publications}
@@ -375,13 +370,6 @@ export async function getServerSideProps({
     const demultiplexedTo = isPathArray(inVitroSystem.demultiplexed_to)
       ? await requestBiosamples(inVitroSystem.demultiplexed_to, request)
       : [];
-    let diseaseTerms: OntologyTermObject[] = [];
-    if (isEmbeddedArray(inVitroSystem.disease_terms)) {
-      const diseaseTermPaths = inVitroSystem.disease_terms.map(
-        (diseaseTerm) => diseaseTerm["@id"]
-      );
-      diseaseTerms = await requestOntologyTerms(diseaseTermPaths, request);
-    }
     const documents = isPathArray(inVitroSystem.documents)
       ? await requestDocuments(inVitroSystem.documents, request)
       : [];
@@ -494,7 +482,6 @@ export async function getServerSideProps({
         demultiplexedFrom,
         demultiplexedTo,
         annotatedFrom,
-        diseaseTerms,
         documents,
         donors,
         originOf,

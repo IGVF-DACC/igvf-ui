@@ -29,13 +29,9 @@ import {
   generateSequenceFileGroups,
   paginateSequenceFileGroups,
 } from "../lib/files";
+import { type OntologyTermObject } from "../lib/ontology-terms";
 // root
-import type {
-  DocumentObject,
-  FileObject,
-  LabObject,
-  OntologyTermObject,
-} from "../globals";
+import type { DocumentObject, FileObject, LabObject } from "../globals";
 import { UC } from "../lib/constants";
 
 /**

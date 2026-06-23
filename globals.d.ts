@@ -1,6 +1,7 @@
 import { type AttachmentObject } from "./lib/attachment";
 import { type FileSetObject } from "./lib/file-sets";
 import { type GeneLocation } from "./lib/genes";
+import { type OntologyTermObject } from "./lib/ontology-terms";
 import { type QualityMetricObject } from "./lib/quality-metric";
 import { type BiosampleObject } from "./lib/samples";
 import { type LinkTo, LinkToArray } from "./lib/types";
@@ -73,7 +74,7 @@ export interface DatabaseObject {
   collections?: string[];
   creation_timestamp?: string;
   description?: string;
-  documents?: LinkTo<DocumentObject>[];
+  documents?: LinkToArray<DocumentObject>;
   lab?: LinkTo<LabObject>;
   name?: string;
   release_timestamp?: string;
@@ -508,32 +509,6 @@ export interface TreatmentObject extends DatabaseObject {
   treatment_term_id?: string;
   treatment_term_name: string;
   treatment_type: string;
-}
-
-export interface OntologyTermObject extends DatabaseObject {
-  aliases?: string[];
-  ancestors?: string[];
-  assay_slims?: string[];
-  category_slims?: string[];
-  cell_slims?: string[];
-  comments?: string[];
-  company?: string;
-  definition?: string;
-  deprecated_ntr_terms?: string[];
-  description?: string;
-  is_a?: LinkToArray<OntologyTermObject>;
-  name?: string;
-  notes?: string;
-  objective_slims?: string[];
-  ontology?: string;
-  organ_slims?: string[];
-  preferred_assay_titles?: string[];
-  sequencing_kits?: string[];
-  summary?: string;
-  synonyms?: string[];
-  system_slims?: string[];
-  term_id: string;
-  term_name: string;
 }
 
 export interface PageObject extends DatabaseObject {

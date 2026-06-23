@@ -16,6 +16,7 @@ import { API_URL } from "../../lib/constants";
 import { type FileSetObject } from "../../lib/file-sets";
 import { dataSize } from "../../lib/general";
 import { type GeneLocation } from "../../lib/genes";
+import { type OntologyTermObject } from "../../lib/ontology-terms";
 import { type ColumnSpec } from "../../lib/report";
 // root
 import type {
@@ -23,7 +24,6 @@ import type {
   DocumentObject,
   FileObject,
   HumanDonorObject,
-  OntologyTermObject,
   PageObject,
 } from "../../globals";
 

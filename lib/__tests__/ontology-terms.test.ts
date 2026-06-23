@@ -1,14 +1,16 @@
 // lib
 import FetchRequest from "../fetch-request";
+import { type FileSetObject } from "../file-sets";
 import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
   getAssayTitleDescription,
   getMeasurementSetAssayTitleDescriptionMap,
-  AssayTermObject,
+  type AssayTermObject,
+  type OntologyTermObject,
 } from "../ontology-terms";
 // root
-import { FileSetObject, OntologyTermObject, Profiles } from "../../globals";
+import type { Profiles } from "../../globals";
 
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 global.fetch = mockFetch;
