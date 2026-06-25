@@ -1,5 +1,8 @@
 // node_modules
-import PropTypes from "prop-types";
+import {
+  type GetServerSidePropsContext,
+  type GetServerSidePropsResult,
+} from "next";
 import { useEffect, useState } from "react";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
@@ -29,6 +32,7 @@ import JsonDisplay from "../../components/json-display";
 import Link from "../../components/link-no-prefetch";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
+import { SampleAnnotatedSummary } from "../../components/sample-annotated-summary";
 import SampleTable from "../../components/sample-table";
 import { useSecDir } from "../../components/section-directory";
 import SeparatedList from "../../components/separated-list";
@@ -38,21 +42,83 @@ import buildAttribution from "../../lib/attribution";
 import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
-  requestDonors,
   requestFiles,
-  requestFileSets,
   requestGenes,
-  requestPublications,
-  requestQualityMetrics,
-  requestSamples,
   requestSupersedes,
 } from "../../lib/common-requests";
+import {
+  isDatabaseObject,
+  isDatabaseObjectArray,
+  pathsFromDatabaseObjects,
+} from "../../lib/database-object";
 import { isDeprecatedStatus } from "../../lib/deprecated-files";
+import DonorTable from "../../components/donor-table";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { getAllDerivedFromFiles } from "../../lib/files";
+import {
+  requestAssociatedFileSets,
+  requestFileSetDonors,
+  requestFileSetPublications,
+  requestFileSetSamples,
+  type FileSetObject,
+  type PredictionSetObject,
+} from "../../lib/file-sets";
+import {
+  getAllDerivedFromFiles,
+  getFilesFileSets,
+  requestFilesQualityMetrics,
+  requestFilesReferenceFiles,
+} from "../../lib/files";
+import { PageProps } from "../../lib/next-js";
+import { SampleTermObject } from "../../lib/ontology-terms";
+import { type QualityMetricObject } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
-import DonorTable from "../../components/donor-table";
+import { getSamplesTerms, type SampleObject } from "../../lib/samples";
+import { isEmbedded, isPathArray } from "../../lib/types";
+// root
+import {
+  type DocumentObject,
+  type DonorObject,
+  type FileObject,
+  type GeneObject,
+  type PublicationObject,
+} from "../../globals";
+
+/**
+ * Props for the prediction set page, sourced from `getServerSideProps`.
+ *
+ * @param predictionSet - Prediction set object to display
+ * @param inputFileSets - Input file sets that this prediction set is an input for
+ * @param inputFileSetFor - Input file sets for this prediction set
+ * @param controlFor - Control file sets for this prediction set
+ * @param documents - Documents associated with this prediction set
+ * @param publications - Publications associated with this prediction set
+ * @param files - Files to display
+ * @param fileFileSets - File sets that `files` refer to in their `file_sets` property
+ * @param referenceFiles - Reference files to display
+ * @param derivedFromFiles - All derived_from files not included in `files`
+ * @param samples - Samples associated with this prediction set
+ * @param donors - Donors associated with this prediction set
+ * @param assessedGenes - Genes that are assessed in this prediction set
+ * @param qualityMetrics - Quality metrics associated with this analysis set
+ */
+interface PredictionSetPageProps extends PageProps {
+  predictionSet: PredictionSetObject;
+  inputFileSets: FileSetObject[];
+  inputFileSetFor: FileSetObject[];
+  controlFor: FileSetObject[];
+  documents: DocumentObject[];
+  publications: PublicationObject[];
+  files: FileObject[];
+  fileFileSets: FileSetObject[];
+  referenceFiles: FileObject[];
+  derivedFromFiles: FileObject[];
+  samples: SampleObject[];
+  samplesTerms: SampleTermObject[];
+  donors: DonorObject[];
+  assessedGenes: GeneObject[];
+  qualityMetrics: QualityMetricObject[];
+}
 
 export default function PredictionSet({
   predictionSet,
@@ -66,20 +132,26 @@ export default function PredictionSet({
   referenceFiles,
   derivedFromFiles,
   samples,
+  samplesTerms,
   donors,
   assessedGenes,
   qualityMetrics,
   supersedes,
   supersededBy,
-  attribution = null,
+  attribution,
   isJson,
-}) {
+}: PredictionSetPageProps) {
   const sections = useSecDir({ isJson });
 
   // State for whether to include deprecated files in the file table and graph.
   const [areDeprecatedFilesVisible, setAreDeprecatedFilesVisible] = useState(
     isDeprecatedStatus(predictionSet.status)
   );
+
+  // Combine all sample-associated terms to pass to the SampleAnnotatedSummary component, ensuring that if the pseudobulk set has a cell type, it is included as a term (since the cell annotation may reference the cell type), along with all terms from the samples.
+  const allSampleTerms = isEmbedded(predictionSet.cell_type)
+    ? [predictionSet.cell_type, ...samplesTerms]
+    : samplesTerms;
 
   useEffect(() => {
     setAreDeprecatedFilesVisible(isDeprecatedStatus(predictionSet.status));
@@ -156,7 +228,7 @@ export default function PredictionSet({
                     </DataItemValue>
                   </>
                 )}
-                {predictionSet.large_scale_gene_list && (
+                {isDatabaseObject(predictionSet.large_scale_gene_list) && (
                   <>
                     <DataItemLabel>Large Scale Gene List</DataItemLabel>
                     <DataItemValue>
@@ -169,7 +241,7 @@ export default function PredictionSet({
                     </DataItemValue>
                   </>
                 )}
-                {predictionSet.large_scale_loci_list && (
+                {isDatabaseObject(predictionSet.large_scale_loci_list) && (
                   <>
                     <DataItemLabel>Large Scale Loci List</DataItemLabel>
                     <DataItemValue>
@@ -215,6 +287,27 @@ export default function PredictionSet({
                     </DataItemValue>
                   </>
                 )}
+                {predictionSet.cell_annotation && (
+                  <>
+                    <DataItemLabel>Cell Annotation</DataItemLabel>
+                    <DataItemValue>
+                      <SampleAnnotatedSummary
+                        summary={predictionSet.cell_annotation}
+                        terms={allSampleTerms}
+                      />
+                    </DataItemValue>
+                  </>
+                )}
+                {isEmbedded(predictionSet.cell_type) && (
+                  <>
+                    <DataItemLabel>Cell Ontology ID</DataItemLabel>
+                    <DataItemValue>
+                      <Link href={predictionSet.cell_type["@id"]}>
+                        {predictionSet.cell_type.term_id}
+                      </Link>
+                    </DataItemValue>
+                  </>
+                )}
                 {referenceFiles.length > 0 && (
                   <>
                     <DataItemLabel>Reference Files</DataItemLabel>
@@ -233,7 +326,7 @@ export default function PredictionSet({
                     </DataItemValue>
                   </>
                 )}
-                {predictionSet.software_versions?.length > 0 && (
+                {isDatabaseObjectArray(predictionSet.software_versions) && (
                   <>
                     <DataItemLabel>Software Versions</DataItemLabel>
                     <DataItemValue>
@@ -264,17 +357,16 @@ export default function PredictionSet({
                 }}
               />
               <FileGraph
-                fileSet={predictionSet}
                 files={files}
-                referenceFiles={referenceFiles}
                 fileFileSets={fileFileSets}
+                referenceFiles={referenceFiles}
                 derivedFromFiles={derivedFromFiles}
                 qualityMetrics={qualityMetrics}
-                fileId={predictionSet.accession}
                 externalDeprecated={{
                   visible: areDeprecatedFilesVisible,
                   setVisible: setAreDeprecatedFilesVisible,
                 }}
+                fileId={predictionSet.accession}
               />
             </>
           )}
@@ -288,7 +380,7 @@ export default function PredictionSet({
             />
           )}
           {donors.length > 0 && <DonorTable donors={donors} />}
-          {predictionSet.construct_library_sets?.length > 0 && (
+          {isDatabaseObjectArray(predictionSet.construct_library_sets) && (
             <ConstructLibraryTable
               constructLibrarySets={predictionSet.construct_library_sets}
               title="Associated Construct Library Sets"
@@ -330,50 +422,20 @@ export default function PredictionSet({
   );
 }
 
-PredictionSet.propTypes = {
-  // Prediction set to display
-  predictionSet: PropTypes.object.isRequired,
-  // Input file sets that this prediction set is an input for
-  inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Input file sets for this prediction set
-  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Control file sets for this prediction set
-  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Files to display
-  files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that `files` refer to in their `file_sets` property
-  fileFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Reference files to display
-  referenceFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // All derived_from files not included in `files`
-  derivedFromFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Genes that are assessed in this prediction set
-  assessedGenes: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Samples associated with this prediction set
-  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Donors associated with this prediction set
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Documents associated with this prediction set
-  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Quality metrics associated with this analysis set
-  qualityMetrics: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Publications associated with this prediction set
-  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that supersede this file set
-  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that are superseded by this file set
-  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Attribution for this prediction set
-  attribution: PropTypes.object,
-  // Is the format JSON?
-  isJson: PropTypes.bool.isRequired,
-};
-
-export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+  resolvedUrl,
+}: GetServerSidePropsContext<{ id: string }>): Promise<
+  GetServerSidePropsResult<PredictionSetPageProps>
+> {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const predictionSet = (
-    await request.getObject(`/prediction-sets/${params.id}/`)
+    await request.getObject<PredictionSetObject>(
+      `/prediction-sets/${params.id}/`
+    )
   ).union();
   if (FetchRequest.isResponseSuccess(predictionSet)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
@@ -385,99 +447,52 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       return canonicalRedirect;
     }
 
-    const documents = predictionSet.documents
+    const files = isDatabaseObjectArray(predictionSet.files)
+      ? await requestFiles(
+          pathsFromDatabaseObjects(predictionSet.files),
+          request
+        )
+      : [];
+
+    const samples = await requestFileSetSamples([predictionSet], request);
+    const samplesTerms = await getSamplesTerms(samples, request);
+    const donors = await requestFileSetDonors(predictionSet, request);
+    const derivedFromFiles = await getAllDerivedFromFiles(files, request);
+    const combinedFiles = files.concat(derivedFromFiles);
+    const fileFileSets = await getFilesFileSets(combinedFiles, request);
+    const publications = await requestFileSetPublications(
+      predictionSet,
+      request
+    );
+    const referenceFiles = await requestFilesReferenceFiles(files, request);
+    const qualityMetrics = await requestFilesQualityMetrics(files, request);
+
+    const documents = isPathArray(predictionSet.documents)
       ? await requestDocuments(predictionSet.documents, request)
       : [];
 
-    let samples = [];
-    if (predictionSet.samples?.length > 0) {
-      const samplePaths = predictionSet.samples.map((sample) => sample["@id"]);
-      samples = await requestSamples(samplePaths, request);
-    }
+    const inputFileSets = await requestAssociatedFileSets(
+      [predictionSet],
+      "input_file_sets",
+      request,
+      ["analysis_set", "curated_set"]
+    );
 
-    const donors = await requestDonors(
-      predictionSet.donors?.map((donor) => donor["@id"]) || [],
+    const inputFileSetFor = await requestAssociatedFileSets(
+      [predictionSet],
+      "input_for",
       request
     );
 
-    const inputFileSets =
-      predictionSet.input_file_sets?.length > 0
-        ? await requestFileSets(predictionSet.input_file_sets, request)
-        : [];
+    const controlFor = await requestAssociatedFileSets(
+      [predictionSet],
+      "control_for",
+      request
+    );
 
-    const inputFileSetFor =
-      predictionSet.input_for?.length > 0
-        ? await requestFileSets(predictionSet.input_for, request)
-        : [];
-
-    let controlFor = [];
-    if (predictionSet.control_for?.length > 0) {
-      const controlForPaths = predictionSet.control_for.map(
-        (controlFor) => controlFor["@id"]
-      );
-      controlFor = await requestFileSets(controlForPaths, request);
-    }
-
-    let files = [];
-    if (predictionSet.files?.length > 0) {
-      const filePaths = predictionSet.files.map((file) => file["@id"]) || [];
-      files = await requestFiles(filePaths, request);
-    }
-
-    const derivedFromFiles = await getAllDerivedFromFiles(files, request);
-    const combinedFiles = files.concat(derivedFromFiles);
-    let fileFileSets = [];
-    if (combinedFiles.length > 0) {
-      const fileSetPaths = combinedFiles.reduce((acc, file) => {
-        return acc.includes(file.file_set["@id"])
-          ? acc
-          : acc.concat(file.file_set["@id"]);
-      }, []);
-      fileFileSets = await requestFileSets(fileSetPaths, request);
-    }
-
-    const assessedGenes =
-      predictionSet.assessed_genes?.length > 0
-        ? await requestGenes(predictionSet.assessed_genes, request)
-        : [];
-
-    let publications = [];
-    if (predictionSet.publications?.length > 0) {
-      const publicationPaths = predictionSet.publications.map(
-        (publication) => publication["@id"]
-      );
-      publications = await requestPublications(publicationPaths, request);
-    }
-
-    let qualityMetrics = [];
-    if (files.length > 0) {
-      let qualityMetricsPaths = files.reduce((acc, file) => {
-        return file.quality_metrics?.length > 0
-          ? acc.concat(file.quality_metrics)
-          : acc;
-      }, []);
-      qualityMetricsPaths = [...new Set(qualityMetricsPaths)];
-      qualityMetrics =
-        qualityMetricsPaths.length > 0
-          ? await requestQualityMetrics(qualityMetricsPaths, request)
-          : [];
-    }
-
-    // Get all reference file paths from the files in the prediction set, then request those files
-    // from the server. `reference_files` has a `minItems` of 1, so just check its existence.
-    const referenceFilePathsSet = files.reduce((acc, file) => {
-      if (file.reference_files) {
-        file.reference_files.forEach((referenceFilePath) => {
-          acc.add(referenceFilePath);
-        });
-      }
-      return acc;
-    }, new Set());
-    const referenceFilePaths = [...referenceFilePathsSet];
-    const referenceFiles =
-      referenceFilePaths.length > 0
-        ? await requestFiles(referenceFilePaths, request)
-        : [];
+    const assessedGenes = isPathArray(predictionSet.assessed_genes)
+      ? await requestGenes(predictionSet.assessed_genes, request)
+      : [];
 
     const { supersedes, supersededBy } = await requestSupersedes(
       predictionSet,
@@ -504,6 +519,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         referenceFiles,
         derivedFromFiles,
         samples,
+        samplesTerms,
         donors,
         qualityMetrics,
         supersedes,

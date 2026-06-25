@@ -104,9 +104,6 @@ interface ThisPageProps extends PageProps {
   assayTitleDescriptionMap: Record<string, string>;
   publications: PublicationObject[];
   documents: DocumentObject[];
-  supersedes: FileSetObject[];
-  supersededBy: FileSetObject[];
-  isJson: boolean;
 }
 
 /**

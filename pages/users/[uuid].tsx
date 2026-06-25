@@ -17,9 +17,10 @@ import PagePreamble from "../../components/page-preamble";
 // lib
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { type PageProps } from "../../lib/next-js";
 import { isJsonFormat } from "../../lib/query-utils";
 // root
-import type { LabObject, PageComponentProps, UserObject } from "../../globals";
+import type { LabObject, UserObject } from "../../globals";
 
 /**
  * Props for the User page component.
@@ -27,12 +28,12 @@ import type { LabObject, PageComponentProps, UserObject } from "../../globals";
  * @property user - User object containing user details
  * @property lab - Lab object associated with the user, if any
  */
-interface UserProps extends PageComponentProps {
+interface UserPageProps extends PageProps {
   user: UserObject;
   lab: LabObject | null;
 }
 
-export default function User({ user, lab, isJson }: UserProps) {
+export default function User({ user, lab, isJson }: UserPageProps) {
   return (
     <>
       <Breadcrumbs item={user} />
@@ -88,7 +89,7 @@ export async function getServerSideProps({
   query,
 }: GetServerSidePropsContext<{
   uuid: string;
-}>): Promise<GetServerSidePropsResult<UserProps>> {
+}>): Promise<GetServerSidePropsResult<UserPageProps>> {
   if (!params) {
     return { notFound: true };
   }
