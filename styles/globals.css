@@ -406,6 +406,11 @@
   --color-file-graph-file-count: oklch(0.5 0 0);
   --color-file-graph-file-border: oklch(0.4891 0 0);
   --color-file-graph-group: oklch(0.9791 0 0);
+  --color-file-graph-controls-background: oklch(1 0 0);
+  --color-file-graph-controls-background-hover: oklch(0.9 0 0);
+  --color-file-graph-controls-border: oklch(0.8 0 0);
+  --color-file-graph-controls-foreground: oklch(0.1 0 0);
+  --color-file-graph-controls-foreground-disabled: oklch(0.5 0 0);
 
   /** Modal */
   --color-modal-border: #cecfd3;
@@ -704,6 +709,11 @@
   --color-file-graph-file: oklch(0.3092 0 0);
   --color-file-graph-file-border: oklch(0.5999 0 0);
   --color-file-graph-group: oklch(0.1703 0 0);
+  --color-file-graph-controls-background: oklch(0.15 0 0);
+  --color-file-graph-controls-background-hover: oklch(0.3 0 0);
+  --color-file-graph-controls-border: oklch(0.4 0 0);
+  --color-file-graph-controls-foreground: oklch(0.9 0 0);
+  --color-file-graph-controls-foreground-disabled: oklch(0.5 0 0);
 
   --color-modal-border: #68799c;
   --color-modal-backdrop: oklch(0 0 0 / 60%);
@@ -1051,4 +1061,28 @@
 
 .dark .react-flow__node:focus-visible {
   box-shadow: 0 0 0 2px #a0a0a0 !important;
+}
+
+.react-flow__controls {
+  border: 1px solid var(--color-file-graph-controls-border) !important;
+  background-color: var(
+    --color-file-graph-controls-background-hover
+  ) !important;
+  @apply overflow-hidden rounded-md;
+}
+
+.react-flow__controls-button {
+  color: var(--color-file-graph-controls-foreground) !important;
+  background-color: var(--color-file-graph-controls-background) !important;
+  border-color: var(--color-file-graph-controls-border) !important;
+}
+
+.react-flow__controls-button:hover {
+  background-color: var(
+    --color-file-graph-controls-background-hover
+  ) !important;
+}
+
+.react-flow__controls-button:disabled {
+  color: var(--color-file-graph-controls-foreground-disabled) !important;
 }

@@ -1557,6 +1557,13 @@ describe("countFileNodes", () => {
 });
 
 describe("generateSVGContent", () => {
+  const mockGraphBounds = {
+    x: 0,
+    y: 0,
+    width: 250,
+    height: 280,
+  };
+
   // Mock DOM-elements factory that creates a fake DOM element for use in Jest tests. It returns a
   // plain object that mimics the interface of a real HTMLElement
   function createMockElement(tagName: string): any {
@@ -1594,7 +1601,7 @@ describe("generateSVGContent", () => {
       .mockImplementation(() => {});
     jest.spyOn(document, "getElementById").mockReturnValue(null);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toBeUndefined();
     expect(consoleSpy).toHaveBeenCalledWith(
@@ -1616,7 +1623,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toBeUndefined();
     expect(consoleSpy).toHaveBeenCalledWith(
@@ -1641,7 +1648,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain("<svg");
     expect(result).toContain('xmlns="http://www.w3.org/2000/svg"');
@@ -1677,7 +1684,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain('<path d="M10,10 L20,20"');
     expect(result).toContain('stroke="#000000"');
@@ -1713,7 +1720,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain('<polygon points="0,0 10,5 0,10"');
     expect(result).toContain('fill="#6b7280"');
@@ -1746,7 +1753,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain('<path d="M10,10 L20,20"');
     expect(result).toContain('stroke="#6b7280"'); // Default color
@@ -1793,7 +1800,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
     expect(result).toContain('font-family="Helvetica, Arial, sans-serif"');
   });
 
@@ -1851,7 +1858,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain("Measurement FileSet");
     expect(result).toContain(`rx="${NODE_HEIGHT / 2}"`);
@@ -1911,7 +1918,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain('width="156"');
     expect(result).toContain('height="60"');
@@ -1972,7 +1979,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain("Unknown FileSet");
     expect(result).toContain(`rx="${NODE_HEIGHT / 2}"`); // Should still have rounded corners
@@ -2025,7 +2032,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain("No Type FileSet");
   });
@@ -2062,7 +2069,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toBeDefined();
     expect(result).toContain("<svg");
@@ -2097,7 +2104,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toBeDefined();
   });
@@ -2163,11 +2170,11 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
-    expect(result).toContain('width="260px"');
-    expect(result).toContain('height="290px"');
-    expect(result).toContain('viewBox="-5 -5 260 290"');
+    expect(result).toContain('width="270px"');
+    expect(result).toContain('height="300px"');
+    expect(result).toContain('viewBox="-10 -10 270 300"');
   });
 
   it("should handle nodes with invalid transform values", () => {
@@ -2212,7 +2219,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     // Should default to position (0, 0) when transform doesn't match expected pattern
     expect(result).toContain('transform="translate(0, 0)"');
@@ -2265,7 +2272,7 @@ describe("generateSVGContent", () => {
       .mockReturnValue(mockContainer as any);
 
     // Call `generateSVGContent` to make sure it does the color variable conversion to hex values.
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     // CSS variables should be converted to hex values.
     expect(result).toContain('fill="#00a651"');
@@ -2348,7 +2355,10 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id") as string;
+    const result = generateSVGContent(
+      "test-graph-id",
+      mockGraphBounds
+    ) as string;
 
     const groupIndex = result.indexOf('transform="translate(5, 10)"');
     const edgeIndex = result.indexOf('<path d="M0,0 L100,100"');
@@ -2408,7 +2418,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain('width="321"');
     expect(result).toContain('height="123"');
@@ -2468,7 +2478,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain('width="444"');
     expect(result).toContain('height="222"');
@@ -2528,7 +2538,7 @@ describe("generateSVGContent", () => {
       .spyOn(document, "getElementById")
       .mockReturnValue(mockContainer as any);
 
-    const result = generateSVGContent("test-graph-id");
+    const result = generateSVGContent("test-graph-id", mockGraphBounds);
 
     expect(result).toContain(`width="${NODE_WIDTH - 2}"`);
     expect(result).toContain(`height="${NODE_HEIGHT - 2}"`);

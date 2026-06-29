@@ -2,18 +2,29 @@
 import ELK from "elkjs/lib/elk.bundled.js";
 import type { ElkNode } from "elkjs/lib/elk-api";
 import _ from "lodash";
-import { CSSProperties, Fragment, useEffect, useState } from "react";
 import {
+  CSSProperties,
+  Fragment,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  Controls,
   Handle,
+  getBezierPath,
+  getViewportForBounds,
   Position,
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
-  getBezierPath,
+  type CoordinateExtent,
   type Edge,
   type EdgeProps,
   type Node,
   type NodeProps,
+  type Rect,
 } from "@xyflow/react";
 // components
 import Checkbox from "../checkbox";
@@ -84,7 +95,7 @@ const edgeTypes = {
 /**
  * Padding around the graph in pixels.
  */
-const GRAPH_PADDING = 5;
+const GRAPH_PADDING = 38;
 
 /**
  * Position of the first line of text in a file node.
@@ -105,6 +116,17 @@ const NODE_LINE_HEIGHT = 13;
  * Padding of the container around the graph.
  */
 const CONTAINER_PADDING = 16;
+
+/**
+ * Maximum height of the graph in pixels. If the graph is taller than this, it will be scrollable.
+ */
+const MAXIMUM_GRAPH_HEIGHT = 1000;
+
+/**
+ * Padding to apply when fitting the graph to the view. This is a fraction of the graph size, so 0.1
+ * means 10% padding around the graph.
+ */
+const FIT_ZOOM_PADDING = 0.1;
 
 /**
  * Styles for the node handles. This puts the handles in the correct place for the edges to hook up
@@ -404,13 +426,11 @@ function GraphCore({
   graphData: ElkNode;
   nativeFiles: FileObject[];
   graphId?: string;
-  onNodeLayout?: (nodes: Node<NodeMetadata>[]) => void;
+  onNodeLayout?: (graphBounds: Rect) => void;
 }) {
   const [elk] = useState(() => new ELK());
   const [laidOutNodes, setLaidOutNodes] = useState<Node<NodeMetadata>[]>([]);
   const [laidOutEdges, setLaidOutEdges] = useState<Edge[]>([]);
-  const [graphHeight, setGraphHeight] = useState(0);
-  const [graphWidth, setGraphWidth] = useState(0);
   const [selectedNode, setSelectedNode] = useState<Node<NodeMetadata> | null>(
     null
   );
@@ -420,6 +440,9 @@ function GraphCore({
   const [qualityMetricFile, setQualityMetricFile] = useState<FileObject | null>(
     null
   );
+  const [graphBounds, setGraphBounds] = useState<Rect | null>(null);
+  const [minZoom, setMinZoom] = useState(0.25);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const rf = useReactFlow();
   const fileSetStats = collectRelevantFileSetStats(laidOutNodes);
@@ -449,7 +472,6 @@ function GraphCore({
         const { nodes, edges } = elkToReactFlow(graphDataWithLayout);
         setLaidOutNodes(nodes as Node<NodeMetadata>[]);
         setLaidOutEdges(edges);
-        onNodeLayout?.(nodes);
       })
       .catch((error) => {
         console.error("ELK layout failed:", error);
@@ -457,40 +479,125 @@ function GraphCore({
   }, [elk, graphData]);
 
   useEffect(() => {
-    // Runs after layout to determine the height of the graph so we can set the height of the
-    // container appropriately.
+    if (laidOutNodes.length === 0) {
+      return;
+    }
+
+    const frameId = requestAnimationFrame(() => {
+      setGraphBounds(rf.getNodesBounds(laidOutNodes));
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [rf, laidOutNodes]);
+
+  useEffect(() => {
+    if (!graphBounds || !onNodeLayout) {
+      return;
+    }
+
+    onNodeLayout(graphBounds);
+  }, [graphBounds, onNodeLayout]);
+
+  useEffect(() => {
+    if (!graphBounds) {
+      return;
+    }
+
+    // Once the graph has been laid out, fit the graph to the view so that it's rendered in full
+    // within the container in case the graph is larger than the container.
+    const frameId = requestAnimationFrame(() => {
+      void rf.fitView({
+        padding: FIT_ZOOM_PADDING,
+        duration: 0,
+      });
+    });
+
+    // Next frame, after React Flow applies the viewport.
     requestAnimationFrame(() => {
-      const graphBounds = rf.getNodesBounds(rf.getNodes());
-      setGraphHeight(
-        Math.ceil(
-          graphBounds.y + graphBounds.height + GRAPH_PADDING + CONTAINER_PADDING
-        )
+      setMinZoom(rf.getZoom());
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [rf, graphBounds]);
+
+  useEffect(() => {
+    if (!containerRef.current || !graphBounds) {
+      return;
+    }
+
+    function updateMinZoom() {
+      const containerWidth = containerRef.current.clientWidth;
+      const containerHeight = containerRef.current.clientHeight;
+
+      const viewport = getViewportForBounds(
+        graphBounds,
+        containerWidth,
+        containerHeight,
+        0,
+        2,
+        FIT_ZOOM_PADDING
       );
-      setGraphWidth(
-        Math.ceil(
-          graphBounds.x + graphBounds.width + GRAPH_PADDING + CONTAINER_PADDING
-        )
+
+      setMinZoom(viewport.zoom);
+    }
+
+    // Called when the width of the file graph container changes, so that we can center the graph
+    // within the container.
+    const observer = new ResizeObserver(() => {
+      updateMinZoom();
+      void rf.setCenter(
+        graphBounds.x + graphBounds.width / 2,
+        graphBounds.y + graphBounds.height / 2,
+        {
+          zoom: rf.getZoom(),
+          duration: 0,
+        }
       );
     });
-  }, [rf, laidOutNodes, laidOutEdges]);
 
-  return (
-    <div className="relative">
-      <div className="max-h-[calc(100vh-8rem)] overflow-x-auto overflow-y-auto">
-        <div
-          className="mx-auto"
-          style={{
-            height: graphHeight + 8,
-            width: graphWidth,
-          }}
-        >
-          <div className="h-full w-full p-2" id={graphId}>
+    updateMinZoom();
+
+    observer.observe(containerRef.current);
+
+    return () => observer.disconnect();
+  }, [rf, graphBounds]);
+
+  // Determine the height of the graph and the extent to which the user can pan around the graph. We
+  // add padding to the graph bounds so that the user can pan a bit beyond the edges of the graph.
+  const graphHeight = graphBounds
+    ? Math.ceil(graphBounds.height + GRAPH_PADDING + CONTAINER_PADDING)
+    : 0;
+  const translateExtent: CoordinateExtent = graphBounds
+    ? [
+        [graphBounds.x - 20, graphBounds.y - 20],
+        [
+          graphBounds.x + graphBounds.width + 20,
+          graphBounds.y + graphBounds.height + 20,
+        ],
+      ]
+    : [
+        [0, 0],
+        [0, 0],
+      ];
+
+  if (graphBounds) {
+    return (
+      <div className="relative">
+        <div className="overflow-auto">
+          <div
+            ref={containerRef}
+            id={graphId}
+            className="mx-auto w-full"
+            style={{
+              height: Math.min(graphHeight, MAXIMUM_GRAPH_HEIGHT),
+            }}
+          >
             <ReactFlow
+              translateExtent={translateExtent}
               nodes={laidOutNodes}
               edges={laidOutEdges}
-              defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-              minZoom={1}
-              maxZoom={1}
+              minZoom={minZoom}
+              maxZoom={2}
               nodeOrigin={[0, 0]}
               nodeTypes={nodeTypes}
               edgeTypes={edgeTypes}
@@ -498,7 +605,7 @@ function GraphCore({
               nodesConnectable={false}
               elementsSelectable={false}
               onNodeClick={onNodeClick}
-              panOnDrag={false}
+              panOnDrag={true}
               panOnScroll={false}
               zoomOnScroll={false}
               zoomOnPinch={false}
@@ -510,39 +617,46 @@ function GraphCore({
                   strokeWidth: 1,
                 },
               }}
-            />
+            >
+              <Controls
+                showInteractive={false}
+                position="bottom-right"
+                orientation="horizontal"
+              />
+            </ReactFlow>
           </div>
+          {selectedNode && isFileNodeMetadata(selectedNode.data) && (
+            <FileModal
+              node={selectedNode as Node<FileMetadata>}
+              onClose={() => setSelectedNode(null)}
+            />
+          )}
+          {selectedNode && isFileSetNodeMetadata(selectedNode.data) && (
+            <FileSetModal
+              node={selectedNode as Node<FileSetMetadata>}
+              nativeFiles={nativeFiles}
+              onClose={() => setSelectedNode(null)}
+            />
+          )}
+          {selectedQualityMetrics.length > 0 && (
+            <QualityMetricModal
+              file={qualityMetricFile}
+              qualityMetrics={selectedQualityMetrics}
+              onClose={() => {
+                setSelectedQualityMetrics([]);
+                setQualityMetricFile(null);
+              }}
+            />
+          )}
         </div>
-        {selectedNode && isFileNodeMetadata(selectedNode.data) && (
-          <FileModal
-            node={selectedNode as Node<FileMetadata>}
-            onClose={() => setSelectedNode(null)}
-          />
-        )}
-        {selectedNode && isFileSetNodeMetadata(selectedNode.data) && (
-          <FileSetModal
-            node={selectedNode as Node<FileSetMetadata>}
-            nativeFiles={nativeFiles}
-            onClose={() => setSelectedNode(null)}
-          />
-        )}
-        {selectedQualityMetrics.length > 0 && (
-          <QualityMetricModal
-            file={qualityMetricFile}
-            qualityMetrics={selectedQualityMetrics}
-            onClose={() => {
-              setSelectedQualityMetrics([]);
-              setQualityMetricFile(null);
-            }}
-          />
-        )}
+        <Legend
+          fileSetStats={fileSetStats}
+          fileCount={countFileNodes(laidOutNodes)}
+        />
       </div>
-      <Legend
-        fileSetStats={fileSetStats}
-        fileCount={countFileNodes(laidOutNodes)}
-      />
-    </div>
-  );
+    );
+  }
+  return null;
 }
 
 /**
@@ -562,7 +676,7 @@ function Graph({
   graphData: ElkNode;
   nativeFiles: FileObject[];
   graphId?: string;
-  onNodeLayout?: (nodes: Node<NodeMetadata>[]) => void;
+  onNodeLayout?: (graphBounds: Rect) => void;
 }) {
   return (
     <ReactFlowProvider>
@@ -669,6 +783,84 @@ function GraphCycleError({ cycles }: { cycles: string[][] }) {
 }
 
 /**
+ * Display the title of the file graph panel, including the download button and deprecated file
+ * toggle if applicable.
+ *
+ * @param panelId - ID of the file-graph panel unique on the page for the section directory
+ * @param graphId - ID of the graph container element unique on the page
+ * @param title - Title that appears above the graph panel
+ * @param secDirTitle - Title for the section directory if the graph is within a section.
+ * @param showDeprecatedToggle - True to show the deprecated file toggle control
+ * @param localDeprecated - Props for handling the visibility of deprecated files in the graph.
+ * @param fileId - ID of the file the graph is for; used to customize download filename
+ * @param isDisabled - True to disable the download button (e.g., when cycles are detected)
+ * @param graphBounds - The bounds of the graph for download purposes
+ */
+function FileGraphTitle({
+  panelId,
+  graphId,
+  title,
+  secDirTitle,
+  showDeprecatedToggle,
+  localDeprecated,
+  fileId,
+  isDisabled,
+  graphBounds,
+}: {
+  panelId: string;
+  graphId: string;
+  title: string;
+  secDirTitle: string;
+  showDeprecatedToggle: boolean;
+  localDeprecated: DeprecatedFileFilterProps;
+  fileId: string;
+  isDisabled: boolean;
+  graphBounds: MutableRefObject<Rect | null>;
+}) {
+  const tooltipAttr = useTooltip(`tooltip-${graphId}`);
+
+  return (
+    <DataAreaTitle id={panelId} secDirTitle={secDirTitle}>
+      <div id="file-graph">{title}</div>
+      <div className="flex gap-1">
+        {showDeprecatedToggle && (
+          <Checkbox
+            id={`file-graph-deprecated-${panelId}`}
+            checked={localDeprecated.visible}
+            name="Include deprecated files"
+            onClick={() => localDeprecated.setVisible(!localDeprecated.visible)}
+            className="items-center [&>input]:mr-0"
+          >
+            <div className="order-first mr-1 text-sm">
+              {localDeprecated.controlTitle}
+            </div>
+          </Checkbox>
+        )}
+        <TooltipRef tooltipAttr={tooltipAttr}>
+          <DownloadTrigger
+            graphId={graphId}
+            fileId={fileId}
+            graphBounds={graphBounds.current}
+            isDisabled={isDisabled || !graphBounds.current}
+          />
+        </TooltipRef>
+      </div>
+      <Tooltip tooltipAttr={tooltipAttr}>
+        Download the graph as an SVG file. See{" "}
+        <Link
+          href="/help/graph-download"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          tutorial
+        </Link>{" "}
+        for details.
+      </Tooltip>
+    </DataAreaTitle>
+  );
+}
+
+/**
  * Display a graph of the file associations for a file set in a collapsible panel. We use files in
  * `files` instead of those embedded in `fileSet` because the embedded file objects do not include
  * enough properties of the files to generate the graph.
@@ -712,7 +904,8 @@ export function FileGraph({
   graphId?: string;
   fileId?: string;
 }) {
-  const tooltipAttr = useTooltip(`tooltip-${graphId}`);
+  // Stores the bounds of the graph after layout so that we can use it for SVG download.
+  const graphBounds = useRef<Rect | null>(null);
 
   // Local state for deprecated file visibility if not controlled externally via props
   const defaultDeprecatedVisible = computeDefaultDeprecatedVisibility(
@@ -779,50 +972,26 @@ export function FileGraph({
   if (graphData || cycles.length > 0 || isEmptyGraphAfterFiltering) {
     return (
       <section role="region" aria-labelledby="file-graph">
-        <DataAreaTitle id={panelId} secDirTitle={secDirTitle}>
-          <div id="file-graph">{title}</div>
-          <div className="flex gap-1">
-            {showDeprecatedToggle && (
-              <Checkbox
-                id={`file-graph-deprecated-${panelId}`}
-                checked={localDeprecated.visible}
-                name="Include deprecated files"
-                onClick={() =>
-                  localDeprecated.setVisible(!localDeprecated.visible)
-                }
-                className="items-center [&>input]:mr-0"
-              >
-                <div className="order-first mr-1 text-sm">
-                  {localDeprecated.controlTitle}
-                </div>
-              </Checkbox>
-            )}
-            <TooltipRef tooltipAttr={tooltipAttr}>
-              <DownloadTrigger
-                graphId={graphId}
-                fileId={fileId}
-                isDisabled={cycles.length > 0 || isEmptyGraphAfterFiltering}
-              />
-            </TooltipRef>
-          </div>
-          <Tooltip tooltipAttr={tooltipAttr}>
-            Download the graph as an SVG file. See{" "}
-            <Link
-              href="/help/graph-download"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              tutorial
-            </Link>{" "}
-            for details.
-          </Tooltip>
-        </DataAreaTitle>
+        <FileGraphTitle
+          panelId={panelId}
+          graphId={graphId}
+          title={title}
+          secDirTitle={secDirTitle}
+          showDeprecatedToggle={showDeprecatedToggle}
+          localDeprecated={localDeprecated}
+          fileId={fileId}
+          isDisabled={cycles.length > 0 || isEmptyGraphAfterFiltering}
+          graphBounds={graphBounds}
+        />
         {graphData ? (
           <DataPanel isPaddingSuppressed>
             <Graph
               graphData={graphData}
               nativeFiles={includedFiles}
               graphId={graphId}
+              onNodeLayout={(layedOutBounds) => {
+                graphBounds.current = layedOutBounds;
+              }}
             />
           </DataPanel>
         ) : isEmptyGraphAfterFiltering ? (
