@@ -3088,8 +3088,8 @@ describe("Test Workflow component", () => {
   });
 });
 
-describe("Test Prediction Set component with alternate_accessions but no files or samples.summary", () => {
-  it("renders a prediction set item", () => {
+describe("Test Prediction Set component", () => {
+  it("renders a prediction set item with alternate_accessions but no files or samples.summary", () => {
     const item = {
       "@id": "/prediction-sets/IGVFDS8323PSET/",
       "@type": ["PredictionSet", "FileSet", "Item"],
@@ -3135,10 +3135,8 @@ describe("Test Prediction Set component with alternate_accessions but no files o
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
-});
 
-describe("Test Prediction Set component with files but no alternate_accessions or samples", () => {
-  it("renders a prediction set item", () => {
+  it("renders a prediction set item with files but no alternate_accessions or samples", () => {
     const item = {
       "@id": "/prediction-sets/IGVFDS8323PSET/",
       "@type": ["PredictionSet", "FileSet", "Item"],
@@ -3183,10 +3181,8 @@ describe("Test Prediction Set component with files but no alternate_accessions o
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
   });
-});
 
-describe("Test Prediction Set component with samples but no files or alternate_accessions", () => {
-  it("renders a prediction set item", () => {
+  it("renders a prediction set item with samples but no files or alternate_accessions", () => {
     const item = {
       "@id": "/prediction-sets/IGVFDS8323PSET/",
       "@type": ["PredictionSet", "FileSet", "Item"],
@@ -3251,11 +3247,18 @@ describe("Test Prediction Set component with samples but no files or alternate_a
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
-  });
-});
 
-describe("Test Prediction Set component with no samples,  no files or alternate_accessions", () => {
-  it("renders a prediction set item", () => {
+    const paths = PredictionSet.getAccessoryDataPaths([item]);
+    expect(paths).toEqual([
+      {
+        type: "PredictionSet",
+        paths: ["/prediction-sets/IGVFDS8323PSET/"],
+        fields: ["cell_annotation", "cell_type"],
+      },
+    ]);
+  });
+
+  it("renders a prediction set item with no samples, no files or alternate_accessions", () => {
     const item = {
       "@id": "/prediction-sets/IGVFDS8323PSET/",
       "@type": ["PredictionSet", "FileSet", "Item"],
@@ -3294,6 +3297,66 @@ describe("Test Prediction Set component with no samples,  no files or alternate_
 
     const supplement = screen.queryByTestId("search-list-item-supplement");
     expect(supplement).not.toBeInTheDocument();
+
+    const status = screen.getByTestId("search-list-item-quality");
+    expect(status).toHaveTextContent("released");
+  });
+
+  it("renders a prediction set item with accessory data", () => {
+    const item = {
+      "@id": "/prediction-sets/IGVFDS8323PSET/",
+      "@type": ["PredictionSet", "FileSet", "Item"],
+      accession: "IGVFDS8323PSET",
+      award: "/awards/HG012012/",
+      lab: "/labs/j-michael-cherry/",
+      files: [],
+      status: "released",
+      file_set_type: "functional effect",
+      summary: "binding effect prediction for FOXM1 using SEMVAR v1.0.0",
+      scope: "genes",
+      uuid: "a053168a-82aa-4f7e-10e3-c19fa3cd13f6",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PredictionSet
+          item={item}
+          accessoryData={{
+            "/prediction-sets/IGVFDS8323PSET/": {
+              "@id": "/prediction-sets/IGVFDS8323PSET/",
+              "@type": ["PredictionSet", "FileSet", "Item"],
+              cell_annotation: "Cell annotation value",
+              cell_type: {
+                "@id": "/sample-terms/UBERON_0005439/",
+                definition:
+                  "An embryonic structure that is the internal layer of the embryonic gut, formed by the recruitment of epiblast cells through the primitive streak.",
+                status: "released",
+                term_id: "UBERON:0005439",
+                term_name: "definitive endoderm",
+              },
+            },
+          }}
+        />
+      </SessionContext.Provider>
+    );
+
+    const uniqueId = screen.getByTestId("search-list-item-unique-id");
+    expect(uniqueId).toHaveTextContent(/Prediction Set/);
+    expect(uniqueId).toHaveTextContent(/IGVFDS8323PSET/);
+
+    const title = screen.getByTestId("search-list-item-title");
+    expect(title).toHaveTextContent(
+      "binding effect prediction for FOXM1 using SEMVAR v1.0.0"
+    );
+
+    const meta = screen.getByTestId("search-list-item-meta");
+    expect(meta).toHaveTextContent("/labs/j-michael-cherry/");
+    expect(meta).toHaveTextContent("genes");
+
+    const supplementContent = screen.getAllByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(supplementContent[0]).toHaveTextContent("Cell annotation value");
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");

@@ -10,6 +10,7 @@ import {
   pathsFromDatabaseObjects,
 } from "./database-object";
 import FetchRequest from "./fetch-request";
+import { type GeneLocation } from "./genes";
 import {
   type AssayTermObject,
   type OntologyTermObject,
@@ -27,6 +28,7 @@ import type {
   LabObject,
   OpenReadingFrameObject,
   PublicationObject,
+  SoftwareVersionObject,
   SourceObject,
 } from "../globals";
 
@@ -198,15 +200,21 @@ export interface MeasurementSetObject extends FileSetObject {
 
 export interface ModelSetObject extends FileSetObject {
   assay_titles?: string[];
+  assessed_genes?: LinkToArray<GeneObject>;
   dbxrefs?: string[];
   doi?: string;
   file_sets?: LinkToArray<FileSetObject>;
   input_file_sets?: LinkToArray<FileSetObject>;
   preferred_assay_titles?: string[];
+  software_versions?: LinkToArray<SoftwareVersionObject>;
 }
 
 export interface PredictionSetObject extends FileSetObject {
   associated_phenotypes?: LinkToArray<OntologyTermObject>;
+  assessed_genes?: LinkToArray<GeneObject>;
+  cell_annotation?: string;
+  cell_qualifier?: string;
+  cell_type?: LinkTo<OntologyTermObject>;
   dbxrefs?: string[];
   doi?: string;
   file_sets?: LinkToArray<FileSetObject>;
@@ -214,6 +222,9 @@ export interface PredictionSetObject extends FileSetObject {
   large_scale_gene_list?: LinkTo<FileObject>;
   large_scale_loci_list?: LinkTo<FileObject>;
   scope?: string;
+  small_scale_gene_list?: LinkToArray<GeneObject>;
+  small_scale_loci_list?: GeneLocation[];
+  software_versions?: LinkToArray<SoftwareVersionObject>;
 }
 
 export interface PseudobulkSetObject extends FileSetObject {

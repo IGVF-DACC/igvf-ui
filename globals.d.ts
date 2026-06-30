@@ -8,18 +8,6 @@ import { type LinkTo, LinkToArray } from "./lib/types";
 import { type WorkflowObject } from "./lib/workflow";
 
 /**
- * Template for props passed from Next.js `getServerSideProps` to page components. Extend this for
- * the props specific to each page.
- *
- * @param isJson - Whether the page is being rendered in JSON format
- * @param pageContext - Additional context for the page, such as title
- */
-export interface PageComponentProps {
-  isJson: boolean;
-  pageContext: { title: string };
-}
-
-/**
  * Single audit within an audit category.
  */
 export interface Audit {

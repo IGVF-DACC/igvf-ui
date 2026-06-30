@@ -1,5 +1,4 @@
 // node_modules
-import PropTypes from "prop-types";
 // components/search/list-renderer
 import {
   SearchListItemContent,
@@ -18,8 +17,27 @@ import {
 // components
 import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
+import { SampleAnnotatedSummary } from "../../sample-annotated-summary";
+// lib
+import { type PredictionSetObject } from "../../../lib/file-sets";
+import { isEmbedded } from "../../../lib/types";
 
-export default function PredictionSet({ item: predictionSet }) {
+/**
+ * A subset of the `PseudobulkSetObject` fields that appears in accessory data for the pseudobulk
+ * set list renderer.
+ */
+type PredictionSetSubset = Pick<
+  PredictionSetObject,
+  "@id" | "@type" | "cell_annotation" | "cell_type"
+>;
+
+export default function PredictionSet({
+  item: predictionSet,
+  accessoryData,
+}: {
+  item: PredictionSetObject;
+  accessoryData?: Record<string, PredictionSetSubset> | null;
+}) {
   // Collect all files.content_type and deduplicate
   const fileContentType =
     predictionSet.files?.length > 0
@@ -34,8 +52,17 @@ export default function PredictionSet({ item: predictionSet }) {
         ].sort()
       : [];
 
+  // If the accessory data has a `cell_type` property, use it to get definitions for tooltips on
+  // `cell_annotation` summary. We eventually need to also retrieve sample terms to get more
+  // complete tooltips.
+  const accessoryPredictionSet = accessoryData?.[predictionSet["@id"]];
+  const allSampleTerms = isEmbedded(accessoryPredictionSet?.cell_type)
+    ? [accessoryPredictionSet.cell_type]
+    : [];
+
   const isSupplementsVisible =
     predictionSet.alternate_accessions ||
+    accessoryPredictionSet?.cell_annotation ||
     fileContentType.length > 0 ||
     sampleSummaries.length > 0;
 
@@ -48,7 +75,11 @@ export default function PredictionSet({ item: predictionSet }) {
         </SearchListItemUniqueId>
         <SearchListItemTitle>{predictionSet.summary}</SearchListItemTitle>
         <SearchListItemMeta>
-          <span key="lab">{predictionSet.lab.title}</span>
+          <span key="lab">
+            {isEmbedded(predictionSet.lab)
+              ? predictionSet.lab.title
+              : predictionSet.lab}
+          </span>
           {predictionSet.scope && (
             <span key="scope">{predictionSet.scope}</span>
           )}
@@ -63,6 +94,19 @@ export default function PredictionSet({ item: predictionSet }) {
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
                   {fileContentType.join(", ")}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+            {accessoryPredictionSet?.cell_annotation && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Cell Annotation
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  <SampleAnnotatedSummary
+                    summary={accessoryPredictionSet.cell_annotation}
+                    terms={allSampleTerms}
+                  />
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
@@ -89,7 +133,12 @@ export default function PredictionSet({ item: predictionSet }) {
   );
 }
 
-PredictionSet.propTypes = {
-  // Single prediction set search-result object to display on a search-result list page
-  item: PropTypes.object.isRequired,
+PredictionSet.getAccessoryDataPaths = (items) => {
+  return [
+    {
+      type: "PredictionSet",
+      paths: items.map((item) => item["@id"]),
+      fields: ["cell_annotation", "cell_type"],
+    },
+  ];
 };
