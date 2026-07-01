@@ -3,7 +3,6 @@ import {
   CheckIcon,
   ClipboardDocumentCheckIcon,
 } from "@heroicons/react/20/solid";
-import { isValidElement, type ReactNode } from "react";
 import Markdown, { type ExtraProps } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -11,6 +10,9 @@ import remarkGfm from "remark-gfm";
 // components
 import { CopyButton } from "./copy-button";
 import Link from "./link-no-prefetch";
+// lib
+import { extractText, REMARK_CLOBBER_PREFIX } from "../lib/markdown";
+import { remarkHeadingIds } from "../lib/remark-heading-ids";
 
 /**
  * Types to define the props for the custom renderers for links and tables in the markdown content. These
@@ -31,11 +33,58 @@ type TableProps = JSX.IntrinsicElements["table"] & ExtraProps;
  */
 export const rehypeSanitizeSchema = {
   ...defaultSchema,
+  clobberPrefix: `${REMARK_CLOBBER_PREFIX}-`,
   attributes: {
     ...defaultSchema.attributes,
     span: [...(defaultSchema.attributes?.span || []), "style"],
   },
 };
+
+/**
+ * This component provides a convenient way to render markdown as HTML while filtering out
+ * dangerous content.
+ *
+ * @param direction - Text direction for the markdown content
+ *   - "ltr" (left-to-right)
+ *   - "rtl" (right-to-left)
+ * @param className - Additional Tailwind CSS classes to apply to the wrapper div around the rendered HTML
+ * @param testid - The test ID for the component, used for testing purposes
+ * @param children - The markdown content to render as HTML
+ */
+export default function MarkdownSection({
+  direction = "ltr",
+  className,
+  testid,
+  suppressLeadingMargin = false,
+  children,
+}: {
+  direction?: "ltr" | "rtl";
+  className?: string;
+  testid?: string;
+  suppressLeadingMargin?: boolean;
+  children: string;
+}) {
+  return (
+    <div data-testid={testid} className="prose dark:prose-invert">
+      <div
+        dir={direction}
+        className={`${suppressLeadingMargin ? "suppress-leading-margin" : ""} ${className ?? ""}`.trim()}
+      >
+        <Markdown
+          remarkPlugins={[remarkGfm, remarkHeadingIds]}
+          rehypePlugins={[rehypeRaw, [rehypeSanitize, rehypeSanitizeSchema]]}
+          components={{
+            a: LinkRenderer,
+            pre: PreRenderer,
+            table: TableRenderer,
+          }}
+        >
+          {children}
+        </Markdown>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Markdown component to intercept the rendering of links in markdown content and render them with
@@ -100,32 +149,6 @@ function PreRenderer({ children, node: _node, ...props }: PreProps) {
 }
 
 /**
- * Recursively extracts plain text from a React node tree. Used to get the copyable text content
- * from the `<pre>` element's children (typically `<code>` wrapping a string).
- *
- * @param node - React node from which to extract text. This can be a string, number, array of
- *               nodes, or a React element.
- * @returns The extracted plain text content as a string.
- */
-function extractText(node: ReactNode): string {
-  if (typeof node === "string") {
-    return node;
-  }
-  if (typeof node === "number") {
-    return String(node);
-  }
-  if (Array.isArray(node)) {
-    // Recursively extract text from each child node and concatenate the results.
-    return (node as ReactNode[]).map(extractText).join("");
-  }
-  if (isValidElement(node)) {
-    // Recursively extract text from the child elements of the React element.
-    return extractText((node.props as { children?: ReactNode }).children);
-  }
-  return "";
-}
-
-/**
  * Custom renderer for tables in markdown content to wrap them in a div with overflow-x-auto to make
  * them horizontally scrollable on smaller screens. This is necessary because markdown tables can be
  * wider than the screen, and without this wrapper they would overflow and break the layout.
@@ -139,52 +162,6 @@ function TableRenderer({ children, node: _node, ...props }: TableProps) {
   return (
     <div className="overflow-x-auto">
       <table {...props}>{children}</table>
-    </div>
-  );
-}
-
-/**
- * This component provides a convenient way to render markdown as HTML while filtering out
- * dangerous content.
- *
- * @param direction - Text direction for the markdown content
- *   - "ltr" (left-to-right)
- *   - "rtl" (right-to-left)
- * @param className - Additional Tailwind CSS classes to apply to the wrapper div around the rendered HTML
- * @param testid - The test ID for the component, used for testing purposes
- * @param children - The markdown content to render as HTML
- */
-export default function MarkdownSection({
-  direction = "ltr",
-  className,
-  testid,
-  suppressLeadingMargin = false,
-  children,
-}: {
-  direction?: "ltr" | "rtl";
-  className?: string;
-  testid?: string;
-  suppressLeadingMargin?: boolean;
-  children: string;
-}) {
-  return (
-    <div data-testid={testid} className="prose dark:prose-invert">
-      <div
-        dir={direction}
-        className={`${suppressLeadingMargin ? "suppress-leading-margin" : ""} ${className ?? ""}`.trim()}
-      >
-        <Markdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw, [rehypeSanitize, rehypeSanitizeSchema]]}
-          components={{
-            a: LinkRenderer,
-            pre: PreRenderer,
-            table: TableRenderer,
-          }}
-        >
-          {children}
-        </Markdown>
-      </div>
     </div>
   );
 }

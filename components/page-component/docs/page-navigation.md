@@ -18,11 +18,10 @@ Don’t use a full URL for internal pages (pages that exist in igvf-ui) — use 
 
 ### Anchors
 
-You can link to a section elsewhere on the same page for the reader’s convenience. You make anchors using the `<a>` HTML tag at the location on the page that you want to link to and choosing a meaningful anchor name that’s suitable for a URL, so don’t go delving into spaces and special characters for the anchor name. You normally use only alphanumerics and dashes for anchor names. Here, an anchor named `tissue-biosamples` gets inserted before a level 2 header:
+You can link to a header (`#`, `##`, etc.) elsewhere on the same page for the reader’s convenience. You add anchor tags by adding an anchor tag that looks like `{#tissue-biosamples}` to the end of the header line. You must separate the tag from the rest of the title with white space, an open brace, hash, then the kebab case ID you want for that tag which must be unique on the page. Here, an anchor named `tissue-biosamples` gets added to a level 2 header. The anchor tag must be separated from the header text with white space, normally a single space. Nothing can follow the anchor tag on the line, including whitespace. If the anchor tag doesn’t follow these rules, it appears as part of the header text and no anchor is generated in the HTML.
 
 ```
-<a name="tissue-biosamples"></a>
-## Tissue Biosamples
+## Tissue Biosamples {#tissue-biosamples}
 ```
 
 You can then use `#tissue-biosamples` as the link to have the browser scroll to this spot.
@@ -34,8 +33,6 @@ Tissue Biosamples=#tissue-biosamples
 
 ## Example
 
-This example makes the page navigation that appears at the top of this document.
-
 ```
 PAGE_NAV
 First Topic=#first-topic
@@ -44,11 +41,11 @@ Third Topic=#third-topic
 Fourth Topic=https://www.genome.gov/
 Fifth Topic=#fifth-topic
 ...
-<a name="first-topic"></a>
+## First Topic {#first-topic}
 ...
-<a name="third-topic"></a>
+### Third Topic {#third-topic}
 ...
-<a name="fifth-topic"></a>
+## Fifth Topic {#fifth-topic}
 ```
 
 “First Topic,” “Third Topic,” and “Fifth Topic” link to their anchors on the same page, so clicking them simply scrolls the page to those locations. “Second Topic” links to the IGVFSM0000DDDD tissue page on this site. “Fourth Topic” links to the NHGRI website.

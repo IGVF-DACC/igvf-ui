@@ -1,8 +1,10 @@
 // node_modules
 import { ReactNode } from "react";
+// local
+import { PluginProps } from "./types";
 // lib
 import { isLight } from "../../lib/color";
-import { PluginProps } from "./types";
+import { REMARK_CLOBBER_PREFIX } from "../../lib/markdown";
 
 /**
  * Displays a single chevron link in the chevron navigation menu. The `color` prop is the CSS hex
@@ -49,12 +51,15 @@ export default function ChevronNavigation(items: PluginProps) {
   if (itemTitles.length > 0) {
     return (
       <nav data-testid="chevron-navigation">
-        <ul className="@container/chevron-menu flex flex-wrap gap-1 overflow-hidden px-4">
+        <ul className="@container/chevron-menu flex flex-wrap gap-2 overflow-hidden px-4">
           {itemTitles.map((itemTitle, index) => {
-            // Get the link and color for the title, separated by a pipe character
+            // Get the link and color for the title, separated by a pipe character.
             const [href, color] = items[itemTitle].split("|");
+            const processedHref = href.startsWith("#")
+              ? `#${REMARK_CLOBBER_PREFIX}-${href.slice(1)}`
+              : href;
             return (
-              <ChevronLink key={index} href={href} color={`#${color}`}>
+              <ChevronLink key={index} href={processedHref} color={`#${color}`}>
                 {itemTitle}
               </ChevronLink>
             );

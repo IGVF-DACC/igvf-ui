@@ -2,6 +2,7 @@
 import Link from "../link-no-prefetch";
 // lib
 import { isValidUrl } from "../../lib/general";
+import { REMARK_CLOBBER_PREFIX } from "../../lib/markdown";
 import { PluginProps } from "./types";
 
 /**
@@ -24,6 +25,9 @@ export default function PageNavigation(items: PluginProps) {
             const href = items[itemTitle];
             const isUrl = isValidUrl(href);
             const isAnchor = href.startsWith("#");
+            const processedHref = isAnchor
+              ? `#${REMARK_CLOBBER_PREFIX}-${href.slice(1)}`
+              : href;
 
             // External links and anchors get a regular <a> while internal links get a <Link> so
             // that they only load JSON data instead of the page's HTML. Using an array index as
@@ -31,13 +35,17 @@ export default function PageNavigation(items: PluginProps) {
             return (
               <li key={index} className="m-0 p-0 pb-2">
                 {isUrl || isAnchor ? (
-                  <a data-testid="external" href={href} className={className}>
+                  <a
+                    data-testid="external"
+                    href={processedHref}
+                    className={className}
+                  >
                     {itemTitle}
                   </a>
                 ) : (
                   <Link
                     data-testid="internal"
-                    href={href}
+                    href={processedHref}
                     className={className}
                   >
                     {itemTitle}

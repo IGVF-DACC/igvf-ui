@@ -61,15 +61,15 @@ describe("page-component tests", () => {
     cy.contains(`Page Navigation Page ${now}`);
     cy.get("[data-testid='page-blocks'] nav a")
       .eq(0)
-      .should("have.attr", "href", "#item1")
+      .should("have.attr", "href", "#user-content-item1")
       .and("have.text", "Item 1");
     cy.get("[data-testid='page-blocks'] nav a")
       .eq(1)
-      .should("have.attr", "href", "#item2")
+      .should("have.attr", "href", "#user-content-item2")
       .and("have.text", "Item 2");
     cy.get("[data-testid='page-blocks'] nav a")
       .eq(2)
-      .should("have.attr", "href", "#item3")
+      .should("have.attr", "href", "#user-content-item3")
       .and("have.text", "Item 3");
   });
 
@@ -135,7 +135,7 @@ describe("page-component tests", () => {
     cy.contains(`Chevron Navigation Page ${now}`);
     cy.get(`[data-testid="chevron-navigation"] ul li a`)
       .eq(0)
-      .should("have.attr", "href", "#first-topic")
+      .should("have.attr", "href", "#user-content-first-topic")
       .should(
         "have.attr",
         "style",
