@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import type { SearchResultsFacetTerm } from "../../../globals";
 import FacetTerm from "../facet-term";
+import facetRegistry from "../facet-registry";
 
 describe("Test the <FacetTerms> component", () => {
   beforeAll(() => {
@@ -210,5 +211,21 @@ describe("Test the <FacetTerms> component", () => {
       "",
       parent
     );
+  });
+});
+
+describe("Test null facet components in the registry", () => {
+  it("renders a null facet term", () => {
+    const ExistingTermComponent = facetRegistry.terms.lookup("file_size");
+    expect(ExistingTermComponent).not.toBeNull();
+
+    const NullTermComponent = facetRegistry.terms.lookup(
+      "preferred_assay_slims"
+    );
+    expect(NullTermComponent).toBeNull();
+
+    const UndefinedTermComponent =
+      facetRegistry.terms.lookup("undefined_field");
+    expect(UndefinedTermComponent).not.toBeNull();
   });
 });

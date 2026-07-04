@@ -4,7 +4,6 @@ import {
   stripLimitQueryIfNeeded,
 } from "../search-results";
 import { CollectionTitles, Profiles, SearchResults } from "../../globals.d";
-import _ from "lodash";
 
 describe("Test generateSearchResultsTypes()", () => {
   it("returns an empty array if profiles is null", () => {
@@ -16,6 +15,7 @@ describe("Test generateSearchResultsTypes()", () => {
       clear_filters: "/search/",
       columns: {},
       facets: [],
+      filters: [],
       notification: "Success",
       title: "Search Results",
       total: 0,
@@ -29,7 +29,7 @@ describe("Test generateSearchResultsTypes()", () => {
   });
 
   it("returns an empty array if the type facet is not found", () => {
-    const searchResults = {
+    const searchResults: SearchResults = {
       "@context": "/terms/",
       "@graph": [],
       "@id": "/search/?type=Item",
@@ -37,6 +37,7 @@ describe("Test generateSearchResultsTypes()", () => {
       clear_filters: "/search/",
       columns: {},
       facets: [],
+      filters: [],
       notification: "Success",
       title: "Search Results",
       total: 0,
@@ -66,6 +67,7 @@ describe("Test generateSearchResultsTypes()", () => {
       notification: "Success",
       title: "Search Results",
       total: 0,
+      filters: [],
       facets: [
         {
           field: "type",
@@ -81,6 +83,7 @@ describe("Test generateSearchResultsTypes()", () => {
             },
           ],
           total: 2,
+          type: "terms",
         },
       ],
     };
@@ -111,6 +114,7 @@ describe("Test generateSearchResultsTypes()", () => {
       notification: "Success",
       title: "Search Results",
       total: 0,
+      filters: [],
       facets: [
         {
           field: "type",
@@ -134,6 +138,7 @@ describe("Test generateSearchResultsTypes()", () => {
             },
           ],
           total: 2,
+          type: "terms",
         },
       ],
     };
@@ -149,7 +154,7 @@ describe("Test generateSearchResultsTypes()", () => {
         Weird: ["Strange"],
       },
     };
-    const collectionTitles: CollectionTitles = {
+    const collectionTitles = {
       "@type": ["CollectionTitles"],
       "measurement-sets": "Measurement Sets",
       MeasurementSet: "Measurement Sets",
@@ -157,7 +162,7 @@ describe("Test generateSearchResultsTypes()", () => {
       "in-vitro-systems": "In Vitro Systems",
       InVitroSystem: "In Vitro Systems",
       in_vitro_system: "In Vitro Systems",
-    };
+    } as unknown as CollectionTitles;
     expect(
       generateSearchResultsTypes(searchResults, profiles, collectionTitles)
     ).toEqual(["In Vitro Systems", "Measurement Sets"]);

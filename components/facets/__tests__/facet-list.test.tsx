@@ -1203,4 +1203,51 @@ describe("Test <FacetList> component", () => {
     const facetContainers = screen.getAllByTestId(/^facet-container-/);
     expect(facetContainers).toHaveLength(2);
   });
+
+  it("doesn't render anything for preferred_assay_slims", () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: false,
+    } as any);
+
+    const searchResults = {
+      "@id": "/search?type=HumanDonor",
+      columns: {},
+      notification: "",
+      title: "Search",
+      total: 4,
+      facets: [
+        {
+          field: "preferred_assay_slims",
+          title: "Preferred Assay Slims",
+          terms: [
+            {
+              key: "Assay A",
+              doc_count: 2,
+            },
+          ],
+          total: 4,
+          type: "terms",
+          appended: false,
+          open_on_load: false,
+        },
+      ],
+      filters: [],
+    } as any;
+
+    render(
+      <FacetList
+        searchResults={searchResults}
+        facets={searchResults.facets}
+        openedFacets={{}}
+        onFacetOpen={jest.fn()}
+        optionalFacetsConfigForType={[]}
+        onOptionalFacetQuickHideChange={jest.fn()}
+        isEditOrderMode={false}
+      />
+    );
+
+    // Verify that no facets are rendered for preferred_assay_slims
+    const facetContainers = screen.queryAllByTestId(/^facet-container-/);
+    expect(facetContainers).toHaveLength(0);
+  });
 });

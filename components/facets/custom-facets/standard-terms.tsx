@@ -14,6 +14,7 @@ import {
 import Icon from "../../icon";
 // lib
 import { checkForBooleanFacet } from "../../../lib/facets";
+import { isSearchResultsFacetTerms } from "../../../lib/search-results";
 import QueryString from "../../../lib/query-string";
 import { splitPathAndQueryString } from "../../../lib/query-utils";
 // root
@@ -288,7 +289,7 @@ function StandardTermsCore({
   const query = new QueryString(queryString);
 
   // Filter the facet terms based on the user-typed term.
-  const facetTerms = facet.terms as SearchResultsFacetTerm[];
+  const facetTerms = isSearchResultsFacetTerms(facet.terms) ? facet.terms : [];
   const filteredTerms = facetTerms.filter((term) => {
     const termKey = term.key_as_string || term.key;
     const termKeyNormalized =
@@ -348,7 +349,7 @@ function StandardTermsCore({
   }, [facetTerms.length]);
 
   return (
-    <div className="mt-2">
+    <div>
       {facetTerms.length > MIN_FILTER_COUNT && (
         <TermFilter
           id={facet.field}

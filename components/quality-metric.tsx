@@ -332,9 +332,11 @@ function QualityMetricContent({
 
   // Get the human-readable title for the quality metric type. Strip " Quality Metrics"
   // from the end of the title if it exists.
-  let title =
+  const titleValue =
     collectionTitles?.[qualityMetric["@type"][0]] || qualityMetric["@type"][0];
-  title = title.replace(/ Quality Metrics$/, "");
+  const title = (
+    Array.isArray(titleValue) ? titleValue[0] : titleValue
+  ).replace(/ Quality Metrics$/, "");
 
   return (
     <>
@@ -439,9 +441,11 @@ export function QualityMetricPanel({
         <DataAreaTitle id={id}>Quality Metrics</DataAreaTitle>
         <DataPanel className="@container/qc-panel flex flex-wrap gap-2">
           {qualityMetrics.map((metric) => {
-            let title =
+            const titleValue =
               collectionTitles?.[metric["@type"][0]] || metric["@type"][0];
-            title = title.replace(/ Quality Metrics$/, "");
+            const title = (
+              Array.isArray(titleValue) ? titleValue[0] : titleValue
+            ).replace(/ Quality Metrics$/, "");
 
             return (
               <SubPanelWrapper

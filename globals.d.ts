@@ -187,11 +187,11 @@ export type Profiles = ProfilesProps & {
 /**
  * Describes the search-results object returned by the data provider.
  */
-export interface SearchResults {
+export interface SearchResults<T extends DatabaseObject = DatabaseObject> {
   "@context": string;
   "@id": string;
   "@type": string[];
-  "@graph": DatabaseObject[];
+  "@graph": T[];
   clear_filters: string;
   columns: SearchResultsColumns;
   facet_groups?: SearchResultsFacetGroup[];

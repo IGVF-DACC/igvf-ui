@@ -47,6 +47,7 @@ import {
 } from "../../components/tabs";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
+import { getCollectionTitle } from "../../lib/collection-titles";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest, { isErrorObject } from "../../lib/fetch-request";
 import { toShishkebabCase } from "../../lib/general";
@@ -817,7 +818,8 @@ export default function Schema({
   const [schemaPageUrl, setSchemaPageUrl] = useState("");
 
   const { collectionTitles, profiles } = useContext(SessionContext);
-  const pageTitle = collectionTitles?.[collection] || schema.title;
+  const pageTitle =
+    getCollectionTitle(collectionTitles, collection) || schema.title;
   const schemaType = schemaToType(schema, profiles);
   const collectionName = collectionNames?.[schemaType] || "";
 

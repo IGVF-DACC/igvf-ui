@@ -1,15 +1,14 @@
-// node_modules
-import _ from "lodash";
 // lib
 import { getQueryStringFromServerQuery } from "./query-utils";
 // types
-import {
+import type {
   CollectionTitles,
   NextJsServerQuery,
   Profiles,
   ProfilesProps,
   SearchResults,
   SearchResultsFacetTerm,
+  SearchResultsFilter,
 } from "../globals";
 
 /**
@@ -35,12 +34,40 @@ export function isSearchResults(item: unknown): item is SearchResults {
 }
 
 /**
+ * Type guard that checks if search results facet terms are present and appear as normal facet
+ * terms, not missing nor an unusual shape. This is used to determine if the facet terms can be
+ * rendered in a standard way, or if they need special handling.
+ *
+ * @param item - Potential search results facet term object
+ * @returns True if item is an array of SearchResultsFacetTerm
+ */
+export function isSearchResultsFacetTerms(
+  item: unknown
+): item is SearchResultsFacetTerm[] {
+  if (!item || typeof item !== "object") {
+    return false;
+  }
+
+  return (
+    Array.isArray(item) &&
+    item.every(
+      (term) =>
+        typeof term === "object" &&
+        term !== null &&
+        "key" in term &&
+        "doc_count" in term
+    )
+  );
+}
+
+/**
  * Builds an array of concrete types returned from search results. The profiles object has to have
  * loaded to get results from this function, or else it returns an empty array.
- * @param {SearchResults} searchResults Search results from igvfd
- * @param {Profiles|null} profiles Profiles object from igvfd if loaded
- * @param {CollectionTitles|null} collectionTitles Map of collection identifiers to titles
- * @returns {string[]} Page title for search results page
+ *
+ * @param searchResults - Search results from igvfd
+ * @param profiles - Profiles object from igvfd if loaded
+ * @param collectionTitles - Map of collection identifiers to titles
+ * @returns Page title for search results page
  */
 export function generateSearchResultsTypes(
   searchResults: SearchResults,
@@ -80,8 +107,9 @@ export function generateSearchResultsTypes(
  * value > 1000, with more than one value, or with a non-numeric value. If so, return a query
  * string to redirect to search without the limit= query parameter; otherwise return an empty
  * string to indicate no redirect needed.
- * @param {NextJsServerQuery} query Query object from the server
- * @returns {string} Query string to redirect to search without the limit= query parameter; empty
+
+ * @param query - Query object from the server
+ * @returns Query string to redirect to search without the limit= query parameter; empty
  *   string if no redirect needed
  */
 export function stripLimitQueryIfNeeded(query: NextJsServerQuery): string {
@@ -99,4 +127,35 @@ export function stripLimitQueryIfNeeded(query: NextJsServerQuery): string {
 
   // Return an empty string to indicate we don't need a redirect.
   return "";
+}
+
+/**
+ * Get the specified field's facet terms and filters from the search results.
+ *
+ * @param searchResults - Search results from back end
+ * @returns List of facet terms and filters for the specified field, or empty arrays if none found
+ */
+export function getFieldTermsAndFilters(
+  field: string,
+  searchResults: SearchResults
+): {
+  terms: SearchResultsFacetTerm[];
+  filters: SearchResultsFilter[];
+} {
+  // Find the preferred assay slims facet in the search results and get its terms.
+  const facet = searchResults.facets.find(
+    (maybeFacet) => maybeFacet.field === field
+  );
+  const terms =
+    facet && isSearchResultsFacetTerms(facet.terms) ? facet.terms : [];
+
+  // Find any filters in search results for the preferred assay slims facet.
+  const filters = searchResults.filters.filter(
+    (filter) => filter.field === field
+  );
+
+  return {
+    terms,
+    filters,
+  };
 }

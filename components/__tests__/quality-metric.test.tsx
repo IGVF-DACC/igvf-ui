@@ -12,6 +12,7 @@ import {
   type QualityMetricObject,
 } from "../../lib/quality-metric";
 import type { FileObject } from "../../globals";
+import SessionContext from "../session-context";
 
 describe("Test QCMetricPanel component", () => {
   it("renders a quality metric panel for MPRA quality metric", () => {
@@ -318,6 +319,52 @@ describe("Test QualityMetricModal component", () => {
 
     expect(screen.getByText("PerturbSeqQualityMetric")).toBeInTheDocument();
   });
+
+  it("renders a quality metric modal with an array collection title", async () => {
+    const file: FileObject = {
+      "@id": "/files/1",
+      "@type": ["File", "Item"],
+      accession: "IGVFFI0000AAAA",
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file_sets/1",
+      quality_metrics: ["/quality_metrics/1"],
+      reference_files: ["/reference_files/1"],
+    };
+    const qualityMetric: QualityMetricObject = {
+      "@id": "/quality_metrics/1",
+      "@type": ["PerturbSeqQualityMetric", "QualityMetric"],
+      analysis_step_version: "/analysis_steps/1",
+      quality_metric_of: ["/files/1"],
+      alignment_percentage: 95,
+    };
+
+    render(
+      <SessionContext.Provider
+        value={
+          {
+            collectionTitles: {
+              "@type": ["CollectionTitles"],
+              PerturbSeqQualityMetric: ["PerturbSeq Quality Metrics"],
+            },
+          } as any
+        }
+      >
+        <ModalManagerProvider>
+          <QualityMetricModal
+            file={file}
+            qualityMetrics={[qualityMetric]}
+            onClose={jest.fn()}
+          />
+        </ModalManagerProvider>
+      </SessionContext.Provider>
+    );
+    await waitFor(() => {
+      // Wait for modal transition effects to settle.
+    });
+
+    expect(screen.getByText("PerturbSeq")).toBeInTheDocument();
+  });
 });
 
 describe("Test QualityMetricPanel component", () => {
@@ -387,6 +434,37 @@ describe("Test QualityMetricPanel component", () => {
 
     const dataPanels = screen.getAllByTestId("datapanel");
     expect(dataPanels).toHaveLength(1);
+  });
+
+  it("renders a panel title from an array collection title", () => {
+    const qualityMetrics: QualityMetricObject[] = [
+      {
+        "@id": "/quality_metrics/1",
+        "@type": ["MpraQualityMetric", "QualityMetric"],
+        analysis_step_version: "/analysis_steps/1",
+        quality_metric_of: ["/files/1"],
+      },
+    ];
+
+    render(
+      <SessionContext.Provider
+        value={
+          {
+            collectionTitles: {
+              "@type": ["CollectionTitles"],
+              MpraQualityMetric: ["MPRA Quality Metrics"],
+            },
+          } as any
+        }
+      >
+        <QualityMetricPanel qualityMetrics={qualityMetrics} />
+      </SessionContext.Provider>
+    );
+
+    expect(screen.getByRole("link", { name: "MPRA" })).toHaveAttribute(
+      "href",
+      "/quality_metrics/1"
+    );
   });
 
   it("renders nothing with an empty array of quality metrics", () => {
