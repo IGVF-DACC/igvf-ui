@@ -16,24 +16,23 @@ The link can take any of these three forms:
 - An internal page, e.g. `/tissues/`
 - An anchor on the page, e.g. `#tissue-biosamples`
 
-Don’t use a full URL for internal pages (pages that exist in igvf-ui) — use the page path instead. Using the full URL loads all the HTML for the page (needed for external sites), while using the page path loads only the smaller amount of data needed to render that page with no HTML needed.
+Don’t use a full URL for internal pages (pages that exist in the data portal) — use the page path instead. Using the full URL loads all the HTML for the page (needed for external sites), while using the page path loads only the markdown content for the page.
 
 Specify the required color of each button after a pipe character following the link. Use hex colors without the leading hash mark (#).
 
 ### Anchors
 
-You can link to a section elsewhere on the same page for the reader’s convenience. You make anchors using the `<a>` HTML tag at the location on the page that you want to link to and choosing a meaningful anchor name that suits a URL, so don’t go delving into spaces and special characters for the anchor name. You normally use only alphanumerics and dashes for anchor names. Here, an anchor named `tissue-biosamples` gets inserted before a level 2 header:
+You can link to a header (`#`, `##`, etc.) elsewhere on the same page for the reader’s convenience. You add anchor tags by adding an anchor tag that looks like `{#tissue-biosamples}` to the end of the header line. You must separate the tag from the rest of the title with white space, an open brace, hash, then the kebab case ID you want for that tag which must be unique on the page. Here, an anchor named `tissue-biosamples` gets added to a level 2 header. The anchor tag must be separated from the header text with white space, normally a single space. Nothing can follow the anchor tag on the line, including whitespace. If the anchor tag doesn’t follow these rules, it appears as part of the header text and no anchor is generated in the HTML.
 
 ```
-<a name="tissue-biosamples"></a>
-## Tissue Biosamples
+## Tissue Biosamples {#tissue-biosamples}
 ```
 
 You can then use `#tissue-biosamples` as the link to have the browser scroll to this spot.
 
 ```
 CHEVRON_NAV
-Tissue Biosamples=#tissue-biosamples
+Tissue Biosamples=#tissue-biosamples|0000ff
 ```
 
 ## Example
@@ -46,11 +45,11 @@ Third Topic=#third-topic|208c4f
 Fourth Topic=https://www.genome.gov/|72c6c2
 Fifth Topic=#fifth-topic|c92020
 ...
-<a name="first-topic"></a>
+## First Topic {#first-topic}
 ...
-<a name="third-topic"></a>
+### Third Topic {#third-topic}
 ...
-<a name="fifth-topic"></a>
+## Fifth Topic {#fifth-topic}
 ```
 
 “First Topic,” “Third Topic,” and “Fifth Topic” link to their anchors on the same page, so clicking them simply scrolls the page to those locations. “Second Topic” links to the IGVFSM0000DDDD tissue page on this site. “Fourth Topic” links to the NHGRI website.

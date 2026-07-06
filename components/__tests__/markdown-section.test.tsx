@@ -100,6 +100,17 @@ jest.mock("rehype-sanitize", () => ({
 }));
 
 /**
+ * Mock our own remark-heading-ids plugin used in MarkdownSection tests. This allows us to verify
+ * that the plugin is correctly passed to react-markdown without invoking the actual plugin logic,
+ * as Jest can't test the actual plugin behavior because it relies on the ESM-only
+ * `unist-util-visit` package.
+ */
+jest.mock("../../lib/remark-heading-ids", () => ({
+  __esModule: true,
+  remarkHeadingIds: jest.fn(),
+}));
+
+/**
  * Mock for the react-markdown component used in MarkdownSection tests. This allows us to verify
  * that the component is correctly passed props without invoking the full markdown parsing stack.
  * You cannot test any markdown rendering behavior with this Jest test mock in place, but it allows

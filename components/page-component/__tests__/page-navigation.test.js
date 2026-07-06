@@ -25,7 +25,7 @@ describe("Test PAGE_NAVIGATION page component", () => {
     // Make sure the first li has the correct text and href.
     const firstItem = within(lis[0]).getByRole("link");
     expect(firstItem).toHaveTextContent("First Topic");
-    expect(firstItem).toHaveAttribute("href", "#first-topic");
+    expect(firstItem).toHaveAttribute("href", "#user-content-first-topic");
 
     // Make sure the second li has the correct text and href.
     const secondItem = within(lis[1]).getByRole("link");
