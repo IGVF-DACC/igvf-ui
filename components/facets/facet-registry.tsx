@@ -16,6 +16,7 @@ import FileSizeTagLabel from "./custom-facets/file-size-tag-label";
 import FileSizeTerms from "./custom-facets/file-size-terms";
 import NoTermCountTitle from "./custom-facets/no-term-count-title";
 import PreferredAssayTermsLabel from "./custom-facets/preferred-assay-terms-label";
+import PreferredAssayTitlesTerms from "./custom-facets/preferred-assay-titles-terms";
 import StandardTagLabel from "./custom-facets/standard-tag-label";
 import StandardTermLabel from "./custom-facets/standard-term-label";
 import StandardTerms from "./custom-facets/standard-terms";
@@ -121,7 +122,9 @@ const tagLabel: FacetRegistrySection<TagComponent> = {
   },
   standard: StandardTagLabel,
   lookup(field: string) {
-    return this.components[field] ?? this.standard;
+    return this.components[field] === null
+      ? null
+      : (this.components[field] ?? this.standard);
   },
 };
 
@@ -135,7 +138,9 @@ const termLabel: FacetRegistrySection<TermLabelComponent> = {
   },
   standard: StandardTermLabel,
   lookup(field: string) {
-    return this.components[field] ?? this.standard;
+    return this.components[field] === null
+      ? null
+      : (this.components[field] ?? this.standard);
   },
 };
 
@@ -144,12 +149,18 @@ const terms: FacetRegistrySection<TermComponent> = {
   components: {
     "audit.INTERNAL_ACTION.category": InternalActionAuditTerms,
     creation_timestamp: DateRangeTerms,
+    "file_sets.preferred_assay_slims": null,
+    "file_sets.preferred_assay_titles": PreferredAssayTitlesTerms,
     file_size: FileSizeTerms,
+    preferred_assay_slims: null,
+    preferred_assay_titles: PreferredAssayTitlesTerms,
     release_timestamp: DateRangeTerms,
   },
   standard: StandardTerms,
   lookup(field: string) {
-    return this.components[field] ?? this.standard;
+    return this.components[field] === null
+      ? null
+      : (this.components[field] ?? this.standard);
   },
 };
 
@@ -162,12 +173,16 @@ const title: FacetRegistrySection<TitleComponent> = {
     "audit.WARNING.category": AuditTitle,
     controlled_access: NoTermCountTitle,
     creation_timestamp: NoTermCountTitle,
+    "file_sets.preferred_assay_slims": null,
     file_size: NoTermCountTitle,
+    preferred_assay_slims: null,
     release_timestamp: NoTermCountTitle,
   },
   standard: StandardTitle,
   lookup(field: string) {
-    return this.components[field] ?? this.standard;
+    return this.components[field] === null
+      ? null
+      : (this.components[field] ?? this.standard);
   },
 };
 

@@ -13,6 +13,7 @@ import type {
   Schema,
   SearchResults,
 } from "../globals.d";
+import { getCollectionTitle } from "./collection-titles";
 import FetchRequest from "./fetch-request";
 import {
   getPageBreadcrumbMeta,
@@ -73,7 +74,7 @@ function buildItemBreadcrumbs(
 ): Breadcrumb[] {
   const itemMeta = meta as ItemBreadcrumbMeta;
   const itemType = item["@type"][0];
-  const parentTitle = collectionTitles?.[itemType] || itemType;
+  const parentTitle = getCollectionTitle(collectionTitles, itemType) || itemType;
   const statusQuery = itemMeta.isAdmin ? "&status!=deleted" : "";
 
   // Build the breadcrumb data from the collection and item.
@@ -132,7 +133,9 @@ function buildSearchResultBreadcrumbs(
     .map((filter) => filter.term);
   if (types.length > 0) {
     const title =
-      types.length > 1 ? "Multiple" : collectionTitles?.[types[0]] || types[0];
+      types.length > 1
+        ? "Multiple"
+        : getCollectionTitle(collectionTitles, types[0]) || types[0];
     return [{ title }];
   }
   return [];

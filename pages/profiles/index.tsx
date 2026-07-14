@@ -26,6 +26,7 @@ import { extractSchema } from "../../lib/profiles";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
 import { deprecatedSchemas } from "../../lib/constants";
+import { getCollectionTitle } from "../../lib/collection-titles";
 import { toShishkebabCase } from "../../lib/general";
 import {
   checkSearchTermSchema,
@@ -210,7 +211,7 @@ function SubTree({
 }) {
   const tooltipAttr = useTooltip(objectType);
 
-  const title = collectionTitles?.[objectType] || objectType;
+  const title = getCollectionTitle(collectionTitles, objectType) || objectType;
   const schema: Schema | undefined = extractSchema(schemas, objectType);
   const childObjectTypes = Object.keys(tree).filter((childObjectType) =>
     isDisplayableType(childObjectType, schemas, tree[childObjectType])

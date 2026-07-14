@@ -330,4 +330,49 @@ describe("Test the <Facet> component", () => {
     const facetTrigger = screen.getByTestId("facettrigger-status");
     expect(facetTrigger).toHaveClass("cursor-ns-resize");
   });
+
+  it("renders no title for `preferred_assay_slims` facet", () => {
+    const updateQuery = jest.fn();
+    const updateOpen = jest.fn();
+    const onOptionalFacetQuickHideChange = jest.fn();
+
+    const searchResults = {
+      "@id": "/search/?type=Treatment",
+      facets: [
+        {
+          field: "preferred_assay_slims",
+          title: "Preferred Assay Slims",
+          terms: [
+            {
+              doc_count: 5,
+              key: "assay1",
+            },
+          ],
+          total: 5,
+        },
+      ],
+      filters: [],
+    };
+
+    const facet = searchResults.facets[0];
+
+    render(
+      <Facet
+        facet={facet}
+        searchResults={searchResults}
+        updateQuery={updateQuery}
+        updateOpen={updateOpen}
+        onOptionalFacetQuickHideChange={onOptionalFacetQuickHideChange}
+        isFacetOpen={false}
+        isEditOrderMode={false}
+        isOptional={false}
+      >
+        <div>Child content</div>
+      </Facet>
+    );
+
+    // Verify that the facet title is not rendered
+    const facetTitle = screen.queryByTestId("facettitle-preferred_assay_slims");
+    expect(facetTitle).not.toBeInTheDocument();
+  });
 });

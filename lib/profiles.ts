@@ -1,4 +1,5 @@
 // libs
+import { getCollectionTitle } from "./collection-titles";
 import FetchRequest from "./fetch-request";
 // types
 import {
@@ -361,11 +362,14 @@ export function schemaNameToCollectionName(
   collectionTitles: CollectionTitles
 ): string {
   if (collectionTitles && schemaName in collectionTitles) {
-    const collectionTitle = collectionTitles[schemaName];
+    const collectionTitle = getCollectionTitle(collectionTitles, schemaName);
+    if (!collectionTitle) {
+      return "";
+    }
 
     // Get all properties in collectionTitles that share the same value as collectionTitle.
     const idsWithMatchingTitles = Object.keys(collectionTitles).filter(
-      (key) => collectionTitles[key] === collectionTitle
+      (key) => getCollectionTitle(collectionTitles, key) === collectionTitle
     );
 
     // Now find the one string in `idsWithMatchingTitles` that doesn't start with an uppercase

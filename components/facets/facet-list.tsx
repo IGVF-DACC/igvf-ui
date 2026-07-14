@@ -75,6 +75,10 @@ export function FacetList({
     <ListWrapper {...listProps}>
       {facets.map((facet) => {
         const Terms = facetRegistry.terms.lookup(facet.field);
+        if (!Terms) {
+          return null;
+        }
+
         const itemProps = isEditOrderMode
           ? {
               value: facet,

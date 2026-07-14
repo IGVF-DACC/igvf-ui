@@ -647,6 +647,15 @@ describe("Test schemaNameToCollectionName functionality", () => {
     expect(result).toBe("");
   });
 
+  it("should return empty string when schema name resolves to no collection title", () => {
+    const titlesWithEmptyTitle = {
+      "@type": ["CollectionTitles"],
+      tissue: "",
+    } as unknown as CollectionTitles;
+    const result = schemaNameToCollectionName("tissue", titlesWithEmptyTitle);
+    expect(result).toBe("");
+  });
+
   it("should return empty string when schema name not found in collectionTitles", () => {
     const result = schemaNameToCollectionName(
       "nonexistent",

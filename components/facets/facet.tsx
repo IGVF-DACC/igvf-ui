@@ -87,6 +87,9 @@ export default function Facet({
   children: React.ReactNode;
 }) {
   const Title = facetRegistry.title.lookup(facet.field);
+  if (!Title) {
+    return null;
+  }
 
   return (
     <div
