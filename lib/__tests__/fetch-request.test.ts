@@ -1,3 +1,6 @@
+import * as https from "node:https";
+import * as http from "node:http";
+
 // Mock Node.js modules to enable testing of persistent connection code
 jest.mock("https", () => ({
   Agent: jest.fn().mockImplementation((config) => ({
@@ -7,6 +10,21 @@ jest.mock("https", () => ({
 }));
 
 jest.mock("http", () => ({
+  Agent: jest.fn().mockImplementation((config) => ({
+    config,
+    protocol: "http:",
+  })),
+}));
+
+// Keep node:-prefixed specifiers aligned with the mocks above.
+jest.mock("node:https", () => ({
+  Agent: jest.fn().mockImplementation((config) => ({
+    config,
+    protocol: "https:",
+  })),
+}));
+
+jest.mock("node:http", () => ({
   Agent: jest.fn().mockImplementation((config) => ({
     config,
     protocol: "http:",
@@ -226,9 +244,7 @@ describe("Test persistent connection functionality", () => {
     (FetchRequest as any).httpsAgent = undefined;
     (FetchRequest as any).httpAgent = undefined;
 
-    // Verify mocked agents are available
-    const https = require("https");
-    const http = require("http");
+    // Verify agents are available
     expect(typeof https.Agent).toBe("function");
     expect(typeof http.Agent).toBe("function");
 
@@ -261,28 +277,20 @@ describe("Test persistent connection functionality", () => {
     (FetchRequest as any).httpsAgent = undefined;
     (FetchRequest as any).httpAgent = undefined;
 
-    // Mock agents to throw an error during initialization
-    const MockHttpsAgent = jest.fn().mockImplementation(() => {
+    const httpsSpy = jest.spyOn(https, "Agent").mockImplementation(() => {
       throw new Error("Agent initialization failed");
     });
-    const MockHttpAgent = jest.fn().mockImplementation(() => {
+    const httpSpy = jest.spyOn(http, "Agent").mockImplementation(() => {
       throw new Error("Agent initialization failed");
     });
-
-    const https = require("https");
-    const http = require("http");
-    https.Agent = MockHttpsAgent;
-    http.Agent = MockHttpAgent;
-
-    // Create request instance - should handle initialization failure gracefully
     const request = new FetchRequest();
 
-    // Verify persistent connections are not available after failure
     expect((request as any).usingPersistentConnections).toBe(false);
-
-    // Verify agents remain undefined after failure
     expect((FetchRequest as any).httpsAgent).toBeUndefined();
     expect((FetchRequest as any).httpAgent).toBeUndefined();
+
+    httpsSpy.mockRestore();
+    httpSpy.mockRestore();
   });
 
   it("handles module import failure gracefully", () => {
@@ -1286,7 +1294,7 @@ describe("Test getZippedPreviewText()", () => {
       5
     );
 
-    expect(result).toBe("");
+    expect(result).toMatch(/^ERROR:/);
   });
 
   it("covers getZippedPreviewText with default maxLines parameter", async () => {

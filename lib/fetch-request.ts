@@ -298,11 +298,9 @@ export default class FetchRequest {
   // types, not code. This holds an actual instance of the agent class once initialized, so we need
   // to use `InstanceType<>` to represent the instance of the class.
   private static httpsAgent:
-    | InstanceType<typeof import("https").Agent>
-    | undefined;
+    InstanceType<typeof import("https").Agent> | undefined;
   private static httpAgent:
-    | InstanceType<typeof import("http").Agent>
-    | undefined;
+    InstanceType<typeof import("http").Agent> | undefined;
   private static connectionPoolInitialized = false;
 
   /**
@@ -943,12 +941,14 @@ export default class FetchRequest {
           inflator.result = "";
         }
       }
-      done = readerDone;
+      if (!done) {
+        done = readerDone;
+      }
     }
 
     if (inflator.err) {
-      console.error(inflator.err);
-      return `ERROR: ${inflator.msg}`;
+      const message = inflator.msg || `inflate error ${inflator.err}`;
+      return `ERROR: ${message}`;
     }
 
     // Now `decompressedText` contains up to `maxLines` lines

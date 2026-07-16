@@ -2,14 +2,7 @@
 import ELK from "elkjs/lib/elk.bundled.js";
 import type { ElkNode } from "elkjs/lib/elk-api";
 import _ from "lodash";
-import {
-  CSSProperties,
-  Fragment,
-  MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { CSSProperties, Fragment, useEffect, useRef, useState } from "react";
 import {
   Controls,
   Handle,
@@ -95,7 +88,7 @@ const edgeTypes = {
 /**
  * Padding around the graph in pixels.
  */
-const GRAPH_PADDING = 38;
+const GRAPH_PADDING = 56;
 
 /**
  * Position of the first line of text in a file node.
@@ -113,20 +106,38 @@ const FILESET_NODE_TOP_LINE_POSITION = 20;
 const NODE_LINE_HEIGHT = 13;
 
 /**
- * Padding of the container around the graph.
- */
-const CONTAINER_PADDING = 16;
-
-/**
  * Maximum height of the graph in pixels. If the graph is taller than this, it will be scrollable.
  */
 const MAXIMUM_GRAPH_HEIGHT = 1000;
 
 /**
- * Padding to apply when fitting the graph to the view. This is a fraction of the graph size, so 0.1
- * means 10% padding around the graph.
+ * Desired margin around the graph when fit-to-view runs, in pixels.
+ *
+ * Tuning note: this is the only value to change for more or less fit padding.
  */
-const FIT_ZOOM_PADDING = 0.1;
+const FIT_VIEW_MARGIN_PX = 56;
+
+/**
+ * Maximum zoom to use when initially fitting the graph to its container. Small graphs should render
+ * at their natural size, while larger graphs should still zoom out enough to fit in full.
+ */
+const MAXIMUM_FIT_ZOOM = 1;
+
+/**
+ * Convert desired pixel margin into React Flow's fit padding fraction.
+ *
+ * @param containerWidth - Graph container width in pixels
+ * @param containerHeight - Graph container height in pixels
+ */
+function getFitZoomPadding(
+  containerWidth: number,
+  containerHeight: number
+): number {
+  const shortestViewportSide = Math.min(containerWidth, containerHeight);
+  return shortestViewportSide <= 0
+    ? 0.1
+    : Math.min(FIT_VIEW_MARGIN_PX / shortestViewportSide, 0.25);
+}
 
 /**
  * Styles for the node handles. This puts the handles in the correct place for the edges to hook up
@@ -503,12 +514,18 @@ function GraphCore({
       return;
     }
 
+    const fitZoomPadding = getFitZoomPadding(
+      containerRef.current?.clientWidth ?? 0,
+      containerRef.current?.clientHeight ?? 0
+    );
+
     // Once the graph has been laid out, fit the graph to the view so that it's rendered in full
     // within the container in case the graph is larger than the container.
     const frameId = requestAnimationFrame(() => {
       void rf.fitView({
-        padding: FIT_ZOOM_PADDING,
+        padding: fitZoomPadding,
         duration: 0,
+        maxZoom: MAXIMUM_FIT_ZOOM,
       });
     });
 
@@ -528,14 +545,15 @@ function GraphCore({
     function updateMinZoom() {
       const containerWidth = containerRef.current.clientWidth;
       const containerHeight = containerRef.current.clientHeight;
+      const fitZoomPadding = getFitZoomPadding(containerWidth, containerHeight);
 
       const viewport = getViewportForBounds(
         graphBounds,
         containerWidth,
         containerHeight,
         0,
-        2,
-        FIT_ZOOM_PADDING
+        MAXIMUM_FIT_ZOOM,
+        fitZoomPadding
       );
 
       setMinZoom(viewport.zoom);
@@ -565,8 +583,12 @@ function GraphCore({
   // Determine the height of the graph and the extent to which the user can pan around the graph. We
   // add padding to the graph bounds so that the user can pan a bit beyond the edges of the graph.
   const graphHeight = graphBounds
-    ? Math.ceil(graphBounds.height + GRAPH_PADDING + CONTAINER_PADDING)
+    ? Math.ceil(graphBounds.height + GRAPH_PADDING)
     : 0;
+  const fitZoomPadding = getFitZoomPadding(
+    containerRef.current?.clientWidth ?? 0,
+    containerRef.current?.clientHeight ?? 0
+  );
   const translateExtent: CoordinateExtent = graphBounds
     ? [
         [graphBounds.x - 20, graphBounds.y - 20],
@@ -622,6 +644,10 @@ function GraphCore({
                 showInteractive={false}
                 position="bottom-right"
                 orientation="horizontal"
+                fitViewOptions={{
+                  padding: fitZoomPadding,
+                  maxZoom: MAXIMUM_FIT_ZOOM,
+                }}
               />
             </ReactFlow>
           </div>
@@ -815,7 +841,7 @@ function FileGraphTitle({
   localDeprecated: DeprecatedFileFilterProps;
   fileId: string;
   isDisabled: boolean;
-  graphBounds: MutableRefObject<Rect | null>;
+  graphBounds: Rect | null;
 }) {
   const tooltipAttr = useTooltip(`tooltip-${graphId}`);
 
@@ -840,8 +866,8 @@ function FileGraphTitle({
           <DownloadTrigger
             graphId={graphId}
             fileId={fileId}
-            graphBounds={graphBounds.current}
-            isDisabled={isDisabled || !graphBounds.current}
+            graphBounds={graphBounds}
+            isDisabled={isDisabled || !graphBounds}
           />
         </TooltipRef>
       </div>
@@ -857,6 +883,68 @@ function FileGraphTitle({
         for details.
       </Tooltip>
     </DataAreaTitle>
+  );
+}
+
+/**
+ * Render a completed file graph with its title. Keeping the graph bounds state here prevents its
+ * update after layout from causing the parent to regenerate the graph data and restart ELK.
+ *
+ * @param graphData - Graph data after ELK layout
+ * @param nativeFiles - Files included directly in the file set the user is viewing
+ * @param panelId - ID of the file-graph panel unique on the page for the section directory
+ * @param graphId - ID of the graph container element unique on the page
+ * @param title - Title that appears above the graph panel
+ * @param secDirTitle - Title for the section directory if the graph is within a section.
+ * @param showDeprecatedToggle - True to show the deprecated file toggle control
+ * @param localDeprecated - Props for handling the visibility of deprecated files in the graph.
+ * @param fileId - ID of the file the graph is for; used to customize download filename
+ */
+function FileGraphContent({
+  graphData,
+  nativeFiles,
+  panelId,
+  graphId,
+  title,
+  secDirTitle,
+  showDeprecatedToggle,
+  localDeprecated,
+  fileId,
+}: {
+  graphData: ElkNode;
+  nativeFiles: FileObject[];
+  panelId: string;
+  graphId: string;
+  title: string;
+  secDirTitle: string;
+  showDeprecatedToggle: boolean;
+  localDeprecated: DeprecatedFileFilterProps;
+  fileId: string;
+}) {
+  const [graphBounds, setGraphBounds] = useState<Rect | null>(null);
+
+  return (
+    <section role="region" aria-labelledby={`${panelId}-label`}>
+      <FileGraphTitle
+        panelId={panelId}
+        graphId={graphId}
+        title={title}
+        secDirTitle={secDirTitle}
+        showDeprecatedToggle={showDeprecatedToggle}
+        localDeprecated={localDeprecated}
+        fileId={fileId}
+        isDisabled={false}
+        graphBounds={graphBounds}
+      />
+      <DataPanel isPaddingSuppressed>
+        <Graph
+          graphData={graphData}
+          nativeFiles={nativeFiles}
+          graphId={graphId}
+          onNodeLayout={setGraphBounds}
+        />
+      </DataPanel>
+    </section>
   );
 }
 
@@ -904,9 +992,6 @@ export function FileGraph({
   graphId?: string;
   fileId?: string;
 }) {
-  // Stores the bounds of the graph after layout so that we can use it for SVG download.
-  const graphBounds = useRef<Rect | null>(null);
-
   // Local state for deprecated file visibility if not controlled externally via props
   const defaultDeprecatedVisible = computeDefaultDeprecatedVisibility(
     true,
@@ -969,9 +1054,25 @@ export function FileGraph({
         )
       : null;
 
-  if (graphData || cycles.length > 0 || isEmptyGraphAfterFiltering) {
+  if (graphData) {
     return (
-      <section role="region" aria-labelledby="file-graph">
+      <FileGraphContent
+        graphData={graphData}
+        nativeFiles={includedFiles}
+        panelId={panelId}
+        graphId={graphId}
+        title={title}
+        secDirTitle={secDirTitle}
+        showDeprecatedToggle={showDeprecatedToggle}
+        localDeprecated={localDeprecated}
+        fileId={fileId}
+      />
+    );
+  }
+
+  if (cycles.length > 0 || isEmptyGraphAfterFiltering) {
+    return (
+      <section role="region" aria-labelledby={`${panelId}-label`}>
         <FileGraphTitle
           panelId={panelId}
           graphId={graphId}
@@ -981,20 +1082,9 @@ export function FileGraph({
           localDeprecated={localDeprecated}
           fileId={fileId}
           isDisabled={cycles.length > 0 || isEmptyGraphAfterFiltering}
-          graphBounds={graphBounds}
+          graphBounds={null}
         />
-        {graphData ? (
-          <DataPanel isPaddingSuppressed>
-            <Graph
-              graphData={graphData}
-              nativeFiles={includedFiles}
-              graphId={graphId}
-              onNodeLayout={(layedOutBounds) => {
-                graphBounds.current = layedOutBounds;
-              }}
-            />
-          </DataPanel>
-        ) : isEmptyGraphAfterFiltering ? (
+        {isEmptyGraphAfterFiltering ? (
           <DataPanel>
             The graph doesn{UC.rsquo}t appear because files are deprecated.
             Select <b>Include deprecated files</b> to view the graph.
