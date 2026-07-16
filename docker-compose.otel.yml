@@ -1,0 +1,16 @@
+# Opt-in OpenTelemetry override. Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.otel.yml up
+# Requires the ClickStack service (workspace-root docker-compose.otel.yml)
+# and CLICKSTACK_API_KEY in the environment or an .env file.
+# After rebuilding the image, add --renew-anon-volumes so the node_modules
+# anonymous volume is reseeded with the @opentelemetry packages.
+services:
+  nextjs:
+    environment:
+      - NODE_OPTIONS=--require /igvf-ui/otel/register.js
+      - OTEL_SERVICE_NAME=igvf-ui
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://clickstack:4318
+      - OTEL_EXPORTER_OTLP_HEADERS=authorization=${CLICKSTACK_API_KEY:-}
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=none
+      - OTEL_LOGS_EXPORTER=none
