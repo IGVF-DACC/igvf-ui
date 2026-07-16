@@ -4,6 +4,7 @@ import { type FileSetNode } from "../types";
 import { auxiliarySetStage } from "./auxiliary-set-grouping";
 import { constructLibrarySetStage } from "./construct-library-set-grouping";
 import { controlFileSetStage } from "./control-file-set-groupings";
+import { inputFileSetStage } from "./input-file-set-grouping";
 import { buildNodesByFileSetPath } from "./lib";
 import { relatedMeasurementSetStage } from "./related-measurement-set-grouping";
 import {
@@ -37,6 +38,7 @@ const groupingPipelineStages: GroupPipelineStageFunction[] = [
   relatedMeasurementSetStage,
   constructLibrarySetStage,
   controlFileSetStage,
+  inputFileSetStage,
 ];
 
 /**
