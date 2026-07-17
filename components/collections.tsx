@@ -36,6 +36,7 @@ const collectionMap: CollectionMapping = {
   MaveDB: "mave-db.svg",
   Morphic: "morphic.svg",
   MPRAbase: "mpra-base.svg",
+  "PD single cell multiomics": "pd-single-cell-multiomics.svg",
   StanfordFCC: "stanford-fcc.svg",
   "TF Perturb-seq Project": "tf-perturb-seq.svg",
   "TOPMED Freeze 8": "topmed-freeze-8.svg",
