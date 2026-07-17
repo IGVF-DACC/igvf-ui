@@ -53,6 +53,7 @@ const optionalFacetTypes = [
   "File",
   "MeasurementSet",
   "PredictionSet",
+  "PseudobulkSet",
 ];
 
 /**
