@@ -294,6 +294,7 @@ export async function requestFileSets(
         "construct_library_sets",
         "control_file_sets",
         "file_set_type",
+        "input_file_sets",
         "lab.title",
         "preferred_assay_titles",
         "related_measurement_sets",
