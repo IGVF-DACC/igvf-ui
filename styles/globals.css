@@ -125,6 +125,9 @@
 
   /** Markdown prose styles */
   --color-prose-title-border: oklch(0.8812 0.013 244.27 / 70%);
+
+  /** Status icon colors */
+  --color-status-icon-ring-catalog: oklch(0.5991 0.0923 86.62);
 }
 
 @media (prefers-color-scheme: dark) {

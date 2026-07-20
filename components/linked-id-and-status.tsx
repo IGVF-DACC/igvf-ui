@@ -1,6 +1,10 @@
 // components
+import { CatalogStatus } from "./catalog-status";
 import Link from "./link-no-prefetch";
 import Status from "./status";
+// lib
+import { isFileInCatalog } from "../lib/collections";
+import { isDatabaseObjectOfType } from "../lib/database-object";
 // root
 import type { DatabaseObject } from "../globals";
 
@@ -38,6 +42,9 @@ export default function LinkedIdAndStatus({
           {children}
         </Link>
         <Status status={status || item.status} isAbbreviated />
+        {isDatabaseObjectOfType(item, "File") && isFileInCatalog(item) && (
+          <CatalogStatus file={item} />
+        )}
       </div>
     </div>
   );
