@@ -681,7 +681,12 @@ export function FileDataItems({ item, children = null }) {
       {item.file_format_type && (
         <>
           <DataItemLabel>File Format Type</DataItemLabel>
-          <DataItemValue>{item.file_format_type}</DataItemValue>
+          <DataItemValueAnnotated
+            objectType={item["@type"][0]}
+            propertyName="file_format_type"
+          >
+            {item.file_format_type}
+          </DataItemValueAnnotated>
         </>
       )}
       <DataItemLabel>Content Type</DataItemLabel>
