@@ -177,6 +177,7 @@ export async function requestFiles(
         "@type",
         "accession",
         "aliases",
+        "collections",
         "content_summary",
         "content_type",
         "controlled_access",

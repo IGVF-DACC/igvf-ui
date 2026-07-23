@@ -20,6 +20,7 @@ import {
   type Rect,
 } from "@xyflow/react";
 // components
+import { CatalogStatusGlyph } from "../catalog-status";
 import Checkbox from "../checkbox";
 import { DataAreaTitle, DataPanel } from "../data-area";
 import Link from "../link-no-prefetch";
@@ -27,6 +28,7 @@ import { QualityMetricModal } from "../quality-metric";
 import SeparatedList from "../separated-list";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
+import { isFileInCatalog } from "../../lib/collections";
 import { UC } from "../../lib/constants";
 import {
   computeDefaultDeprecatedVisibility,
@@ -54,7 +56,7 @@ import {
   NODE_HEIGHT,
   NODE_WIDTH,
 } from "./lib";
-import { NodeStatus } from "./status";
+import { FILE_NODE_STATUS_BADGE_DIAMETER, NodeStatus } from "./status";
 import {
   fileSetTypeColorMap,
   groupTypeColorMap,
@@ -287,6 +289,13 @@ function FileNodeContent(props: NodeProps) {
               y={(linePosition += NODE_LINE_HEIGHT)}
             />
             <NodeStatus file={file} />
+            {isFileInCatalog(file) && (
+              <g
+                transform={`translate(${NODE_WIDTH - 20} 22) scale(${FILE_NODE_STATUS_BADGE_DIAMETER / 20})`}
+              >
+                <CatalogStatusGlyph id={file.accession} />
+              </g>
+            )}
           </g>
         </svg>
       </div>

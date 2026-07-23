@@ -3,47 +3,8 @@ import _ from "lodash";
 import Image from "next/image";
 // components
 import Link from "./link-no-prefetch";
-
-/**
- * Type for the collection map object. The keys are collection names from the schema enum and the
- * values are the corresponding logo image file names in the /public/collections directory.
- */
-type CollectionMapping = {
-  [key: string]: string;
-};
-
-/**
- * Map of collection names to their corresponding logo image file. The logo files exist in the
- * /public/collections directory.
- */
-const collectionMap: CollectionMapping = {
-  ACMG73: "acmg73.svg",
-  Benchmark: "benchmark.svg",
-  "Bridge Sample": "bridge-sample.png",
-  ClinGen: "clingen.svg",
-  "E2G Pillar Project": "e2g-pillar.svg",
-  ENCODE: "encode.svg",
-  GREGoR: "gregor.svg",
-  "IGVF_catalog_beta_v0.1": "igvf-catalog-0.1.svg",
-  "IGVF_catalog_beta_v0.2": "igvf-catalog-0.2.svg",
-  "IGVF_catalog_beta_v0.3": "igvf-catalog-0.3.svg",
-  "IGVF_catalog_beta_v0.4": "igvf-catalog-0.4.svg",
-  "IGVF_catalog_beta_v0.5": "igvf-catalog-0.5.svg",
-  "IGVF_catalog_v1.0": "igvf-catalog-1.0.svg",
-  "IGVF_catalog_v1.1": "igvf-catalog-1.1.svg",
-  "IGVF_catalog_v1.2": "igvf-catalog-1.2.svg",
-  "IGVF phase 1": "igvf-phase-1.svg",
-  MaveDB: "mave-db.svg",
-  Morphic: "morphic.svg",
-  MPRAbase: "mpra-base.svg",
-  "PD single cell multiomics": "pd-single-cell-multiomics.svg",
-  StanfordFCC: "stanford-fcc.svg",
-  "TF Perturb-seq Project": "tf-perturb-seq.svg",
-  "TOPMED Freeze 8": "topmed-freeze-8.svg",
-  VarChAMP: "varchamp.svg",
-  Vista: "vista.svg",
-  "Williams Syndrome Research": "williams-syndrome-research.svg",
-} as const;
+// lib
+import { getCollectionPath } from "../lib/collections";
 
 /**
  * Height and width of collection logos in pixels. PNG or JPEG files should have double this
@@ -87,7 +48,7 @@ export default function Collections({
     return (
       <ul className="flex flex-wrap gap-1">
         {sortedCollections.map((collection) => {
-          const imageFile = collectionMap[collection];
+          const collectionPath = getCollectionPath(collection);
           return (
             <li key={collection}>
               <Link
@@ -98,9 +59,9 @@ export default function Collections({
                   height: COLLECTION_DIMENSIONS.HEIGHT,
                 }}
               >
-                {imageFile ? (
+                {collectionPath ? (
                   <Image
-                    src={`/collections/${imageFile}`}
+                    src={collectionPath}
                     width={COLLECTION_DIMENSIONS.WIDTH}
                     height={COLLECTION_DIMENSIONS.HEIGHT}
                     alt={`${collection} collection`}

@@ -7,7 +7,7 @@ import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { toShishkebabCase } from "../lib/general";
 // root
-import { DatabaseObject } from "../globals";
+import type { DatabaseObject } from "../globals";
 
 /**
  * ADDING NEW STATUS VALUES

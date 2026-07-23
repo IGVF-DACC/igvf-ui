@@ -68,4 +68,17 @@ describe("Regular file download link", () => {
     expect(link).toBeInTheDocument();
     expect(link.parentElement.parentElement).toHaveClass("text-red-500");
   });
+
+  it("renders a link with the file catalog badge when the file is in the file catalog", () => {
+    const file = {
+      "@id": "/files/IGVFFI0000AAAA/",
+      "@type": ["File", "Item"],
+      collections: ["IGVF_catalog_v1.2"],
+      status: "released",
+    };
+    render(<LinkedIdAndStatus item={file}>File</LinkedIdAndStatus>);
+
+    const catalogBadge = screen.getByTestId(/^catalog-status-icon-/);
+    expect(catalogBadge).toBeInTheDocument();
+  });
 });
