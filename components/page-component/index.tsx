@@ -38,6 +38,7 @@ import ChevronNavigation from "./chevron-navigation";
 import ImageAligned from "./image-aligned";
 import PageNavigation from "./page-navigation";
 import SampleCount from "./sample-count";
+import TocNavigation from "./toc-navigation";
 import VideoYouTube from "./video-youtube";
 
 /**
@@ -52,6 +53,7 @@ const componentMap: Readonly<Record<string, PluginComponent>> = {
   IMAGE_ALIGNED: ImageAligned,
   PAGE_NAV: PageNavigation,
   SAMPLE_COUNT: SampleCount,
+  TOC_NAV: TocNavigation,
   VIDEO_YOUTUBE: VideoYouTube,
 };
 

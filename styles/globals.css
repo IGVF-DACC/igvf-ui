@@ -128,6 +128,11 @@
 
   /** Status icon colors */
   --color-status-icon-ring-catalog: oklch(0.5991 0.0923 86.62);
+
+  /** TOC page component styles */
+  --color-toc-nav-header: oklch(0.436 0.0412 186.63);
+  --color-toc-nav-header-label: oklch(0.436 0.0412 186.63);
+  --color-toc-nav-outline: oklch(0.436 0.0412 186.63);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -168,6 +173,11 @@
 
     /** Markdown prose styles */
     --color-prose-title-border: oklch(0.3334 0.013 244.27 / 70%);
+
+    /** TOC page component styles */
+    --color-toc-nav-header: oklch(0.3587 0.0412 186.63);
+    --color-toc-nav-header-label: oklch(0.6114 0.0412 186.63);
+    --color-toc-nav-outline: oklch(0.3587 0.0412 186.63);
   }
 }
 
@@ -784,6 +794,10 @@
   @apply border-prose-title-border border-b pb-1.5;
 }
 
+.prose p {
+  @apply my-2.5;
+}
+
 .prose p:first-of-type {
   @apply mt-0;
 }
@@ -809,6 +823,23 @@
     spacing before the first list item because previous items likely have bottom spacing. */
 .prose li + li {
   margin-top: 0.25rem;
+}
+
+/* Keep the typography plugin's spacing around top-level lists, but tighten lists nested inside
+   list items so they stay visually grouped with their parent item. */
+.prose li > :is(ol, ul) {
+  @apply my-1;
+}
+
+/* GFM task-list items already include a checkbox, so suppress their normal bullet or number. */
+.prose li.task-list-item {
+  list-style-type: none;
+  padding-inline-start: 0.375em;
+}
+
+.prose li.task-list-item > input[type="checkbox"] {
+  inline-size: 1em;
+  margin-inline: -1.5em 0.25em;
 }
 
 .dark .prose table th {
