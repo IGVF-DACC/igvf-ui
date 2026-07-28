@@ -795,7 +795,7 @@
 }
 
 .prose p {
-  @apply my-2.5;
+  @apply my-4;
 }
 
 .prose p:first-of-type {
@@ -807,7 +807,7 @@
 }
 
 .prose table {
-  @apply my-0;
+  @apply my-4;
 }
 
 .prose table th {
