@@ -4,7 +4,7 @@ This page component places a collapsible navigation area into the page, letting 
 
 ![Demonstration of the TOC navigation page component](../../../public/pages/toc-navigation-demo.png)
 
-When the page loads the menu does not appear; only “TABLE OF CONTENTS” appears preceded by a plus sign. Clicking this button makes the menu appear.
+When the page loads the menu does not appear; only “TABLE OF CONTENTS” appears preceded by a plus sign. Clicking this button makes the menu appear. If five or fewer items exist in TOC_NAV, the menu opens by default, though the user can then close it if they wish.
 
 Compare this with PAGE_NAV. That horizontal menu is best when you have just a few links with short titles. It can also link to other pages and external pages, unlike TOC_NAV. TOC_NAV is best if you have several items on the page to link to, or they have long titles that make PAGE_NAV look awkward.
 
