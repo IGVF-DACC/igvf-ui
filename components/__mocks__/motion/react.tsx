@@ -1,4 +1,4 @@
-import { HTMLAttributes, ReactNode } from "react";
+import { HTMLAttributes, ReactElement } from "react";
 
 /**
  * Mock motion/react to make animations instant in tests. We need this because facet tests check
@@ -7,16 +7,50 @@ import { HTMLAttributes, ReactNode } from "react";
  */
 
 type AnimatePresenceProps = {
-  children: ReactNode;
+  children: ReactElement | ReactElement[] | null;
 };
 
 export const AnimatePresence = jest.fn(
   ({ children }: AnimatePresenceProps) => children
 );
 
+type MotionDivProps = HTMLAttributes<HTMLDivElement> & {
+  initial?: unknown;
+  animate?: unknown;
+  exit?: unknown;
+  variants?: unknown;
+  transition?: unknown;
+};
+
+type MotionUlProps = HTMLAttributes<HTMLUListElement> & {
+  initial?: unknown;
+  animate?: unknown;
+  exit?: unknown;
+  variants?: unknown;
+  transition?: unknown;
+};
+
 export const motion = {
-  div: jest.fn((props: HTMLAttributes<HTMLDivElement>) => <div {...props} />),
-  ul: jest.fn((props: HTMLAttributes<HTMLUListElement>) => <ul {...props} />),
+  div: jest.fn(
+    ({
+      initial: _initial,
+      animate: _animate,
+      exit: _exit,
+      variants: _variants,
+      transition: _transition,
+      ...props
+    }: MotionDivProps) => <div {...props} />
+  ),
+  ul: jest.fn(
+    ({
+      initial: _initial,
+      animate: _animate,
+      exit: _exit,
+      variants: _variants,
+      transition: _transition,
+      ...props
+    }: MotionUlProps) => <ul {...props} />
+  ),
 };
 
 export const Reorder = {
