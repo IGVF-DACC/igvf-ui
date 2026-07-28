@@ -23,12 +23,16 @@ describe("TocNavigation", () => {
     }
   });
 
-  const items: PluginProps = {
-    "Section 1": "#section-1",
-    "Section 2": "#section-2",
-  };
-
   it("renders the TOC items", () => {
+    const items: PluginProps = {
+      "Section 1": "#section-1",
+      "Section 2": "#section-2",
+      "Section 3": "#section-3",
+      "Section 4": "#section-4",
+      "Section 5": "#section-5",
+      "Section 6": "#section-6",
+    };
+
     render(<TocNavigation {...items} />);
 
     // Check if the toggle button is rendered
@@ -51,6 +55,15 @@ describe("TocNavigation", () => {
   });
 
   it("scrolls to an anchor target", () => {
+    const items: PluginProps = {
+      "Section 1": "#section-1",
+      "Section 2": "#section-2",
+      "Section 3": "#section-3",
+      "Section 4": "#section-4",
+      "Section 5": "#section-5",
+      "Section 6": "#section-6",
+    };
+
     // Create a mock target element for the anchor link.
     const target = document.createElement("div");
     target.id = "user-content-section-1";
@@ -94,6 +107,15 @@ describe("TocNavigation", () => {
   });
 
   it("returns when the anchor target cannot be found", () => {
+    const items: PluginProps = {
+      "Section 1": "#section-1",
+      "Section 2": "#section-2",
+      "Section 3": "#section-3",
+      "Section 4": "#section-4",
+      "Section 5": "#section-5",
+      "Section 6": "#section-6",
+    };
+
     render(<TocNavigation {...items} />);
     fireEvent.click(screen.getByTestId("toc-toggle-button"));
 
@@ -118,6 +140,15 @@ describe("TocNavigation", () => {
   });
 
   it("disables smooth scrolling when reduced motion is preferred", () => {
+    const items: PluginProps = {
+      "Section 1": "#section-1",
+      "Section 2": "#section-2",
+      "Section 3": "#section-3",
+      "Section 4": "#section-4",
+      "Section 5": "#section-5",
+      "Section 6": "#section-6",
+    };
+
     const target = document.createElement("div");
     target.id = "user-content-section-1";
     target.scrollIntoView = jest.fn();
@@ -142,6 +173,15 @@ describe("TocNavigation", () => {
   });
 
   it("uses smooth scrolling when matchMedia is unavailable", () => {
+    const items: PluginProps = {
+      "Section 1": "#section-1",
+      "Section 2": "#section-2",
+      "Section 3": "#section-3",
+      "Section 4": "#section-4",
+      "Section 5": "#section-5",
+      "Section 6": "#section-6",
+    };
+
     delete (window as { matchMedia?: Window["matchMedia"] }).matchMedia;
 
     const target = document.createElement("div");
@@ -171,13 +211,12 @@ describe("TocNavigation", () => {
       Invalid: "/invalid-section",
     };
     render(<TocNavigation {...items} />);
+
     // Make sure the TOC trigger exists.
     const tocButton = screen.getByTestId("toc-toggle-button");
     expect(tocButton).toBeInTheDocument();
 
-    // Open the TOC and check that only the valid item is rendered.
-    fireEvent.click(screen.getByTestId("toc-toggle-button"));
-
+    // Because only two items are provided, and one is invalid, the TOC is opened by default.
     expect(screen.getByRole("link", { name: "Valid" })).toBeInTheDocument();
     expect(screen.queryByText("Invalid")).not.toBeInTheDocument();
   });

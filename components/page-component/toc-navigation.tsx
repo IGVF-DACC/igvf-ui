@@ -13,6 +13,12 @@ import { REMARK_CLOBBER_PREFIX } from "../../lib/markdown";
 import { type PluginProps } from "./types";
 
 /**
+ * Minimum number of TOC items to display before the TOC is initially open. If the number of TOC
+ * items is less than or equal to this value, the TOC will appear closed by default.
+ */
+const MIN_DEFAULT_TOC_ITEMS_OPEN = 5;
+
+/**
  * Detect whether the user prefers reduced motion. Falls back to `false` in non-browser contexts.
  *
  * @returns `true` if the user prefers reduced motion, `false` otherwise.
@@ -68,7 +74,6 @@ function scrollToAnchor(event: MouseEvent<HTMLAnchorElement>, href: string) {
  *                each section
  */
 export default function TocNavigation(items: PluginProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const contentId = useId();
 
   // Evaluate the preference at render time to avoid relying on a motion hook export in tests.
@@ -78,6 +83,10 @@ export default function TocNavigation(items: PluginProps) {
   // alpha-numeric characters and dashes.
   const validItems: PluginProps = Object.fromEntries(
     Object.entries(items).filter(([_, href]) => /^#[a-zA-Z0-9-]+$/.test(href))
+  );
+
+  const [isOpen, setIsOpen] = useState(
+    Object.keys(validItems).length <= MIN_DEFAULT_TOC_ITEMS_OPEN
   );
 
   // Don't render anything if no valid items are present. This prevents rendering an empty TOC when
