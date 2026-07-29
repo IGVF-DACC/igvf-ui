@@ -29,7 +29,6 @@
 // root
 import type {
   DataProviderObject,
-  DatabaseObject,
   SearchResults,
   SessionObject,
 } from "../globals";
@@ -964,10 +963,10 @@ export default class FetchRequest {
    * @param payload - Object to post
    * @returns Response from POST request
    */
-  public async postObject(
+  public async postObject<T>(
     path: string,
     payload: object
-  ): Promise<DatabaseObject | ErrorObject> {
+  ): Promise<T | ErrorObject> {
     const url = this.pathUrl(path);
     logRequest("postObject", path, this.usingPersistentConnections);
     const options = this.buildOptionsWithAgent(url, "POST", {
@@ -977,7 +976,7 @@ export default class FetchRequest {
     });
     try {
       const response = await fetch(url, options);
-      return response.json();
+      return (await response.json()) as T | ErrorObject;
     } catch (error) {
       console.log(error);
       return NETWORK_ERROR_RESPONSE;

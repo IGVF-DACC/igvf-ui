@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { AuditDetail, AuditStatus, useAudit } from "../audit";
+import SessionContext from "../session-context";
 
 /**
  * Method to mock the useAuth0 hook comes from:
@@ -19,6 +20,22 @@ jest.mock("@auth0/auth0-react", () => ({
 
 // Needed because of animations.
 global.scrollTo = jest.fn();
+
+const privilegedSessionProperties = {
+  user: {
+    lab: "/labs/example-lab/",
+  },
+};
+
+function renderWithPrivilegedSession(component) {
+  return render(
+    <SessionContext.Provider
+      value={{ sessionProperties: privilegedSessionProperties }}
+    >
+      {component}
+    </SessionContext.Provider>
+  );
+}
 
 /**
  * Mimics a full audit object within an item object.
@@ -140,7 +157,9 @@ describe("Test the AuditStatus button", () => {
       toggleDetailsOpen: jest.fn(),
     };
 
-    render(<AuditStatus item={item} auditState={auditState} />);
+    renderWithPrivilegedSession(
+      <AuditStatus item={item} auditState={auditState} />
+    );
 
     const auditStatusButton = screen.getByTestId("audit-status-button");
     expect(auditStatusButton).toBeInTheDocument();
@@ -264,7 +283,9 @@ describe("Test the AuditDetail panel", () => {
       toggleDetailsOpen: jest.fn(),
     };
 
-    render(<AuditDetail item={item} auditState={auditState} />);
+    renderWithPrivilegedSession(
+      <AuditDetail item={item} auditState={auditState} />
+    );
 
     expect(screen.getByTestId("audit-detail-panel")).toBeInTheDocument();
 
@@ -312,7 +333,9 @@ describe("Test the AuditDetail panel", () => {
       toggleDetailsOpen: jest.fn(),
     };
 
-    render(<AuditDetail item={item} auditState={auditState} />);
+    renderWithPrivilegedSession(
+      <AuditDetail item={item} auditState={auditState} />
+    );
 
     expect(screen.getByTestId("audit-detail-panel")).toBeInTheDocument();
 

@@ -11,6 +11,7 @@ import { Button, ButtonLink } from "./form-elements";
 import GlobalContext from "./global-context";
 import SessionContext from "./session-context";
 // lib
+import { objectAllowsEdit } from "../lib/database-object";
 import { removeTrailingSlash } from "../lib/general";
 import { itemToSchema } from "../lib/schema";
 /* istanbul ignore file */
@@ -173,9 +174,10 @@ ControlButton.propTypes = {
 export function EditLink({ item }) {
   const { profiles } = useContext(SessionContext);
   const { isAuthenticated } = useAuth0();
+  const isEditable = objectAllowsEdit(item);
 
   const itemSchema = itemToSchema(item, profiles);
-  if (isAuthenticated && itemSchema && canEdit(itemSchema)) {
+  if (isAuthenticated && isEditable && itemSchema && canEdit(itemSchema)) {
     const editPath = `${removeTrailingSlash(item["@id"])}#!edit`;
     return (
       <div className="flex justify-end">

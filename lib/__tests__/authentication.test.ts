@@ -1,5 +1,6 @@
 import {
   checkAuthErrorUri,
+  createUnverifiedAccount,
   getDataProviderUrl,
   getSession,
   getSessionProperties,
@@ -69,6 +70,42 @@ describe("Test logging into and out of the server", () => {
     // Not much to test, so this mostly assures code coverage rather than functionality.
     const response = await logoutDataProvider();
     expect(response).toEqual({});
+  });
+
+  it("should create an unverified igvfd account", async () => {
+    const session = {
+      _csrft_: "6FnqvE30k90JdOE2fr9j1jOX1IsDctBJuQex34nv",
+    };
+    const accessToken = "mock-auth0-access-token";
+    const accountResponse = {
+      "@graph": [],
+      "@type": ["result"],
+      status: "success",
+    };
+    const getAccessTokenSilently = jest.fn().mockResolvedValue(accessToken);
+    window.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(accountResponse),
+    });
+
+    const response = await createUnverifiedAccount(
+      session,
+      getAccessTokenSilently
+    );
+
+    expect(getAccessTokenSilently).toHaveBeenCalledTimes(1);
+    expect(window.fetch).toHaveBeenCalledTimes(1);
+
+    const [url, options] = (window.fetch as jest.Mock).mock.calls[0];
+    expect(url).toEqual(expect.stringContaining("/users/@@sign-up"));
+    expect(options).toMatchObject({
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ accessToken }),
+    });
+    expect(options.headers.get("Content-Type")).toBe("application/json");
+    expect(options.headers.get("X-CSRF-Token")).toBe(session._csrft_);
+    expect(response).toEqual(accountResponse);
   });
 });
 

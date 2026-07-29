@@ -4,13 +4,14 @@ import { AnimatePresence, motion } from "motion/react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useContext, useState } from "react";
 // components
 import {
   standardAnimationTransition,
   standardAnimationVariants,
 } from "./animation";
 import MarkdownSection from "./markdown-section";
+import SessionContext from "./session-context";
 // lib
 import { getVisibleItemAuditLevels } from "../lib/audit";
 import { toShishkebabCase } from "../lib/general";
@@ -312,9 +313,14 @@ AuditLevel.propTypes = {
  */
 export function AuditDetail({ item, auditState, className = null }) {
   const { isAuthenticated } = useAuth0();
+  const { sessionProperties } = useContext(SessionContext);
 
   // Get the item's audit levels visible at the current authentication level.
-  const auditLevels = getVisibleItemAuditLevels(item, isAuthenticated);
+  const auditLevels = getVisibleItemAuditLevels(
+    item,
+    isAuthenticated,
+    sessionProperties
+  );
   const hasAudits = auditLevels.length > 0;
 
   return (
@@ -379,7 +385,12 @@ AuditDetail.propTypes = {
  */
 export function AuditStatus({ item, auditState }) {
   const { isAuthenticated } = useAuth0();
-  const itemAuditLevels = getVisibleItemAuditLevels(item, isAuthenticated);
+  const { sessionProperties } = useContext(SessionContext);
+  const itemAuditLevels = getVisibleItemAuditLevels(
+    item,
+    isAuthenticated,
+    sessionProperties
+  );
 
   if (itemAuditLevels.length > 0) {
     // Make an array of the human-readable audit levels for screen readers.
@@ -390,7 +401,7 @@ export function AuditStatus({ item, auditState }) {
     return (
       <button
         onClick={auditState.toggleDetailsOpen}
-        className={`border-audit flex h-[22px] shrink cursor-pointer items-center rounded-full border px-1 ${
+        className={`border-audit flex h-5.5 shrink cursor-pointer items-center rounded-full border px-1 ${
           auditState.isDetailOpen
             ? "bg-button-audit-open"
             : "bg-button-audit-closed"

@@ -188,3 +188,13 @@ export function pathsFromDatabaseObjects(items: unknown): string[] {
 
   return paths;
 }
+
+/**
+ * Determines if an object is editable at the user's current privileges.
+ *
+ * @param item - Object to determine if it's editable
+ * @returns True if the object is editable at the user's current privileges
+ */
+export function objectAllowsEdit(item: DatabaseObject): boolean {
+  return item.actions?.some((action) => action.name === "edit") ?? false;
+}

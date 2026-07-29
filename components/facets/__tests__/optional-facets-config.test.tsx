@@ -1,7 +1,11 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 import { OptionalFacetsConfigModal } from "../optional-facets-config";
 import { ModalManagerProvider } from "../../modal-manager";
+import SessionContext, {
+  type SessionContextValue,
+} from "../../session-context";
 import type { SearchResultsFacet } from "../../../globals";
 import * as authentication from "../../../lib/authentication";
 
@@ -9,12 +13,23 @@ import * as authentication from "../../../lib/authentication";
 jest.mock("../../__mocks__/resize-observer-mock");
 jest.mock("../../__mocks__/intersectionObserverMock");
 
+jest.mock("@auth0/auth0-react", () => ({
+  useAuth0: jest.fn(),
+}));
+
 // Mock the authentication module
 jest.mock("../../../lib/authentication", () => ({
   loginAuthProvider: jest.fn(),
 }));
 
 describe("OptionalFacetsConfigModal", () => {
+  beforeEach(() => {
+    (useAuth0 as jest.Mock).mockReturnValue({
+      isAuthenticated: false,
+      loginWithRedirect: jest.fn(),
+    });
+  });
+
   const mockAllFacets: SearchResultsFacet[] = [
     {
       field: "age",
@@ -357,5 +372,73 @@ describe("OptionalFacetsConfigModal", () => {
 
     // Verify loginAuthProvider was called
     expect(mockLoginAuthProvider).toHaveBeenCalled();
+  });
+
+  it("shows internal-action facets and sync messaging to privileged users", () => {
+    (useAuth0 as jest.Mock).mockReturnValue({
+      isAuthenticated: true,
+      loginWithRedirect: jest.fn(),
+    });
+    const internalActionFacet: SearchResultsFacet = {
+      field: "audit.INTERNAL_ACTION.category",
+      title: "Audit Internal Action",
+      terms: [],
+      total: 0,
+      type: "terms",
+      appended: false,
+      optional: true,
+    };
+    const sessionContext = {
+      sessionProperties: { user: { lab: "/labs/test-lab/" } },
+    } as SessionContextValue;
+
+    render(
+      <SessionContext.Provider value={sessionContext}>
+        <ModalManagerProvider>
+          <OptionalFacetsConfigModal
+            selectedType="MeasurementSet"
+            visibleOptionalFacets={[]}
+            allFacets={[internalActionFacet]}
+            onSave={jest.fn()}
+            onClose={jest.fn()}
+          />
+        </ModalManagerProvider>
+      </SessionContext.Provider>
+    );
+
+    expect(screen.getByText("Audit Internal Action")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Selections sync to other browsers/)
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Sign in" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides internal-action facets from unprivileged users", () => {
+    const internalActionFacet: SearchResultsFacet = {
+      field: "audit.INTERNAL_ACTION.category",
+      title: "Audit Internal Action",
+      terms: [],
+      total: 0,
+      type: "terms",
+      appended: false,
+      optional: true,
+    };
+
+    render(
+      <ModalManagerProvider>
+        <OptionalFacetsConfigModal
+          selectedType="MeasurementSet"
+          visibleOptionalFacets={[]}
+          allFacets={[internalActionFacet]}
+          onSave={jest.fn()}
+          onClose={jest.fn()}
+        />
+      </ModalManagerProvider>
+    );
+
+    expect(screen.queryByText("Audit Internal Action")).not.toBeInTheDocument();
+    expect(screen.getByText("No optional facets available.")).toBeInTheDocument();
   });
 });

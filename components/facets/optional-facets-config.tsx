@@ -2,18 +2,41 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { CheckBadgeIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import { useState } from "react";
+import { useContext, useState } from "react";
 // components
 import { AnnotatedItem } from "../annotated-value";
 import Checkbox from "../checkbox";
 import { Button, ButtonAsLink } from "../form-elements";
 import Icon from "../icon";
 import Modal from "../modal";
+import SessionContext from "../session-context";
 // lib
 import { loginAuthProvider } from "../../lib/authentication";
 import { type OptionalFacetsConfigForType } from "../../lib/facets";
 // root
-import type { SearchResultsFacet } from "../../globals";
+import type {
+  SearchResultsFacet,
+  SessionPropertiesObject,
+} from "../../globals";
+
+/**
+ * Filter the optional facets to only those that should be displayed for this user.
+ *
+ * @param optionalFacets - Optional facets to check
+ * @param sessionProperties - Session properties from the back end
+ * @returns Optional facets to appear at this user's privilege level
+ */
+function filterOptionalFacets(
+  optionalFacets: SearchResultsFacet[],
+  sessionProperties: SessionPropertiesObject
+): SearchResultsFacet[] {
+  return optionalFacets.filter((facet) => {
+    if (facet.field === "audit.INTERNAL_ACTION.category") {
+      return sessionProperties?.user?.lab !== undefined;
+    }
+    return facet;
+  });
+}
 
 /**
  * Wrap each section of checkboxes within the checkbox area.
@@ -46,6 +69,7 @@ export function OptionalFacetsConfigModal({
   onClose: () => void;
 }) {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { sessionProperties } = useContext(SessionContext);
 
   // Tracks the optional facet config being modified in the modal.
   const [dynamicConfig, setDynamicConfig] =
@@ -53,11 +77,15 @@ export function OptionalFacetsConfigModal({
 
   // Get only the optional facets for all facets available for the current type.
   const optionalFacets = allFacets.filter((facet) => facet.optional);
+  const filteredOptionalFacets = filterOptionalFacets(
+    optionalFacets,
+    sessionProperties
+  );
 
   // Group each optional facet by their category and sort case insensitively. Any without
   // `category` go into "Other" and get sorted last.
   const groupedOptionalFacets = _.groupBy(
-    optionalFacets,
+    filteredOptionalFacets,
     (facet) => facet.category || "z"
   );
   const sortedGroupNames = _.sortBy(

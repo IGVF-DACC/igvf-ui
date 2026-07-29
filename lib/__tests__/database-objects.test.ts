@@ -3,10 +3,11 @@ import {
   isDatabaseObjectArray,
   isDatabaseObjectArrayOfType,
   isDatabaseObjectOfType,
+  objectAllowsEdit,
   pathsFromDatabaseObjects,
 } from "../database-object";
 import { type FileSetObject } from "../file-sets";
-import type { LabObject, UserObject } from "../../globals";
+import type { DatabaseObject, LabObject, UserObject } from "../../globals";
 
 describe("isDatabaseObject", () => {
   test("that an object without `@type` is a database object without checking `@type` but isn't when checking `@type`", () => {
@@ -274,5 +275,53 @@ describe("pathsFromDatabaseObjects", () => {
 
     expect(pathsFromDatabaseObjects(items)).toEqual([]);
     expect(pathsFromDatabaseObjects(null)).toEqual([]);
+  });
+});
+
+describe("objectAllowsEdit", () => {
+  it("returns true if the object has an edit action", () => {
+    const obj: DatabaseObject = {
+      "@id": "/some/object/",
+      "@type": ["SomeType"],
+      actions: [
+        {
+          name: "edit",
+          title: "Edit",
+          profile: "/profiles/some-profile/",
+          href: "/some/object/edit/",
+        },
+      ],
+      status: "released",
+    };
+
+    expect(objectAllowsEdit(obj)).toBe(true);
+  });
+
+  it("returns false if the object does not have an edit action", () => {
+    const obj: DatabaseObject = {
+      "@id": "/some/object/",
+      "@type": ["SomeType"],
+      actions: [
+        {
+          name: "view",
+          title: "View",
+          profile: "/profiles/some-profile/",
+          href: "/some/object/view/",
+        },
+      ],
+      status: "released",
+    };
+
+    expect(objectAllowsEdit(obj)).toBe(false);
+  });
+
+  it("returns false if the object has no actions", () => {
+    const obj: DatabaseObject = {
+      "@id": "/some/object/",
+      "@type": ["SomeType"],
+      status: "released",
+    };
+
+    expect(objectAllowsEdit(obj)).toBe(false);
   });
 });

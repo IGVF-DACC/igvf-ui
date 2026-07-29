@@ -817,11 +817,13 @@ export default function Schema({
   // Full URL of the page so we can link to tabs and properties within tabs
   const [schemaPageUrl, setSchemaPageUrl] = useState("");
 
-  const { collectionTitles, profiles } = useContext(SessionContext);
+  const { collectionTitles, profiles, sessionProperties } =
+    useContext(SessionContext);
   const pageTitle =
     getCollectionTitle(collectionTitles, collection) || schema.title;
   const schemaType = schemaToType(schema, profiles);
   const collectionName = collectionNames?.[schemaType] || "";
+  const canAddObjects = sessionProperties?.user?.lab !== undefined;
 
   // Generate URLs for each of the top-level tabs; used to open those tabs on page load.
   const tabUrls = {
@@ -859,7 +861,13 @@ export default function Schema({
           </ButtonLink>
           <SearchAndReportType type={schemaType} title={schema.title} />
         </div>
-        <AddLink schema={schema} collectionName={collectionName} label="Add" />
+        {canAddObjects && (
+          <AddLink
+            schema={schema}
+            collectionName={collectionName}
+            label="Add"
+          />
+        )}
       </div>
       <DataPanel className="@container" isPaddingSuppressed>
         <TabGroup defaultId={tab}>
