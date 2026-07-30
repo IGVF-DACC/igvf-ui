@@ -48,10 +48,10 @@ export function BatchDownloadModalContent({
           <i>
             <b>file_metadata.tsv</b>
           </i>{" "}
-          | cut -f2 | xargs -L 1 curl -O -J -L
+          | tail -n +2 | cut -f2 | xargs -L 1 curl -O -J -L
         </code>
         <CopyButton.Icon
-          target="tail -n +2 file_metadata.tsv | cut -f2 | xargs -L 1 curl -O -J -L"
+          target="grep -v '^#' file_metadata.tsv | tail -n +2 | cut -f2 | xargs -L 1 curl -O -J -L"
           label="Copy this command line to the clipboard"
           size="sm"
         >
