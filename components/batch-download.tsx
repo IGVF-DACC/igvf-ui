@@ -44,7 +44,7 @@ export function BatchDownloadModalContent({
       </p>
       <div className="mt-2 flex gap-1">
         <code className="py-0">
-          tail -n +2{" "}
+          grep -v '^#'{" "}
           <i>
             <b>file_metadata.tsv</b>
           </i>{" "}
