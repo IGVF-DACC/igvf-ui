@@ -36,10 +36,12 @@ export function BatchDownloadModalContent({
   return (
     <div className="prose dark:prose-invert">
       <p>
-        Click the &ldquo;Download&rdquo; button below to download a file named
-        &ldquo;file_metadata.tsv&rdquo; containing the metadata for all
-        selected files. Then use the following command to download all files
-        listed in the metadata file:
+        Click the &ldquo;Download&rdquo; button below to download a file named{" "}
+        <i>
+	  <b>file_metadata.tsv</b>
+        </i>{" "}
+        containing the metadata for all selected files. Then use the following command
+        to download all files listed in the metadata file:
       </p>
       <div className="mt-2 flex justify-center gap-1">
         <code className="py-0">
