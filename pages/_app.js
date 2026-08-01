@@ -165,8 +165,8 @@ function Site({ Component, pageProps, postLoginRedirectUri }) {
       <TestServerWarning />
       <div className="md:container">
         <GlobalContext.Provider value={globalContext}>
-          <Session postLoginRedirectUri={postLoginRedirectUri}>
-            <ModalManagerProvider>
+          <ModalManagerProvider>
+            <Session postLoginRedirectUri={postLoginRedirectUri}>
               <div className="md:flex">
                 <NavigationSection />
                 <div className="@container/main min-w-0 shrink grow py-2 pr-3 md:pr-0 md:pl-2">
@@ -180,8 +180,8 @@ function Site({ Component, pageProps, postLoginRedirectUri }) {
                   )}
                 </div>
               </div>
-            </ModalManagerProvider>
-          </Session>
+            </Session>
+          </ModalManagerProvider>
         </GlobalContext.Provider>
       </div>
     </ViewportOverlay>

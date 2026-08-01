@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { useAuth0 } from "@auth0/auth0-react";
+import SessionContext from "../../session-context";
 import AuditTitle from "../custom-facets/audit-title";
 
 /**
@@ -109,11 +110,15 @@ describe("Test the facet audit title component", () => {
     useAuth0.mockReturnValue({ isAuthenticated: true });
 
     render(
-      <AuditTitle
-        facet={searchResults.facets[0]}
-        searchResults={searchResults}
-        isFacetOpen
-      />
+      <SessionContext.Provider
+        value={{ sessionProperties: { user: { lab: "/labs/test-lab/" } } }}
+      >
+        <AuditTitle
+          facet={searchResults.facets[0]}
+          searchResults={searchResults}
+          isFacetOpen
+        />
+      </SessionContext.Provider>
     );
 
     expect(screen.getByText("Audit Internal Action")).toBeInTheDocument();

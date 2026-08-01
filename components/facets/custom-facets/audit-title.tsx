@@ -1,7 +1,9 @@
 // node_modules
 import { useAuth0 } from "@auth0/auth0-react";
+import { useContext } from "react";
 // components
 import { auditMap } from "../../audit";
+import SessionContext from "../../session-context";
 // component/facets
 import { FacetTermCount } from "../facet-term-count";
 // components/facets/custom-facets
@@ -30,8 +32,14 @@ export default function AuditTitle({
   isEditOrderMode: boolean;
 }) {
   const { isAuthenticated } = useAuth0();
+  const { sessionProperties } = useContext(SessionContext);
 
-  if (isAuthenticated || facet.field !== "audit.INTERNAL_ACTION.category") {
+  const isPrivilegedUser = sessionProperties?.user?.lab !== undefined;
+
+  if (
+    (isAuthenticated && isPrivilegedUser) ||
+    facet.field !== "audit.INTERNAL_ACTION.category"
+  ) {
     // Extract the audit type from the facet field name, and use it to get the color and title.
     const auditType = facet.field.split(".")[1];
     const mapping = auditMap[auditType];

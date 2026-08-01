@@ -1,7 +1,7 @@
 // node_modules
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import router from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 // components
 import { AddLink } from "../../components/add";
 import Breadcrumbs from "../../components/breadcrumbs";
@@ -22,7 +22,7 @@ import {
   SearchAndReportType,
 } from "../../components/profiles";
 import SchemaIcon from "../../components/schema-icon";
-import { extractSchema } from "../../lib/profiles";
+import SessionContext from "../../components/session-context";
 import { Tooltip, TooltipRef, useTooltip } from "../../components/tooltip";
 // lib
 import { deprecatedSchemas } from "../../lib/constants";
@@ -31,6 +31,7 @@ import { toShishkebabCase } from "../../lib/general";
 import {
   checkSearchTermSchema,
   checkSearchTermTitle,
+  extractSchema,
   schemaToPath,
   type SearchMode,
 } from "../../lib/profiles";
@@ -200,6 +201,7 @@ function SubTree({
   searchMode,
   collectionTitles = null,
   collectionNames = null,
+  canAddObjects = false,
 }: {
   tree: ProfileHierarchy;
   objectType: string;
@@ -208,6 +210,7 @@ function SubTree({
   searchMode: SearchMode;
   collectionTitles?: CollectionTitles | null;
   collectionNames?: Record<string, string> | null;
+  canAddObjects?: boolean;
 }) {
   const tooltipAttr = useTooltip(objectType);
 
@@ -284,11 +287,13 @@ function SubTree({
               {schema.description || "No description available"}
             </Tooltip>
             <SearchAndReportType type={objectType} title={title} />
-            <AddLink
-              schema={schema}
-              collectionName={collectionName}
-              label={`Add ${schema.title}`}
-            />
+            {canAddObjects && (
+              <AddLink
+                schema={schema}
+                collectionName={collectionName}
+                label={`Add ${schema.title}`}
+              />
+            )}
           </>
         ) : (
           <>
@@ -303,6 +308,7 @@ function SubTree({
             const child = tree[childObjectType];
             return (
               <SubTree
+                key={childObjectType}
                 tree={child}
                 objectType={childObjectType}
                 schemas={schemas}
@@ -310,7 +316,7 @@ function SubTree({
                 searchMode={searchMode}
                 collectionTitles={collectionTitles}
                 collectionNames={collectionNames}
-                key={childObjectType}
+                canAddObjects={canAddObjects}
               />
             );
           })}
@@ -336,7 +342,9 @@ export default function Profiles({
     "schema-search-mode",
     "SEARCH_MODE_TITLE"
   );
+  const { sessionProperties } = useContext(SessionContext);
 
+  const canAddObjects = sessionProperties?.user?.lab !== undefined;
   const topLevelObjectTypes = Object.keys(schemas._hierarchy.Item).filter(
     (objectType) =>
       isDisplayableType(
@@ -372,6 +380,7 @@ export default function Profiles({
             const topOfTree = schemas._hierarchy.Item[objectType];
             return (
               <SubTree
+                key={objectType}
                 tree={topOfTree}
                 objectType={objectType}
                 schemas={schemas}
@@ -379,7 +388,7 @@ export default function Profiles({
                 searchMode={searchMode}
                 collectionTitles={collectionTitles}
                 collectionNames={collectionNames}
-                key={objectType}
+                canAddObjects={canAddObjects}
               />
             );
           })}

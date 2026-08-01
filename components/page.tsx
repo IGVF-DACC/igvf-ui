@@ -42,6 +42,7 @@ import PageComponent from "./page-component";
 import PagePreamble from "./page-preamble";
 import SessionContext from "./session-context";
 // lib
+import { objectAllowsEdit } from "../lib/database-object";
 import FetchRequest, { ErrorObject } from "../lib/fetch-request";
 import {
   detectConflictingName,
@@ -1049,6 +1050,7 @@ export default function Page({
   const router = useRouter();
   const { isAuthenticated } = useAuth0();
   const { session } = useContext(SessionContext);
+  const canEditPages = objectAllowsEdit(page);
 
   useEffect(() => {
     // Enable editing mode if the user is authenticated and the URL ends with "#!edit"
@@ -1155,7 +1157,9 @@ export default function Page({
         />
       ) : (
         <>
-          {isAuthenticated && <EditPageTrigger href={router.asPath} />}
+          {isAuthenticated && canEditPages && (
+            <EditPageTrigger href={router.asPath} />
+          )}
           <PanelComponent>
             <div data-testid="page-blocks" id="page-content">
               {editableBlocks.map((block, i) => {

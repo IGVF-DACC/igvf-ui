@@ -148,7 +148,8 @@ export function CreateAccessKeyTrigger({ onAccessKeyChange }) {
   // Access key secret
   const [accessKeySecret, setAccessKeySecret] = useState("");
 
-  const { session } = useContext(SessionContext);
+  const { session, sessionProperties } = useContext(SessionContext);
+  const canCreateAccessKeys = sessionProperties?.user?.lab !== undefined;
 
   /**
    * Called to create a new access key. Once that happens it opens the modal to display the new
@@ -170,21 +171,24 @@ export function CreateAccessKeyTrigger({ onAccessKeyChange }) {
     setOpen(false);
   }
 
-  return (
-    <>
-      <Button className="mt-2 w-full sm:w-auto" onClick={createKey}>
-        Create Access Key
-      </Button>
-      {isOpen && (
-        <AccessKeyModal
-          accessKeyId={accessKeyId}
-          accessKeySecret={accessKeySecret}
-          createOrReset="create"
-          onClose={closeModal}
-        />
-      )}
-    </>
-  );
+  if (canCreateAccessKeys) {
+    return (
+      <>
+        <Button className="mt-2 w-full sm:w-auto" onClick={createKey}>
+          Create Access Key
+        </Button>
+        {isOpen && (
+          <AccessKeyModal
+            accessKeyId={accessKeyId}
+            accessKeySecret={accessKeySecret}
+            createOrReset="create"
+            onClose={closeModal}
+          />
+        )}
+      </>
+    );
+  }
+  return null;
 }
 
 CreateAccessKeyTrigger.propTypes = {

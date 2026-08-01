@@ -1,16 +1,13 @@
 // node_modules
 import _ from "lodash";
-// Types
-import { DatabaseObject } from "../globals.d";
+// root
+import type { DatabaseObject, SessionPropertiesObject } from "../globals";
 
 /**
  * All possible audit levels, and just the public ones.
  */
 export type AuditLevel =
-  | "ERROR"
-  | "NOT_COMPLIANT"
-  | "WARNING"
-  | "INTERNAL_ACTION";
+  "ERROR" | "NOT_COMPLIANT" | "WARNING" | "INTERNAL_ACTION";
 export type PublicAuditLevel = Exclude<AuditLevel, "INTERNAL_ACTION">;
 
 /**
@@ -46,12 +43,19 @@ function isPublicAuditLevel(level: string): level is PublicAuditLevel {
  */
 export function getVisibleItemAuditLevels(
   item: DatabaseObject,
-  isAuthenticated: boolean
+  isAuthenticated: boolean,
+  sessionProperties: SessionPropertiesObject | null
 ): string[] {
+  // A user with a lab is considered privileged and can see all audit levels, even INTERNAL_ACTION.
+  // You can be authenticated but not privileged if you don't have a lab, in which case you can only
+  // see public audit levels just as if you were unauthenticated.
+  const isPrivilegedUser = sessionProperties?.user?.lab !== undefined;
+
   const visibleAuditLevels = item.audit
-    ? Object.keys(item.audit).filter((level): level is AuditLevel => {
-        return isAuthenticated || isPublicAuditLevel(level);
-      })
+    ? Object.keys(item.audit).filter(
+        (level): level is AuditLevel =>
+          (isAuthenticated && isPrivilegedUser) || isPublicAuditLevel(level)
+      )
     : [];
   const validAuditLevels = visibleAuditLevels.filter((level) =>
     auditLevelOrder.includes(level)
