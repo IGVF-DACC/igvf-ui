@@ -67,7 +67,7 @@ export function BatchDownloadModalContent({
       </p>
       <ul>
         <li>
-          <code>grep -v &apos;^#&apos; file_metadata.tsv</code> reads the
+          <code>grep -v '^#' file_metadata.tsv</code> reads the
           metadata file and removes any comment lines (lines starting with{" "}
           <code>#</code>), such as the source URL or column descriptions at
           the top.
