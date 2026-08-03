@@ -38,7 +38,7 @@ export function BatchDownloadModalContent({
       <p>
         Click the &ldquo;Download&rdquo; button below to download a file named{" "}
         <i>
-	  <b>file_metadata.tsv</b>
+          <b>file_metadata.tsv</b>
         </i>{" "}
         containing the metadata for all selected files. Then use the following command
         to download all files listed in the metadata file:
