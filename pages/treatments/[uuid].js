@@ -119,6 +119,12 @@ export default function Treatment({
                   </DataItemValue>
                 </>
               )}
+              {treatment.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{treatment.description}</DataItemValue>
+                </>
+              )}
               {treatment.submitter_comment && (
                 <>
                   <DataItemLabel>Submitter Comment</DataItemLabel>

@@ -47,6 +47,12 @@ export default function Image({ image, attribution = null, isJson }) {
               </DataItemValue>
               <DataItemLabel>md5sum</DataItemLabel>
               <DataItemValue>{image.attachment.md5sum}</DataItemValue>
+              {image.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{image.description}</DataItemValue>
+                </>
+              )}
               {image.summary && (
                 <>
                   <DataItemLabel>Summary</DataItemLabel>

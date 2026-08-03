@@ -2,6 +2,7 @@
 import _ from "lodash";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
+import { QualityMetricDataItems } from "../../components/common-data-items";
 import { DataArea, DataPanel } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
@@ -25,7 +26,7 @@ import { isJsonFormat } from "../../lib/query-utils";
 // root
 import type { FileObject } from "../../globals";
 
-export default function PerturbSeqQualityMetric({
+export default function SingleCellAtacSeqQualityMetric({
   qualityMetric,
   qualityMetricOf,
   isJson,
@@ -46,17 +47,19 @@ export default function PerturbSeqQualityMetric({
           <StatusPreviewDetail item={qualityMetric} />
           <DataPanel>
             <DataArea>
-              {singleCellAtacSeqFields.map((fieldAttr) => {
-                if (qualityMetric[fieldAttr.name]) {
-                  return (
-                    <QualityMetricField
-                      key={fieldAttr.name}
-                      fieldAttr={fieldAttr}
-                      qualityMetric={qualityMetric}
-                    />
-                  );
-                }
-              })}
+              <QualityMetricDataItems item={qualityMetric}>
+                {singleCellAtacSeqFields.map((fieldAttr) => {
+                  if (qualityMetric[fieldAttr.name]) {
+                    return (
+                      <QualityMetricField
+                        key={fieldAttr.name}
+                        fieldAttr={fieldAttr}
+                        qualityMetric={qualityMetric}
+                      />
+                    );
+                  }
+                })}
+              </QualityMetricDataItems>
             </DataArea>
           </DataPanel>
 

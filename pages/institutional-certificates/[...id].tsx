@@ -84,6 +84,15 @@ export default function InstitutionalCertificate({
                 </a>
               </DataItemValueUrl>
 
+              {institutionalCertificate.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>
+                    {institutionalCertificate.description}
+                  </DataItemValue>
+                </>
+              )}
+
               <DataItemLabel>Creation Timestamp</DataItemLabel>
               <DataItemValue>
                 {formatDate(institutionalCertificate.creation_timestamp)}

@@ -50,6 +50,12 @@ export default function Lab({ lab, awards = null, pi = null, isJson }) {
                   </DataItemValueUrl>
                 </>
               )}
+              {lab.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{lab.description}</DataItemValue>
+                </>
+              )}
               {awards?.length > 0 && (
                 <>
                   <DataItemLabel>Awards</DataItemLabel>
