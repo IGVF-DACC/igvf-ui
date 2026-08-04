@@ -70,6 +70,12 @@ export default function Publication({
             <DataArea>
               <DataItemLabel>Title</DataItemLabel>
               <DataItemValue>{publication.title}</DataItemValue>
+              {publication.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{publication.description}</DataItemValue>
+                </>
+              )}
               {publication.authors && (
                 <>
                   <DataItemLabel>Authors</DataItemLabel>

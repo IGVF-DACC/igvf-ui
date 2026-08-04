@@ -66,6 +66,12 @@ export function DonorDataItems({ item, publications = [], children }) {
         </>
       )}
       {children}
+      {item.description && (
+        <>
+          <DataItemLabel>Description</DataItemLabel>
+          <DataItemValue>{item.description}</DataItemValue>
+        </>
+      )}
       {item.submitter_comment && (
         <>
           <DataItemLabel>Submitter Comment</DataItemLabel>
@@ -121,6 +127,7 @@ DonorDataItems.propTypes = {
 
 DonorDataItems.commonProperties = [
   "aliases",
+  "description",
   "ethnicities",
   "publications",
   "revoke_detail",
@@ -989,6 +996,32 @@ FileSetDataItems.commonProperties = [
   "summary",
   "url",
 ];
+
+/**
+ * Display data items common to all quality-metric-derived objects.
+ */
+export function QualityMetricDataItems({ item, children }) {
+  return (
+    <>
+      {children}
+      {item.summary && (
+        <>
+          <DataItemLabel>Summary</DataItemLabel>
+          <DataItemValue>{item.summary}</DataItemValue>
+        </>
+      )}
+    </>
+  );
+}
+
+QualityMetricDataItems.propTypes = {
+  // Quality metric object
+  item: PropTypes.object.isRequired,
+  // Children elements to render
+  children: PropTypes.node,
+};
+
+QualityMetricDataItems.commonProperties = ["summary"];
 
 /**
  * `UnknownTypePanel` uses the following data and functions to use common data item renderers based

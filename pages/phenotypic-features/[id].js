@@ -50,6 +50,12 @@ export default function PhenotypicFeature({
               <DataItemValue>
                 <Link href={phenotypicFeature.feature["@id"]}>{feature}</Link>
               </DataItemValue>
+              {phenotypicFeature.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{phenotypicFeature.description}</DataItemValue>
+                </>
+              )}
               {truthyOrZero(phenotypicFeature.quantity) && (
                 <>
                   <DataItemLabel>Quantity</DataItemLabel>

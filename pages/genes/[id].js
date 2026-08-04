@@ -47,6 +47,12 @@ export default function Gene({ gene, isJson }) {
               <DataItemValue>
                 <EnsemblLink geneid={gene.geneid} taxa={gene.taxa} />
               </DataItemValue>
+              {gene.description && (
+                <>
+                  <DataItemLabel>Description</DataItemLabel>
+                  <DataItemValue>{gene.description}</DataItemValue>
+                </>
+              )}
               {gene.allele && (
                 <>
                   <DataItemLabel>Allele</DataItemLabel>

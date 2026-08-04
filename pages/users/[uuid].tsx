@@ -41,13 +41,23 @@ export default function User({ user, lab, isJson }: UserPageProps) {
         <PagePreamble />
         <ObjectPageHeader item={user} isJsonFormat={isJson} />
         <JsonDisplay item={user} isJsonFormat={isJson}>
-          {user.job_title || lab || user.email || user.submitter_comment ? (
+          {user.job_title ||
+          lab ||
+          user.email ||
+          user.submitter_comment ||
+          user.description ? (
             <DataPanel>
               <DataArea>
                 {user.job_title && (
                   <>
                     <DataItemLabel>Job Title</DataItemLabel>
                     <DataItemValue>{user.job_title}</DataItemValue>
+                  </>
+                )}
+                {user.description && (
+                  <>
+                    <DataItemLabel>Description</DataItemLabel>
+                    <DataItemValue>{user.description}</DataItemValue>
                   </>
                 )}
                 {lab && (
