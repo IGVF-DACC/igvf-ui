@@ -137,7 +137,9 @@ export default function PseudobulkSet({
   const preferredAssayTitleDescriptionMap =
     getPreferredAssayTitleDescriptionMap(profiles);
 
-  // Combine all sample-associated terms to pass to the SampleAnnotatedSummary component, ensuring that if the pseudobulk set has a cell type, it is included as a term (since the cell annotation may reference the cell type), along with all terms from the samples.
+  // Combine all sample-associated terms to pass to the SampleAnnotatedSummary component, ensuring
+  // that if the pseudobulk set has a cell type, it is included as a term (since the cell annotation
+  // may reference the cell type), along with all terms from the samples.
   const allSampleTerms = isEmbedded(pseudobulkSet.cell_type)
     ? [pseudobulkSet.cell_type, ...samplesTerms]
     : samplesTerms;
@@ -351,7 +353,7 @@ export default function PseudobulkSet({
               fileSets={inputFileSetFor}
               reportLink={`/multireport/?type=FileSet&input_file_sets.@id=${pseudobulkSet["@id"]}`}
               reportLabel="Report of file sets that this pseudobulk set is an input for"
-              title="File Sets Using This Analysis Set as an Input"
+              title="File Sets Using This Pseudobulk Set as an Input"
               panelId="input-file-set-for"
             />
           )}
@@ -361,7 +363,7 @@ export default function PseudobulkSet({
               fileSets={controlFor}
               reportLink={`/multireport/?type=FileSet&control_file_sets.@id=${pseudobulkSet["@id"]}`}
               reportLabel="Report of file sets that this pseudobulk set serves as a control for"
-              title="File Sets Controlled by This Analysis Set"
+              title="File Sets Controlled by This Pseudobulk Set"
               panelId="control-for"
             />
           )}

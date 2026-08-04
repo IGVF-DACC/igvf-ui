@@ -277,13 +277,13 @@ export async function requestSeqspecFiles(
  * @param addedProperties Additional properties to request
  * @returns The file-set objects requested
  */
-export async function requestFileSets(
+export async function requestFileSets<T extends FileSetObject = FileSetObject>(
   paths: string[],
   request: FetchRequest,
   addedProperties: string[] = []
-): Promise<FileSetObject[]> {
+): Promise<T[]> {
   return (
-    await request.getMultipleObjectsBulk<FileSetObject>(
+    await request.getMultipleObjectsBulk<T>(
       paths,
       [
         "@type",

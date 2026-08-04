@@ -1,6 +1,16 @@
 // lib
 import { isErrorObject } from "./fetch-request";
-import { type FileSetObject } from "./file-sets";
+import {
+  AuxiliarySetObject,
+  CuratedSetObject,
+  type AnalysisSetObject,
+  type ConstructLibrarySetObject,
+  type FileSetObject,
+  type MeasurementSetObject,
+  type ModelSetObject,
+  type PredictionSetObject,
+  type PseudobulkSetObject,
+} from "./file-sets";
 import { type OntologyTermObject } from "./ontology-terms";
 import { type SampleObject } from "./samples";
 import { isPathArray } from "./types";
@@ -36,6 +46,14 @@ type DatabaseTypeMap = {
   Donor: DonorObject;
   File: FileObject;
   FileSet: FileSetObject;
+  AnalysisSet: AnalysisSetObject;
+  AuxiliarySet: AuxiliarySetObject;
+  ConstructLibrarySet: ConstructLibrarySetObject;
+  CuratedSet: CuratedSetObject;
+  MeasurementSet: MeasurementSetObject;
+  ModelSet: ModelSetObject;
+  PredictionSet: PredictionSetObject;
+  PseudobulkSet: PseudobulkSetObject;
   Gene: GeneObject;
   HumanDonor: HumanDonorObject;
   Lab: LabObject;
@@ -187,6 +205,25 @@ export function pathsFromDatabaseObjects(items: unknown): string[] {
   }
 
   return paths;
+}
+
+/**
+ * Filters an array of database objects to those referenced by another array of database objects or
+ * paths. The filtered objects retain their order from `databaseObjects`.
+ *
+ * This is useful when you have an object that contains a property that might contain paths or
+ * partial database objects, and getServerSideProps() has already fetched the full objects.
+ *
+ * @param references - Database objects or paths that identify the objects to include
+ * @param databaseObjects - Database objects to filter
+ * @returns Database objects whose paths occur in `references`
+ */
+export function filterDatabaseObjectsByReferences<T extends DatabaseObject>(
+  references: unknown,
+  databaseObjects: T[]
+): T[] {
+  const referencePaths = new Set(pathsFromDatabaseObjects(references));
+  return databaseObjects.filter((item) => referencePaths.has(item["@id"]));
 }
 
 /**

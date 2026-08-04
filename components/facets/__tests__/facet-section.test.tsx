@@ -37,9 +37,21 @@ jest.mock("@auth0/auth0-react", () => ({
 }));
 
 const mockUseAuth0 = useAuth0 as jest.MockedFunction<typeof useAuth0>;
+const originalConsoleError = console.error;
 
 describe("Test <FacetSection> component", () => {
   beforeEach(() => {
+    jest.spyOn(console, "error").mockImplementation((...args: unknown[]) => {
+      const [firstArg] = args;
+      if (
+        typeof firstArg === "string" &&
+        firstArg.includes("inside a test was not wrapped in act")
+      ) {
+        return;
+      }
+      originalConsoleError(...args);
+    });
+
     window.scrollTo = jest.fn();
     // Mock fetch to return resolved promises immediately
     window.fetch = jest.fn(async () =>

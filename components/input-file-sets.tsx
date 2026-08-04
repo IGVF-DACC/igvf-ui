@@ -11,8 +11,12 @@ import LinkedIdAndStatusStack from "./linked-id-and-status-stack";
 import SessionContext from "./session-context";
 import SortableGrid from "./sortable-grid";
 // lib
-import { isDatabaseObjectArrayOfType } from "../lib/database-object";
 import {
+  isDatabaseObjectArrayOfType,
+  pathsFromDatabaseObjects,
+} from "../lib/database-object";
+import {
+  FileSetObjectProperty,
   type AuxiliarySetObject,
   type ConstructLibrarySetObject,
   type FileSetObject,
@@ -101,15 +105,13 @@ const measurementSetColumns: SortableGridConfig<
   {
     id: "control-file-sets",
     title: "Controls",
-    display: ({ source, meta }) =>
-      meta &&
-      isDatabaseObjectArrayOfType(source.control_file_sets, "FileSet") ? (
-        <FileSetsDisplay
-          fileSet={source}
-          embeddedFileSets={meta.controlFileSets}
-          fileSetProperty="control_file_sets"
-        />
-      ) : null,
+    display: ({ source, meta }) => (
+      <FileSetsDisplay
+        fileSet={source}
+        embeddedFileSets={meta.controlFileSets}
+        fileSetProperty="control_file_sets"
+      />
+    ),
     hide: (measurementSets) =>
       columnHideCondition(measurementSets, "control_file_sets"),
     isSortable: false,
@@ -118,14 +120,13 @@ const measurementSetColumns: SortableGridConfig<
   {
     id: "auxiliary-sets",
     title: "Associated Auxiliary Sets",
-    display: ({ source, meta }) =>
-      meta && isDatabaseObjectArrayOfType(source.auxiliary_sets, "FileSet") ? (
-        <FileSetsDisplay
-          fileSet={source}
-          embeddedFileSets={meta.auxiliarySets}
-          fileSetProperty="auxiliary_sets"
-        />
-      ) : null,
+    display: ({ source, meta }) => (
+      <FileSetsDisplay
+        fileSet={source}
+        embeddedFileSets={meta.auxiliarySets}
+        fileSetProperty="auxiliary_sets"
+      />
+    ),
     hide: (measurementSets) =>
       columnHideCondition(measurementSets, "auxiliary_sets"),
     isSortable: false,
@@ -361,8 +362,7 @@ function SamplesDisplay({
   // the corresponding samples in the meta.samples array so we have all the properties we need for
   // the table.
   const embeddedSamples = fileSet[propertyName as keyof typeof fileSet] as
-    | SampleObject[]
-    | undefined;
+    SampleObject[] | undefined;
   if (!isDatabaseObjectArrayOfType(embeddedSamples, "Sample")) {
     return null;
   }
@@ -431,8 +431,7 @@ function samplesSorter(
 function columnHideCondition(data: FileSetObject[], propertyName: string) {
   const embeddedData = data.flatMap((datum) => {
     const property = datum[propertyName as keyof typeof datum] as
-      | FileSetObject[]
-      | undefined;
+      FileSetObject[] | undefined;
 
     return property ?? [];
   });
@@ -455,23 +454,18 @@ function FileSetsDisplay({
 }: {
   fileSet: FileSetObject;
   embeddedFileSets: FileSetObject[];
-  fileSetProperty: string;
+  fileSetProperty: FileSetObjectProperty;
 }) {
-  const referencedFileSets = fileSet[
-    fileSetProperty as keyof typeof fileSet
-  ] as FileSetObject[] | undefined;
-
-  if (referencedFileSets && referencedFileSets.length > 0) {
-    // The embedded file sets in the given file set don't have enough properties to display in the
-    // table. Find the corresponding full file-set objects in meta.controlFileSets so that we have
-    // all the properties we need for the table.
-    const fileSetPaths = referencedFileSets.map(
-      (controlSet) => controlSet["@id"]
+  // The embedded file sets in the given file set don't have enough properties to display in the
+  // table. Find the corresponding full file-set objects in meta.controlFileSets so that we have
+  // all the properties we need for the table.
+  const fileSetPaths = pathsFromDatabaseObjects(
+    fileSetProperty in fileSet ? fileSet[fileSetProperty] : undefined
+  );
+  if (fileSetPaths.length > 0) {
+    const displayedFileSets = embeddedFileSets.filter((fileSet) =>
+      fileSetPaths.includes(fileSet["@id"])
     );
-    const displayedFileSets = embeddedFileSets.filter((controlSet) =>
-      fileSetPaths.includes(controlSet["@id"])
-    );
-
     if (displayedFileSets.length > 0) {
       return (
         <LinkedIdAndStatusStack items={displayedFileSets}>
@@ -480,6 +474,7 @@ function FileSetsDisplay({
       );
     }
   }
+
   return null;
 }
 

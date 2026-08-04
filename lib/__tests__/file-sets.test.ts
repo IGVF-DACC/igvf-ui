@@ -2,12 +2,15 @@ import FetchRequest from "../fetch-request";
 import {
   isFileSetObjectType,
   requestAssociatedFileSets,
+  requestFileSetAssociatedFiles,
   requestFileSetDonors,
   requestFileSetPublications,
   requestFileSetSamples,
+  requestPipelineParameters,
   type CuratedSetObject,
   type PseudobulkSetObject,
 } from "../file-sets";
+import { ok } from "../result";
 import { type SampleObject } from "../samples";
 import type { HumanDonorObject, PublicationObject } from "../../globals";
 
@@ -479,6 +482,213 @@ describe("requestFileSetSamples", () => {
 
     expect(result).toEqual([]);
     expect(mockFetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("requestFileSetAssociatedFiles", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    mockFetch.mockReset();
+  });
+
+  it("returns file objects for unique file paths from the given property", async () => {
+    const fileSet1: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0001PSBK/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS0001PSBK",
+      award: "/awards/HG012012/",
+      file_set_type: "pseudobulk analysis",
+      files: ["/files/IGVFFL0000AAAA/", "/files/IGVFFL0000BBBB/"],
+      lab: "/labs/j-michael-cherry/",
+      status: "in progress",
+      summary: "A pseudobulk set.",
+    };
+    const fileSet2: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0002PSBK/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS0002PSBK",
+      award: "/awards/HG012012/",
+      file_set_type: "pseudobulk analysis",
+      files: ["/files/IGVFFL0000BBBB/"],
+      lab: "/labs/j-michael-cherry/",
+      status: "in progress",
+      summary: "A pseudobulk set.",
+    };
+
+    const resultFile1 = {
+      "@id": "/files/IGVFFL0000AAAA/",
+      "@type": ["File", "Item"],
+      accession: "IGVFFL0000AAAA",
+      file_set: "/pseudobulk-sets/IGVFDS0001PSBK/",
+      status: "in progress",
+    };
+    const resultFile2 = {
+      "@id": "/files/IGVFFL0000BBBB/",
+      "@type": ["File", "Item"],
+      accession: "IGVFFL0000BBBB",
+      file_set: "/pseudobulk-sets/IGVFDS0001PSBK/",
+      status: "in progress",
+    };
+
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({ "@graph": [resultFile1, resultFile2] })
+    );
+
+    const request = new FetchRequest();
+    const result = await requestFileSetAssociatedFiles(
+      [fileSet1, fileSet2],
+      "files",
+      request
+    );
+
+    expect(result).toEqual([resultFile1, resultFile2]);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns empty array when no files are referenced", async () => {
+    const fileSet: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0001PSBK/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS0001PSBK",
+      award: "/awards/HG012012/",
+      file_set_type: "pseudobulk analysis",
+      lab: "/labs/j-michael-cherry/",
+      status: "in progress",
+      summary: "A pseudobulk set.",
+    };
+
+    const request = new FetchRequest();
+    const result = await requestFileSetAssociatedFiles(
+      [fileSet],
+      "files",
+      request
+    );
+
+    expect(result).toEqual([]);
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("returns empty array when referenced values are non-database objects", async () => {
+    const fileSet: PseudobulkSetObject = {
+      "@id": "/pseudobulk-sets/IGVFDS0003PSBK/",
+      "@type": ["PseudobulkSet", "FileSet", "Item"],
+      accession: "IGVFDS0003PSBK",
+      award: "/awards/HG012012/",
+      file_set_type: "pseudobulk analysis",
+      files: [{ foo: "bar" } as any],
+      lab: "/labs/j-michael-cherry/",
+      status: "in progress",
+      summary: "A pseudobulk set.",
+    };
+
+    const request = new FetchRequest();
+    const result = await requestFileSetAssociatedFiles(
+      [fileSet],
+      "files",
+      request
+    );
+
+    expect(result).toEqual([]);
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("returns empty array for an array that is not database objects", async () => {
+    const request = new FetchRequest();
+    const result = await requestFileSetAssociatedFiles(
+      [{ foo: "bar" }] as unknown as PseudobulkSetObject[],
+      "files",
+      request
+    );
+
+    expect(result).toEqual([]);
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("requestPipelineParameters", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    mockFetch.mockReset();
+  });
+
+  it("returns empty grouped arrays when pipeline_parameters is missing", async () => {
+    const analysisSet = {
+      "@id": "/analysis-sets/IGVFDS0001ANAS/",
+      "@type": ["AnalysisSet", "FileSet", "Item"],
+      accession: "IGVFDS0001ANAS",
+      file_set_type: "analysis",
+      summary: "Analysis set",
+      status: "in progress",
+    } as any;
+
+    const request = new FetchRequest();
+    const getMultipleObjectsSpy = jest.spyOn(request, "getMultipleObjects");
+
+    const result = await requestPipelineParameters(analysisSet, request);
+
+    expect(result).toEqual({ files: [], documents: [] });
+    expect(getMultipleObjectsSpy).not.toHaveBeenCalled();
+  });
+
+  it("splits retrieved pipeline parameters into files and documents", async () => {
+    const analysisSet = {
+      "@id": "/analysis-sets/IGVFDS0002ANAS/",
+      "@type": ["AnalysisSet", "FileSet", "Item"],
+      accession: "IGVFDS0002ANAS",
+      file_set_type: "analysis",
+      summary: "Analysis set",
+      status: "in progress",
+      pipeline_parameters: [
+        "/files/IGVFFL0000PIPE/",
+        "/documents/IGVFDO0000PIPE/",
+        "/labs/j-michael-cherry/",
+      ],
+    } as any;
+
+    const fileObject = {
+      "@id": "/files/IGVFFL0000PIPE/",
+      "@type": ["File", "Item"],
+      accession: "IGVFFL0000PIPE",
+      status: "in progress",
+    };
+    const documentObject = {
+      "@id": "/documents/IGVFDO0000PIPE/",
+      "@type": ["Document", "Item"],
+      accession: "IGVFDO0000PIPE",
+      status: "in progress",
+    };
+    const ignoredObject = {
+      "@id": "/labs/j-michael-cherry/",
+      "@type": ["Lab", "Item"],
+      title: "Cherry Lab",
+      status: "current",
+    };
+
+    const request = new FetchRequest();
+    const getMultipleObjectsSpy = jest
+      .spyOn(request, "getMultipleObjects")
+      .mockResolvedValueOnce([
+        ok(fileObject),
+        ok(documentObject),
+        ok(ignoredObject),
+      ] as any);
+
+    const result = await requestPipelineParameters(analysisSet, request);
+
+    expect(getMultipleObjectsSpy).toHaveBeenCalledWith(
+      [
+        "/files/IGVFFL0000PIPE/",
+        "/documents/IGVFDO0000PIPE/",
+        "/labs/j-michael-cherry/",
+      ],
+      { filterErrors: true }
+    );
+    expect(result).toEqual({
+      files: [fileObject],
+      documents: [documentObject],
+    });
   });
 });
 

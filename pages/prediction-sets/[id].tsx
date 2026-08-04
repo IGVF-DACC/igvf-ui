@@ -57,6 +57,7 @@ import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import {
   requestAssociatedFileSets,
+  requestFileSetAssociatedFiles,
   requestFileSetDonors,
   requestFileSetPublications,
   requestFileSetSamples,
@@ -115,6 +116,7 @@ interface PredictionSetPageProps extends PageProps {
   derivedFromFiles: FileObject[];
   samples: SampleObject[];
   samplesTerms: SampleTermObject[];
+  clsLibraryDesignFiles: FileObject[];
   donors: DonorObject[];
   assessedGenes: GeneObject[];
   qualityMetrics: QualityMetricObject[];
@@ -133,6 +135,7 @@ export default function PredictionSet({
   derivedFromFiles,
   samples,
   samplesTerms,
+  clsLibraryDesignFiles,
   donors,
   assessedGenes,
   qualityMetrics,
@@ -383,6 +386,7 @@ export default function PredictionSet({
           {isDatabaseObjectArray(predictionSet.construct_library_sets) && (
             <ConstructLibraryTable
               constructLibrarySets={predictionSet.construct_library_sets}
+              libraryDesignFiles={clsLibraryDesignFiles}
               title="Associated Construct Library Sets"
               panelId="associated-construct-library-sets"
             />
@@ -490,6 +494,17 @@ export async function getServerSideProps({
       request
     );
 
+    const constructLibrarySets = isDatabaseObjectArray(
+      predictionSet.construct_library_sets
+    )
+      ? predictionSet.construct_library_sets
+      : [];
+    const clsLibraryDesignFiles = await requestFileSetAssociatedFiles(
+      constructLibrarySets,
+      "integrated_content_files",
+      request
+    );
+
     const assessedGenes = isPathArray(predictionSet.assessed_genes)
       ? await requestGenes(predictionSet.assessed_genes, request)
       : [];
@@ -520,6 +535,7 @@ export async function getServerSideProps({
         derivedFromFiles,
         samples,
         samplesTerms,
+        clsLibraryDesignFiles,
         donors,
         qualityMetrics,
         supersedes,

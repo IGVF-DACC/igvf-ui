@@ -56,6 +56,7 @@ import {
 import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { requestFileSetAssociatedFiles } from "../../lib/file-sets";
 import {
   getMeasurementSetAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
@@ -108,6 +109,7 @@ export default function MeasurementSet({
   seqspecDocuments,
   enrichmentDesigns,
   libraryDesignFiles,
+  clsLibraryDesignFiles,
   supersedes,
   supersededBy,
   assayTitleDescriptionMap,
@@ -311,6 +313,7 @@ export default function MeasurementSet({
           {measurementSet.construct_library_sets?.length > 0 && (
             <ConstructLibraryTable
               constructLibrarySets={measurementSet.construct_library_sets}
+              libraryDesignFiles={clsLibraryDesignFiles}
               title="Associated Construct Library Sets"
               panelId="associated-construct-library-sets"
             />
@@ -411,6 +414,8 @@ MeasurementSet.propTypes = {
   enrichmentDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Library design files associated with the measurement set's construct library sets
   libraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Construct library design files associated with this measurement set
+  clsLibraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Documents associated with this measurement set
   documents: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Publications associated with this measurement set
@@ -528,6 +533,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       request
     );
 
+    const clsLibraryDesignFiles = await requestFileSetAssociatedFiles(
+      measurementSet.construct_library_sets,
+      "integrated_content_files",
+      request
+    );
+
     let publications = [];
     if (measurementSet.publications?.length > 0) {
       const publicationPaths = measurementSet.publications.map(
@@ -566,6 +577,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         seqspecDocuments,
         enrichmentDesigns,
         libraryDesignFiles,
+        clsLibraryDesignFiles,
         supersedes,
         supersededBy,
         assayTitleDescriptionMap,

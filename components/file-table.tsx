@@ -80,6 +80,7 @@ const filesColumns: SortableGridConfig<FileObject, FileTableMeta>[] = [
   {
     id: "summary",
     title: "Summary",
+    sorter: (item) => (item.summary || "\uffff").toLowerCase(),
   },
   {
     id: "workflows",

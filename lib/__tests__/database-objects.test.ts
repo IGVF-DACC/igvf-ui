@@ -1,4 +1,5 @@
 import {
+  filterDatabaseObjectsByReferences,
   isDatabaseObject,
   isDatabaseObjectArray,
   isDatabaseObjectArrayOfType,
@@ -275,6 +276,48 @@ describe("pathsFromDatabaseObjects", () => {
 
     expect(pathsFromDatabaseObjects(items)).toEqual([]);
     expect(pathsFromDatabaseObjects(null)).toEqual([]);
+  });
+});
+
+describe("filterDatabaseObjectsByReferences", () => {
+  const users: UserObject[] = [
+    {
+      "@id": "/users/j-michael-cherry",
+      "@type": ["User", "Item"],
+      email: "j-michael-cherry@example.com",
+      first_name: "Michael",
+      last_name: "Cherry",
+      title: "J. Michael Cherry",
+      status: "current",
+    },
+    {
+      "@id": "/users/ben-hitz",
+      "@type": ["User", "Item"],
+      email: "ben-hitz@example.com",
+      first_name: "Ben",
+      last_name: "Hitz",
+      title: "Ben Hitz",
+      status: "current",
+    },
+  ];
+
+  test("that it filters database objects using path references", () => {
+    expect(
+      filterDatabaseObjectsByReferences(["/users/ben-hitz"], users)
+    ).toEqual([users[1]]);
+  });
+
+  test("that it filters database objects using database-object references", () => {
+    expect(filterDatabaseObjectsByReferences([users[0]], users)).toEqual([
+      users[0],
+    ]);
+  });
+
+  test("that it returns an empty array for invalid references", () => {
+    expect(filterDatabaseObjectsByReferences(null, users)).toEqual([]);
+    expect(
+      filterDatabaseObjectsByReferences([{ property: "value" }], users)
+    ).toEqual([]);
   });
 });
 
