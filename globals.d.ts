@@ -368,6 +368,7 @@ export interface FileObject extends DatabaseObject {
   derived_from?: string[];
   derived_manually?: boolean;
   documents?: LinkToArray<DocumentObject>;
+  enrichment_designs?: LinkToArray<FileObject>;
   external_host_url?: string;
   externally_hosted?: boolean;
   file_format: string;

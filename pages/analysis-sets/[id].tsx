@@ -1,6 +1,6 @@
 // node_modules
 import _ from "lodash";
-import PropTypes from "prop-types";
+import { GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import { useContext, useEffect, useState } from "react";
 // components
 import AliasList from "../../components/alias-list";
@@ -44,26 +44,114 @@ import buildAttribution from "../../lib/attribution";
 import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
-  requestDonors,
-  requestFileSets,
   requestFiles,
+  requestGenes,
   requestLibraryDesignFiles,
-  requestPublications,
-  requestQualityMetrics,
+  requestOntologyTerms,
   requestSampleBarcodeMaps,
-  requestSamples,
   requestSupersedes,
 } from "../../lib/common-requests";
+import { pathsFromDatabaseObjects } from "../../lib/database-object";
 import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { getAllDerivedFromFiles } from "../../lib/files";
-import { pathToType } from "../../lib/general";
+import {
+  requestAssociatedFileSets,
+  requestPipelineParameters,
+  requestFileSetDonors,
+  requestFileSetPublications,
+  requestFileSetSamples,
+  requestFileSetAssociatedFiles,
+  type AnalysisSetObject,
+  type FileSetObject,
+} from "../../lib/file-sets";
+import {
+  getAllDerivedFromFiles,
+  getFilesFileSets,
+  requestFilesQualityMetrics,
+  requestFilesReferenceFiles,
+} from "../../lib/files";
+import { type PageProps } from "../../lib/next-js";
 import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
+  OntologyTermObject,
 } from "../../lib/ontology-terms";
+import { type QualityMetricObject } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
+import { type SampleObject } from "../../lib/samples";
+import { isPathArray } from "../../lib/types";
+// root
+import type {
+  DocumentObject,
+  DonorObject,
+  FileObject,
+  GeneObject,
+  PublicationObject,
+} from "../../globals";
+
+/**
+ * Props for the analysis-set page, sourced from `getServerSideProps`.
+ *
+ * @property analysisSet - Analysis set object to display
+ * @property publications - Publications associated with the analysis set
+ * @property documents - Documents associated with the analysis set
+ * @property files - Files associated with the analysis set
+ * @property fileFileSets - File sets associated with the analysis set's files
+ * @property referenceFiles - Reference files associated with the analysis set's files
+ * @property derivedFromFiles - Files that are in the `derived_from` chains of the analysis set's
+ *                              files
+ * @property inputFileSets - Input file sets associated with the analysis set
+ * @property inputFileSetSamples - Samples associated with the analysis set's input file sets
+ * @property inputFileSetFor - File sets that the analysis set is an input for
+ * @property controlFileSets - Control file sets associated with the analysis set
+ * @property controlFor - File sets that the analysis set serves as a control for
+ * @property auxiliarySets - Auxiliary sets associated with the analysis set's input file sets
+ * @property measurementSets - Measurement sets associated with the analysis set's input file sets
+ * @property constructLibrarySets - Construct library sets associated with the analysis set's input
+ *                                  file sets
+ * @property libraryDesignFiles - Library design files associated with the analysis set
+ * @property samples - Samples associated with the analysis set
+ * @property barcodeMapFiles - Sample barcode map files associated with the analysis set's samples
+ * @property donors - Donors associated with the analysis set's samples
+ * @property qualityMetrics - Quality metrics associated with the analysis set's files
+ * @property assayTitleDescriptionMap - Map of assay titles to their descriptions for the analysis
+ *                                      set
+ * @property pipelineParametersDocuments - Documents associated with the analysis set's pipeline
+ *                                         parameters
+ * @property pipelineParametersFiles - Files associated with the analysis set's pipeline parameters
+ * @property enrichmentDesigns - Enrichment design files associated with the analysis set's input
+ *                               file sets
+ * @property targetedGenes - Genes associated with the analysis set
+ */
+interface AnalysisSetPageProps extends PageProps {
+  analysisSet: AnalysisSetObject;
+  publications: PublicationObject[];
+  documents: DocumentObject[];
+  files: FileObject[];
+  fileFileSets: FileSetObject[];
+  referenceFiles: FileObject[];
+  derivedFromFiles: FileObject[];
+  inputFileSets: FileSetObject[];
+  inputFileSetSamples: SampleObject[];
+  inputFileSetFor: FileSetObject[];
+  controlFileSets: FileSetObject[];
+  controlFor: FileSetObject[];
+  auxiliarySets: FileSetObject[];
+  measurementSets: FileSetObject[];
+  constructLibrarySets: FileSetObject[];
+  libraryDesignFiles: FileObject[];
+  samples: SampleObject[];
+  barcodeMapFiles: FileObject[];
+  donors: DonorObject[];
+  qualityMetrics: QualityMetricObject[];
+  assayTitleDescriptionMap: Record<string, string>;
+  pipelineParametersDocuments: DocumentObject[];
+  pipelineParametersFiles: FileObject[];
+  functionalAssayMechanisms: OntologyTermObject[];
+  enrichmentDesigns: FileObject[];
+  targetedGenes: GeneObject[];
+}
 
 export default function AnalysisSet({
   analysisSet,
@@ -89,12 +177,14 @@ export default function AnalysisSet({
   assayTitleDescriptionMap,
   pipelineParametersDocuments,
   pipelineParametersFiles,
+  functionalAssayMechanisms,
   enrichmentDesigns,
+  targetedGenes,
   supersedes,
   supersededBy,
   attribution = null,
   isJson,
-}) {
+}: AnalysisSetPageProps) {
   const sections = useSecDir({ isJson });
   const { profiles } = useContext(SessionContext);
   const preferredAssayTitleDescriptionMap =
@@ -199,31 +289,29 @@ export default function AnalysisSet({
                   </DataItemValue>
                 </>
               )}
-              {analysisSet.functional_assay_mechanisms?.length > 0 && (
+              {functionalAssayMechanisms.length > 0 && (
                 <>
                   <DataItemLabel>Functional Assay Mechanisms</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList isCollapsible>
-                      {analysisSet.functional_assay_mechanisms.map(
-                        (phenotypeTerm) => (
-                          <Link
-                            href={phenotypeTerm["@id"]}
-                            key={phenotypeTerm.term_id}
-                          >
-                            {phenotypeTerm.term_name}
-                          </Link>
-                        )
-                      )}
+                      {functionalAssayMechanisms.map((phenotypeTerm) => (
+                        <Link
+                          href={phenotypeTerm["@id"]}
+                          key={phenotypeTerm.term_id}
+                        >
+                          {phenotypeTerm.term_name}
+                        </Link>
+                      ))}
                     </SeparatedList>
                   </DataItemValue>
                 </>
               )}
-              {analysisSet.targeted_genes?.length > 0 && (
+              {targetedGenes.length > 0 && (
                 <>
                   <DataItemLabel>Targeted Genes</DataItemLabel>
                   <DataItemValue>
                     <SeparatedList isCollapsible>
-                      {analysisSet.targeted_genes.map((gene) => (
+                      {targetedGenes.map((gene) => (
                         <Link href={gene["@id"]} key={gene["@id"]}>
                           {gene.symbol}
                         </Link>
@@ -322,7 +410,6 @@ export default function AnalysisSet({
                 }}
               />
               <FileGraph
-                fileSet={analysisSet}
                 files={files}
                 referenceFiles={referenceFiles}
                 fileFileSets={fileFileSets}
@@ -375,9 +462,9 @@ export default function AnalysisSet({
 
           {donors.length > 0 && <DonorTable donors={donors} />}
 
-          {analysisSet.construct_library_sets?.length > 0 && (
+          {constructLibrarySets.length > 0 && (
             <ConstructLibraryTable
-              constructLibrarySets={analysisSet.construct_library_sets}
+              constructLibrarySets={constructLibrarySets}
               title="Associated Construct Library Sets"
               panelId="associated-construct-library-sets"
             />
@@ -440,69 +527,20 @@ export default function AnalysisSet({
   );
 }
 
-AnalysisSet.propTypes = {
-  analysisSet: PropTypes.object.isRequired,
-  // Files to display
-  files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that `files` refer to in their `file_sets` property
-  fileFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Reference files to display
-  referenceFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // All derived_from files not included in `files`
-  derivedFromFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Input file sets to display
-  inputFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Input file set samples
-  inputFileSetSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that this analysis set is input for
-  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Control file sets to display
-  controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets controlled by this analysis set
-  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // AuxiliarySets to display
-  auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // MeasurementSets to display
-  measurementSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // ConstructLibrarySets to display
-  constructLibrarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Library design files associated with this analysis set
-  libraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Samples from analysis set `samples` property that doesn't embed enough properties to display
-  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Sample barcode map tabular files associated with the analysis set's samples
-  barcodeMapFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Donors from analysis set `donors` property that doesn't embed enough properties to display
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Quality metrics associated with this analysis set
-  qualityMetrics: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Assay title description map for this analysis set
-  assayTitleDescriptionMap: PropTypes.object.isRequired,
-  // Publications associated with this analysis set
-  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Documents associated with this analysis set
-  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Pipeline parameters documents
-  pipelineParametersDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Pipeline parameters tabular files
-  pipelineParametersFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Enrichment design files
-  enrichmentDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that this file set supersedes
-  supersedes: PropTypes.arrayOf(PropTypes.object),
-  // File sets that supersede this file set
-  supersededBy: PropTypes.arrayOf(PropTypes.object),
-  // Attribution for this analysis set
-  attribution: PropTypes.object,
-  // Is the format JSON?
-  isJson: PropTypes.bool.isRequired,
-};
-
-export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+  resolvedUrl,
+}: GetServerSidePropsContext<{ id: string }>): Promise<
+  GetServerSidePropsResult<AnalysisSetPageProps>
+> {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const analysisSet = (
-    await request.getObject(`/analysis-sets/${params.id}/`)
+    await request.getObject<AnalysisSetObject>(
+      `/analysis-sets/${params.id}/?frame=object`
+    )
   ).union();
 
   if (FetchRequest.isResponseSuccess(analysisSet)) {
@@ -515,32 +553,13 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       return canonicalRedirect;
     }
 
-    const documents = analysisSet.documents
+    const documents = isPathArray(analysisSet.documents)
       ? await requestDocuments(analysisSet.documents, request)
       : [];
 
-    const filePaths =
-      analysisSet.files?.length > 0
-        ? analysisSet.files.map((file) => file["@id"])
-        : [];
-    const files =
-      filePaths.length > 0 ? await requestFiles(filePaths, request) : [];
-
-    // Get all reference file paths from the files in the analysis set, then request those files
-    // from the server. `reference_files` has a `minItems` of 1, so just check its existence.
-    const referenceFilePathsSet = files.reduce((acc, file) => {
-      if (file.reference_files) {
-        file.reference_files.forEach((referenceFilePath) => {
-          acc.add(referenceFilePath);
-        });
-      }
-      return acc;
-    }, new Set());
-    const referenceFilePaths = [...referenceFilePathsSet];
-    const referenceFiles =
-      referenceFilePaths.length > 0
-        ? await requestFiles(referenceFilePaths, request)
-        : [];
+    const files = isPathArray(analysisSet.files)
+      ? await requestFiles(analysisSet.files, request)
+      : [];
 
     // Get the paths of all files that are in `files`' `derived_from` array property. Combine and
     // deduplicate them, and then request them from the server. Repeat this process with those
@@ -548,49 +567,39 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const derivedFromFiles = await getAllDerivedFromFiles(files, request);
     const combinedFiles = files.concat(derivedFromFiles);
 
-    // Get all file-set objects in every file's `file_sets` property.
-    let fileFileSets = [];
-    if (combinedFiles.length > 0) {
-      const fileSetPaths = combinedFiles.reduce((acc, file) => {
-        return acc.includes(file.file_set["@id"])
-          ? acc
-          : acc.concat(file.file_set["@id"]);
-      }, []);
-      fileFileSets = await requestFileSets(fileSetPaths, request);
-    }
+    // Request reference files associated with the analysis set's files
+    const referenceFiles = await requestFilesReferenceFiles(files, request);
 
-    let inputFileSets = [];
-    if (analysisSet.input_file_sets?.length > 0) {
-      // The embedded `input_file_sets` in the analysis set don't have enough properties to display
-      // in the table, so we have to request them.
-      const inputFileSetPaths = analysisSet.input_file_sets.map(
-        (fileSet) => fileSet["@id"]
-      );
-      inputFileSets = await requestFileSets(inputFileSetPaths, request, [
-        "auxiliary_sets",
-        "control_file_sets",
-        "measurement_sets",
-      ]);
-    }
+    // Request file sets associated with the analysis set's files and their derived-from files.
+    const fileFileSets = await getFilesFileSets(combinedFiles, request);
 
-    const inputFileSetFor =
-      analysisSet.input_for?.length > 0
-        ? await requestFileSets(analysisSet.input_for, request)
-        : [];
+    // Request objects associated with the analysis set.
+    const samples = await requestFileSetSamples([analysisSet], request);
+    const donors = await requestFileSetDonors(analysisSet, request);
+    const publications = await requestFileSetPublications(analysisSet, request);
+    const libraryDesignFiles = await requestLibraryDesignFiles(
+      analysisSet,
+      request
+    );
 
-    let controlFor = [];
-    if (analysisSet.control_for?.length > 0) {
-      const controlForPaths = analysisSet.control_for.map(
-        (control) => control["@id"]
-      );
-      controlFor = await requestFileSets(controlForPaths, request);
-    }
+    const inputFileSets = await requestAssociatedFileSets(
+      [analysisSet],
+      "input_file_sets",
+      request,
+      ["auxiliary_sets", "control_file_sets", "measurement_sets"]
+    );
 
-    let samples = [];
-    if (analysisSet.samples?.length > 0) {
-      const samplePaths = analysisSet.samples.map((sample) => sample["@id"]);
-      samples = await requestSamples(samplePaths, request);
-    }
+    const inputFileSetFor = await requestAssociatedFileSets(
+      [analysisSet],
+      "input_for",
+      request
+    );
+
+    const controlFor = await requestAssociatedFileSets(
+      [analysisSet],
+      "control_for",
+      request
+    );
 
     const barcodeMapFiles = await requestSampleBarcodeMaps(
       samples,
@@ -598,157 +607,68 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       "deleted"
     );
 
-    const donors = await requestDonors(
-      analysisSet.donors?.map((donor) => donor["@id"]) || [],
+    // Request file sets associated with the analysis set's input file sets.
+    const auxiliarySets = await requestAssociatedFileSets(
+      inputFileSets,
+      "auxiliary_sets",
+      request
+    );
+    const measurementSets = await requestAssociatedFileSets(
+      inputFileSets,
+      "measurement_sets",
+      request
+    );
+    const controlFileSets = await requestAssociatedFileSets(
+      inputFileSets,
+      "control_file_sets",
+      request
+    );
+    const constructLibrarySets = await requestAssociatedFileSets(
+      inputFileSets,
+      "construct_library_sets",
       request
     );
 
-    let auxiliarySets = [];
-    let controlFileSets = [];
-    let measurementSets = [];
-    if (inputFileSets.length > 0) {
-      // Retrieve the input file sets' auxiliary sets.
-      let auxiliarySetsPaths = inputFileSets.reduce((acc, fileSet) => {
-        return fileSet.auxiliary_sets?.length > 0
-          ? acc.concat(
-              fileSet.auxiliary_sets.map((auxiliarySet) => auxiliarySet["@id"])
-            )
-          : acc;
-      }, []);
-      auxiliarySetsPaths = [...new Set(auxiliarySetsPaths)];
-      auxiliarySets =
-        auxiliarySetsPaths.length > 0
-          ? await requestFileSets(auxiliarySetsPaths, request)
-          : [];
-
-      // Retrieve the input file sets' measurement sets.
-      measurementSets = inputFileSets.reduce((acc, fileSet) => {
-        return fileSet.measurement_sets?.length > 0
-          ? acc.concat(fileSet.measurement_sets)
-          : acc;
-      }, []);
-      let measurementSetPaths = measurementSets.map(
-        (measurementSet) => measurementSet["@id"]
-      );
-      measurementSetPaths = [...new Set(measurementSetPaths)];
-      measurementSets =
-        measurementSetPaths.length > 0
-          ? await requestFileSets(measurementSetPaths, request)
-          : [];
-
-      // Retrieve the input file sets' control file sets.
-      controlFileSets = inputFileSets.reduce((acc, fileSet) => {
-        return fileSet.control_file_sets?.length > 0
-          ? acc.concat(fileSet.control_file_sets)
-          : acc;
-      }, []);
-      let controlFileSetPaths = controlFileSets.map(
-        (controlFileSet) => controlFileSet["@id"]
-      );
-      controlFileSetPaths = [...new Set(controlFileSetPaths)];
-      controlFileSets = await requestFileSets(controlFileSetPaths, request);
-    }
-
-    const embeddedSamples = inputFileSets.reduce((acc, inputFileSet) => {
-      return inputFileSet.samples?.length > 0
-        ? acc.concat(inputFileSet.samples)
-        : acc;
-    }, []);
-
-    let inputFileSetSamples = [];
-    if (embeddedSamples.length > 0) {
-      let samplePaths = embeddedSamples.map((sample) => sample["@id"]);
-      samplePaths = [...new Set(samplePaths)];
-      inputFileSetSamples = await requestSamples(samplePaths, request);
-    }
-
-    let constructLibrarySets = [];
-    if (inputFileSetSamples.length > 0) {
-      const embeddedConstructLibrarySets = inputFileSetSamples.reduce(
-        (acc, sample) => {
-          return sample.construct_library_sets?.length > 0
-            ? acc.concat(sample.construct_library_sets)
-            : acc;
-        },
-        []
-      );
-      let constructLibrarySetPaths = embeddedConstructLibrarySets.map(
-        (constructLibrarySet) => constructLibrarySet["@id"]
-      );
-
-      if (constructLibrarySetPaths.length > 0) {
-        constructLibrarySetPaths = [...new Set(constructLibrarySetPaths)];
-        constructLibrarySets = await requestFileSets(
-          constructLibrarySetPaths,
-          request,
-          ["integrated_content_files"]
-        );
-      }
-    }
-
-    const libraryDesignFiles = await requestLibraryDesignFiles(
-      analysisSet,
+    const inputFileSetSamples = await requestFileSetSamples(
+      inputFileSets,
       request
     );
 
-    let publications = [];
-    if (analysisSet.publications?.length > 0) {
-      const publicationPaths = analysisSet.publications.map(
-        (publication) => publication["@id"]
-      );
-      publications = await requestPublications(publicationPaths, request);
-    }
+    const functionalAssayMechanismPaths = pathsFromDatabaseObjects(
+      analysisSet.functional_assay_mechanisms
+    );
+    const functionalAssayMechanisms =
+      functionalAssayMechanismPaths.length > 0
+        ? await requestOntologyTerms(functionalAssayMechanismPaths, request)
+        : [];
 
-    let qualityMetrics = [];
-    if (files.length > 0) {
-      let qualityMetricsPaths = files.reduce((acc, file) => {
-        return file.quality_metrics?.length > 0
-          ? acc.concat(file.quality_metrics)
-          : acc;
-      }, []);
-      qualityMetricsPaths = [...new Set(qualityMetricsPaths)];
-      qualityMetrics =
-        qualityMetricsPaths.length > 0
-          ? await requestQualityMetrics(qualityMetricsPaths, request)
-          : [];
-    }
+    const qualityMetrics = await requestFilesQualityMetrics(files, request);
 
     // `pipeline_parameters` can contain both `/documents/id` and `/tabular-files/id`. Put these
     // into groups `documents` and `tabular-files`, then request the corresponding objects.
-    let pipelineParametersDocuments = [];
-    let pipelineParametersFiles = [];
-    if (analysisSet.pipeline_parameters?.length > 0) {
-      const pipelineParametersGroups = _.groupBy(
-        analysisSet.pipeline_parameters,
-        (parameter) => pathToType(parameter)
-      );
+    const {
+      files: pipelineParametersFiles,
+      documents: pipelineParametersDocuments,
+    } = await requestPipelineParameters(analysisSet, request);
 
-      // Request Document objects if any exist in the group.
-      if (pipelineParametersGroups.documents) {
-        pipelineParametersDocuments = await requestDocuments(
-          pipelineParametersGroups.documents,
-          request
-        );
-      }
-
-      // Request Tabular File objects if any exist in the group.
-      if (pipelineParametersGroups["tabular-files"]) {
-        pipelineParametersFiles = await requestFiles(
-          pipelineParametersGroups["tabular-files"],
-          request
-        );
-      }
-    }
-
-    const enrichmentDesigns =
-      analysisSet.enrichment_designs?.length > 0
-        ? await requestFiles(analysisSet.enrichment_designs, request)
-        : [];
+    const enrichmentDesigns = await requestFileSetAssociatedFiles(
+      [analysisSet],
+      "enrichment_designs",
+      request
+    );
 
     const assayTitleDescriptionMap =
       analysisSet.assay_titles?.length > 0
         ? await getAssayTitleDescriptionMap(analysisSet.assay_titles, request)
         : {};
+
+    const targetedGenes =
+      analysisSet.targeted_genes?.length > 0
+        ? await requestGenes(
+            pathsFromDatabaseObjects(analysisSet.targeted_genes),
+            request
+          )
+        : [];
 
     const { supersedes, supersededBy } = await requestSupersedes(
       analysisSet,
@@ -782,7 +702,9 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         assayTitleDescriptionMap,
         pipelineParametersDocuments,
         pipelineParametersFiles,
+        functionalAssayMechanisms,
         enrichmentDesigns,
+        targetedGenes,
         supersedes,
         supersededBy,
         pageContext: { title: analysisSet.accession },

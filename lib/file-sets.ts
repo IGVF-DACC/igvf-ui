@@ -1,12 +1,17 @@
+// components
+import { UniformPipelineStatusValues } from "../components/uniform-pipeline-status";
 // lib
 import {
   requestDonors,
+  requestFiles,
   requestFileSets,
+  requestOntologyTerms,
   requestPublications,
   requestSamples,
 } from "./common-requests";
 import {
   isDatabaseObjectArray,
+  isDatabaseObjectOfType,
   pathsFromDatabaseObjects,
 } from "./database-object";
 import FetchRequest from "./fetch-request";
@@ -14,7 +19,9 @@ import { type GeneLocation } from "./genes";
 import {
   type AssayTermObject,
   type OntologyTermObject,
+  type PhenotypeTermObject,
 } from "./ontology-terms";
+import { Ok } from "./result";
 import { type SampleObject } from "./samples";
 import { type LinkTo, type LinkToArray } from "./types";
 import { type WorkflowObject } from "./workflow";
@@ -88,6 +95,14 @@ type SeriesType = "multiome";
 export type ConcreteFileSetObject = FileSetTypeMap[keyof FileSetTypeMap];
 
 /**
+ * For each file-set type in FileSetTypeMap, get all of its property names, then combine those
+ * property names into a union type.
+ */
+export type FileSetObjectProperty = {
+  [Type in keyof FileSetTypeMap]: keyof FileSetTypeMap[Type];
+}[keyof FileSetTypeMap];
+
+/**
  * Abstract interface representing the common properties of all file-set objects in the system. Use
  * this when you don't need a specific property of a file set, or when you only need these
  * properties common to all file-set objects. Use `ConcreteFileSetObject` when you need to work
@@ -120,11 +135,14 @@ export interface AnalysisSetObject extends FileSetObject {
   doi?: string;
   external_image_data_url?: string;
   file_sets?: LinkToArray<FileSetObject>;
+  functional_assay_mechanisms?: LinkToArray<PhenotypeTermObject>;
   input_file_sets?: LinkToArray<FileSetObject>;
   pipeline_parameters?: LinkToArray<FileObject | DocumentObject>;
   preferred_assay_titles?: string[];
+  protocols?: string[];
   sample_summary?: string;
-  uniform_pipeline_status?: string;
+  targeted_genes?: LinkToArray<GeneObject>;
+  uniform_pipeline_status?: UniformPipelineStatusValues;
   workflows?: LinkToArray<WorkflowObject>;
 }
 
@@ -195,7 +213,9 @@ export interface MeasurementSetObject extends FileSetObject {
   file_sets?: LinkToArray<FileSetObject>;
   multiome_size?: number;
   preferred_assay_titles?: string[];
+  protocols?: string[];
   related_measurement_sets?: RelatedMeasurementSet[];
+  targeted_genes?: LinkToArray<GeneObject>;
 }
 
 export interface ModelSetObject extends FileSetObject {
@@ -250,9 +270,9 @@ export interface PseudobulkSetObject extends FileSetObject {
  * @param addedProperties - Additional properties to include in the request
  * @returns Array of associated file set objects
  */
-export async function requestAssociatedFileSets<T extends FileSetObject>(
-  fileSets: T[],
-  fileSetProperty: keyof T,
+export async function requestAssociatedFileSets(
+  fileSets: FileSetObject[],
+  fileSetProperty: FileSetObjectProperty,
   request: FetchRequest,
   addedProperties: string[] = []
 ): Promise<FileSetObject[]> {
@@ -263,7 +283,9 @@ export async function requestAssociatedFileSets<T extends FileSetObject>(
   const uniquePaths = [
     ...new Set(
       fileSets.flatMap((fileSet) =>
-        pathsFromDatabaseObjects(fileSet[fileSetProperty])
+        pathsFromDatabaseObjects(
+          fileSetProperty in fileSet ? fileSet[fileSetProperty] : undefined
+        )
       )
     ),
   ];
@@ -271,6 +293,41 @@ export async function requestAssociatedFileSets<T extends FileSetObject>(
   return uniquePaths.length > 0
     ? await requestFileSets(uniquePaths, request, addedProperties)
     : [];
+}
+
+/**
+ * Given an array of file sets, retrieve all file objects from a specified property of those file
+ * sets. The specified property should contain either paths to file objects or partial embedded file
+ * objects. If they're embedded, use this function if you need to retrieve the full file objects.
+ *
+ * If the given property is not present in a file set, that file set will be skipped. If the given
+ * file sets doesn't appear to be an array of file sets, an empty array is returned.
+ *
+ * @param fileSets - File sets from which to get their file objects for a property
+ * @param fileProperty - File-set property name that contains the file references
+ * @param request - FetchRequest instance to use for retrieving file objects
+ * @returns File objects referenced by the specified property of the given file set.
+ */
+export async function requestFileSetAssociatedFiles(
+  fileSets: FileSetObject[],
+  fileProperty: keyof FileObject,
+  request: FetchRequest
+): Promise<FileObject[]> {
+  if (!isDatabaseObjectArray(fileSets)) {
+    return [];
+  }
+
+  const uniquePaths = [
+    ...new Set(
+      fileSets.flatMap((fileSet) =>
+        pathsFromDatabaseObjects(
+          fileProperty in fileSet ? fileSet[fileProperty] : undefined
+        )
+      )
+    ),
+  ];
+
+  return uniquePaths.length > 0 ? await requestFiles(uniquePaths, request) : [];
 }
 
 /**
@@ -288,6 +345,30 @@ export async function requestFileSetDonors(
 ): Promise<DonorObject[]> {
   const donorPaths = pathsFromDatabaseObjects(fileSet.donors);
   return donorPaths.length > 0 ? await requestDonors(donorPaths, request) : [];
+}
+
+export async function requestFileSetOntologyTerms(
+  fileSets: FileSetObject[],
+  property: keyof FileSetObject,
+  request: FetchRequest
+): Promise<OntologyTermObject[]> {
+  if (!isDatabaseObjectArray(fileSets)) {
+    return [];
+  }
+
+  const uniquePaths = [
+    ...new Set(
+      fileSets.flatMap((fileSet) =>
+        pathsFromDatabaseObjects(
+          property in fileSet ? fileSet[property] : undefined
+        )
+      )
+    ),
+  ];
+
+  return uniquePaths.length > 0
+    ? await requestOntologyTerms(uniquePaths, request)
+    : [];
 }
 
 /**
@@ -337,6 +418,52 @@ export async function requestFileSetSamples(
   return uniquePaths.length > 0
     ? await requestSamples(uniquePaths, request)
     : [];
+}
+
+/**
+ * Given an analysis set, request all file and document objects from the analysis set's
+ * `pipeline_parameters` property. The `pipeline_parameters` property can contain either paths to
+ * file objects and document objects or partial embedded file and document objects.
+ *
+ * @param analysisSet - Analysis set object that might contain `pipeline_parameters`
+ * @param request - FetchRequest instance to use for retrieving pipeline parameter objects
+ * @returns File and document objects referenced by the analysis set's `pipeline_parameters` property
+ */
+export async function requestPipelineParameters(
+  analysisSet: AnalysisSetObject,
+  request: FetchRequest
+): Promise<{ files: FileObject[]; documents: DocumentObject[] }> {
+  const pipelineParameterPaths = pathsFromDatabaseObjects(
+    analysisSet.pipeline_parameters
+  );
+  if (pipelineParameterPaths.length === 0) {
+    return { files: [], documents: [] };
+  }
+
+  // Some pipeline parameters may be FileObjects, while others may be DocumentObjects. Request
+  // them together, then separate them into their respective types.
+  const pipelineParameters = Ok.all(
+    await request.getMultipleObjects<FileObject | DocumentObject>(
+      pipelineParameterPaths,
+      { filterErrors: true }
+    )
+  );
+
+  // Separate the pipeline parameters into files and documents to return to the caller.
+  return pipelineParameters.reduce<{
+    files: FileObject[];
+    documents: DocumentObject[];
+  }>(
+    (groupedParameters, parameter) => {
+      if (isDatabaseObjectOfType(parameter, "File")) {
+        groupedParameters.files.push(parameter);
+      } else if (isDatabaseObjectOfType(parameter, "Document")) {
+        groupedParameters.documents.push(parameter);
+      }
+      return groupedParameters;
+    },
+    { files: [], documents: [] }
+  );
 }
 
 /**
