@@ -36,22 +36,23 @@ export function BatchDownloadModalContent({
   return (
     <div className="prose dark:prose-invert">
       <p>
-        Click the &ldquo;Download&rdquo; button below to download a file named
-        &ldquo;file_metadata.tsv&rdquo; that contains the metadata for all
-        selected files. With the current directory containing this file, use the
-        following command line to download all files listed in the metadata
-        file:
+        Click the &ldquo;Download&rdquo; button below to download a file named{" "}
+        <i>
+          <b>file_metadata.tsv</b>
+        </i>{" "}
+        containing the metadata for all selected files. Then use the following command
+        to download all files listed in the metadata file:
       </p>
-      <div className="mt-2 flex gap-1">
+      <div className="mt-2 flex justify-center gap-1">
         <code className="py-0">
-          tail -n +2{" "}
+          grep -v '^#'{" "}
           <i>
             <b>file_metadata.tsv</b>
           </i>{" "}
-          | cut -f2 | xargs -L 1 curl -O -J -L
+          | tail -n +2 | cut -f2 | xargs -L 1 curl -O -J -L
         </code>
         <CopyButton.Icon
-          target="tail -n +2 file_metadata.tsv | cut -f2 | xargs -L 1 curl -O -J -L"
+          target="grep -v '^#' file_metadata.tsv | tail -n +2 | cut -f2 | xargs -L 1 curl -O -J -L"
           label="Copy this command line to the clipboard"
           size="sm"
         >
@@ -60,6 +61,33 @@ export function BatchDownloadModalContent({
           }
         </CopyButton.Icon>
       </div>
+      <p>
+        This command is made up of several steps chained together, each one
+        feeding its output to the next:
+      </p>
+      <ul>
+        <li>
+          <code>grep -v '^#' file_metadata.tsv</code> reads the
+          metadata file and removes any comment lines (lines starting with{" "}
+          <code>#</code>), such as the source URL or column descriptions at
+          the top.
+        </li>
+        <li>
+          <code>tail -n +2</code> removes the first remaining line, the
+          column header row, leaving only the data rows.
+        </li>
+        <li>
+          <code>cut -f2</code> extracts just the second tab-separated column
+          from each row, which contains the file&rsquo;s download URL.
+        </li>
+        <li>
+          <code>xargs -L 1 curl -O -J -L</code> takes each URL, one at a
+          time, and downloads it with curl. <code>-O</code> saves the file
+          under its original name, <code>-J</code> uses the filename
+          suggested by the server, and <code>-L</code> follows any
+          redirects.
+        </li>
+      </ul>
       <p>
         If necessary, replace{" "}
         <i>
