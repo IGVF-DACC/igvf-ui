@@ -26,6 +26,7 @@ const collectionMap = {
   "IGVF_catalog_v1.0": "igvf-catalog-1.0.svg",
   "IGVF_catalog_v1.1": "igvf-catalog-1.1.svg",
   "IGVF_catalog_v1.2": "igvf-catalog-1.2.svg",
+  "IGVF_catalog_v2.0": "igvf-catalog-2.0.svg",
   "IGVF phase 1": "igvf-phase-1.svg",
   MaveDB: "mave-db.svg",
   Morphic: "morphic.svg",
