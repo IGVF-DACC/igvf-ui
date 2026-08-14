@@ -40,6 +40,7 @@ import {
 import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { requestFileSetAssociatedFiles } from "../../lib/file-sets";
 import { isJsonFormat } from "../../lib/query-utils";
 
 export default function CuratedSet({
@@ -50,6 +51,7 @@ export default function CuratedSet({
   inputFileSetFor,
   controlFor,
   samples,
+  clsLibraryDesignFiles,
   donors,
   supersedes,
   supersededBy,
@@ -119,6 +121,7 @@ export default function CuratedSet({
           {curatedSet.construct_library_sets?.length > 0 && (
             <ConstructLibraryTable
               constructLibrarySets={curatedSet.construct_library_sets}
+              libraryDesignFiles={clsLibraryDesignFiles}
               title="Associated Construct Library Sets"
               panelId="associated-construct-library-sets"
             />
@@ -163,6 +166,8 @@ CuratedSet.propTypes = {
   controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Samples associated with this curated set
   samples: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Construct library design files associated with this curated set
+  clsLibraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // Donors associated with this curated set
   donors: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets that this file set supersedes
@@ -221,6 +226,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       samples = await requestSamples(samplePaths, request);
     }
 
+    const clsLibraryDesignFiles = await requestFileSetAssociatedFiles(
+      curatedSet.construct_library_sets,
+      "integrated_content_files",
+      request
+    );
+
     const donors = await requestDonors(
       curatedSet.donors?.map((donor) => donor["@id"]) || [],
       request
@@ -250,6 +261,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         inputFileSetFor,
         controlFor,
         samples,
+        clsLibraryDesignFiles,
         donors,
         supersedes,
         supersededBy,

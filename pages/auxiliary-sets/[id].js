@@ -47,6 +47,7 @@ import {
 import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { requestFileSetAssociatedFiles } from "../../lib/file-sets";
 import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
@@ -65,6 +66,7 @@ export default function AuxiliarySet({
   inputFileSetFor,
   controlFor,
   samples,
+  clsLibraryDesignFiles,
   donors,
   assayTitleDescriptionMap,
   supersedes,
@@ -159,6 +161,7 @@ export default function AuxiliarySet({
           {auxiliarySet.construct_library_sets?.length > 0 && (
             <ConstructLibraryTable
               constructLibrarySets={auxiliarySet.construct_library_sets}
+              libraryDesignFiles={clsLibraryDesignFiles}
               title="Associated Construct Library Sets"
               panelId="associated-construct-library-sets"
             />
@@ -210,6 +213,8 @@ AuxiliarySet.propTypes = {
   seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // seqspec documents associated with `files`
   seqspecDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Construct library design files associated with this auxiliary set
+  clsLibraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets that this file set is input for
   inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
   // File sets controlled by this file set
@@ -307,6 +312,12 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
           )
         : [];
 
+    const clsLibraryDesignFiles = await requestFileSetAssociatedFiles(
+      auxiliarySet.construct_library_sets,
+      "integrated_content_files",
+      request
+    );
+
     let controlFor = [];
     if (auxiliarySet.control_for?.length > 0) {
       const controlForPaths = auxiliarySet.control_for.map(
@@ -355,6 +366,7 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         seqspecDocuments,
         inputFileSetFor,
         samples,
+        clsLibraryDesignFiles,
         donors,
         controlFor,
         assayTitleDescriptionMap,

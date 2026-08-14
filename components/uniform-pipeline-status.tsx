@@ -13,17 +13,7 @@ import { Tooltip, TooltipRef, useTooltip } from "./tooltip";
 // lib
 import { toShishkebabCase } from "../lib/general";
 import { extractSchema } from "../lib/profiles";
-
-/**
- * Possible statuses for the uniform pipeline. Update if the `uniform_pipeline_status` enum in the
- * schema changes. Keep `fallback` as the last option to handle unexpected values.
- */
-export type UniformPipelineStatus =
-  | "completed"
-  | "error"
-  | "preprocessing"
-  | "processing"
-  | "fallback";
+import { type UniformPipelineStatusValues } from "../lib/uniform-pipeline-status";
 
 /**
  * Display configuration for each possible status.
@@ -34,7 +24,7 @@ type StatusConfig = {
   Icon: ({ className }: { className?: string }) => JSX.Element;
 };
 
-const statusConfig: Record<UniformPipelineStatus, StatusConfig> = {
+const statusConfig: Record<UniformPipelineStatusValues, StatusConfig> = {
   completed: {
     styles:
       "bg-uniform-pipeline-completed ring-uniform-pipeline-completed fill-uniform-pipeline-completed text-uniform-pipeline-completed",
@@ -112,7 +102,7 @@ export function UniformPipelineStatus({
   atType,
   objectId,
 }: {
-  status: UniformPipelineStatus;
+  status: UniformPipelineStatusValues;
   atType: string;
   objectId: string;
 }) {
