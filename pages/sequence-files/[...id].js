@@ -203,7 +203,9 @@ export default function SequenceFile({
               files={seqspecs}
               title="Associated seqspec Files"
               reportLink={`/multireport/?type=ConfigurationFile&seqspec_of=${sequenceFile["@id"]}`}
+              secDirTitle="Associated seqspec Files"
               panelId="seqspec"
+              hasDeprecatedOption
             />
           )}
           {documents.length > 0 && <DocumentTable documents={documents} />}

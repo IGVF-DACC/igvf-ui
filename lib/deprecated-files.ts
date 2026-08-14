@@ -4,8 +4,9 @@ import type { FileObject } from "../globals";
 /**
  * Use to pass properties to React components that can filter deprecated files, such as the file
  * table and file graph components. The parent component uses both `visible` and `setVisible` to
- * track visibility state itself, otherwise `FileTable` and `FileGraph` manage their own local
- * state for deprecated file visibility.
+ * track visibility state itself. If those are not provided, `FileTable` and `FileGraph` use local
+ * state, meaning each component owns and updates its own deprecated-file visibility with internal
+ * React state.
  *
  * When you don't use `visible` and `setVisible`, the deprecated file visibility defaults to false
  * (i.e. deprecated files are hidden) unless you set `defaultVisible` to true. The label for the
@@ -67,33 +68,38 @@ export function trimDeprecatedFiles(
 
 /**
  * Resolves the properties for tracking deprecated file visibility and control title, using external
- * properties if provided, or falling back to local state management if not. This allows components
- * to either manage their own deprecated file state or receive it from a parent component, while
- * ensuring consistent control titles and behavior.
+ * properties if provided, or falling back to local state management if not.
  *
- * @param localDeprecated - Local properties for tracking deprecated state and title
- * @param [externalDeprecated] - External properties for tracking deprecated state and title
+ * Local state here means the component keeps its own `visible` value (for example with `useState`)
+ * instead of receiving a shared value from a parent. Use `externalDeprecated` when a parent
+ * component should own deprecated-file visibility state for one or more child components. This
+ * keeps the toggle and file visibility synchronized across views (for example, a table and graph
+ * shown together), while still allowing local state when shared control is not needed.
+ *
+ * @param fallbackDeprecated - Fallback local properties for deprecated state and title
+ * @param [externalDeprecated] - Parent-provided deprecated visibility state and control metadata
  * @returns An object containing the resolved properties for tracking deprecated state and title.
  */
 export function resolveDeprecatedFileProps(
-  localDeprecated: DeprecatedFileFilterProps,
+  fallbackDeprecated: DeprecatedFileFilterProps,
   externalDeprecated?: DeprecatedFileFilterProps
 ): DeprecatedFileFilterProps {
   if (externalDeprecated) {
     return {
-      visible: externalDeprecated.visible ?? localDeprecated.visible,
-      setVisible: externalDeprecated.setVisible ?? localDeprecated.setVisible,
+      visible: externalDeprecated.visible ?? fallbackDeprecated.visible,
+      setVisible:
+        externalDeprecated.setVisible ?? fallbackDeprecated.setVisible,
       defaultVisible:
-        externalDeprecated.defaultVisible ?? localDeprecated.defaultVisible,
+        externalDeprecated.defaultVisible ?? fallbackDeprecated.defaultVisible,
       controlTitle:
         externalDeprecated.controlTitle ??
-        localDeprecated.controlTitle ??
+        fallbackDeprecated.controlTitle ??
         "Include deprecated files",
     };
   }
 
-  // Return local state and default title.
-  return localDeprecated;
+  // Without external overrides, return the fallback properties unchanged.
+  return fallbackDeprecated;
 }
 
 /**
@@ -152,8 +158,12 @@ export function deprecatedStatusQueryParam(
  * `<FileTable>`. Pass the `hasDeprecatedOption` and `externalDeprecated` props, and this function
  * returns the default visibility to use for local deprecated visibility state.
  *
+ * You should pass `externalDeprecated` when the parent needs to define the initial value or share
+ * visibility behavior across sibling components. If omitted, each component falls back to its own
+ * local default behavior, where that component alone controls deprecated visibility.
+ *
  * @param hasDeprecatedOption - Pass the `hasDeprecatedOption` property
- * @param externalDeprecated  - Pass the `externalDeprecated` property
+ * @param externalDeprecated  - Optional parent-owned deprecated visibility defaults and controls
  * @returns Default visibility to use for local deprecated visibility state
  */
 export function computeDefaultDeprecatedVisibility(

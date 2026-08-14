@@ -126,8 +126,12 @@ export function DataAreaTitle({
  * @param href - Local URL to link to; don't use an external link
  * @param label - Label for the link
  * @param isExternal - True if the link is external
- * @param isDeletedVisible - True to include deleted items in the linked report
- * @param isDeprecatedVisible - True to include archived items in the linked report
+ * @param isDeletedVisible - True to include deleted items in the linked report query; this only
+ *                           affects the generated report link, not what is currently rendered on
+ *                           the page
+ * @param isDeprecatedVisible - True to include archived/revoked items in the linked report query;
+ *                              deleted items are still controlled by `isDeletedVisible`
+
  */
 export function DataAreaTitleLink({
   href,

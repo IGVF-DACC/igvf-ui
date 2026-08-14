@@ -314,6 +314,10 @@ function AlternateRowComponent({
  * @param isIlluminaReadType - True if the table displays files with Illumina read type
  * @param seqspecFiles - Sequence specification files associated with the table
  * @param seqspecDocuments - Sequence specification documents associated with the table
+ * @param isDeletedVisible - True to include deleted items in the generated report link; this does
+ *                           not control whether rows are shown in this table
+ * @param defaultDeprecatedVisible - Initial on-page deprecated visibility for this table's local
+ *                                   deprecated filter state
  * @param panelId - ID for the table panel for the section directory
  */
 export default function SequencingFileTable({
@@ -350,18 +354,24 @@ export default function SequencingFileTable({
   );
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
-  const localDeprecated = resolveDeprecatedFileProps({
+  const resolvedDeprecated = resolveDeprecatedFileProps({
     visible: deprecatedVisible,
     setVisible: setDeprecatedVisible,
     defaultVisible: defaultDeprecatedVisible,
     controlTitle: "Include deprecated files",
   });
 
-  // Filter out deprecated files if the user has not opted to include them.
-  const { visibleFiles, showDeprecatedToggle } = computeFileDisplayData(
-    files,
-    localDeprecated
-  );
+  // Filter out deprecated files and seqspec files if the user has not opted to include them. Show
+  // the "Include deprecated files" toggle if either the files or seqspec files contain deprecated
+  // items.
+  const { visibleFiles, showDeprecatedToggle: showDeprecatedToggleFiles } =
+    computeFileDisplayData(files, resolvedDeprecated);
+  const {
+    visibleFiles: visibleSeqspecFiles,
+    showDeprecatedToggle: showDeprecatedToggleSeqspecFiles,
+  } = computeFileDisplayData(seqspecFiles, resolvedDeprecated);
+  const showDeprecatedToggle =
+    showDeprecatedToggleFiles || showDeprecatedToggleSeqspecFiles;
 
   // True or false isIlluminaReadType adds a positive or negative `illumina_read_type` selector to
   // the report link. Undefined generates no `illumina_read_type` selector in the file query string.
@@ -475,7 +485,7 @@ export default function SequencingFileTable({
             {showDeprecatedToggle && (
               <DeprecatedFileFilterControl
                 panelId={panelId}
-                deprecatedData={localDeprecated}
+                deprecatedData={resolvedDeprecated}
               />
             )}
             {controller && (
@@ -492,7 +502,7 @@ export default function SequencingFileTable({
                 label="Report of files that have this item as their file set"
                 isDeletedVisible={isDeletedVisible}
                 isDisabled={visibleFiles.length === 0}
-                isDeprecatedVisible={localDeprecated.visible}
+                isDeprecatedVisible={resolvedDeprecated.visible}
               >
                 <TableCellsIcon className="h-4 w-4" />
               </DataAreaTitleLink>
@@ -515,7 +525,7 @@ export default function SequencingFileTable({
           <DataGridContainer className="h-full">
             <DataGrid
               data={[resolvedHeaderRow, ...sequenceDataGrid]}
-              meta={{ seqspecFiles, seqspecDocuments }}
+              meta={{ seqspecFiles: visibleSeqspecFiles, seqspecDocuments }}
             />
           </DataGridContainer>
         ) : (

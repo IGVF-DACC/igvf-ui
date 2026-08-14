@@ -117,7 +117,7 @@ export function CuratedSetFileTable({
   );
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
-  const localDeprecated = resolveDeprecatedFileProps({
+  const resolvedDeprecated = resolveDeprecatedFileProps({
     visible: deprecatedVisible,
     setVisible: setDeprecatedVisible,
     defaultVisible: defaultDeprecatedVisible,
@@ -142,7 +142,7 @@ export function CuratedSetFileTable({
   // Filter out deprecated files if the user has not opted to include them.
   const { visibleFiles, showDeprecatedToggle } = computeFileDisplayData(
     files,
-    localDeprecated
+    resolvedDeprecated
   );
 
   return (
@@ -154,7 +154,7 @@ export function CuratedSetFileTable({
             {showDeprecatedToggle && (
               <DeprecatedFileFilterControl
                 panelId={panelId}
-                deprecatedData={localDeprecated}
+                deprecatedData={resolvedDeprecated}
               />
             )}
             {controller && (
@@ -170,7 +170,7 @@ export function CuratedSetFileTable({
                 href={finalReportLink}
                 label={label}
                 isDisabled={visibleFiles.length === 0}
-                isDeprecatedVisible={localDeprecated.visible}
+                isDeprecatedVisible={resolvedDeprecated.visible}
               >
                 <TableCellsIcon className="h-4 w-4" />
               </DataAreaTitleLink>
