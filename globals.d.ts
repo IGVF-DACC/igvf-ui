@@ -478,6 +478,7 @@ export interface SourceObject extends DatabaseObject {
 }
 
 export interface TreatmentObject extends DatabaseObject {
+  aliases?: string[];
   amount?: number;
   amount_units?: string;
   biosamples_treated?: LinkToArray<BiosampleObject>;
@@ -485,6 +486,7 @@ export interface TreatmentObject extends DatabaseObject {
   description?: string;
   duration?: number;
   duration_units?: string;
+  lot_id?: string;
   notes?: string;
   pH?: number;
   post_treatment_time?: number;

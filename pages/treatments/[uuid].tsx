@@ -1,5 +1,8 @@
 // node_modules
-import PropTypes from "prop-types";
+import {
+  type GetServerSidePropsContext,
+  type GetServerSidePropsResult,
+} from "next";
 // components
 import AliasList from "../../components/alias-list";
 import Attribution from "../../components/attribution";
@@ -11,6 +14,7 @@ import {
   DataItemValueAnnotated,
   DataPanel,
 } from "../../components/data-area";
+import DbxrefList from "../../components/dbxref-list";
 import DocumentTable from "../../components/document-table";
 import ProductInfo from "../../components/product-info";
 import { EditableItem } from "../../components/edit";
@@ -23,22 +27,60 @@ import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
-import { requestDocuments, requestBiosamples } from "../../lib/common-requests";
+import {
+  requestDocuments,
+  requestBiosamples,
+  requestSources,
+} from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
+import { pathsFromDatabaseObjects } from "../../lib/database-object";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truthyOrZero } from "../../lib/general";
+import { PageProps } from "../../lib/next-js";
 import { isJsonFormat } from "../../lib/query-utils";
-import { Ok } from "../../lib/result";
+import { type BiosampleObject } from "../../lib/samples";
+// root
+import type {
+  DocumentObject,
+  SourceObject,
+  LabObject,
+  TreatmentObject,
+} from "../../globals";
 
+/**
+ * Props for the Treatment page component.
+ *
+ * @property biosamplesTreated - Biosample objects treated by this treatment
+ * @property documents - Document objects associated with this treatment
+ * @property sources - Source or lab objects associated with this treatment
+ * @property treatment - Treatment object to display as the page content
+ */
+interface TreatmentPageProps extends PageProps {
+  biosamplesTreated: BiosampleObject[];
+  documents: DocumentObject[];
+  sources: (SourceObject | LabObject)[];
+  treatment: TreatmentObject;
+}
+
+/**
+ * Page-rendering component for the treatment page.
+ *
+ * @param treatment - Treatment object to render
+ * @param biosamplesTreated - Biosample objects treated by this treatment
+ * @param documents - Documents associated with the treatment
+ * @param attribution - Attribution data for the page
+ * @param sources - Sources or labs associated with the treatment
+ * @param isJson - True if user requested viewing JSON for the page
+ */
 export default function Treatment({
   treatment,
   biosamplesTreated,
   documents,
-  attribution,
   sources,
+  attribution,
   isJson,
-}) {
+}: TreatmentPageProps) {
   const sections = useSecDir({ isJson });
 
   return (
@@ -55,6 +97,17 @@ export default function Treatment({
               <DataItemValue>{treatment.treatment_term_name}</DataItemValue>
               <DataItemLabel>Treatment Type</DataItemLabel>
               <DataItemValue>{treatment.treatment_type}</DataItemValue>
+              {treatment.treatment_term_id && (
+                <>
+                  <DataItemLabel>Treatment Term ID</DataItemLabel>
+                  <DataItemValue>
+                    <DbxrefList
+                      dbxrefs={[treatment.treatment_term_id]}
+                      isCollapsible
+                    />
+                  </DataItemValue>
+                </>
+              )}
               <DataItemLabel>Treatment Summary</DataItemLabel>
               <DataItemValue>{treatment.summary}</DataItemValue>
               {truthyOrZero(treatment.amount) && (
@@ -169,26 +222,18 @@ export default function Treatment({
   );
 }
 
-Treatment.propTypes = {
-  // Technical treatment to display
-  treatment: PropTypes.object.isRequired,
-  // Biosamples treated by this treatment
-  biosamplesTreated: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Documents treatment
-  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Attribution for this treatment
-  attribution: PropTypes.object,
-  // Source lab or source for this treatment
-  sources: PropTypes.arrayOf(PropTypes.object),
-  // Is the format JSON?
-  isJson: PropTypes.bool.isRequired,
-};
-
-export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+  resolvedUrl,
+}: GetServerSidePropsContext<{ uuid: string }>): Promise<
+  GetServerSidePropsResult<TreatmentPageProps>
+> {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const treatment = (
-    await request.getObject(`/treatments/${params.uuid}/`)
+    await request.getObject<TreatmentObject>(`/treatments/${params.uuid}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(treatment)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
@@ -201,26 +246,26 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       return canonicalRedirect;
     }
 
-    const biosamplesTreated =
-      treatment.biosamples_treated?.length > 0
-        ? await requestBiosamples(treatment.biosamples_treated, request)
-        : [];
-    const documents = treatment.documents
-      ? await requestDocuments(treatment.documents, request)
-      : [];
+    const biosamplesTreated = await requestBiosamples(
+      pathsFromDatabaseObjects(treatment.biosamples_treated),
+      request
+    );
+
+    const documents = await requestDocuments(
+      pathsFromDatabaseObjects(treatment.documents),
+      request
+    );
+
     const treatmentId =
       treatment.treatment_type === "environmental"
         ? treatment.summary
         : treatment.treatment_term_id;
-    let sources = [];
-    if (treatment.sources?.length > 0) {
-      const sourcePaths = treatment.sources.map((source) => source["@id"]);
-      sources = Ok.all(
-        await request.getMultipleObjects(sourcePaths, {
-          filterErrors: true,
-        })
-      );
-    }
+
+    const sources = await requestSources(
+      pathsFromDatabaseObjects(treatment.sources),
+      request
+    );
+
     const attribution = await buildAttribution(treatment, req.headers.cookie);
     return {
       props: {

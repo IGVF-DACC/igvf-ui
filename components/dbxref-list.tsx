@@ -17,7 +17,11 @@
  *
  * http://www.uniprot.org/uniprot/1234
  *
- * Preprocessor
+ * If you need multiple placeholders in the URL pattern, you can use {1}, {2}, etc. and the
+ * DbxrefPreprocessor can return an alternate id that is an array of values to fill in those
+ * placeholders.
+ *
+ * PREPROCESSOR
  * ------------
  * Dbxrefs aren't always so simple and need some massaging before DbxrefList generates the URL. An
  * example:
@@ -35,7 +39,7 @@
  *
  * {
  *   altUrlPattern: String with the alternate URL pattern to use instead of the default one.
- *   altId: Dbxref id to use instead of the one in the dbxref string
+ * . altId: Dbxref id to use instead of the one in the dbxref string
  * }
  *
  * `altUrlPattern` is a URL *pattern*, so it probably should include {0} so that this component
@@ -44,17 +48,69 @@
 
 // node_modules
 import _ from "lodash";
-import PropTypes from "prop-types";
 // components
 import SeparatedList from "./separated-list";
 // lib
 import Curie from "../lib/curie";
 
 /**
+ * Used for processors requiring extra data specific to a particular dbxref. For example, ENSEMBL
+ * requires a `taxa` string to generate a URL, unneeded by any other dbxref at this time. Expand this
+ * type with new properties as needed for future dbxref CURIE prefixes.
+ */
+type DbxrefMeta = {
+  taxa?: string;
+};
+
+/**
+ * Result returned by a DbxrefPreprocessor function.
+ *
+ * @property altUrlPattern - Alternate URL pattern to use instead of the one in `pattern`
+ * @property altId - Alternate dbxref ID to use instead of the one in the dbxref string
+ */
+type DbxrefPreprocessorResult = {
+  altUrlPattern?: string;
+  altId?: string;
+};
+
+/**
+ * Function to process the CURIE string before generating the URL for the dbxref.
+ *
+ * @param curie - Full dbxref CURIE string including both `prefix` and `id` (e.g., "GEO:GSM1234")
+ * @param prefix - CURIE prefix (e.g., "GEO")
+ * @param id - Dbxref ID part of the CURIE string (e.g., "GSM1234")
+ * @param meta - Metadata specific to the dbxref
+ */
+type DbxrefPreprocessor = (
+  curie: string,
+  prefix: string,
+  id: string,
+  meta: DbxrefMeta
+) => DbxrefPreprocessorResult;
+
+/**
+ * Configuration for a specific dbxref CURIE prefix. It's unusual not to have a pattern, but if we
+ * can't know what the URL will look like until we look at the dbxref id or metadata, then we can
+ * use a preprocessor to generate the URL pattern and/or the id.
+ *
+ * @param pattern - URL pattern for the dbxref prefix including a "{0}" where the dbxref id should go
+ * @param preprocessor - Function to process the CURIE string before generating the URL
+ */
+type DbxrefPrefixConfig =
+  | {
+      pattern: string;
+      preprocessor?: DbxrefPreprocessor;
+    }
+  | {
+      pattern?: never;
+      preprocessor: DbxrefPreprocessor;
+    };
+
+/**
  * Add a new property to this object to handle new dbxref CURIE prefixes. Also add a new Jest test
  * to __tests__/dbxref-list.test.js when you do this.
  */
-export const dbxrefPrefixMap = {
+export const dbxrefPrefixMap: Record<string, DbxrefPrefixConfig> = {
   Cellosaurus: {
     pattern: "https://web.expasy.org/cellosaurus/{0}",
   },
@@ -63,8 +119,13 @@ export const dbxrefPrefixMap = {
   },
   ENSEMBL: {
     // ENSEMBL requires a { taxa: <organism scientific name> } metadata object to generate a URL.
-    preprocessor: (curie, prefix, id, meta) => {
-      if (meta && meta.taxa) {
+    preprocessor: (
+      _curie: string,
+      _prefix: string,
+      _id: string,
+      meta: DbxrefMeta
+    ) => {
+      if (meta.taxa) {
         if (meta.taxa === "Homo sapiens") {
           return {
             altUrlPattern:
@@ -97,8 +158,8 @@ export const dbxrefPrefixMap = {
   },
   GEO: {
     pattern: "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={0}",
-    preprocessor: (curie, prefix, id) => {
-      if (id.substr(0, 4) === "SAMN") {
+    preprocessor: (_curie, _prefix, id) => {
+      if (id.startsWith("SAMN")) {
         return { altUrlPattern: "https://www.ncbi.nlm.nih.gov/biosample/{0}" };
       }
       return {};
@@ -188,22 +249,34 @@ export const dbxrefPrefixMap = {
 
 /**
  * Process a single dbxref string, converting it to a URL if possible.
- * @param {string} dbxref The dbxref string to process
- * @param {object} meta Metadata to use for processing specific types of dbxrefs
+ *
+ * @param dbxref - The dbxref string to process
+ * @param meta - Metadata to use for processing specific types of dbxrefs
  */
 class DbxrefProcessor extends Curie {
-  #meta;
+  readonly #meta: DbxrefMeta;
+  #urlCache?: string;
 
-  constructor(dbxref, meta) {
+  constructor(dbxref: string, meta: DbxrefMeta) {
     super(dbxref);
     this.#meta = meta;
   }
 
   /**
-   * Return the URL corresponding to the dbxref based on the dbxref processor for the dbxref's
+   * Get the URL corresponding to the dbxref. If no URL is available, return an empty string.
+   */
+  get url(): string {
+    if (this.#urlCache === undefined) {
+      this.#urlCache = this.#calculateUrl();
+    }
+    return this.#urlCache;
+  }
+
+  /**
+   * Calculate the URL corresponding to the dbxref based on the dbxref processor for the dbxref's
    * prefix. If no processor exists for the dbxref's prefix, return an empty URL.
    */
-  get url() {
+  #calculateUrl(): string {
     let url = "";
     const urlProcessor = dbxrefPrefixMap[this.prefix];
     if (urlProcessor) {
@@ -235,8 +308,17 @@ class DbxrefProcessor extends Curie {
 /**
  * Display a single linked dbxref. If no URL is available for the dbxref, just display the dbxref
  * string.
+ *
+ * @param dbxref - dbxref string to display
+ * @param meta - Metadata that affects certain dbxrefs
  */
-function DbxrefItem({ dbxref, meta }) {
+export function DbxrefItem({
+  dbxref,
+  meta,
+}: {
+  dbxref: string;
+  meta: DbxrefMeta;
+}) {
   const dbxrefProcessor = new DbxrefProcessor(dbxref, meta);
   if (dbxrefProcessor.url) {
     return (
@@ -245,23 +327,26 @@ function DbxrefItem({ dbxref, meta }) {
       </a>
     );
   }
+
+  // If we don't handle the dbxref prefix, just return the dbxref string without a link.
   return <>{dbxref}</>;
 }
 
-DbxrefItem.propTypes = {
-  // Dbxref to display as a link
-  dbxref: PropTypes.string.isRequired,
-  // Metadata that affects certain dbxrefs
-  meta: PropTypes.object.isRequired,
-};
-
 /**
  * Display a comma-separated list of linked dbxrefs.
+ *
+ * @param dbxrefs - List of dbxrefs to display
+ * @param isCollapsible - True if the list of linked dbxrefs should be collapsible
+ * @param meta - Metadata that affects certain dbxrefs
  */
 export default function DbxrefList({
   dbxrefs,
   isCollapsible = false,
   meta = {},
+}: {
+  dbxrefs: string[];
+  isCollapsible?: boolean;
+  meta?: DbxrefMeta;
 }) {
   return (
     <SeparatedList isCollapsible={isCollapsible}>
@@ -271,12 +356,3 @@ export default function DbxrefList({
     </SeparatedList>
   );
 }
-
-DbxrefList.propTypes = {
-  // Dbxrefs to display
-  dbxrefs: PropTypes.arrayOf(PropTypes.string).isRequired,
-  // True if the list of linked dbxrefs should be collapsible
-  isCollapsible: PropTypes.bool,
-  // Metadata that affects certain dbxrefs
-  meta: PropTypes.object,
-};

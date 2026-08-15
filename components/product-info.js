@@ -22,7 +22,14 @@ export default function ProductInfo({
         <>
           {sources[0].url ? (
             <>
-              <Link href={sources[0].url}>{sources[0].name}</Link> {prodLot}
+              <a
+                href={sources[0].url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {sources[0].name}
+              </a>{" "}
+              {prodLot}
             </>
           ) : (
             <>

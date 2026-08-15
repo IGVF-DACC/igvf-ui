@@ -1,3 +1,5 @@
+// node_modules
+import _ from "lodash";
 // lib
 import { type InstitutionalCertificateObject } from "./data-use-limitation";
 import {
@@ -149,13 +151,15 @@ export async function requestBiosamples(
   paths: string[],
   request: FetchRequest
 ): Promise<BiosampleObject[]> {
-  return (
-    await request.getMultipleObjectsBulk<BiosampleObject>(
-      paths,
-      ["accession", "disease_terms", "sample_terms", "status", "summary"],
-      ["Biosample"]
-    )
-  ).unwrap_or([]);
+  return paths.length > 0
+    ? (
+        await request.getMultipleObjectsBulk<BiosampleObject>(
+          paths,
+          ["accession", "disease_terms", "sample_terms", "status", "summary"],
+          ["Biosample"]
+        )
+      ).unwrap_or([])
+    : [];
 }
 
 /**
@@ -318,19 +322,21 @@ export async function requestDocuments(
   paths: string[],
   request: FetchRequest
 ): Promise<DocumentObject[]> {
-  return (
-    await request.getMultipleObjectsBulk<DocumentObject>(
-      paths,
-      [
-        "attachment",
-        "description",
-        "document_type",
-        "standardized_file_format",
-        "uuid",
-      ],
-      ["Document"]
-    )
-  ).unwrap_or([]);
+  return paths.length > 0
+    ? (
+        await request.getMultipleObjectsBulk<DocumentObject>(
+          paths,
+          [
+            "attachment",
+            "description",
+            "document_type",
+            "standardized_file_format",
+            "uuid",
+          ],
+          ["Document"]
+        )
+      ).unwrap_or([])
+    : [];
 }
 
 /**
@@ -565,26 +571,6 @@ export async function requestUsers(
 ): Promise<UserObject[]> {
   return (
     await request.getMultipleObjectsBulk<UserObject>(paths, ["title"], ["User"])
-  ).unwrap_or([]);
-}
-
-/**
- * Retrieve the sources objects for the given award paths from the data provider.
- *
- * @param paths - Paths to the award objects to request
- * @param request - The request object to use to make the request
- * @returns The award objects requested
- */
-export async function requestSources(
-  paths: string[],
-  request: FetchRequest
-): Promise<SourceObject[]> {
-  return (
-    await request.getMultipleObjectsBulk<SourceObject>(
-      paths,
-      ["name", "url", "lab.title"],
-      ["Source"]
-    )
   ).unwrap_or([]);
 }
 
@@ -853,4 +839,45 @@ export async function requestAuthenticatedUser(
   // Extract the user object from the session properties.
   const sessionProperties = response as SessionPropertiesObject;
   return sessionProperties.user || null;
+}
+
+/**
+ * Request the sources objects for the given paths from the data provider. The array of paths can
+ * include both source and lab paths, and the returned array of objects will include both source
+ * and lab objects. The request will be made in parallel for both source and lab paths.
+ */
+export async function requestSources(
+  paths: string[],
+  request: FetchRequest
+): Promise<(SourceObject | LabObject)[]> {
+  if (paths.length === 0) {
+    return [];
+  }
+
+  // Group the paths by type (source or lab) based on their paths. Any paths that don't match either
+  // type will be ignored.
+  const pathsByType = _.groupBy(paths, (path) => {
+    if (path.startsWith("/sources/")) {
+      return "sources";
+    }
+    if (path.startsWith("/labs/")) {
+      return "labs";
+    }
+    return "unknown";
+  });
+  const sourcePaths = pathsByType.sources ?? [];
+  const labPaths = pathsByType.labs ?? [];
+
+  // Request the source and lab objects in parallel.
+  const [sourceObjects, labObjects] = await Promise.all([
+    request.getMultipleObjectsBulk<SourceObject>(
+      sourcePaths,
+      ["name", "url", "lab.title"],
+      ["Source"]
+    ),
+    request.getMultipleObjectsBulk<LabObject>(labPaths, ["title"], ["Lab"]),
+  ]);
+
+  // Combine the source and lab objects into a single array and return it.
+  return [...sourceObjects.unwrap_or([]), ...labObjects.unwrap_or([])];
 }
