@@ -161,11 +161,12 @@ const filesColumns: SortableGridConfig<FileObject>[] = [
  * @param downloadQuery - Extra query parameters for downloading files, if needed
  * @param controllerContent - Extra text or JSX content for the batch download controller
  *                            files exist
- * @param isDeletedVisible - True to include deleted files in the linked report
+ * @param isDeletedVisible - True to include deleted items in the generated report link; this does
+ *                           not control whether rows are shown in the current table
  * @param hasDeprecatedOption - True allows user to toggle deprecated file visibility;
  *                              `externalDeprecated` ignored if false
- * @param externalDeprecated - Props related to viewing deprecated files; if not provided, defaults
- *                             to local state management
+ * @param externalDeprecated - Parent-provided deprecated visibility state for shared control
+ *                             across components; if omitted, this table uses local state
  * @param secDirTitle - Title for this table's section directory entry if not default
  * @param panelId - Unique ID for the table for the section directory
  */
@@ -206,7 +207,7 @@ export function ImagingFileTable({
   );
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
-  const localDeprecated = resolveDeprecatedFileProps(
+  const resolvedDeprecated = resolveDeprecatedFileProps(
     {
       visible: deprecatedVisible,
       setVisible: setDeprecatedVisible,
@@ -234,7 +235,7 @@ export function ImagingFileTable({
   // Filter out deprecated files if the user has not opted to include them.
   const { visibleFiles, showDeprecatedToggle } = computeFileDisplayData(
     files,
-    localDeprecated
+    resolvedDeprecated
   );
 
   return (
@@ -246,7 +247,7 @@ export function ImagingFileTable({
             {hasDeprecatedOption && showDeprecatedToggle && (
               <DeprecatedFileFilterControl
                 panelId={panelId}
-                deprecatedData={localDeprecated}
+                deprecatedData={resolvedDeprecated}
               />
             )}
             {controller && (
@@ -265,7 +266,7 @@ export function ImagingFileTable({
                 isDeletedVisible={isDeletedVisible}
                 isDisabled={visibleFiles.length === 0}
                 isDeprecatedVisible={
-                  !hasDeprecatedOption || localDeprecated.visible
+                  !hasDeprecatedOption || resolvedDeprecated.visible
                 }
               >
                 <TableCellsIcon className="h-4 w-4" />

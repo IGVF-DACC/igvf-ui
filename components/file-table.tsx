@@ -153,7 +153,8 @@ const filesColumns: SortableGridConfig<FileObject, FileTableMeta>[] = [
  * @param reportLabel - Optional label for the report link
  * @param controllerContent - Optional additional content to render alongside the batch download controller
  * @param isFilteredVisible - Optional flag to control visibility of the filtered column
- * @param isDeletedVisible - Optional flag to control visibility of deleted files
+ * @param isDeletedVisible - Optional flag to include deleted items in the generated report link;
+ *                           this does not control whether rows are shown in the current table
  * @param hasDeprecatedOption - Optional flag indicating whether deprecated file toggle should be shown
  * @param externalDeprecated - Optional external control for deprecated file visibility
  * @param secDirTitle - Optional secondary directory title for the data area
@@ -196,7 +197,7 @@ export default function FileTable({
   );
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
-  const localDeprecated = resolveDeprecatedFileProps(
+  const resolvedDeprecated = resolveDeprecatedFileProps(
     {
       visible: deprecatedVisible,
       setVisible: setDeprecatedVisible,
@@ -222,7 +223,7 @@ export default function FileTable({
   // Filter out deprecated files if the user has not opted to include them.
   const { visibleFiles, showDeprecatedToggle } = computeFileDisplayData(
     files,
-    localDeprecated
+    resolvedDeprecated
   );
 
   return (
@@ -234,7 +235,7 @@ export default function FileTable({
             {hasDeprecatedOption && showDeprecatedToggle && (
               <DeprecatedFileFilterControl
                 panelId={panelId}
-                deprecatedData={localDeprecated}
+                deprecatedData={resolvedDeprecated}
               />
             )}
             {controller && (
@@ -253,7 +254,7 @@ export default function FileTable({
                 isDeletedVisible={isDeletedVisible}
                 isDisabled={visibleFiles.length === 0}
                 isDeprecatedVisible={
-                  !hasDeprecatedOption || localDeprecated.visible
+                  !hasDeprecatedOption || resolvedDeprecated.visible
                 }
               >
                 <TableCellsIcon className="h-4 w-4" />

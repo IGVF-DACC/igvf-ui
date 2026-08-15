@@ -826,7 +826,7 @@ function GraphCycleError({ cycles }: { cycles: string[][] }) {
  * @param title - Title that appears above the graph panel
  * @param secDirTitle - Title for the section directory if the graph is within a section.
  * @param showDeprecatedToggle - True to show the deprecated file toggle control
- * @param localDeprecated - Props for handling the visibility of deprecated files in the graph.
+ * @param deprecatedProps - Props for handling the visibility of deprecated files in the graph.
  * @param fileId - ID of the file the graph is for; used to customize download filename
  * @param isDisabled - True to disable the download button (e.g., when cycles are detected)
  * @param graphBounds - The bounds of the graph for download purposes
@@ -837,7 +837,7 @@ function FileGraphTitle({
   title,
   secDirTitle,
   showDeprecatedToggle,
-  localDeprecated,
+  deprecatedProps,
   fileId,
   isDisabled,
   graphBounds,
@@ -847,7 +847,7 @@ function FileGraphTitle({
   title: string;
   secDirTitle: string;
   showDeprecatedToggle: boolean;
-  localDeprecated: DeprecatedFileFilterProps;
+  deprecatedProps: DeprecatedFileFilterProps;
   fileId: string;
   isDisabled: boolean;
   graphBounds: Rect | null;
@@ -861,13 +861,13 @@ function FileGraphTitle({
         {showDeprecatedToggle && (
           <Checkbox
             id={`file-graph-deprecated-${panelId}`}
-            checked={localDeprecated.visible}
+            checked={deprecatedProps.visible}
             name="Include deprecated files"
-            onClick={() => localDeprecated.setVisible(!localDeprecated.visible)}
+            onClick={() => deprecatedProps.setVisible(!deprecatedProps.visible)}
             className="items-center [&>input]:mr-0"
           >
             <div className="order-first mr-1 text-sm">
-              {localDeprecated.controlTitle}
+              {deprecatedProps.controlTitle}
             </div>
           </Checkbox>
         )}
@@ -906,7 +906,7 @@ function FileGraphTitle({
  * @param title - Title that appears above the graph panel
  * @param secDirTitle - Title for the section directory if the graph is within a section.
  * @param showDeprecatedToggle - True to show the deprecated file toggle control
- * @param localDeprecated - Props for handling the visibility of deprecated files in the graph.
+ * @param deprecatedProps - Props for handling the visibility of deprecated files in the graph.
  * @param fileId - ID of the file the graph is for; used to customize download filename
  */
 function FileGraphContent({
@@ -917,7 +917,7 @@ function FileGraphContent({
   title,
   secDirTitle,
   showDeprecatedToggle,
-  localDeprecated,
+  deprecatedProps,
   fileId,
 }: {
   graphData: ElkNode;
@@ -927,7 +927,7 @@ function FileGraphContent({
   title: string;
   secDirTitle: string;
   showDeprecatedToggle: boolean;
-  localDeprecated: DeprecatedFileFilterProps;
+  deprecatedProps: DeprecatedFileFilterProps;
   fileId: string;
 }) {
   const [graphBounds, setGraphBounds] = useState<Rect | null>(null);
@@ -940,7 +940,7 @@ function FileGraphContent({
         title={title}
         secDirTitle={secDirTitle}
         showDeprecatedToggle={showDeprecatedToggle}
-        localDeprecated={localDeprecated}
+        deprecatedProps={deprecatedProps}
         fileId={fileId}
         isDisabled={false}
         graphBounds={graphBounds}
@@ -1011,7 +1011,7 @@ export function FileGraph({
   );
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
-  const localDeprecated = resolveDeprecatedFileProps(
+  const resolvedDeprecated = resolveDeprecatedFileProps(
     {
       visible: deprecatedVisible,
       setVisible: setDeprecatedVisible,
@@ -1022,14 +1022,14 @@ export function FileGraph({
   );
   const { showDeprecatedToggle } = computeFileDisplayData(
     files,
-    localDeprecated
+    resolvedDeprecated
   );
 
   // Filter out deprecated files if the user has not opted to include them.
-  const visibleFiles = trimDeprecatedFiles(files, localDeprecated.visible);
+  const visibleFiles = trimDeprecatedFiles(files, resolvedDeprecated.visible);
   const includedDerivedFromFiles = trimDeprecatedFiles(
     derivedFromFiles,
-    localDeprecated.visible
+    resolvedDeprecated.visible
   );
 
   // Generate the lists of files to include in the graph, both for all files and for non-deprecated
@@ -1038,7 +1038,7 @@ export function FileGraph({
     visibleFiles,
     includedDerivedFromFiles
   );
-  const includedFilesWithDeprecated = localDeprecated.visible
+  const includedFilesWithDeprecated = resolvedDeprecated.visible
     ? includedFiles
     : generateIncludedFiles(files, includedDerivedFromFiles);
 
@@ -1073,7 +1073,7 @@ export function FileGraph({
         title={title}
         secDirTitle={secDirTitle}
         showDeprecatedToggle={showDeprecatedToggle}
-        localDeprecated={localDeprecated}
+        deprecatedProps={resolvedDeprecated}
         fileId={fileId}
       />
     );
@@ -1088,7 +1088,7 @@ export function FileGraph({
           title={title}
           secDirTitle={secDirTitle}
           showDeprecatedToggle={showDeprecatedToggle}
-          localDeprecated={localDeprecated}
+          deprecatedProps={resolvedDeprecated}
           fileId={fileId}
           isDisabled={cycles.length > 0 || isEmptyGraphAfterFiltering}
           graphBounds={null}
