@@ -80,7 +80,6 @@ import {
 import { type QualityMetricObject } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
 import { type SampleObject } from "../../lib/samples";
-import { isPathArray } from "../../lib/types";
 // root
 import type {
   DocumentObject,
@@ -545,13 +544,21 @@ export async function getServerSideProps({
       return canonicalRedirect;
     }
 
-    const documents = isPathArray(analysisSet.documents)
-      ? await requestDocuments(analysisSet.documents, request)
-      : [];
+    const documents =
+      analysisSet.documents?.length > 0
+        ? await requestDocuments(
+            pathsFromDatabaseObjects(analysisSet.documents),
+            request
+          )
+        : [];
 
-    const files = isPathArray(analysisSet.files)
-      ? await requestFiles(analysisSet.files, request)
-      : [];
+    const files =
+      analysisSet.files?.length > 0
+        ? await requestFiles(
+            pathsFromDatabaseObjects(analysisSet.files),
+            request
+          )
+        : [];
 
     // Get the paths of all files that are in `files`' `derived_from` array property. Combine and
     // deduplicate them, and then request them from the server. Repeat this process with those

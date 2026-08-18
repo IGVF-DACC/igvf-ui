@@ -451,12 +451,13 @@ export async function getServerSideProps({
       return canonicalRedirect;
     }
 
-    const files = isDatabaseObjectArray(predictionSet.files)
-      ? await requestFiles(
-          pathsFromDatabaseObjects(predictionSet.files),
-          request
-        )
-      : [];
+    const files =
+      predictionSet.files?.length > 0
+        ? await requestFiles(
+            pathsFromDatabaseObjects(predictionSet.files),
+            request
+          )
+        : [];
 
     const samples = await requestFileSetSamples([predictionSet], request);
     const samplesTerms = await getSamplesTerms(samples, request);
@@ -471,9 +472,13 @@ export async function getServerSideProps({
     const referenceFiles = await requestFilesReferenceFiles(files, request);
     const qualityMetrics = await requestFilesQualityMetrics(files, request);
 
-    const documents = isPathArray(predictionSet.documents)
-      ? await requestDocuments(predictionSet.documents, request)
-      : [];
+    const documents =
+      predictionSet.documents?.length > 0
+        ? await requestDocuments(
+            pathsFromDatabaseObjects(predictionSet.documents),
+            request
+          )
+        : [];
 
     const inputFileSets = await requestAssociatedFileSets(
       [predictionSet],
