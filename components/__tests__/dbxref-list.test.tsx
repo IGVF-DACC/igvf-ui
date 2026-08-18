@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import DbxrefList from "../dbxref-list";
+import DbxrefList, { DbxrefItem } from "../dbxref-list";
 
 describe("Test the conversion of dbxref strings to links", () => {
   it("converts Cellosaurus dbxrefs to links correctly", () => {
@@ -9,7 +9,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts DepMap dbxrefs to links correctly", () => {
@@ -19,7 +19,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts human ENSEMBL dbxrefs to links correctly", () => {
@@ -30,7 +30,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} meta={{ taxa: "Homo sapiens" }} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts mouse ENSEMBL dbxrefs to links correctly", () => {
@@ -41,7 +41,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} meta={{ taxa: "Mus musculus" }} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts unspecified taxa ENSEMBL dbxrefs to a text string correctly", () => {
@@ -62,7 +62,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts GEO dbxrefs to links correctly", () => {
@@ -74,8 +74,8 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(2);
-    expect(dbxrefElements[0].href).toBe(expected);
-    expect(dbxrefElements[1].href).toBe(expectedSAMN);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
+    expect(dbxrefElements[1]).toHaveAttribute("href", expectedSAMN);
   });
 
   it("converts HGNC dbxrefs to links correctly", () => {
@@ -86,7 +86,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts IMGT/GENE-DB dbxrefs to links correctly", () => {
@@ -97,7 +97,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts MGI dbxrefs to links correctly", () => {
@@ -107,7 +107,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts MIM dbxrefs to links correctly", () => {
@@ -117,7 +117,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts miRBase dbxrefs to links correctly", () => {
@@ -128,7 +128,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts RefSeq dbxrefs to links correctly", () => {
@@ -138,7 +138,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts UniProtKB dbxrefs to links correctly", () => {
@@ -148,7 +148,7 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
   it("converts Vega dbxrefs to links correctly", () => {
@@ -158,6 +158,27 @@ describe("Test the conversion of dbxref strings to links", () => {
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
     expect(dbxrefElements).toHaveLength(1);
-    expect(dbxrefElements[0].href).toBe(expected);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
+  });
+});
+
+describe("DbxrefItem component", () => {
+  it("renders a link for a known dbxref", () => {
+    render(<DbxrefItem dbxref="HGNC:1637" meta={{}} />);
+    const linkElement = screen.getByRole("link");
+    expect(linkElement).toHaveAttribute(
+      "href",
+      "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:1637"
+    );
+  });
+
+  it("renders plain text for an unknown dbxref", () => {
+    render(<DbxrefItem dbxref="UnknownDB:XYZ-123" meta={{}} />);
+    const textElement = screen.getByText("UnknownDB:XYZ-123");
+    expect(textElement).toBeInTheDocument();
+
+    // Ensure that no link is rendered
+    const linkElements = screen.queryAllByRole("link");
+    expect(linkElements).toHaveLength(0);
   });
 });

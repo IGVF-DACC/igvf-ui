@@ -266,6 +266,14 @@ describe("Test all the common requests", () => {
     expect(result[1]).toEqual(mockResult["@graph"][1]);
   });
 
+  test("requestBiosamples function returns empty array with no paths", async () => {
+    const request = new FetchRequest();
+    const result = await requestBiosamples([], request);
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
+  });
+
   test("requestFiles function", async () => {
     const mockResult = {
       "@graph": [
@@ -737,6 +745,14 @@ describe("Test all the common requests", () => {
     expect(result[1]).toEqual(mockResult["@graph"][1]);
   });
 
+  test("requestDocuments function returns empty array with no paths", async () => {
+    const request = new FetchRequest();
+    const result = await requestDocuments([], request);
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
+  });
+
   test("requestDonors function", async () => {
     const mockResult = {
       "@graph": [
@@ -1146,6 +1162,49 @@ describe("Test all the common requests", () => {
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual(mockResult["@graph"][0]);
     expect(result[1]).toEqual(mockResult["@graph"][1]);
+  });
+
+  test("requestSources function returns empty array with no paths", async () => {
+    const request = new FetchRequest();
+    const result = await requestSources([], request);
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
+  });
+
+  test("requestSources function ignores unknown path types", async () => {
+    const request = new FetchRequest();
+    const result = await requestSources(
+      ["/unknown-type/IGVFDS1234TEST/", "/another-unknown/IGVFDS5678TEST/"],
+      request
+    );
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
+  });
+
+  test("requestSources function supports lab paths", async () => {
+    const mockLabResult = {
+      "@graph": [
+        {
+          "@id": "/labs/j-michael-cherry/",
+          "@type": ["Lab", "Item"],
+          title: "J. Michael Cherry, Stanford",
+        },
+      ],
+    };
+
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockLabResult));
+
+    const request = new FetchRequest();
+    const result = await requestSources(["/labs/j-michael-cherry/"], request);
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/search-quick/?type=Lab&field=title&@id=/labs/j-michael-cherry/&limit=1",
+      expect.anything()
+    );
+    expect(result).toEqual(mockLabResult["@graph"]);
   });
 
   test("requestPages function", async () => {
