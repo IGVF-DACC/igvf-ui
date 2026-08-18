@@ -238,43 +238,6 @@ export async function requestLabs(
 }
 
 /**
- * Files can contain seqspec paths or partial embedded objects. This function retrieves the seqspec
- * files referenced by the given files for both cases.
- * @param files Files potentially containing seqspec paths or objects to request
- * @param request The request object to use to make the request
- * @returns The seqspec files requested; [] if no seqspec files found
- */
-export async function requestSeqspecFiles(
-  files: FileObject[],
-  request: FetchRequest
-): Promise<FileObject[]> {
-  let seqspecFiles: FileObject[] = [];
-  if (files.length > 0) {
-    const seqspecPaths: string[] = files.reduce((acc: string[], file) => {
-      const fileSeqspecs = file.seqspecs as string[] | undefined;
-      if (fileSeqspecs && fileSeqspecs.length > 0) {
-        // File schemas define seqspecs as either an array of @ids or partial embedded
-        // configuration-file objects. If the latter, extract the @id paths from each object.
-        const paths: string[] =
-          typeof fileSeqspecs[0] === "string"
-            ? fileSeqspecs
-            : (fileSeqspecs as unknown as DatabaseObject[]).map(
-                (seqspec) => seqspec["@id"]
-              );
-        return [...acc, ...paths];
-      }
-      return acc;
-    }, []);
-    const uniqueSeqspecPaths = [...new Set(seqspecPaths)];
-    seqspecFiles =
-      uniqueSeqspecPaths.length > 0
-        ? await requestFiles(uniqueSeqspecPaths, request)
-        : [];
-  }
-  return seqspecFiles;
-}
-
-/**
  * Retrieve the FileSet objects for the given FileSet paths from the data provider.
  * @param paths Paths to the FileSet objects to request
  * @param request The request object to use to make the request
@@ -414,16 +377,15 @@ export async function requestInstitutionalCertificates(
 /**
  * Retrieve the ontology-term objects for the given donor paths from the data provider.
  *
- * @param - paths Paths to the ontology-term objects to request
- * @param - request The request object to use to make the request
+ * @param paths - Paths to the ontology-term objects to request
+ * @param request - The request object to use to make the request
  * @returns The ontology term objects requested
  */
-export async function requestOntologyTerms(
-  paths: string[],
-  request: FetchRequest
-): Promise<OntologyTermObject[]> {
+export async function requestOntologyTerms<
+  T extends OntologyTermObject = OntologyTermObject,
+>(paths: string[], request: FetchRequest): Promise<T[]> {
   return (
-    await request.getMultipleObjectsBulk<OntologyTermObject>(
+    await request.getMultipleObjectsBulk<T>(
       paths,
       ["definition", "term_id", "term_name"],
       ["OntologyTerm"]

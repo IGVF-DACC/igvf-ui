@@ -1,9 +1,11 @@
 // node_modules
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import _ from "lodash";
-import PropTypes from "prop-types";
+import {
+  type GetServerSidePropsContext,
+  type GetServerSidePropsResult,
+} from "next";
 import { useContext } from "react";
-import { Fragment } from "react";
 // components
 import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 import Attribution from "../../components/attribution";
@@ -18,6 +20,7 @@ import {
   DataItemLabel,
   DataItemList,
   DataItemValue,
+  DataItemValueAnnotated,
   DataPanel,
 } from "../../components/data-area";
 import { DataUseLimitationSummaries } from "../../components/data-use-limitation-status";
@@ -44,29 +47,99 @@ import buildAttribution from "../../lib/attribution";
 import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import {
   requestDocuments,
-  requestDonors,
   requestFiles,
-  requestFileSets,
-  requestLibraryDesignFiles,
+  requestGenes,
+  requestOntologyTerms,
   requestPublications,
-  requestSamples,
-  requestSeqspecFiles,
   requestSupersedes,
 } from "../../lib/common-requests";
+import { pathsFromDatabaseObjects } from "../../lib/database-object";
 import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
-import { requestFileSetAssociatedFiles } from "../../lib/file-sets";
+import {
+  ConstructLibrarySetObject,
+  requestAssociatedFileSets,
+  requestFileSetAssociatedFiles,
+  requestFileSetDonors,
+  requestFileSetSamples,
+  type FileSetObject,
+  type MeasurementSetObject,
+} from "../../lib/file-sets";
+import { requestSeqspecDocuments, requestSeqspecFiles } from "../../lib/files";
+import { type PageProps } from "../../lib/next-js";
 import {
   getMeasurementSetAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
+  PhenotypeTermObject,
 } from "../../lib/ontology-terms";
 import { isJsonFormat } from "../../lib/query-utils";
+import { SampleObject } from "../../lib/samples";
+// root
+import type {
+  DocumentObject,
+  DonorObject,
+  FileObject,
+  GeneObject,
+  PublicationObject,
+} from "../../globals";
 
 /**
- * Display the assay details for the measurement set.
+ * Props for the MeasurementSet page component.
+ *
+ * @param assayTitleDescriptionMap - Map of assay term titles to their descriptions
+ * @param auxiliarySets - Auxiliary datasets associated with the measurement set
+ * @param clsLibraryDesignFiles - Construct library design files associated with the measurement
+ *                                set's construct library sets
+ * @param controlFileSets - Control file sets associated with the measurement set
+ * @param controlFor - File sets that have this measurement set as a control
+ * @param documents - Documents associated with the measurement set
+ * @param donors - Donors associated with the measurement set
+ * @param enrichmentDesigns - Enrichment designs associated with the measurement set
+ * @param files - Files associated with the measurement set
+ * @param functionalAssayMechanisms - Functional assay mechanism phenotype terms associated with the
+ *                                    measurement set
+ * @param inputFileSetFor - File sets that this measurement set is an input for
+ * @param libraryDesignFiles - Library design files associated with the measurement set's construct
+ *                             library sets
+ * @param measurementSet - Measurement set object to display assay details for
+ * @param publications - Publications associated with the measurement set
+ * @param samples - Samples associated with the measurement set
+ * @param seqspecDocuments - Seqspec documents associated with the measurement set's files
+ * @param seqspecFiles - Seqspec files associated with the measurement set's files
+ * @param targetedGenes - Targeted genes associated with the measurement set
  */
-function AssayDetails({ measurementSet }) {
+interface MeasurementSetPageProps extends PageProps {
+  assayTitleDescriptionMap: Record<string, string>;
+  auxiliarySets: FileSetObject[];
+  constructLibrarySets: ConstructLibrarySetObject[];
+  controlFileSets: FileSetObject[];
+  controlFor: FileSetObject[];
+  documents: DocumentObject[];
+  donors: DonorObject[];
+  enrichmentDesigns: FileObject[];
+  files: FileObject[];
+  functionalAssayMechanisms: PhenotypeTermObject[];
+  inputFileSetFor: FileSetObject[];
+  libraryDesignFiles: FileObject[];
+  measurementSet: MeasurementSetObject;
+  publications: PublicationObject[];
+  samples: SampleObject[];
+  seqspecDocuments: DocumentObject[];
+  seqspecFiles: FileObject[];
+  targetedGenes: GeneObject[];
+}
+
+/**
+ * Display the assay details panel for the measurement set.
+ *
+ * @param measurementSet - Measurement set object to display assay details for
+ */
+function AssayDetails({
+  measurementSet,
+}: {
+  measurementSet: MeasurementSetObject;
+}) {
   if (measurementSet.sequencing_library_types?.length > 0) {
     return (
       <>
@@ -76,9 +149,12 @@ function AssayDetails({ measurementSet }) {
             {measurementSet.sequencing_library_types?.length > 0 && (
               <>
                 <DataItemLabel>Sequencing Library Types</DataItemLabel>
-                <DataItemValue>
-                  {measurementSet.sequencing_library_types.join(", ")}
-                </DataItemValue>
+                <DataItemValueAnnotated
+                  objectType={measurementSet["@type"][0]}
+                  propertyName="sequencing_library_types"
+                >
+                  {measurementSet.sequencing_library_types}
+                </DataItemValueAnnotated>
               </>
             )}
           </DataArea>
@@ -89,33 +165,30 @@ function AssayDetails({ measurementSet }) {
   return null;
 }
 
-AssayDetails.propTypes = {
-  // Measurement set to display
-  measurementSet: PropTypes.object.isRequired,
-};
-
 export default function MeasurementSet({
   measurementSet,
   controlFileSets,
   documents,
   publications,
   files,
+  constructLibrarySets,
   auxiliarySets,
   inputFileSetFor,
   controlFor,
   samples,
   donors,
+  functionalAssayMechanisms,
   seqspecFiles,
   seqspecDocuments,
   enrichmentDesigns,
   libraryDesignFiles,
-  clsLibraryDesignFiles,
+  targetedGenes,
   supersedes,
   supersededBy,
   assayTitleDescriptionMap,
   attribution = null,
   isJson,
-}) {
+}: MeasurementSetPageProps) {
   const tooltipAttr = useTooltip("external-image-url");
   const sections = useSecDir({ isJson });
   const { profiles } = useContext(SessionContext);
@@ -129,9 +202,7 @@ export default function MeasurementSet({
 
   // Collect all sample summaries and display them as a collapsible list.
   const sampleSummaries =
-    measurementSet.samples?.length > 0
-      ? measurementSet.samples.map((sample) => sample.summary)
-      : [];
+    samples.length > 0 ? samples.map((sample) => sample.summary) : [];
   const uniqueSampleSummaries = [...new Set(sampleSummaries)];
 
   // Collect all sample protocols.
@@ -181,12 +252,12 @@ export default function MeasurementSet({
                     </DataItemValue>
                   </>
                 )}
-                {measurementSet.targeted_genes && (
+                {targetedGenes.length > 0 && (
                   <>
                     <DataItemLabel>Targeted Genes</DataItemLabel>
                     <DataItemValue>
                       <SeparatedList isCollapsible>
-                        {measurementSet.targeted_genes.map((gene) => (
+                        {targetedGenes.map((gene) => (
                           <Link key={gene["@id"]} href={gene["@id"]}>
                             {gene.symbol}
                           </Link>
@@ -203,21 +274,19 @@ export default function MeasurementSet({
                     </DataItemList>
                   </>
                 )}
-                {measurementSet.functional_assay_mechanisms?.length > 0 && (
+                {functionalAssayMechanisms.length > 0 && (
                   <>
                     <DataItemLabel>Functional Assay Mechanisms</DataItemLabel>
                     <DataItemValue>
                       <SeparatedList isCollapsible>
-                        {measurementSet.functional_assay_mechanisms.map(
-                          (phenotypeTerm) => (
-                            <Link
-                              href={phenotypeTerm["@id"]}
-                              key={phenotypeTerm.term_id}
-                            >
-                              {phenotypeTerm.term_name}
-                            </Link>
-                          )
-                        )}
+                        {functionalAssayMechanisms.map((phenotypeTerm) => (
+                          <Link
+                            href={phenotypeTerm["@id"]}
+                            key={phenotypeTerm.term_id}
+                          >
+                            {phenotypeTerm.term_name}
+                          </Link>
+                        ))}
                       </SeparatedList>
                     </DataItemValue>
                   </>
@@ -310,10 +379,10 @@ export default function MeasurementSet({
             />
           )}
           {donors.length > 0 && <DonorTable donors={donors} />}
-          {measurementSet.construct_library_sets?.length > 0 && (
+          {constructLibrarySets.length > 0 && (
             <ConstructLibraryTable
-              constructLibrarySets={measurementSet.construct_library_sets}
-              libraryDesignFiles={clsLibraryDesignFiles}
+              constructLibrarySets={constructLibrarySets}
+              libraryDesignFiles={libraryDesignFiles}
               title="Associated Construct Library Sets"
               panelId="associated-construct-library-sets"
             />
@@ -322,6 +391,7 @@ export default function MeasurementSet({
             <FileTable
               files={libraryDesignFiles}
               title="Library Design Files"
+              secDirTitle="Library Design Files"
               panelId="library-design-files"
             />
           )}
@@ -389,54 +459,20 @@ export default function MeasurementSet({
   );
 }
 
-MeasurementSet.propTypes = {
-  // Measurement set to display
-  measurementSet: PropTypes.object.isRequired,
-  // Control File Sets of the measurement set
-  controlFileSets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Files to display
-  files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Auxiliary datasets
-  auxiliarySets: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that this measurement set is an input for
-  inputFileSetFor: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that have this measurement set as a control
-  controlFor: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Sample objects associated with the measurement set
-  samples: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Donor objects associated with the measurement set
-  donors: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // seqspec files associated with `files`
-  seqspecFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // seqspec documents associated with `files`
-  seqspecDocuments: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Enrichment designs tabular files associated with the measurement set
-  enrichmentDesigns: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Library design files associated with the measurement set's construct library sets
-  libraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Construct library design files associated with this measurement set
-  clsLibraryDesignFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Documents associated with this measurement set
-  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Publications associated with this measurement set
-  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that this file set supersedes
-  supersedes: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // File sets that this file set is superseded by
-  supersededBy: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Map of assay term titles to their descriptions
-  assayTitleDescriptionMap: PropTypes.object.isRequired,
-  // Attribution for this measurement set
-  attribution: PropTypes.object,
-  // Is the format JSON?
-  isJson: PropTypes.bool.isRequired,
-};
-
-export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+  resolvedUrl,
+}: GetServerSidePropsContext<{
+  id: string;
+}>): Promise<GetServerSidePropsResult<MeasurementSetPageProps>> {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const measurementSet = (
-    await request.getObject(`/measurement-sets/${params.id}/`)
+    await request.getObject<MeasurementSetObject>(
+      `/measurement-sets/${params.id}/`
+    )
   ).union();
   if (FetchRequest.isResponseSuccess(measurementSet)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
@@ -447,97 +483,91 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     if (canonicalRedirect) {
       return canonicalRedirect;
     }
-    const documents = measurementSet.documents
-      ? await requestDocuments(measurementSet.documents, request)
-      : [];
-    let files = [];
-    if (measurementSet.files?.length > 0) {
-      const filePaths = measurementSet.files.map((file) => file["@id"]) || [];
-      files = await requestFiles(filePaths, request);
-    }
-    let controlFileSets = [];
-    if (measurementSet.control_file_sets?.length > 0) {
-      const controlPaths = measurementSet.control_file_sets.map(
-        (control) => control["@id"]
-      );
-      controlFileSets = await requestFileSets(controlPaths, request);
-    }
 
-    const inputFileSetFor =
-      measurementSet.input_for?.length > 0 &&
-      measurementSet.input_for.every(
-        (item) => typeof item === "object" && item["@id"]
-      )
-        ? await requestFileSets(
-            measurementSet.input_for.map((inputFor) => inputFor["@id"]),
+    const samples = await requestFileSetSamples([measurementSet], request);
+    const donors = await requestFileSetDonors(measurementSet, request);
+
+    const documents =
+      measurementSet.documents?.length > 0
+        ? await requestDocuments(
+            pathsFromDatabaseObjects(measurementSet.documents),
             request
           )
         : [];
 
-    let controlFor = [];
-    if (measurementSet.control_for?.length > 0) {
-      const controlForPaths = measurementSet.control_for.map(
-        (controlFor) => controlFor["@id"]
-      );
-      controlFor = await requestFileSets(controlForPaths, request);
-    }
-
-    let auxiliarySets = [];
-    const auxiliarySetPaths =
-      measurementSet.auxiliary_sets?.length > 0
-        ? measurementSet.auxiliary_sets.map((dataset) => dataset["@id"])
+    const files =
+      measurementSet.files?.length > 0
+        ? await requestFiles(
+            pathsFromDatabaseObjects(measurementSet.files),
+            request
+          )
         : [];
-    if (auxiliarySetPaths.length > 0) {
-      auxiliarySets = await requestFileSets(auxiliarySetPaths, request, [
-        "files",
-      ]);
-    }
 
-    let samples = [];
-    const samplesPaths =
-      measurementSet.samples?.length > 0
-        ? measurementSet.samples.map((sample) => sample["@id"])
-        : [];
-    if (samplesPaths.length > 0) {
-      samples = await requestSamples(samplesPaths, request);
-    }
-
-    const donors = await requestDonors(
-      measurementSet.donors?.map((donor) => donor["@id"]) || [],
+    const controlFileSets = await requestAssociatedFileSets(
+      [measurementSet],
+      "control_file_sets",
       request
     );
 
-    // Use the files to retrieve all the seqspec files they might link to.
+    const inputFileSetFor = await requestAssociatedFileSets(
+      [measurementSet],
+      "input_for",
+      request
+    );
+
+    const controlFor = await requestAssociatedFileSets(
+      [measurementSet],
+      "control_for",
+      request
+    );
+
+    // Request auxiliary sets associated with the measurement set.
+    const auxiliarySets = await requestAssociatedFileSets(
+      [measurementSet],
+      "auxiliary_sets",
+      request
+    );
+
     const seqspecFiles =
       files.length > 0 ? await requestSeqspecFiles(files, request) : [];
+    const seqspecDocuments = await requestSeqspecDocuments(files, request);
 
-    let seqspecDocuments = [];
-    if (files.length > 0) {
-      const seqspecDocumentPaths = files.map(
-        (seqspecFile) => seqspecFile.seqspec_document
-      );
-      if (seqspecDocumentPaths.length > 0) {
-        const uniqueDocumentPaths = [...new Set(seqspecDocumentPaths)];
-        seqspecDocuments = await requestDocuments(uniqueDocumentPaths, request);
-      }
-    }
-
-    const enrichmentDesigns = measurementSet.enrichment_designs
-      ? await requestFiles(measurementSet.enrichment_designs, request, [
-          "TabularFile",
-        ])
-      : [];
-
-    const libraryDesignFiles = await requestLibraryDesignFiles(
-      measurementSet,
+    const enrichmentDesigns = await requestFileSetAssociatedFiles(
+      [measurementSet],
+      "enrichment_designs",
       request
     );
 
-    const clsLibraryDesignFiles = await requestFileSetAssociatedFiles(
-      measurementSet.construct_library_sets,
+    const constructLibrarySets =
+      await requestAssociatedFileSets<ConstructLibrarySetObject>(
+        [measurementSet],
+        "construct_library_sets",
+        request,
+        ["integrated_content_files"]
+      );
+    const libraryDesignFiles = await requestFileSetAssociatedFiles(
+      constructLibrarySets,
       "integrated_content_files",
       request
     );
+
+    const targetedGenes =
+      measurementSet.targeted_genes?.length > 0
+        ? await requestGenes(
+            pathsFromDatabaseObjects(measurementSet.targeted_genes),
+            request
+          )
+        : [];
+
+    const functionalAssayMechanisms =
+      measurementSet.functional_assay_mechanisms?.length > 0
+        ? await requestOntologyTerms<PhenotypeTermObject>(
+            pathsFromDatabaseObjects(
+              measurementSet.functional_assay_mechanisms
+            ),
+            request
+          )
+        : [];
 
     let publications = [];
     if (measurementSet.publications?.length > 0) {
@@ -568,19 +598,21 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
         documents,
         publications,
         files,
+        constructLibrarySets,
         auxiliarySets,
         inputFileSetFor,
         controlFor,
         samples,
         donors,
+        functionalAssayMechanisms,
         seqspecFiles,
         seqspecDocuments,
         enrichmentDesigns,
+        targetedGenes,
         libraryDesignFiles,
-        clsLibraryDesignFiles,
+        assayTitleDescriptionMap,
         supersedes,
         supersededBy,
-        assayTitleDescriptionMap,
         pageContext: { title: measurementSet.accession },
         attribution,
         isJson,

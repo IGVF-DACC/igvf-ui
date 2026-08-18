@@ -35,7 +35,6 @@ import {
   requestDocuments,
   requestFiles,
   requestQualityMetrics,
-  requestSeqspecFiles,
   requestSupersedes,
   requestWorkflows,
 } from "../../lib/common-requests";
@@ -44,6 +43,7 @@ import FetchRequest from "../../lib/fetch-request";
 import {
   checkForFileDownloadPath,
   convertFileDownloadPathToFilePagePath,
+  requestSeqspecFiles,
 } from "../../lib/files";
 import { truthyOrZero } from "../../lib/general";
 import { isJsonFormat } from "../../lib/query-utils";

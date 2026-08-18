@@ -39,12 +39,12 @@ import {
   requestFiles,
   requestFileSets,
   requestPublications,
-  requestSeqspecFiles,
   requestSupersedes,
 } from "../../lib/common-requests";
 import { UC } from "../../lib/constants";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { requestSeqspecFiles } from "../../lib/files";
 import { convertTextToTitleCase } from "../../lib/general";
 import {
   getAssayTitleDescriptionMap,
