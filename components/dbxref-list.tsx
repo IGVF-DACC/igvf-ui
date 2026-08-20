@@ -114,6 +114,9 @@ export const dbxrefPrefixMap: Record<string, DbxrefPrefixConfig> = {
   Cellosaurus: {
     pattern: "https://web.expasy.org/cellosaurus/{0}",
   },
+  CHEBI: {
+    pattern: "https://www.ebi.ac.uk/chebi/CHEBI:{0}",
+  },
   DepMap: {
     pattern: "https://depmap.org/portal/cell_line/{0}",
   },
@@ -228,7 +231,7 @@ export const dbxrefPrefixMap: Record<string, DbxrefPrefixConfig> = {
   },
   NCIT: {
     pattern:
-      "https://ontobee.org/ontology/NCIT?iri=http://purl.obolibrary.org/obo/NCIT_{0}",
+      "https://evsexplore.semantics.cancer.gov/evsexplore/concept/ncit/{0}",
   },
   DOID: {
     pattern:
