@@ -46,7 +46,6 @@ import {
   requestDocuments,
   requestFiles,
   requestGenes,
-  requestLibraryDesignFiles,
   requestOntologyTerms,
   requestSupersedes,
 } from "../../lib/common-requests";
@@ -140,7 +139,7 @@ interface AnalysisSetPageProps extends PageProps {
   controlFor: FileSetObject[];
   auxiliarySets: FileSetObject[];
   measurementSets: FileSetObject[];
-  constructLibrarySets: ConstructLibrarySetObject[];
+  inputConstructLibrarySets: ConstructLibrarySetObject[];
   libraryDesignFiles: FileObject[];
   clsLibraryDesignFiles: FileObject[];
   samples: SampleObject[];
@@ -169,7 +168,7 @@ export default function AnalysisSet({
   controlFor,
   auxiliarySets,
   measurementSets,
-  constructLibrarySets,
+  inputConstructLibrarySets,
   libraryDesignFiles,
   clsLibraryDesignFiles,
   samples,
@@ -454,9 +453,9 @@ export default function AnalysisSet({
 
           {donors.length > 0 && <DonorTable donors={donors} />}
 
-          {constructLibrarySets.length > 0 && (
+          {inputConstructLibrarySets.length > 0 && (
             <ConstructLibraryTable
-              constructLibrarySets={constructLibrarySets}
+              constructLibrarySets={inputConstructLibrarySets}
               libraryDesignFiles={clsLibraryDesignFiles}
               title="Associated Construct Library Sets"
               panelId="associated-construct-library-sets"
@@ -471,7 +470,7 @@ export default function AnalysisSet({
               controlFileSets={controlFileSets}
               auxiliarySets={auxiliarySets}
               measurementSets={measurementSets}
-              constructLibrarySets={constructLibrarySets}
+              constructLibrarySets={inputConstructLibrarySets}
               excludedTypes={["ConstructLibrarySet"]}
             />
           )}
@@ -576,8 +575,16 @@ export async function getServerSideProps({
     const samples = await requestFileSetSamples([analysisSet], request);
     const donors = await requestFileSetDonors(analysisSet, request);
     const publications = await requestFileSetPublications(analysisSet, request);
-    const libraryDesignFiles = await requestLibraryDesignFiles(
-      analysisSet,
+    const constructLibrarySets =
+      await requestAssociatedFileSets<ConstructLibrarySetObject>(
+        [analysisSet],
+        "construct_library_sets",
+        request,
+        ["integrated_content_files"]
+      );
+    const libraryDesignFiles = await requestFileSetAssociatedFiles(
+      constructLibrarySets,
+      "integrated_content_files",
       request
     );
 
@@ -616,7 +623,7 @@ export async function getServerSideProps({
       "control_file_sets",
       request
     );
-    const constructLibrarySets =
+    const inputConstructLibrarySets =
       await requestAssociatedFileSets<ConstructLibrarySetObject>(
         inputFileSets,
         "construct_library_sets",
@@ -624,7 +631,7 @@ export async function getServerSideProps({
         ["integrated_content_files"]
       );
     const clsLibraryDesignFiles = await requestFileSetAssociatedFiles(
-      constructLibrarySets,
+      inputConstructLibrarySets,
       "integrated_content_files",
       request
     );
@@ -693,7 +700,7 @@ export async function getServerSideProps({
         controlFor,
         auxiliarySets,
         measurementSets,
-        constructLibrarySets,
+        inputConstructLibrarySets,
         libraryDesignFiles,
         clsLibraryDesignFiles,
         samples,

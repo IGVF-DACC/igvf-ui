@@ -360,6 +360,7 @@ export type UploadStatus =
 export interface FileObject extends DatabaseObject {
   accession?: string;
   aliases?: string[];
+  anvil_url?: string;
   checkfiles_timestamp?: string;
   checkfiles_version?: string;
   content_summary?: string;

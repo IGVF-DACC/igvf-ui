@@ -41,13 +41,13 @@ import {
   requestFileSets,
   requestPublications,
   requestSamples,
-  requestSeqspecFiles,
   requestSupersedes,
 } from "../../lib/common-requests";
 import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { requestFileSetAssociatedFiles } from "../../lib/file-sets";
+import { requestSeqspecFiles } from "../../lib/files";
 import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,

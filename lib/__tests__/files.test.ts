@@ -13,18 +13,16 @@ import {
   paginateSequenceFileGroups,
   requestFilesQualityMetrics,
   requestFilesReferenceFiles,
+  requestSeqspecDocuments,
+  requestSeqspecFiles,
   splitIlluminaSequenceFiles,
 } from "../files";
+import { type FileSetObject } from "../file-sets";
 import FetchRequest from "../fetch-request";
 import type { Cell, RowComponentProps } from "../data-grid";
 import { type QualityMetricObject } from "../quality-metric";
 import { type SampleObject } from "../samples";
-import type {
-  DatabaseObject,
-  FileObject,
-  FileSetObject,
-  SearchResults,
-} from "../../globals";
+import type { DocumentObject, FileObject, SearchResults } from "../../globals";
 
 const mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 global.fetch = mockFetch;
@@ -51,6 +49,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "fastq",
         file_set: "/file-sets/IGVFFI0000ILRT/",
         illumina_read_type: "R1",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -63,6 +62,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -75,6 +75,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "low resolution tissue",
         file_format: "jpg",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -88,6 +89,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "fastq",
         file_set: "/file-sets/IGVFFI0000ILRT/",
         illumina_read_type: "R1",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -100,6 +102,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "peaks",
         file_format: "bed",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -112,6 +115,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -124,6 +128,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "high resolution tissue",
         file_format: "png",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -136,6 +141,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "sample sort parameters",
         file_format: "bed",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -170,6 +176,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -182,6 +189,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -217,6 +225,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         file_format: "fastq",
         file_set: "/file-sets/IGVFFI0000ILRT/",
         illumina_read_type: "R1",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -229,6 +238,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         illumina_read_type: "R1",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
@@ -264,6 +274,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "low resolution tissue",
         file_format: "jpg",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -276,6 +287,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "high resolution tissue",
         file_format: "png",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -310,6 +322,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "peaks",
         file_format: "bed",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -322,6 +335,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
         content_type: "sample sort parameters",
         file_format: "bed",
         file_set: "/file-sets/IGVFFI0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "in progress",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -347,7 +361,7 @@ describe("Test the splitIlluminaSequenceFiles function", () => {
   });
 
   it("returns an empty array for both filesWithReadType, imageFileType, tabularFileType and filesWithoutReadType when given an empty array", () => {
-    const files: Array<DatabaseObject> = [];
+    const files: Array<FileObject> = [];
 
     const results = splitIlluminaSequenceFiles(files);
     const withIlluminaIds = results.filesWithReadType.map(
@@ -415,6 +429,7 @@ describe("Test the generateGraphData function", () => {
         derived_from: ["file2"],
         file_set: "file-set-1",
         file_format: "fastq",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
       {
@@ -424,6 +439,7 @@ describe("Test the generateGraphData function", () => {
         content_type: "peaks",
         file_set: "file-set-1",
         file_format: "bam",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
     ];
@@ -433,15 +449,17 @@ describe("Test the generateGraphData function", () => {
   });
 
   it("returns a list of files where one derived_from belongs to another file set", async () => {
-    const mockResult: SearchResults = {
+    const mockResult: SearchResults<FileObject> = {
       "@context": "/terms/",
       "@graph": [
         {
           "@id": "file3",
           "@type": ["File"],
           accession: "file3",
+          content_type: "peaks",
           file_set: "file-set-2",
           file_format: "bam",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
           status: "released",
         },
       ],
@@ -485,6 +503,7 @@ describe("Test the generateGraphData function", () => {
         derived_from: ["file2"],
         file_set: "file-set-1",
         file_format: "fastq",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
       {
@@ -495,6 +514,7 @@ describe("Test the generateGraphData function", () => {
         derived_from: ["file3"],
         file_set: "file-set-1",
         file_format: "bam",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
     ];
@@ -514,24 +534,28 @@ describe("Test the generateGraphData function", () => {
         "@id": "file3",
         "@type": ["File"],
         accession: "file3",
+        content_type: "peaks",
         file_set: "file-set-2",
         file_format: "bam",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
     ]);
   });
 
   it("crashes if a loop exists in the data", async () => {
-    const mockResult: SearchResults = {
+    const mockResult: SearchResults<FileObject> = {
       "@context": "/terms/",
       "@graph": [
         {
           "@id": "file3",
           "@type": ["File"],
           accession: "file3",
+          content_type: "peaks",
           derived_from: ["file2"],
           file_set: "file-set-2",
           file_format: "bam",
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
           status: "released",
         },
       ],
@@ -575,6 +599,7 @@ describe("Test the generateGraphData function", () => {
         derived_from: ["file2"],
         file_set: "file-set-1",
         file_format: "fastq",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
       {
@@ -585,6 +610,7 @@ describe("Test the generateGraphData function", () => {
         derived_from: ["file3"],
         file_set: "file-set-1",
         file_format: "bam",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
     ];
@@ -622,6 +648,7 @@ describe("getFilesFileSets", () => {
         content_type: "peaks",
         file_format: "fastq",
         file_set: "/file-sets/IGVFDS0000ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
       {
@@ -631,6 +658,7 @@ describe("getFilesFileSets", () => {
         content_type: "peaks",
         file_format: "bam",
         file_set: "/file-sets/IGVFDS0001ILRT/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
     ];
@@ -686,6 +714,7 @@ describe("getFilesFileSets", () => {
         content_type: "peaks",
         file_format: "fastq",
         file_set: fileSet,
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
     ];
@@ -718,6 +747,7 @@ describe("getFilesFileSets", () => {
         accession: "IGVFFI0000ILRT",
         content_type: "peaks",
         file_format: "fastq",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
       {
@@ -726,6 +756,7 @@ describe("getFilesFileSets", () => {
         accession: "IGVFFI0001ILRT",
         content_type: "peaks",
         file_format: "bam",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
       },
     ] satisfies Array<Omit<FileObject, "file_set">>;
@@ -744,6 +775,7 @@ describe("Test the checkFileDownloadable function", () => {
       content_type: "peaks",
       file_format: "fastq",
       file_set: "file-set-1",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       status: "released",
       upload_status: "validated",
     };
@@ -758,6 +790,7 @@ describe("Test the checkFileDownloadable function", () => {
       content_type: "peaks",
       file_format: "fastq",
       file_set: "file-set-1",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       status: "in progress",
       upload_status: "pending",
     };
@@ -774,6 +807,7 @@ describe("Test the checkFileDownloadable function", () => {
       file_set: "file-set-1",
       status: "released",
       controlled_access: true,
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       anvil_url: "https://anvil.org",
     };
     const result = checkFileDownloadable(file);
@@ -787,6 +821,7 @@ describe("Test the checkFileDownloadable function", () => {
       content_type: "peaks",
       file_format: "fastq",
       file_set: "file-set-1",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       status: "released",
       externally_hosted: true,
     };
@@ -824,6 +859,7 @@ describe("Test collectFileFileSetSamples function", () => {
       content_type: "peaks",
       file_format: "fastq",
       file_set: fileSet,
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       status: "released",
     };
 
@@ -851,6 +887,7 @@ describe("Test the generateSequenceFileGroups function", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/IGVFFI0000ILRT/",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       status: "released",
       uuid: "00000000-0000-0000-0000-000000000000",
       creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -1063,6 +1100,7 @@ describe("Test the fileGroupsToDataGridFormat function", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/IGVFFI0000ILRT/",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       status: "released",
       uuid: "00000000-0000-0000-0000-000000000000",
       creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -1307,6 +1345,7 @@ describe("Test the applyFileToCells function", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/IGVFFI0000ILRT/",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       status: "released",
       uuid: "00000000-0000-0000-0000-000000000000",
       creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -2188,6 +2227,7 @@ describe("Test the isFileObject function", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/IGVFFI0000TEST/",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       status: "released",
       uuid: "00000000-0000-0000-0000-000000000000",
       creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -2251,6 +2291,7 @@ describe("Test the isFileObjectArray function", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/IGVFFI0000TEST/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
         uuid: "00000000-0000-0000-0000-000000000000",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -2263,6 +2304,7 @@ describe("Test the isFileObjectArray function", () => {
         content_type: "reads",
         file_format: "fastq",
         file_set: "/file-sets/IGVFFI0000TEST/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
         uuid: "00000000-0000-0000-0000-000000000001",
         creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -2309,6 +2351,7 @@ describe("requestFilesQualityMetrics", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/IGVFFI0000TEST/",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       quality_metrics: [
         "/quality-metrics/a0696f31-1422-4946-ddea-21da73f7d04a/",
       ],
@@ -2343,6 +2386,7 @@ describe("requestFilesQualityMetrics", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/IGVFFI0000TEST/",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       status: "released",
       uuid: "00000000-0000-0000-0000-000000000000",
       creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -2362,6 +2406,7 @@ describe("requestFilesQualityMetrics", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/IGVFFI0000TEST/",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       quality_metrics: [],
       status: "released",
       uuid: "00000000-0000-0000-0000-000000000000",
@@ -2395,6 +2440,7 @@ describe("requestFilesReferenceFiles", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/IGVFFI0000TEST/",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       reference_files: ["/reference-files/ref1/", "/reference-files/ref2/"],
       status: "released",
       uuid: "00000000-0000-0000-0000-000000000000",
@@ -2410,6 +2456,7 @@ describe("requestFilesReferenceFiles", () => {
         content_type: "reference",
         file_format: "fasta",
         file_set: "/file-sets/IGVFFI0000REFS/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
         uuid: "11111111-1111-1111-1111-111111111111",
         creation_timestamp: "2023-12-01T10:00:00.000000+00:00",
@@ -2422,6 +2469,7 @@ describe("requestFilesReferenceFiles", () => {
         content_type: "reference",
         file_format: "fasta",
         file_set: "/file-sets/IGVFFI0000REFS/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
         status: "released",
         uuid: "22222222-2222-2222-2222-222222222222",
         creation_timestamp: "2023-12-01T11:00:00.000000+00:00",
@@ -2461,6 +2509,7 @@ describe("requestFilesReferenceFiles", () => {
       content_type: "reads",
       file_format: "fastq",
       file_set: "/file-sets/IGVFFI0000TEST/",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
       status: "released",
       uuid: "00000000-0000-0000-0000-000000000000",
       creation_timestamp: "2023-11-30T22:47:32.147601+00:00",
@@ -2469,5 +2518,302 @@ describe("requestFilesReferenceFiles", () => {
     const request = new FetchRequest();
     const result = await requestFilesReferenceFiles([file], request);
     expect(result).toEqual([]);
+  });
+});
+
+describe("requestSeqspecFiles", () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+    global.fetch = mockFetch;
+    window.fetch = mockFetch;
+  });
+
+  test("requestSeqspecFiles function with paths in seqspecs", async () => {
+    const seqspecFiles = [
+      {
+        "@id": "/sequence-files/IGVFFI4353EABL/",
+        "@type": ["SequenceFile", "File", "Item"],
+        accession: "IGVFFI4353EABL",
+        content_type: "reads",
+        creation_timestamp: "2024-06-01T01:54:33.198114+00:00",
+        file_format: "fastq",
+        file_set: "/auxiliary-sets/IGVFDS0835JNKZ/",
+        file_size: 24041524,
+        href: "/sequence-files/IGVFFI4353EABL/@@download/IGVFFI4353EABL.fastq.gz",
+        index: "AACGCATT:CCAG",
+        lab: {
+          title: "Jesse Engreitz, Stanford",
+        },
+        seqspecs: ["/configuration-files/IGVFFI6521QYYB/"],
+        sequencing_platform: "/platform-terms/EFO_0008565/",
+        sequencing_run: 1,
+        status: "released",
+        upload_status: "validated",
+      },
+      {
+        "@id": "/sequence-files/IGVFFI2761AOAR/",
+        "@type": ["SequenceFile", "File", "Item"],
+        accession: "IGVFFI2761AOAR",
+        content_type: "reads",
+        creation_timestamp: "2024-06-01T01:24:43.745452+00:00",
+        file_format: "fastq",
+        file_set: "/auxiliary-sets/IGVFDS5389PFCH/",
+        file_size: 5675294,
+        href: "/sequence-files/IGVFFI2761AOAR/@@download/IGVFFI2761AOAR.fastq.gz",
+        index: "GCACATCT:ACGT",
+        lab: {
+          title: "Jesse Engreitz, Stanford",
+        },
+        seqspecs: [],
+        sequencing_platform: "/platform-terms/EFO_0008565/",
+        sequencing_run: 1,
+        status: "released",
+        upload_status: "validated",
+      },
+    ];
+    const mockResult = {
+      "@graph": [
+        {
+          "@id": "/configuration-files/IGVFFI6521QYYB/",
+          "@type": ["ConfigurationFile", "File", "Item"],
+          accession: "IGVFFI6521QYYB",
+          content_type: "seqspec",
+          creation_timestamp: "2024-06-11T20:44:36.652871+00:00",
+          file_format: "yaml",
+          file_set: "/auxiliary-sets/IGVFDS0835JNKZ/",
+          file_size: 914,
+          href: "/configuration-files/IGVFFI6521QYYB/@@download/IGVFFI6521QYYB.yaml.gz",
+          lab: {
+            title: "Jesse Engreitz, Stanford",
+          },
+          status: "released",
+          upload_status: "validated",
+        },
+      ],
+    };
+
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestSeqspecFiles(
+      seqspecFiles as unknown as FileObject[],
+      request
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockResult["@graph"][0]);
+  });
+
+  test("requestSeqspecFiles function with no seqspecs", async () => {
+    const seqspecFiles = [
+      {
+        "@id": "/sequence-files/IGVFFI4353EABL/",
+        "@type": ["SequenceFile", "File", "Item"],
+        accession: "IGVFFI4353EABL",
+        content_type: "reads",
+        creation_timestamp: "2024-06-01T01:54:33.198114+00:00",
+        file_format: "fastq",
+        file_set: "/auxiliary-sets/IGVFDS0835JNKZ/",
+        file_size: 24041524,
+        href: "/sequence-files/IGVFFI4353EABL/@@download/IGVFFI4353EABL.fastq.gz",
+        index: "AACGCATT:CCAG",
+        lab: {
+          title: "Jesse Engreitz, Stanford",
+        },
+        seqspecs: [],
+        sequencing_platform: "/platform-terms/EFO_0008565/",
+        sequencing_run: 1,
+        status: "released",
+        upload_status: "validated",
+      },
+      {
+        "@id": "/sequence-files/IGVFFI2761AOAR/",
+        "@type": ["SequenceFile", "File", "Item"],
+        accession: "IGVFFI2761AOAR",
+        content_type: "reads",
+        creation_timestamp: "2024-06-01T01:24:43.745452+00:00",
+        file_format: "fastq",
+        file_set: "/auxiliary-sets/IGVFDS5389PFCH/",
+        file_size: 5675294,
+        href: "/sequence-files/IGVFFI2761AOAR/@@download/IGVFFI2761AOAR.fastq.gz",
+        index: "GCACATCT:ACGT",
+        lab: {
+          title: "Jesse Engreitz, Stanford",
+        },
+        seqspecs: [],
+        sequencing_platform: "/platform-terms/EFO_0008565/",
+        sequencing_run: 1,
+        status: "released",
+        upload_status: "validated",
+      },
+    ];
+    const request = new FetchRequest();
+    const result = await requestSeqspecFiles(
+      seqspecFiles as unknown as FileObject[],
+      request
+    );
+    expect(result).toHaveLength(0);
+  });
+
+  test("requestSeqspecFiles function with objects in seqspecs", async () => {
+    const seqspecFiles = [
+      {
+        "@id": "/sequence-files/IGVFFI4353EABL/",
+        "@type": ["SequenceFile", "File", "Item"],
+        accession: "IGVFFI4353EABL",
+        content_type: "reads",
+        creation_timestamp: "2024-06-01T01:54:33.198114+00:00",
+        file_format: "fastq",
+        file_set: "/auxiliary-sets/IGVFDS0835JNKZ/",
+        file_size: 24041524,
+        href: "/sequence-files/IGVFFI4353EABL/@@download/IGVFFI4353EABL.fastq.gz",
+        index: "AACGCATT:CCAG",
+        lab: {
+          title: "Jesse Engreitz, Stanford",
+        },
+        seqspecs: [{ "@id": "/configuration-files/IGVFFI6521QYYB/" }],
+        sequencing_platform: "/platform-terms/EFO_0008565/",
+        sequencing_run: 1,
+        status: "released",
+        upload_status: "validated",
+      },
+      {
+        "@id": "/sequence-files/IGVFFI2761AOAR/",
+        "@type": ["SequenceFile", "File", "Item"],
+        accession: "IGVFFI2761AOAR",
+        content_type: "reads",
+        creation_timestamp: "2024-06-01T01:24:43.745452+00:00",
+        file_format: "fastq",
+        file_set: "/auxiliary-sets/IGVFDS5389PFCH/",
+        file_size: 5675294,
+        href: "/sequence-files/IGVFFI2761AOAR/@@download/IGVFFI2761AOAR.fastq.gz",
+        index: "GCACATCT:ACGT",
+        lab: {
+          title: "Jesse Engreitz, Stanford",
+        },
+        seqspecs: [],
+        sequencing_platform: "/platform-terms/EFO_0008565/",
+        sequencing_run: 1,
+        status: "released",
+        upload_status: "validated",
+      },
+    ];
+    const mockResult = {
+      "@context": "/terms/",
+      "@graph": [
+        {
+          "@id": "/configuration-files/IGVFFI6521QYYB/",
+          "@type": ["ConfigurationFile", "File", "Item"],
+          accession: "IGVFFI6521QYYB",
+          content_type: "seqspec",
+          creation_timestamp: "2024-06-11T20:44:36.652871+00:00",
+          file_format: "yaml",
+          file_set: "/auxiliary-sets/IGVFDS0835JNKZ/",
+          file_size: 914,
+          href: "/configuration-files/IGVFFI6521QYYB/@@download/IGVFFI6521QYYB.yaml.gz",
+          lab: {
+            title: "Jesse Engreitz, Stanford",
+          },
+          status: "released",
+          upload_status: "validated",
+        },
+      ],
+      "@id":
+        "/search/?@id=/configuration-files/IGVFFI6521QYYB/&seqspecs!=*&field=accession&field=content_type&field=creation_timestamp&field=file_format&field=file_size&field=file_set&field=flowcell_id&field=href&field=illumina_read_type&field=index&field=lab.title&field=lane&field=seqspecs&field=sequencing_platform&field=sequencing_run&field=status&field=upload_status&limit=2",
+      "@type": ["Search"],
+      clear_filters: "/search/",
+      notification: "Success",
+      title: "Search",
+      total: 1,
+    };
+
+    mockFetch.mockResolvedValueOnce(createMockResponse(mockResult));
+
+    const request = new FetchRequest();
+    const result = await requestSeqspecFiles(
+      seqspecFiles as unknown as FileObject[],
+      request
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(mockResult["@graph"][0]);
+  });
+});
+
+describe("requestSeqspecDocuments function", () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+    global.fetch = mockFetch;
+    window.fetch = mockFetch;
+  });
+
+  test("requestSeqspecDocuments function with a non-embedded seqspec document", async () => {
+    const seqspecFiles: FileObject[] = [
+      {
+        "@id": "/sequence-files/IGVFFI6521QYYB/",
+        "@type": ["SeqspecDocument", "File", "Item"],
+        accession: "IGVFFI6521QYYB",
+        content_type: "seqspec",
+        file_format: "yaml",
+        file_set: "/auxiliary-sets/IGVFDS0835JNKZ/",
+        file_size: 914,
+        href: "/seqspec-documents/IGVFFI6521QYYB/@@download/IGVFFI6521QYYB.yaml.gz",
+        lab: "/labs/j-michael-cherry/",
+        md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+        seqspecs: ["/seqspec-documents/IGVFFI6521QYYB/"],
+        seqspec_document: "/seqspec-documents/IGVFFI6521QYYB/",
+        status: "released",
+        upload_status: "validated",
+      },
+    ];
+
+    const resultSeqspecDocument: DocumentObject[] = [
+      {
+        "@id": "/seqspec-documents/IGVFFI6521QYYB/",
+        "@type": ["SeqspecDocument", "File", "Item"],
+        attachment: {
+          download:
+            "/seqspec-documents/IGVFFI6521QYYB/@@download/IGVFFI6521QYYB.yaml.gz",
+          href: "/seqspec-documents/IGVFFI6521QYYB/@@download/IGVFFI6521QYYB.yaml.gz",
+          type: "application/json",
+          size: 914,
+          md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+          width: 0,
+          height: 0,
+        },
+        description: "Seqspec document for IGVFFI6521QYYB",
+        status: "released",
+      },
+    ];
+
+    // Mock the bulk-search response containing the seqspec document.
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({ "@graph": resultSeqspecDocument })
+    );
+
+    const request = new FetchRequest();
+    const result = await requestSeqspecDocuments(seqspecFiles, request);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(resultSeqspecDocument[0]);
+  });
+
+  test("returns an empty array when the seqspec file has no seqspec document", async () => {
+    const seqspecFile: FileObject = {
+      "@id": "/sequence-files/IGVFFI6521QYYB/",
+      "@type": ["ConfigurationFile", "File", "Item"],
+      accession: "IGVFFI6521QYYB",
+      content_type: "seqspec",
+      file_format: "yaml",
+      file_set: "/auxiliary-sets/IGVFDS0835JNKZ/",
+      file_size: 914,
+      href: "/seqspec-documents/IGVFFI6521QYYB/@@download/IGVFFI6521QYYB.yaml.gz",
+      lab: "/labs/j-michael-cherry/",
+      md5sum: "d41d8cd98f00b204e9800998ecf8427e",
+      status: "released",
+    };
+
+    const request = new FetchRequest();
+    const result = await requestSeqspecDocuments([seqspecFile], request);
+
+    expect(result).toEqual([]);
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 });

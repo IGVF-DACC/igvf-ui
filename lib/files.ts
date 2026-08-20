@@ -2,6 +2,7 @@
 import _ from "lodash";
 // lib
 import {
+  requestDocuments,
   requestFiles,
   requestFileSets,
   requestQualityMetrics,
@@ -15,6 +16,7 @@ import {
 import {
   isDatabaseObjectArrayOfType,
   isDatabaseObjectOfType,
+  pathsFromDatabaseObjects,
 } from "./database-object";
 import type FetchRequest from "./fetch-request";
 import { type QualityMetricObject } from "./quality-metric";
@@ -22,7 +24,12 @@ import { type FileSetObject } from "./file-sets";
 import { type SampleObject } from "./samples";
 import { isEmbedded, isPath, isPathArray } from "./types";
 // root
-import type { DatabaseObject, FileObject, UploadStatus } from "../globals";
+import type {
+  DatabaseObject,
+  DocumentObject,
+  FileObject,
+  UploadStatus,
+} from "../globals";
 
 /**
  * Flag indicating a missing flowcell ID in a sequencing file group. Uses "z" to ensure
@@ -548,5 +555,66 @@ export async function requestFilesReferenceFiles(
 
   return referenceFilePaths.length > 0
     ? await requestFiles(referenceFilePaths, request)
+    : [];
+}
+
+/**
+ * Files can contain seqspec paths or partial embedded objects. This function retrieves the seqspec
+ * files referenced by the given files for both cases.
+ *
+ * @param files Files potentially containing seqspec paths or objects to request
+ * @param request The request object to use to make the request
+ * @returns seqspec files requested; [] if no seqspec files found
+ */
+export async function requestSeqspecFiles(
+  files: FileObject[],
+  request: FetchRequest
+): Promise<FileObject[]> {
+  let seqspecFiles: FileObject[] = [];
+  if (files.length > 0) {
+    const seqspecPaths: string[] = files.reduce((acc: string[], file) => {
+      const fileSeqspecs = file.seqspecs as string[] | undefined;
+      if (fileSeqspecs && fileSeqspecs.length > 0) {
+        // File schemas define seqspecs as either an array of @ids or partial embedded
+        // configuration-file objects. If the latter, extract the @id paths from each object.
+        const paths: string[] =
+          typeof fileSeqspecs[0] === "string"
+            ? fileSeqspecs
+            : (fileSeqspecs as unknown as DatabaseObject[]).map(
+                (seqspec) => seqspec["@id"]
+              );
+        return [...acc, ...paths];
+      }
+      return acc;
+    }, []);
+    const uniqueSeqspecPaths = [...new Set(seqspecPaths)];
+    seqspecFiles =
+      uniqueSeqspecPaths.length > 0
+        ? await requestFiles(uniqueSeqspecPaths, request)
+        : [];
+  }
+  return seqspecFiles;
+}
+
+/**
+ * Given an array of files, retrieve all seqspec documents from those files' `seqspec_document`
+ * property.
+ *
+ * @param files - Files from which to retrieve seqspec documents
+ * @param request - FetchRequest instance
+ * @returns Seqspec documents requested; [] if no seqspec documents found
+ */
+export async function requestSeqspecDocuments(
+  files: FileObject[],
+  request: FetchRequest
+): Promise<DocumentObject[]> {
+  const seqspecDocumentPaths = files.flatMap((file) =>
+    pathsFromDatabaseObjects(
+      file.seqspec_document ? [file.seqspec_document] : []
+    )
+  );
+  const uniquePaths = [...new Set(seqspecDocumentPaths)];
+  return uniquePaths.length > 0
+    ? await requestDocuments(uniquePaths, request)
     : [];
 }

@@ -211,10 +211,14 @@ export interface MeasurementSetObject extends FileSetObject {
   enrichment_designs?: LinkToArray<FileObject>;
   external_image_urls?: string[];
   file_sets?: LinkToArray<FileSetObject>;
+  functional_assay_mechanisms?: LinkToArray<PhenotypeTermObject>;
+  library_preparation_kit?: string;
   multiome_size?: number;
   preferred_assay_titles?: string[];
   protocols?: string[];
   related_measurement_sets?: RelatedMeasurementSet[];
+  sequencing_library_types?: string[];
+  strand_specificity?: string;
   targeted_genes?: LinkToArray<GeneObject>;
 }
 
