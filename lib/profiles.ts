@@ -22,7 +22,6 @@ export type SearchMode = "SEARCH_MODE_TITLE" | "SEARCH_MODE_PROPERTIES";
  * Loads the schemas for all object types, with each key of the object being the @type for each
  * schema.
  *
- * @param dataProviderUrl URL of the data provider instance
  * @returns Promise that resolves to the /profiles object
  */
 export async function getProfiles(): Promise<Profiles | null> {

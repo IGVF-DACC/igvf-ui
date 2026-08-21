@@ -241,6 +241,7 @@ export interface PredictionSetObject extends FileSetObject {
   cell_type?: LinkTo<OntologyTermObject>;
   dbxrefs?: string[];
   doi?: string;
+  file_set_type: string;
   file_sets?: LinkToArray<FileSetObject>;
   input_file_sets?: LinkToArray<FileSetObject>;
   large_scale_gene_list?: LinkTo<FileObject>;
