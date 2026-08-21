@@ -12,6 +12,16 @@ describe("Test the conversion of dbxref strings to links", () => {
     expect(dbxrefElements[0]).toHaveAttribute("href", expected);
   });
 
+  it("converts CHEBI dbxrefs to links correctly", () => {
+    const dbxrefs = ["CHEBI:12345"];
+    const expected = "https://www.ebi.ac.uk/chebi/CHEBI:12345";
+
+    render(<DbxrefList dbxrefs={dbxrefs} />);
+    const dbxrefElements = screen.getAllByRole("link");
+    expect(dbxrefElements).toHaveLength(1);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
+  });
+
   it("converts DepMap dbxrefs to links correctly", () => {
     const dbxrefs = ["DepMap:ACH-123456"];
     const expected = "https://depmap.org/portal/cell_line/ACH-123456";
@@ -124,6 +134,17 @@ describe("Test the conversion of dbxref strings to links", () => {
     const dbxrefs = ["miRBase:MI0000252"];
     const expected =
       "http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc=MI0000252";
+
+    render(<DbxrefList dbxrefs={dbxrefs} />);
+    const dbxrefElements = screen.getAllByRole("link");
+    expect(dbxrefElements).toHaveLength(1);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
+  });
+
+  it("converts NCIT dbxrefs to links correctly", () => {
+    const dbxrefs = ["NCIT:C1234"];
+    const expected =
+      "https://evsexplore.semantics.cancer.gov/evsexplore/concept/ncit/C1234";
 
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
