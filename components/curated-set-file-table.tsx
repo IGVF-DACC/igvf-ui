@@ -1,11 +1,10 @@
 // node_modules
 import { TableCellsIcon } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 // components
 import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
-import { DataAreaTitle, DataAreaTitleLink } from "./data-area";
+import { DataAreaTitle, DataPanel, DataAreaTitleLink } from "./data-area";
 import { DeprecatedFileFilterControl } from "./deprecated-files";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
@@ -13,17 +12,21 @@ import {
   imageFileHasThumbnail,
   ImageFileThumbnailAndPreview,
 } from "./image-file-thumbnail";
-import SortableGrid from "./sortable-grid";
+import SortableGrid, { type SortableGridConfig } from "./sortable-grid";
 import Status from "./status";
 // lib
 import { FileTableController } from "../lib/batch-download";
+import { isDatabaseObject } from "../lib/database-object";
 import {
   computeFileDisplayData,
   resolveDeprecatedFileProps,
 } from "../lib/deprecated-files";
+import { type FileSetObject } from "../lib/file-sets";
 import { dataSize, truthyOrZero } from "../lib/general";
+// root
+import type { FileObject } from "../globals";
 
-const filesColumns = [
+const filesColumns: SortableGridConfig<FileObject>[] = [
   {
     id: "accession",
     title: "Accession",
@@ -74,8 +77,12 @@ const filesColumns = [
   {
     id: "lab",
     title: "Lab",
-    display: ({ source }) => source.lab?.title,
-    sorter: (item) => (item.lab ? item.lab.title.toLowerCase() : "z"),
+    display: ({ source }) =>
+      isDatabaseObject(source.lab) ? source.lab.title : null,
+    sorter: (item) =>
+      isDatabaseObject(item.lab) && item.lab.title
+        ? item.lab.title.toLowerCase()
+        : "z",
   },
   {
     id: "file_size",
@@ -99,17 +106,26 @@ const filesColumns = [
 
 /**
  * Display a sortable table of the given files.
+ *
+ * @param files - List of file objects to display in the table
+ * @param fileSet - File set object associated with the files
+ * @param title - Optional title for the table
+ * @param defaultDeprecatedVisible - Optional flag to control the default visibility of deprecated
+ *                                   files
+ * @param panelId - Optional ID for the panel containing the table
  */
 export function CuratedSetFileTable({
   files,
-  fileSet = null,
+  fileSet,
   title = "Files",
-  reportLink = "",
-  reportLabel = "",
-  downloadQuery = null,
-  controllerContent = null,
   defaultDeprecatedVisible = false,
   panelId = "files",
+}: {
+  files: FileObject[];
+  fileSet: FileSetObject;
+  title?: ReactNode;
+  defaultDeprecatedVisible?: boolean;
+  panelId?: string;
 }) {
   // Local state for deprecated file visibility if not controlled externally via props
   const [deprecatedVisible, setDeprecatedVisible] = useState(
@@ -125,19 +141,13 @@ export function CuratedSetFileTable({
   });
 
   // Compose the report link, either from the file set or the given link and label.
-  const finalReportLink = fileSet
-    ? `/multireport/?type=File&file_set.@id=${encodeURIComponent(
-        fileSet["@id"]
-      )}`
-    : reportLink;
-  const label = fileSet
-    ? "Report of files that have this item as their file set"
-    : reportLabel;
+  const finalReportLink = `/multireport/?type=File&file_set.@id=${encodeURIComponent(
+    fileSet["@id"]
+  )}`;
+  const label = "Report of files that have this item as their file set";
 
   // Create a batch-download controller if a file set is provided.
-  const controller = fileSet
-    ? new FileTableController(fileSet, downloadQuery)
-    : null;
+  const controller = new FileTableController(fileSet);
 
   // Filter out deprecated files if the user has not opted to include them.
   const { visibleFiles, showDeprecatedToggle } = computeFileDisplayData(
@@ -164,7 +174,6 @@ export function CuratedSetFileTable({
                 size="sm"
               />
             )}
-            {controllerContent}
             {finalReportLink && (
               <DataAreaTitleLink
                 href={finalReportLink}
@@ -178,34 +187,22 @@ export function CuratedSetFileTable({
           </div>
         )}
       </DataAreaTitle>
-      <div className="overflow-hidden">
-        <SortableGrid
-          data={visibleFiles}
-          columns={filesColumns}
-          keyProp="@id"
-        />
-      </div>
+      {visibleFiles.length === 0 ? (
+        <DataPanel>
+          <div className="text-center italic">
+            No files to display. Select <b>Include deprecated files</b> to view
+            these deprecated files.
+          </div>
+        </DataPanel>
+      ) : (
+        <div className="overflow-hidden">
+          <SortableGrid
+            data={visibleFiles}
+            columns={filesColumns}
+            keyProp="@id"
+          />
+        </div>
+      )}
     </>
   );
 }
-
-CuratedSetFileTable.propTypes = {
-  // Files to display
-  files: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // FileSet object containing these files; used for report link and batch download
-  fileSet: PropTypes.object,
-  // Title for the table; can be a string or a React component
-  title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  // Full report link for file tables not on FileSet pages, i.e. without `fileSet`
-  reportLink: PropTypes.string,
-  // Label for the report link for file tables not on FileSet pages, i.e. without `fileSet`
-  reportLabel: PropTypes.string,
-  // Extra query parameters for downloading files, if needed
-  downloadQuery: PropTypes.object,
-  // Extra text or JSX content for the batch download controller
-  controllerContent: PropTypes.node,
-  // Default visibility for deprecated files
-  defaultDeprecatedVisible: PropTypes.bool,
-  // Unique ID for the table for the section directory
-  panelId: PropTypes.string,
-};
