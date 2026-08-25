@@ -358,10 +358,12 @@ export default function AnalysisSet({
                   </DataItemList>
                 </>
               )}
-              {analysisSet.sample_summary && (
+              {analysisSet.simplified_sample_summary && (
                 <>
                   <DataItemLabel>Samples</DataItemLabel>
-                  <DataItemValue>{analysisSet.sample_summary}</DataItemValue>
+                  <DataItemValue>
+                    {analysisSet.simplified_sample_summary}
+                  </DataItemValue>
                 </>
               )}
               {analysisSet.protocols?.length > 0 && (
