@@ -1639,14 +1639,14 @@ describe("Test the AnalysisSet component", () => {
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders an AnalysisSet item with sample_summary", () => {
+  it("renders an AnalysisSet item with simplified_sample_summary", () => {
     const item = {
       "@id": "/analysis-sets/IGVFDS0390NOLS/",
       "@type": ["AnalysisSet", "FileSet", "Item"],
       accession: "IGVFDS0390NOLS",
       aliases: ["igvf:basic_analysis_set_2"],
       award: "/awards/HG012012/",
-      sample_summary:
+      simplified_sample_summary:
         "Homo sapiens lung tissue, transfected with a reporter library",
       file_set_type: "primary analysis",
       files: [],

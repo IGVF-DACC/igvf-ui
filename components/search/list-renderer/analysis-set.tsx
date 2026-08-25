@@ -55,7 +55,7 @@ export default function AnalysisSet({
   const isSupplementsVisible =
     analysisSet.alternate_accessions ||
     analysisSet.description ||
-    analysisSet.sample_summary ||
+    analysisSet.simplified_sample_summary ||
     fileContentType.length > 0 ||
     isUniformPipeline;
 
@@ -88,13 +88,13 @@ export default function AnalysisSet({
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {analysisSet.sample_summary && (
+            {analysisSet.simplified_sample_summary && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Samples
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  {analysisSet.sample_summary}
+                  {analysisSet.simplified_sample_summary}
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}

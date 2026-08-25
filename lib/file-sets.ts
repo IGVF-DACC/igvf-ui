@@ -139,7 +139,7 @@ export interface AnalysisSetObject extends FileSetObject {
   pipeline_parameters?: LinkToArray<FileObject | DocumentObject>;
   preferred_assay_titles?: string[];
   protocols?: string[];
-  sample_summary?: string;
+  simplified_sample_summary?: string;
   targeted_genes?: LinkToArray<GeneObject>;
   uniform_pipeline_status?: UniformPipelineStatusValues;
   workflows?: LinkToArray<WorkflowObject>;
