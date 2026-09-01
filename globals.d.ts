@@ -544,12 +544,15 @@ export interface PublicationObject extends DatabaseObject {
  * Data structure common to all software object types.
  */
 export interface SoftwareObject extends DatabaseObject {
+  aliases?: string[];
   categories?: string[];
   description: string;
   name: string;
-  publications?: PublicationObject[];
+  publications?: LinkToArray<PublicationObject>;
   source_url: string;
   title: string;
+  used_by?: string[];
+  versions?: LinkToArray<SoftwareVersionObject>;
 }
 
 /**

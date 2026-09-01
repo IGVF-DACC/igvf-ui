@@ -40,6 +40,7 @@ import type {
   TreatmentObject,
   UserObject,
 } from "../globals";
+import { isPathArray } from "./types";
 
 /**
  * Retrieve the analysis step objects for the given analysis step paths from the data provider.
@@ -97,14 +98,19 @@ export async function requestAnalysisStepVersions(
 
 /**
  * Retrieve the award objects for the given award paths from the data provider.
- * @param {Array<string>} paths Paths to the award objects to request
- * @param {FetchRequest} request The request object to use to make the request
- * @returns {Array<object>} The award objects requested
+ *
+ * @param paths - Paths to the award objects to request
+ * @param request - Request object to use to make the request
+ * @returns Award objects requested
  */
 export async function requestAwards(
   paths: string[],
   request: FetchRequest
 ): Promise<AwardObject[]> {
+  if (!isPathArray(paths)) {
+    return [];
+  }
+
   return (
     await request.getMultipleObjectsBulk<AwardObject>(
       paths,
@@ -224,17 +230,22 @@ export async function requestFiles(
 
 /**
  * Retrieve the lab objects for the given lab paths from the data provider.
+ *
  * @param paths - Paths to the lab objects to request
- * @param request - The request object to use to make the request
- * @returns The lab objects requested
+ * @param request - Request object to use to make the request
+ * @returns Lab objects requested
  */
 export async function requestLabs(
   paths: string[],
   request: FetchRequest
 ): Promise<LabObject[]> {
+  if (paths.length === 0) {
+    return [];
+  }
+
   return (
-    await request.getMultipleObjectsBulk(paths, ["title"], ["Lab"])
-  ).unwrap_or([]) as LabObject[];
+    await request.getMultipleObjectsBulk<LabObject>(paths, ["title"], ["Lab"])
+  ).unwrap_or([]);
 }
 
 /**
@@ -455,13 +466,17 @@ export async function requestSamples(
  * Retrieve the software objects for the given paths from the data provider.
  *
  * @param paths - Paths to the software objects to request
- * @param request - The request object to use to make the request
- * @returns The software version objects requested
+ * @param request - Request object to use to make the request
+ * @returns Software version objects requested
  */
 export async function requestSoftware(
   paths: string[],
   request: FetchRequest
 ): Promise<SoftwareObject[]> {
+  if (!isPathArray(paths)) {
+    return [];
+  }
+
   return (
     await request.getMultipleObjectsBulk<SoftwareObject>(
       paths,
@@ -491,10 +506,14 @@ export async function requestSoftwareVersions(
   paths: string[],
   request: FetchRequest
 ): Promise<SoftwareVersionObject[]> {
+  if (!isPathArray(paths)) {
+    return [];
+  }
+
   return (
     await request.getMultipleObjectsBulk<SoftwareVersionObject>(
       paths,
-      ["downloaded_url", "name", "status", "version"],
+      ["name", "status", "source_url", "version"],
       ["SoftwareVersion"]
     )
   ).unwrap_or([]);
@@ -586,13 +605,17 @@ export async function requestWorkflows(
  * Retrieve the publication objects for the given paths from the data provider.
  *
  * @param paths - Paths to the publication objects to request
- * @param request - The request object to use to make the request
- * @returns The publication objects requested, or an empty array if none found
+ * @param request - Request object to use to make the request
+ * @returns publication objects requested, or an empty array if none found
  */
 export async function requestPublications(
   paths: string[],
   request: FetchRequest
 ): Promise<PublicationObject[]> {
+  if (!isPathArray(paths)) {
+    return [];
+  }
+
   return (
     await request.getMultipleObjectsBulk<PublicationObject>(
       paths,

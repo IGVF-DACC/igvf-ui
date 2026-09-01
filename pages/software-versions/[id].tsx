@@ -1,5 +1,8 @@
 // node_modules
-import PropTypes from "prop-types";
+import {
+  type GetServerSidePropsContext,
+  type GetServerSidePropsResult,
+} from "next";
 // components
 import AliasList from "../../components/alias-list";
 import Attribution from "../../components/attribution";
@@ -22,17 +25,41 @@ import { StatusPreviewDetail } from "../../components/status";
 // lib
 import buildAttribution from "../../lib/attribution";
 import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
-import { requestPublications } from "../../lib/common-requests";
+import {
+  requestPublications,
+  requestSoftware,
+} from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { isJsonFormat } from "../../lib/query-utils";
+import { PageProps } from "../../lib/next-js";
+// root
+import type {
+  PublicationObject,
+  SoftwareObject,
+  SoftwareVersionObject,
+} from "../../globals";
+import { pathsFromDatabaseObjects } from "../../lib/database-object";
+
+/**
+ * Props for the software version page component.
+ *
+ * @property softwareVersion - Software version object to display
+ * @property publications - Publications associated with the software version
+ */
+interface SoftwareVersionPageProps extends PageProps {
+  softwareVersion: SoftwareVersionObject;
+  software: SoftwareObject;
+  publications: PublicationObject[];
+}
 
 export default function SoftwareVersion({
   softwareVersion,
+  software,
   publications,
   attribution = null,
   isJson,
-}) {
+}: SoftwareVersionPageProps) {
   const sections = useSecDir({ isJson });
 
   return (
@@ -46,11 +73,11 @@ export default function SoftwareVersion({
           <DataPanel>
             <DataArea>
               <DataItemLabel>Software</DataItemLabel>
-              <DataItemValue>
-                <Link href={softwareVersion.software["@id"]}>
-                  {softwareVersion.software.title}
-                </Link>
-              </DataItemValue>
+              {software && (
+                <DataItemValue>
+                  <Link href={software["@id"]}>{software.title}</Link>
+                </DataItemValue>
+              )}
               {softwareVersion.description && (
                 <>
                   <DataItemLabel>Description</DataItemLabel>
@@ -108,22 +135,20 @@ export default function SoftwareVersion({
   );
 }
 
-SoftwareVersion.propTypes = {
-  // Software Version object to display
-  softwareVersion: PropTypes.object.isRequired,
-  // Publications associated with this software version
-  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Attribution for this software version
-  attribution: PropTypes.object,
-  // Is the format JSON?
-  isJson: PropTypes.bool.isRequired,
-};
-
-export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+  resolvedUrl,
+}: GetServerSidePropsContext<{ id: string }>): Promise<
+  GetServerSidePropsResult<SoftwareVersionPageProps>
+> {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const softwareVersion = (
-    await request.getObject(`/software-versions/${params.id}/`)
+    await request.getObject<SoftwareVersionObject>(
+      `/software-versions/${params.id}/`
+    )
   ).union();
   if (FetchRequest.isResponseSuccess(softwareVersion)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
@@ -135,31 +160,26 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       return canonicalRedirect;
     }
 
-    const award = (
-      await request.getObject(softwareVersion.award["@id"])
-    ).optional();
-    const lab = (
-      await request.getObject(softwareVersion.lab["@id"])
-    ).optional();
+    const [software] = await requestSoftware(
+      pathsFromDatabaseObjects([softwareVersion.software]),
+      request
+    );
 
-    let publications = [];
-    if (softwareVersion.publications?.length > 0) {
-      const publicationPaths = softwareVersion.publications.map(
-        (publication) => publication["@id"]
-      );
-      publications = await requestPublications(publicationPaths, request);
-    }
+    const publications = await requestPublications(
+      pathsFromDatabaseObjects(softwareVersion.publications),
+      request
+    );
 
     const attribution = await buildAttribution(
       softwareVersion,
       req.headers.cookie
     );
+
     return {
       props: {
         softwareVersion,
+        software,
         publications,
-        award,
-        lab,
         pageContext: { title: softwareVersion.summary },
         attribution,
         isJson,
