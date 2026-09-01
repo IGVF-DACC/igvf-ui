@@ -821,7 +821,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFetch).toHaveBeenCalledWith(
-      "/search-quick/?type=SoftwareVersion&field=name&field=status&field=source_url&field=version&@id=/software-versions/bowtie2-v2.4.4/&limit=1",
+      "/search-quick/?type=SoftwareVersion&field=name&field=source_url&field=status&field=version&@id=/software-versions/bowtie2-v2.4.4/&limit=1",
       expect.anything()
     );
     expect(result).toHaveLength(1);

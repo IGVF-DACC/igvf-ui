@@ -466,12 +466,15 @@ export async function requestSamples(
  * Retrieve the software objects for the given paths from the data provider.
  *
  * @param paths - Paths to the software objects to request
- * @param request - Request object to use to make the request
- * @returns Software version objects requested
+ * @param request - The request object to use to make the request
+ * @param additionalProperties - Additional properties to include in the request for each
+ *                               software object
+ * @returns The software objects requested
  */
 export async function requestSoftware(
   paths: string[],
-  request: FetchRequest
+  request: FetchRequest,
+  additionalProperties: string[] = []
 ): Promise<SoftwareObject[]> {
   if (!isPathArray(paths)) {
     return [];
@@ -488,6 +491,7 @@ export async function requestSoftware(
         "source_url",
         "status",
         "title",
+        ...additionalProperties,
       ],
       ["Software"]
     )
@@ -500,11 +504,14 @@ export async function requestSoftware(
  *
  * @param paths - Paths to the software-version objects to request
  * @param request - The request object to use to make the request
+ * @param additionalProperties - Additional properties to include in the request for each
+ *                               software-version object
  * @returns The software version objects requested
  */
 export async function requestSoftwareVersions(
   paths: string[],
-  request: FetchRequest
+  request: FetchRequest,
+  additionalProperties: string[] = []
 ): Promise<SoftwareVersionObject[]> {
   if (!isPathArray(paths)) {
     return [];
@@ -513,7 +520,7 @@ export async function requestSoftwareVersions(
   return (
     await request.getMultipleObjectsBulk<SoftwareVersionObject>(
       paths,
-      ["name", "status", "source_url", "version"],
+      ["name", "source_url", "status", "version", ...additionalProperties],
       ["SoftwareVersion"]
     )
   ).unwrap_or([]);

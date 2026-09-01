@@ -133,6 +133,20 @@
   --color-toc-nav-header: oklch(0.436 0.0412 186.63);
   --color-toc-nav-header-label: oklch(0.436 0.0412 186.63);
   --color-toc-nav-outline: oklch(0.436 0.0412 186.63);
+
+  /** Predictive modeling page styles */
+  --color-predmod-sec-heading: oklch(0.436 0.0412 186.63);
+  --color-predmod-sec-subheading: oklch(0.551 0.027 264.364);
+  --color-predmod-sw-title: oklch(0.3672 0.0753 251.94);
+  --color-predmod-sw-description: oklch(0.551 0.027 264.364);
+  --color-predmod-sw-hover: oklch(0.9341 0.0185 227.68);
+  --color-predmod-repo: oklch(1 0 0);
+  --color-predmod-repo-hover: oklch(
+    from var(--color-predmod-sw-hover) calc(l - 0.1) c h
+  );
+  --color-predmod-repo-outline: oklch(87.2% 0.01 258.338);
+  --color-predmod-repo-count: oklch(0.7292 0.0753 251.94);
+  --color-predmod-repo-count-label: oklch(1 0 0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -178,6 +192,20 @@
     --color-toc-nav-header: oklch(0.3587 0.0412 186.63);
     --color-toc-nav-header-label: oklch(0.6114 0.0412 186.63);
     --color-toc-nav-outline: oklch(0.3587 0.0412 186.63);
+
+    /** Predictive modeling page styles */
+    --color-predmod-sec-heading: oklch(0.6246 0.062 185.99);
+    --color-predmod-sec-subheading: oklch(70.7% 0.022 261.325);
+    --color-predmod-sw-title: oklch(0.7292 0.0753 251.94);
+    --color-predmod-sw-description: oklch(70.7% 0.022 261.325);
+    --color-predmod-sw-hover: oklch(0.2861 0.0376 227.68);
+    --color-predmod-repo: oklch(0 0 0);
+    --color-predmod-repo-hover: oklch(
+      from var(--color-predmod-sw-hover) calc(l + 0.1) c h
+    );
+    --color-predmod-repo-outline: oklch(37.3% 0.034 259.733);
+    --color-predmod-repo-count: oklch(0.4374 0.0753 251.94);
+    --color-predmod-repo-count-label: oklch(1 0 0);
   }
 }
 

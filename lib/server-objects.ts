@@ -23,6 +23,11 @@ const COLLECTION_TITLES_KEY = "collection-titles";
 const COLLECTION_NAMES_KEY = "collection-names";
 
 /**
+ * Time-to-live for the profiles object in the server cache in seconds.
+ */
+const PROFILE_CACHE_TTL = 60 * 15; // 15 minutes
+
+/**
  * Retrieve the profiles object either from the server cache or by fetching it from the data
  * provider. Profiles from the data provider get cached. Only call this function from code running
  * on the NextJS server.
@@ -31,7 +36,12 @@ const COLLECTION_NAMES_KEY = "collection-names";
  * @returns Promise that resolves to the profiles object; null if something went wrong
  */
 export async function retrieveProfiles(cookie = ""): Promise<Profiles | null> {
-  return await getObjectCached<Profiles>(cookie, PROFILES_KEY, "/profiles/");
+  return await getObjectCached<Profiles>(
+    cookie,
+    PROFILES_KEY,
+    "/profiles/",
+    PROFILE_CACHE_TTL
+  );
 }
 
 /**
