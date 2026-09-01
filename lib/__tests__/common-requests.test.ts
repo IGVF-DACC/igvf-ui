@@ -804,7 +804,7 @@ describe("Test all the common requests", () => {
         {
           "@id": "/software-versions/bowtie2-v2.4.4/",
           "@type": ["SoftwareVersion", "Item"],
-          downloaded_url:
+          source_url:
             "https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.4.4/",
           name: "bowtie2-v2.4.4",
           status: "released",
@@ -821,11 +821,32 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFetch).toHaveBeenCalledWith(
-      "/search-quick/?type=SoftwareVersion&field=downloaded_url&field=name&field=status&field=version&@id=/software-versions/bowtie2-v2.4.4/&limit=1",
+      "/search-quick/?type=SoftwareVersion&field=name&field=source_url&field=status&field=version&@id=/software-versions/bowtie2-v2.4.4/&limit=1",
       expect.anything()
     );
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual(mockResult["@graph"][0]);
+  });
+
+  test("requestSoftwareVersions function returns empty array with no paths", async () => {
+    const request = new FetchRequest();
+    const result = await requestSoftwareVersions([], request);
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
+  });
+
+  test.each([
+    ["requestAwards", requestAwards],
+    ["requestLabs", requestLabs],
+    ["requestSoftware", requestSoftware],
+    ["requestPublications", requestPublications],
+  ])("%s returns empty array with no paths", async (_name, requestObjects) => {
+    const request = new FetchRequest();
+    const result = await requestObjects([], request);
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
   });
 
   test("requestTreatments function", async () => {

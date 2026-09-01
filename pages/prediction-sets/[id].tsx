@@ -151,7 +151,9 @@ export default function PredictionSet({
     isDeprecatedStatus(predictionSet.status)
   );
 
-  // Combine all sample-associated terms to pass to the SampleAnnotatedSummary component, ensuring that if the pseudobulk set has a cell type, it is included as a term (since the cell annotation may reference the cell type), along with all terms from the samples.
+  // Combine all sample-associated terms to pass to the SampleAnnotatedSummary component, ensuring
+  // that if the pseudobulk set has a cell type, it is included as a term (since the cell annotation
+  // may reference the cell type), along with all terms from the samples.
   const allSampleTerms = isEmbedded(predictionSet.cell_type)
     ? [predictionSet.cell_type, ...samplesTerms]
     : samplesTerms;

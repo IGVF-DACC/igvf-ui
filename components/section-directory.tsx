@@ -106,7 +106,7 @@ type SectionItem = {
  * React component to render each item in the section directory menu. This allows you to customize
  * the appearance of each item in the menu.
  */
-type RendererComponent = React.ComponentType<{
+export type SecMenuItemRenderer = React.ComponentType<{
   section: SectionItem;
   allSections: SectionItem[];
 }>;
@@ -116,7 +116,7 @@ type RendererComponent = React.ComponentType<{
  */
 export type SectionList = {
   items: SectionItem[];
-  renderer?: RendererComponent;
+  renderer?: SecMenuItemRenderer;
 };
 
 /**
@@ -327,7 +327,7 @@ export function useSecDir({
   hash = "",
   isJson,
 }: {
-  renderer?: RendererComponent;
+  renderer?: SecMenuItemRenderer;
   hash?: string;
   isJson?: boolean;
 } = {}): SectionList {

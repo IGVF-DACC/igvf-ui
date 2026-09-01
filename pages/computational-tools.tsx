@@ -104,6 +104,15 @@ function generateRowsInCategory(
   publications: PublicationObject[]
 ): Row[] {
   return items.map((item) => {
+    const softwarePublications = publications.filter((publication) =>
+      item.publications?.some((softwarePublication) => {
+        if (typeof softwarePublication === "string") {
+          return softwarePublication === publication["@id"];
+        }
+        return softwarePublication["@id"] === publication["@id"];
+      })
+    );
+
     const titleAsId = toShishkebabCase(item.title);
 
     return {
@@ -135,7 +144,7 @@ function generateRowsInCategory(
           id: `${titleAsId}-references`,
           content: (
             <PublicationCell
-              softwarePublications={item.publications}
+              softwarePublications={softwarePublications}
               publications={publications}
             />
           ),
