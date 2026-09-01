@@ -1,5 +1,8 @@
 // node_modules
-import PropTypes from "prop-types";
+import {
+  type GetServerSidePropsContext,
+  type GetServerSidePropsResult,
+} from "next";
 // components
 import AliasList from "../../components/alias-list";
 import Attribution from "../../components/attribution";
@@ -30,7 +33,28 @@ import {
 } from "../../lib/common-requests";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import type { PageProps } from "../../lib/next-js";
 import { isJsonFormat } from "../../lib/query-utils";
+// root
+import type {
+  PublicationObject,
+  SoftwareObject,
+  SoftwareVersionObject,
+} from "../../globals";
+import { pathsFromDatabaseObjects } from "../../lib/database-object";
+
+/**
+ * Props to render the software object summary page.
+ *
+ * @property software - Software object to display
+ * @property publications - Publications associated with the software object
+ * @property versions - Software versions associated with the software object
+ */
+interface SoftwarePageProps extends PageProps {
+  software: SoftwareObject;
+  publications: PublicationObject[];
+  versions: SoftwareVersionObject[];
+}
 
 export default function Software({
   software,
@@ -38,7 +62,7 @@ export default function Software({
   versions,
   attribution = null,
   isJson,
-}) {
+}: SoftwarePageProps) {
   const sections = useSecDir({ isJson });
 
   return (
@@ -104,30 +128,26 @@ export default function Software({
             </DataArea>
           </DataPanel>
 
-          {versions?.length > 0 && <SoftwareVersionTable versions={versions} />}
+          {versions.length > 0 && <SoftwareVersionTable versions={versions} />}
         </JsonDisplay>
       </EditableItem>
     </>
   );
 }
 
-Software.propTypes = {
-  // Software object to display
-  software: PropTypes.object.isRequired,
-  // Publications associated with this software
-  publications: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Software versions associated with this software
-  versions: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // Attribution for this software
-  attribution: PropTypes.object,
-  // Is the format JSON?
-  isJson: PropTypes.bool.isRequired,
-};
-
-export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+  resolvedUrl,
+}: GetServerSidePropsContext<{ id: string }>): Promise<
+  GetServerSidePropsResult<SoftwarePageProps>
+> {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const software = (await request.getObject(`/software/${params.id}/`)).union();
+  const software = (
+    await request.getObject<SoftwareObject>(`/software/${params.id}/`)
+  ).union();
   if (FetchRequest.isResponseSuccess(software)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
       software,
@@ -138,29 +158,22 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       return canonicalRedirect;
     }
 
-    const award = (await request.getObject(software.award["@id"])).optional();
-    const lab = (await request.getObject(software.lab["@id"])).optional();
+    const versions = await requestSoftwareVersions(
+      pathsFromDatabaseObjects(software.versions),
+      request
+    );
 
-    const versions =
-      software.versions?.length > 0
-        ? await requestSoftwareVersions(software.versions, request)
-        : [];
-
-    let publications = [];
-    if (software.publications?.length > 0) {
-      const publicationPaths = software.publications.map(
-        (publication) => publication["@id"]
-      );
-      publications = await requestPublications(publicationPaths, request);
-    }
+    const publications = await requestPublications(
+      pathsFromDatabaseObjects(software.publications),
+      request
+    );
 
     const attribution = await buildAttribution(software, req.headers.cookie);
+
     return {
       props: {
         software,
         publications,
-        award,
-        lab,
         versions,
         pageContext: { title: software.title },
         attribution,
