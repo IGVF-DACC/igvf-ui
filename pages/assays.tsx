@@ -18,13 +18,19 @@ import {
   arbitraryTypeToText,
   toShishkebabCase,
 } from "../lib/general";
-import { type ColumnMap, generateMatrixColumnMap } from "../lib/matrix";
+import {
+  generateMatrixColumnMap,
+  getMatrixBucketWrapper,
+  type ColumnMap,
+  type MatrixResults,
+  type MatrixResultsObject,
+} from "../lib/matrix";
 import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
 } from "../lib/ontology-terms";
 // root
-import type { MatrixResults, MatrixResultsObject, Profiles } from "../globals";
+import type { Profiles } from "../globals";
 
 /**
  * List of sample classifications that should be hidden from the matrix data.
@@ -284,14 +290,14 @@ function convertMatrixToDataTable(
   const xProp = matrix.x.group_by as string;
   const [yProp0, yProp1, yProp2] = matrix.y.group_by as string[];
   const columnMap = generateMatrixColumnMap(
-    matrix.x[xProp].buckets,
+    getMatrixBucketWrapper(matrix.x, xProp).buckets,
     hiddenClassifications
   );
 
   // Generate the data rows for the table, one row with child rows for each term category. Use a
   // `forEach` loop instead of `map` so we can insert total-count rows after each term category row.
   const dataRows = [];
-  matrix.y[yProp0].buckets.forEach((bucket0) => {
+  getMatrixBucketWrapper(matrix.y, yProp0).buckets.forEach((bucket0) => {
     const columnTotals = Array(Object.keys(columnMap).length + 1).fill(0);
 
     // Generate the term category header cell for the row.
@@ -302,74 +308,79 @@ function convertMatrixToDataTable(
     };
 
     // Generate the assay child rows for the term category row
-    const assayRows = bucket0[yProp1].buckets.map((bucket1) => {
-      // Generate the assay cell for the row.
-      const assayCell: Cell = {
-        id: toShishkebabCase(bucket1.key),
-        content: bucket1.key,
-        component: AssayCell,
-      };
-
-      // Generate the preferred assay title child rows for the assay row.
-      const preferredAssayRows = bucket1[yProp2].buckets.map((bucket2) => {
-        const preferredAssayCell: Cell = {
-          id: `toShishkebabCase(bucket2.key)`,
-          content: bucket2.key,
-          component: PreferredAssayHeaderCell,
+    const assayRows = getMatrixBucketWrapper(bucket0, yProp1).buckets.map(
+      (bucket1) => {
+        // Generate the assay cell for the row.
+        const assayCell: Cell = {
+          id: toShishkebabCase(bucket1.key),
+          content: bucket1.key,
+          component: AssayCell,
         };
 
-        // Initialize the data cells with empty content, and add a last Total cell.
-        const dataCells = Array(Object.keys(columnMap).length + 1).fill({});
-        Object.entries(columnMap).forEach(([key, value]) => {
-          dataCells[value] = {
-            id: toShishkebabCase(key),
-            content: "",
-            component: CounterCell,
+        // Generate the preferred assay title child rows for the assay row.
+        const preferredAssayRows = getMatrixBucketWrapper(
+          bucket1,
+          yProp2
+        ).buckets.map((bucket2) => {
+          const preferredAssayCell: Cell = {
+            id: `toShishkebabCase(bucket2.key)`,
+            content: bucket2.key,
+            component: PreferredAssayHeaderCell,
           };
-        });
 
-        // Fill in the data cells with the actual data from the matrix.
-        let rowTotal = 0;
-        bucket2[xProp].buckets.forEach((bucket) => {
-          const columnIndex = columnMap[bucket.key];
-          if (columnIndex !== undefined) {
-            dataCells[columnIndex] = {
-              id: toShishkebabCase(bucket.key),
-              content: abbreviateNumber(bucket.doc_count),
+          // Initialize the data cells with empty content, and add a last Total cell.
+          const dataCells = Array(Object.keys(columnMap).length + 1).fill({});
+          Object.entries(columnMap).forEach(([key, value]) => {
+            dataCells[value] = {
+              id: toShishkebabCase(key),
+              content: "",
               component: CounterCell,
             };
+          });
 
-            // Update the totals for the row and column.
-            rowTotal += bucket.doc_count;
-            columnTotals[columnIndex] += bucket.doc_count;
-          }
+          // Fill in the data cells with the actual data from the matrix.
+          let rowTotal = 0;
+          getMatrixBucketWrapper(bucket2, xProp).buckets.forEach((bucket) => {
+            const columnIndex = columnMap[bucket.key];
+            if (columnIndex !== undefined) {
+              dataCells[columnIndex] = {
+                id: toShishkebabCase(bucket.key),
+                content: abbreviateNumber(bucket.doc_count),
+                component: CounterCell,
+              };
+
+              // Update the totals for the row and column.
+              rowTotal += bucket.doc_count;
+              columnTotals[columnIndex] += bucket.doc_count;
+            }
+          });
+
+          // Add the row total cell to the end of the data cells. Add the row totals to the column
+          // for the row totals.
+          dataCells[dataCells.length - 1] = {
+            id: "total",
+            content: abbreviateNumber(rowTotal),
+            component: TotalCell,
+          };
+          columnTotals[dataCells.length - 1] += rowTotal;
+
+          // Compose the preferred assay title row with its data cells.
+          return {
+            id: `row-${bucket0.key}-${bucket1.key}-${bucket2.key}`,
+            cells: [preferredAssayCell].concat(dataCells),
+          } as Row;
         });
 
-        // Add the row total cell to the end of the data cells. Add the row totals to the column
-        // for the row totals.
-        dataCells[dataCells.length - 1] = {
-          id: "total",
-          content: abbreviateNumber(rowTotal),
-          component: TotalCell,
-        };
-        columnTotals[dataCells.length - 1] += rowTotal;
+        // Add the preferred assay title child rows to the assay header cell.
+        assayCell.childRows = preferredAssayRows;
 
-        // Compose the preferred assay title row with its data cells.
+        // Generate the assay row.
         return {
-          id: `row-${bucket0.key}-${bucket1.key}-${bucket2.key}`,
-          cells: [preferredAssayCell].concat(dataCells),
+          id: `row-${bucket0.key}-${bucket1.key}`,
+          cells: [assayCell],
         } as Row;
-      });
-
-      // Add the preferred assay title child rows to the assay header cell.
-      assayCell.childRows = preferredAssayRows;
-
-      // Generate the assay row.
-      return {
-        id: `row-${bucket0.key}-${bucket1.key}`,
-        cells: [assayCell],
-      } as Row;
-    });
+      }
+    );
 
     // Add the assay child rows to the term category header cell.
     termCategoryCell.childRows = assayRows;
@@ -466,11 +477,15 @@ function getAssayTerms(assaySummary: MatrixResultsObject): string[] {
   const slimsProp = assaySummary.y.group_by[0];
   const termNameProp = assaySummary.y.group_by[1];
   if (slimsProp && termNameProp) {
-    assaySummary.y[slimsProp].buckets.forEach((bucket) => {
-      bucket[termNameProp].buckets.forEach((termBucket) => {
-        terms.add(termBucket.key);
-      });
-    });
+    getMatrixBucketWrapper(assaySummary.y, slimsProp).buckets.forEach(
+      (bucket) => {
+        getMatrixBucketWrapper(bucket, termNameProp).buckets.forEach(
+          (termBucket) => {
+            terms.add(termBucket.key);
+          }
+        );
+      }
+    );
   }
   return [...terms];
 }
