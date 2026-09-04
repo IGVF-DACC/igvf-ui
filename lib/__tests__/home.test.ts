@@ -4,9 +4,9 @@ import {
   getFileSetTypeConfig,
   isGroupByValueAnArrayOfStrings,
   requestSummary,
-  type GroupByValue,
 } from "../home";
 import { type LabData } from "../home";
+import { type GroupByValue } from "../matrix";
 
 describe("Test convertLabDataToChartData function", () => {
   it("returns the given file sets converted to Nivo data", () => {

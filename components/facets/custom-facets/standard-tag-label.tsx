@@ -1,7 +1,13 @@
 // lib
 import { getFilterTerm } from "../../../lib/facets";
+import { truncateText } from "../../../lib/general";
 // root
 import type { SearchResultsFilter } from "../../../globals";
+
+/**
+ * Maximum length for the term displayed in the tag label. Terms longer than this will be truncated.
+ */
+const MAX_TERM_LENGTH = 50;
 
 /**
  * Display the standard facet tag label. This is the default tag label for all facets that do not
@@ -18,5 +24,5 @@ export default function StandardTagLabel({
   filter: SearchResultsFilter;
 }) {
   const term = getFilterTerm(filter);
-  return <>{term}</>;
+  return <>{truncateText(term, MAX_TERM_LENGTH)}</>;
 }

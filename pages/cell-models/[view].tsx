@@ -18,14 +18,15 @@ import {
 import FetchRequest from "../../lib/fetch-request";
 import { errorObjectToProps } from "../../lib/errors";
 import { toShishkebabCase } from "../../lib/general";
-import { type ColumnMap } from "../../lib/matrix";
+import {
+  type ColumnMap,
+  getMatrixAxisGroups,
+  getMatrixBuckets,
+  type MatrixBucket,
+  type MatrixResults,
+  type MatrixResultsObject,
+} from "../../lib/matrix";
 import { encodeUriElement } from "../../lib/query-encoding";
-// root
-import type {
-  MatrixBucket,
-  MatrixResults,
-  MatrixResultsObject,
-} from "../../globals.d";
 
 /**
  * Source data for cell renderers in the matrix.
@@ -121,8 +122,8 @@ function generateMatrixColumnMap(
   // Descend into the rows to find out which columns get used.
   const usedColumns = new Set<string>();
   for (const rowBucket of rowBuckets) {
-    for (const childBucket of rowBucket[minorYProp].buckets) {
-      for (const columnBucket of childBucket[majorXProp].buckets) {
+    for (const childBucket of getMatrixBuckets(rowBucket, minorYProp)) {
+      for (const columnBucket of getMatrixBuckets(childBucket, majorXProp)) {
         usedColumns.add(columnBucket.key);
       }
     }
@@ -262,7 +263,8 @@ function generateChildRow(
   minorYProp: string,
   view: ViewIdentifier
 ): Row {
-  if (childBucket[majorXProp].buckets.length > 0) {
+  const childColumnBuckets = getMatrixBuckets(childBucket, majorXProp);
+  if (childColumnBuckets.length > 0) {
     // Create the cells for one child row, starting with the minor Y-axis category for the row.
     const href = `${
       viewQueries[view].cellLinkPath
@@ -291,7 +293,6 @@ function generateChildRow(
 
     // Fill in the actual counts for the cells that have a non-zero count. The bucket keys match the
     // column labels in the matrix, so use `columnMap` to find the correct column index for each key.
-    const childColumnBuckets = childBucket[majorXProp].buckets;
     for (const columnBucket of childColumnBuckets) {
       const columnIndex = columnMap[columnBucket.key] + 1;
       (childCells[columnIndex].source as CellSource).href = `${
@@ -320,25 +321,30 @@ function convertMatrixToDataGrid(
   matrix: MatrixResultsObject,
   view: ViewIdentifier
 ): DataGridFormat {
-  const majorXProp = matrix.x.group_by as string;
-  const majorYProp = matrix.y.group_by[0];
-  const minorYProp = matrix.y.group_by[1];
+  const [majorXProp] = getMatrixAxisGroups(matrix.x);
+  const [majorYProp, minorYProp] = getMatrixAxisGroups(matrix.y);
+  if (!majorXProp || !majorYProp || !minorYProp) {
+    throw new Error("Cell model matrix has unexpected axis groups");
+  }
+
+  const columnBuckets = getMatrixBuckets(matrix.x, majorXProp);
+  const rowBuckets = getMatrixBuckets(matrix.y, majorYProp);
 
   // Make a map of the x column labels to their index so we know what column to put each cell in.
   const columnMap = generateMatrixColumnMap(
-    matrix.x[majorXProp].buckets,
-    matrix.y[majorYProp].buckets,
+    columnBuckets,
+    rowBuckets,
     majorXProp,
     minorYProp
   );
 
   // Generate the data grid rows we can pass to `<DataGrid>`, excluding the header row that we'll
   // add later.
-  const sortedBuckets = _.sortBy(matrix.y[majorYProp].buckets, (bucket) =>
+  const sortedBuckets = _.sortBy(rowBuckets, (bucket) =>
     bucket.key.toLowerCase()
   );
   let dataGrid: DataGridFormat = sortedBuckets.map((bucket) => {
-    const childBuckets = bucket[minorYProp].buckets;
+    const childBuckets = getMatrixBuckets(bucket, minorYProp);
     const majorYQuery = `${majorYProp}=${encodeUriElement(bucket.key)}`;
     let childRows = childBuckets.map((childBucket) => {
       return generateChildRow(
@@ -420,7 +426,7 @@ export default function TissueSummary({
   const dataGrid = convertMatrixToDataGrid(cellModel.matrix, view);
 
   function handleTabClick(tabId) {
-    router.push(viewQueries[tabId].pagePath);
+    void router.push(viewQueries[tabId].pagePath);
   }
 
   return (
