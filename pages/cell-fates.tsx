@@ -23,18 +23,25 @@ import {
 import { type PageProps } from "../lib/next-js";
 
 interface DifferentiationSeriesProps extends PageProps {
-  matrix: MatrixResultsObject;
+  differentiatedMatrix: MatrixResultsObject;
+  reprogrammedMatrix: MatrixResultsObject;
 }
 
 export default function DifferentiationSeries({
-  matrix,
+  differentiatedMatrix,
+  reprogrammedMatrix,
 }: DifferentiationSeriesProps) {
-  const dataGrid = convertMatrixToDataGrid(matrix);
+  console.log("************* DIFF", differentiatedMatrix);
+  console.log("************* REPROG", reprogrammedMatrix);
+
+  const differentiatedDataGrid = convertMatrixToDataGrid(differentiatedMatrix);
+  const reprogrammedDataGrid = convertMatrixToDataGrid(reprogrammedMatrix);
 
   return (
     <div>
       <PagePreamble />
-      <DataTable data={dataGrid} />
+      <DataTable data={differentiatedDataGrid} />
+      <DataTable data={reprogrammedDataGrid} />
     </div>
   );
 }
@@ -146,20 +153,29 @@ export async function getServerSideProps({
   GetServerSidePropsResult<DifferentiationSeriesProps>
 > {
   const request = new FetchRequest({ cookie: req.headers.cookie });
-  const results = (
+  const differentiatedResults = (
     await request.getObject<MatrixResults>(
-      "/matrix/?type=AnalysisSet&config=DifferentiationSeries&samples.classifications!=multiplexed+sample&samples.classifications=differentiated+cell+specimen&samples.classifications=reprogrammed+cell+specimen&file_set_type=principal+analysis"
+      "/matrix/?type=AnalysisSet&config=DifferentiationSeries&samples.classifications!=multiplexed+sample&samples.classifications=differentiated+cell+specimen&file_set_type=principal+analysis"
     )
   ).union();
-  if (FetchRequest.isResponseSuccess(results)) {
-    return {
-      props: {
-        matrix: results.matrix,
-        pageContext: { title: "Cell Fates" },
-        isJson: false,
-      },
-    };
+  if (FetchRequest.isResponseSuccess(differentiatedResults)) {
+    const reprogrammedResults = (
+      await request.getObject<MatrixResults>(
+        "/matrix/?type=AnalysisSet&config=DifferentiationSeries&samples.classifications!=multiplexed+sample&samples.classifications=reprogrammed+cell+specimen&file_set_type=principal+analysis"
+      )
+    ).union();
+    if (FetchRequest.isResponseSuccess(reprogrammedResults)) {
+      return {
+        props: {
+          differentiatedMatrix: differentiatedResults.matrix,
+          reprogrammedMatrix: reprogrammedResults.matrix,
+          pageContext: { title: "Cell Fates" },
+          isJson: false,
+        },
+      };
+    }
+    return errorObjectToProps(reprogrammedResults);
   }
 
-  return errorObjectToProps(results);
+  return errorObjectToProps(differentiatedResults);
 }
