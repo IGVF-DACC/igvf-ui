@@ -84,6 +84,24 @@
 }
 
 /**
+ * Utility for highlighting marked cells in a table row when any marked cell in that row is hovered.
+ * Add `data-highlight` to every cell that should trigger and receive the highlight.
+ *
+ * To use this, define theme colors such as `--color-warning-hl` for a warning highlight,
+ * `--color-info-hl` for an info highlight, etc. The corresponding table cell class would be
+ * `row-hl-warning-hl` or `row-hl-info-hl`, respectively.
+ */
+@utility table-row-hl {
+  & tr:has([data-highlight]:hover) [data-highlight] {
+    background-color: var(--row-hl-color);
+  }
+}
+
+@utility row-hl-* {
+  --row-hl-color: --value(--color-*, [color]);
+}
+
+/**
  * Light and dark themes. With Tailwind CSS v4 this will gradually take over the functionality of
  * tailwind.config.ts, :root, and .dark groups, which were a Tailwind CSS v3 thing that's getting
  * deprecated.
@@ -117,6 +135,38 @@
   --color-select-menu-item-label: var(--color-gray-800);
   --color-select-menu-item-hover: var(--color-gray-600);
   --color-select-menu-item-label-hover: var(--color-white);
+
+  /** Generic matrix colors */
+  --color-matrix-header: oklch(0.8699 0.0593 274.59);
+  --color-matrix-subheader: oklch(0.92 0.0377 274.59);
+  --color-matrix-lines: oklch(0.62 0 0);
+  --color-matrix-data-cell: oklch(0.736 0.0683 82.41);
+
+  /** Cell fates matrix colors */
+  --color-cell-fates-diff-matrix-header: var(--color-matrix-header);
+  --color-cell-fates-diff-matrix-subheader: var(--color-matrix-subheader);
+  --color-cell-fates-diff-matrix-subheader-hl: oklch(
+    from var(--color-cell-fates-diff-matrix-subheader) calc(l - 0.06) c h
+  );
+  --color-cell-fates-diff-matrix-classification: oklch(
+    from var(--color-matrix-header) calc(l - 0.04) c h
+  );
+  --color-cell-fates-diff-matrix-data-cell: var(--color-matrix-data-cell);
+  --color-cell-fates-diff-matrix-data-cell-hl: oklch(
+    from var(--color-cell-fates-diff-matrix-data-cell) calc(l - 0.06) c h
+  );
+  --color-cell-fates-repr-matrix-header: oklch(0.8699 0.0593 155.05);
+  --color-cell-fates-repr-matrix-subheader: oklch(0.9316 0.0593 155.05);
+  --color-cell-fates-repr-matrix-subheader-hl: oklch(
+    from var(--color-cell-fates-repr-matrix-subheader) calc(l - 0.06) c h
+  );
+  --color-cell-fates-repr-matrix-classification: oklch(
+    from var(--color-cell-fates-repr-matrix-header) calc(l - 0.04) c h
+  );
+  --color-cell-fates-repr-matrix-data-cell: oklch(0.736 0.0683 336.83);
+  --color-cell-fates-repr-matrix-data-cell-hl: oklch(
+    from var(--color-cell-fates-repr-matrix-data-cell) calc(l - 0.06) c h
+  );
 
   /** Radio Button Cards */
   --color-radio-card-outline: var(--color-gray-300);
@@ -179,6 +229,26 @@
     --color-select-menu-item-label: var(--color-gray-200);
     --color-select-menu-item-hover: var(--color-gray-200);
     --color-select-menu-item-label-hover: var(--color-gray-800);
+
+    /** Generic matrix colors */
+    --color-matrix-header: oklch(0.4285 0.0593 274.59);
+    --color-matrix-subheader: oklch(0.3572 0.0593 274.59);
+    --color-matrix-lines: oklch(0.62 0 0);
+    --color-matrix-data-cell: oklch(0.4652 0.0683 82.41);
+
+    /** Cell fates matrix colors */
+    --color-cell-fates-diff-matrix-header: var(--color-matrix-header);
+    --color-cell-fates-diff-matrix-subheader: var(--color-matrix-subheader);
+    --color-cell-fates-diff-matrix-classification: oklch(
+      from var(--color-cell-fates-diff-matrix-header) calc(l + 0.04) c h
+    );
+    --color-cell-fates-diff-matrix-data-cell: var(--color-matrix-data-cell);
+    --color-cell-fates-repr-matrix-header: oklch(0.4285 0.0593 155.05);
+    --color-cell-fates-repr-matrix-subheader: oklch(0.3572 0.0593 155.05);
+    --color-cell-fates-repr-matrix-classification: oklch(
+      from var(--color-cell-fates-repr-matrix-header) calc(l + 0.04) c h
+    );
+    --color-cell-fates-repr-matrix-data-cell: oklch(0.4652 0.0683 336.83);
 
     /** Radio Button Cards */
     --color-radio-card-outline: var(--color-gray-700);

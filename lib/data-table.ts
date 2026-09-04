@@ -1,38 +1,88 @@
 /**
  * Represents a single cell within a row in a data table.
+ *
+ * @property id - ID for the cell, unique among all cells in one row
+ * @property content - Content of the cell; it can be a React node as well
+ * @property component - React component to render the cell instead of the default
+ * @property componentProps - Extra props to pass to `component`
+ * @property childRows - Rows to the right vertically spanned by this cell
+ * @property colSpan - Number of columns to span
+ * @property isHeaderCell - True if the cell is a header cell, usually for vertical headers; false
+ *                          for a data cell
+ * @property _rowSpan - Number of rows spanned by this cell. Internal use
+ * @property _htmlRowId - All cells within a single HTML table row share the same ID. Internal use
  */
 export type Cell = {
-  /** ID for the cell, unique among all cells in one row */
   id: string;
-  /** Content of the cell; it can be a React node as well */
   content: string | number | React.ReactNode;
-  /** React component to render the cell instead of the default */
-  component?: React.ComponentType<{
-    children: string | number | React.ReactNode;
-  }>;
-  /** Extra props to pass to `component` */
+  component?: React.ElementType;
   componentProps?: Record<string, unknown>;
-  /** Rows to the right vertically spanned by this cell */
   childRows?: Row[];
-  /** Number of columns to span */
   colSpan?: number;
-  /** True if the cell is a header cell, usually for vertical headers; false for a data cell */
   isHeaderCell?: boolean;
-  /** Number of rows spanned by this cell. Internal use */
   _rowSpan?: number;
-  /** All cells within a single HTML table row share the same ID. Internal use */
   _htmlRowId?: number;
 };
 
 /**
+ * Props supplied to custom cell components by `DataTable`.
+ */
+type InjectedCellComponentProps = "children" | "rowSpan" | "colSpan" | "meta";
+
+/**
+ * Get the props callers must supply for a custom cell component. Only include the props that are
+ * not injected by `DataTable`.
+ */
+type CustomCellComponentProps<TComponent extends React.ElementType> = Omit<
+  React.ComponentProps<TComponent>,
+  InjectedCellComponentProps
+>;
+
+/**
+ * Determine which values can be used as the cell's `content`. If the custom component declares a
+ * `children` prop, infer its type so `content` must satisfy that component's requirements. For a
+ * component without an explicit `children` prop, allow any React content.
+ */
+type CustomCellContent<TComponent extends React.ElementType> =
+  React.ComponentProps<TComponent> extends { children: infer TContent }
+    ? TContent
+    : React.ReactNode;
+
+/**
+ * Cell definition whose component and custom props are checked together before being stored as a
+ * heterogeneous `Cell`.
+ */
+type CustomCell<TComponent extends React.ElementType> = Omit<
+  Cell,
+  "component" | "componentProps" | "content"
+> & {
+  component: TComponent;
+  content: CustomCellContent<NoInfer<TComponent>>;
+  componentProps: CustomCellComponentProps<NoInfer<TComponent>>;
+};
+
+/**
+ * Create a cell with type-checked content and custom component props. `DataTable` injects
+ * `children`, `rowSpan`, `colSpan`, and `meta`; callers provide every other component prop.
+ *
+ * @param cell - Custom cell definition to create a type-checked cell from
+ */
+export function createCell<TComponent extends React.ElementType>(
+  cell: CustomCell<TComponent>
+): Cell {
+  return cell as unknown as Cell;
+}
+
+/**
  * Represents a single row in a data table.
+ *
+ * @property id - ID for the row, unique among all rows
+ * @property cells - Cells in the row
+ * @property isHeaderRow - True if the row is a header row, false or undefined for a data row
  */
 export type Row = {
-  /** ID for the row, unique among all rows */
   id: string;
-  /** Cells in the row */
   cells: Cell[];
-  /** True if the row is a header row, false for a data row */
   isHeaderRow?: boolean;
 };
 
@@ -50,6 +100,7 @@ export type DataTableFormat = Row[];
  *   [[header], [data], [header, header], [data, data]].
  * In the result, you can tell whether a segment is for header rows or data rows by checking the
  * `isHeaderRow` property of the first row in the segment.
+ *
  * @param rows - The array of rows to split.
  * @returns Array of arrays of rows, where each inner array contains either only header rows or
  *     only data rows.
@@ -96,8 +147,9 @@ export function splitRowsIntoSegments(
  * Calculate the number of rows spanned by the given cell. If the cell has child rows, the result
  * includes the number of rows spanned by each child row, and the children of the cells in the
  * child rows, and so on.
+ *
  * @param cell - Cell to calculate the row span for
- * @returns The number of rows spanned by the cell
+ * @returns Number of rows spanned by the cell
  */
 export function calculateRowSpan(cell: Cell): number {
   if (cell.childRows?.length > 0) {
@@ -114,6 +166,7 @@ export function calculateRowSpan(cell: Cell): number {
  * It adds `_htmlRowId` to each cell to indicate which HTML row it belongs to. This lets
  * `<DataTable>` to split this flat array of cells into HTML rows. It also adds `_rowSpan` to each
  * cell to indicate how many rows it spans.
+ *
  * @param rows Rows within a segment (header/data) to flatten
  * @param htmlRowId Segment number to split cells into HTML rows
  * @returns Flattened array of cells with updated segment number
