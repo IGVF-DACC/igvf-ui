@@ -32,7 +32,7 @@ export type Row = {
   id: string;
   /** Cells in the row */
   cells: Cell[];
-  /** True if the row is a header row, false for a data row */
+  /** True if the row is a header row, false or undefined for a data row */
   isHeaderRow?: boolean;
 };
 
