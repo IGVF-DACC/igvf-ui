@@ -74,18 +74,21 @@ export function AnnotatedItem({
  * @param objectType - `@type` of object this property belongs to
  * @param propertyName - Name of the object property being displayed
  * @param externalAnnotations - Map of values to descriptions if not using the schema
+ * @param className - Additional classes applied when the value has an annotation
  */
 export function AnnotatedValue({
   as,
   objectType = "",
   propertyName = "",
   externalAnnotations = {},
+  className,
   children,
 }: {
   as?: ElementType;
   objectType?: string;
   propertyName?: string;
   externalAnnotations?: Record<string, string>;
+  className?: string;
   children: string;
 }) {
   const { profiles } = useContext(SessionContext);
@@ -133,6 +136,7 @@ export function AnnotatedValue({
         as={as}
         annotation={annotation}
         tooltipKey={uniqueTooltipKey}
+        className={className}
       >
         {children}
       </AnnotatedItem>
