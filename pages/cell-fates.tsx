@@ -72,35 +72,25 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
 
   const columnMap = generateMatrixColumnMap(headerBuckets);
 
-  // Find the bucket within `classificationBuckets` that has a key of "differentiated cell specimen"
-  const differentiatedCellSpecimenBucket = classificationBuckets.find(
-    (bucket) => bucket.key === "differentiated cell specimen"
-  );
-  const differentiatedParentBucket = getMatrixBuckets(
-    differentiatedCellSpecimenBucket,
-    yGroupByParent
-  );
-  const differentiatedRows = generateRows(
-    differentiatedParentBucket,
+  // Generate the rows for the "differentiated cell specimen" classification.
+  const differentiatedRows = convertBucketsToRows(
+    classificationBuckets,
+    "differentiated cell specimen",
+    yGroupByParent,
+    yGroupByChild,
     headerBuckets,
     columnMap,
-    yGroupByChild,
     xGroupBy
   );
 
-  // Find the bucket within `classificationBuckets` that has a key of "reprogrammed cell specimen"
-  const reprogrammedCellSpecimenBucket = classificationBuckets.find(
-    (bucket) => bucket.key === "reprogrammed cell specimen"
-  );
-  const reprogrammedParentBucket = getMatrixBuckets(
-    reprogrammedCellSpecimenBucket,
-    yGroupByParent
-  );
-  const reprogrammedRows = generateRows(
-    reprogrammedParentBucket,
+  // Generate the rows for the "reprogrammed cell specimen" classification.
+  const reprogrammedRows = convertBucketsToRows(
+    classificationBuckets,
+    "reprogrammed cell specimen",
+    yGroupByParent,
+    yGroupByChild,
     headerBuckets,
     columnMap,
-    yGroupByChild,
     xGroupBy
   );
 
@@ -115,6 +105,52 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
   ];
 }
 
+/**
+ * Converts a set of sample classification buckets into rows for the data grid, including their
+ * child rows and data cells.
+ *
+ * @param buckets - Classification buckets to convert
+ * @param classification - Classification key to find within the buckets
+ * @param yGroupByParent - Field name to group parent buckets by
+ * @param yGroupByChild - Field name to group child buckets by
+ * @param headerBuckets - Buckets for the x-axis header row
+ * @param columnMap - Mapping of column keys to their indices
+ * @param xGroupBy - Field name to group column buckets by
+ * @returns Rows representing the classification, parent, and child data cells
+ */
+function convertBucketsToRows(
+  buckets: MatrixBucket[],
+  classification: string,
+  yGroupByParent: string,
+  yGroupByChild: string,
+  headerBuckets: MatrixBucket[],
+  columnMap: ColumnMap,
+  xGroupBy: string
+): Row[] {
+  const classificationBuckets = buckets.find(
+    (bucket) => bucket.key === classification
+  );
+  const parentBucket = getMatrixBuckets(classificationBuckets, yGroupByParent);
+  const rows = generateRows(
+    parentBucket,
+    headerBuckets,
+    columnMap,
+    yGroupByChild,
+    xGroupBy
+  );
+  return rows;
+}
+
+/**
+ * Generates the rows for a given set of parent buckets, including their child rows and data cells.
+ *
+ * @param parentBuckets - Parent buckets to generate rows for
+ * @param headerBuckets - Buckets for the x-axis header row
+ * @param columnMap - Mapping of column keys to their indices
+ * @param yGroupByChild - Field name to group child buckets by
+ * @param xGroupBy - Field name to group column buckets by
+ * @returns Rows representing the parent and child data cells
+ */
 function generateRows(
   parentBuckets: MatrixBucket[],
   headerBuckets: MatrixBucket[],
