@@ -16,6 +16,7 @@ import {
   generateMatrixColumnMap,
   getMatrixBuckets,
   getMatrixAxisGroups,
+  type ColumnMap,
   type MatrixBucket,
   type MatrixResults,
   type MatrixResultsObject,
@@ -46,8 +47,9 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
   if (!xGroupBy) {
     throw new Error("No group-by property found for the X axis");
   }
-  const [yGroupByParent, yGroupByChild] = getMatrixAxisGroups(matrix.y);
-  if (!yGroupByParent || !yGroupByChild) {
+  const [yGroupByClassification, yGroupByParent, yGroupByChild] =
+    getMatrixAxisGroups(matrix.y);
+  if (!yGroupByClassification || !yGroupByParent || !yGroupByChild) {
     throw new Error("No group-by properties found for the Y axis");
   }
 
@@ -58,16 +60,68 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
     return [];
   }
 
-  // Generate an empty row to copy for each data row, ensuring it has the same number of columns as
-  // the header row.
-
-  // Generate the map of column titles to their zero-based column indices.
-  const columnMap = generateMatrixColumnMap(headerBuckets);
-
   // Generate the cells for the header row.
   const headerCells = generateHeaderRow(headerBuckets);
 
-  const parentBuckets = getMatrixBuckets(matrix.y, yGroupByParent);
+  // Get the buckets for the y-axis sample classification. With no data, the classification row will
+  // be empty, so we return an empty array to indicate no data grid can be generated.
+  const classificationBuckets = getMatrixBuckets(
+    matrix.y,
+    yGroupByClassification
+  );
+
+  const columnMap = generateMatrixColumnMap(headerBuckets);
+
+  // Find the bucket within `classificationBuckets` that has a key of "differentiated cell specimen"
+  const differentiatedCellSpecimenBucket = classificationBuckets.find(
+    (bucket) => bucket.key === "differentiated cell specimen"
+  );
+  const differentiatedParentBucket = getMatrixBuckets(
+    differentiatedCellSpecimenBucket,
+    yGroupByParent
+  );
+  const differentiatedRows = generateRows(
+    differentiatedParentBucket,
+    headerBuckets,
+    columnMap,
+    yGroupByChild,
+    xGroupBy
+  );
+
+  // Find the bucket within `classificationBuckets` that has a key of "reprogrammed cell specimen"
+  const reprogrammedCellSpecimenBucket = classificationBuckets.find(
+    (bucket) => bucket.key === "reprogrammed cell specimen"
+  );
+  const reprogrammedParentBucket = getMatrixBuckets(
+    reprogrammedCellSpecimenBucket,
+    yGroupByParent
+  );
+  const reprogrammedRows = generateRows(
+    reprogrammedParentBucket,
+    headerBuckets,
+    columnMap,
+    yGroupByChild,
+    xGroupBy
+  );
+
+  return [
+    {
+      id: "header",
+      cells: headerCells,
+      isHeaderRow: true,
+    },
+    ...differentiatedRows,
+    ...reprogrammedRows,
+  ];
+}
+
+function generateRows(
+  parentBuckets: MatrixBucket[],
+  headerBuckets: MatrixBucket[],
+  columnMap: ColumnMap,
+  yGroupByChild: string,
+  xGroupBy: string
+): Row[] {
   const parentRows: Row[] = [];
   parentBuckets.forEach((parentBucket) => {
     const childBuckets = getMatrixBuckets(parentBucket, yGroupByChild);
@@ -110,15 +164,7 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
       ],
     });
   });
-
-  return [
-    {
-      id: "header",
-      cells: headerCells,
-      isHeaderRow: true,
-    },
-    ...parentRows,
-  ];
+  return parentRows;
 }
 
 /**
@@ -148,7 +194,7 @@ export async function getServerSideProps({
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const results = (
     await request.getObject<MatrixResults>(
-      "/matrix/?type=AnalysisSet&config=DifferentiationSeries&samples.classifications!=multiplexed+sample&samples.classifications=differentiated+cell+specimen&samples.classifications=reprogrammed+cell+specimen&file_set_type=principal+analysis"
+      "/matrix/?type=AnalysisSet&config=CellFates&samples.classifications!=multiplexed+sample&samples.classifications=differentiated+cell+specimen&samples.classifications=reprogrammed+cell+specimen&file_set_type=principal+analysis"
     )
   ).union();
   if (FetchRequest.isResponseSuccess(results)) {
