@@ -24,7 +24,8 @@ describe("Test the conversion of dbxref strings to links", () => {
 
   it("converts DepMap dbxrefs to links correctly", () => {
     const dbxrefs = ["DepMap:ACH-123456"];
-    const expected = "https://depmap.org/portal/cell_line/ACH-123456";
+    const expected =
+      "https://depmap.org/portal/cell_line/ACH-123456?tab=overview";
 
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");
@@ -145,6 +146,17 @@ describe("Test the conversion of dbxref strings to links", () => {
     const dbxrefs = ["NCIT:C1234"];
     const expected =
       "https://evsexplore.semantics.cancer.gov/evsexplore/concept/ncit/C1234";
+
+    render(<DbxrefList dbxrefs={dbxrefs} />);
+    const dbxrefElements = screen.getAllByRole("link");
+    expect(dbxrefElements).toHaveLength(1);
+    expect(dbxrefElements[0]).toHaveAttribute("href", expected);
+  });
+
+  it("converts PCL dbxrefs to links correctly", () => {
+    const dbxrefs = ["PCL:123456"];
+    const expected =
+      "https://ontobee.org/ontology/PCL?iri=http://purl.obolibrary.org/obo/PCL_123456";
 
     render(<DbxrefList dbxrefs={dbxrefs} />);
     const dbxrefElements = screen.getAllByRole("link");

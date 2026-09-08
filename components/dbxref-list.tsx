@@ -118,7 +118,7 @@ export const dbxrefPrefixMap: Record<string, DbxrefPrefixConfig> = {
     pattern: "https://www.ebi.ac.uk/chebi/CHEBI:{0}",
   },
   DepMap: {
-    pattern: "https://depmap.org/portal/cell_line/{0}",
+    pattern: "https://depmap.org/portal/cell_line/{0}?tab=overview",
   },
   ENSEMBL: {
     // ENSEMBL requires a { taxa: <organism scientific name> } metadata object to generate a URL.
@@ -193,6 +193,10 @@ export const dbxrefPrefixMap: Record<string, DbxrefPrefixConfig> = {
   },
   miRBase: {
     pattern: "http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={0}",
+  },
+  PCL: {
+    pattern:
+      "https://ontobee.org/ontology/PCL?iri=http://purl.obolibrary.org/obo/PCL_{0}",
   },
   PMCID: {
     pattern: "https://www.ncbi.nlm.nih.gov/pmc/articles/{0}",
