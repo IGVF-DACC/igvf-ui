@@ -10,9 +10,10 @@
 import type {
   CollectionTitles,
   DatabaseObject,
+  Profiles,
   Schema,
   SearchResults,
-} from "../globals.d";
+} from "../globals";
 import { getCollectionTitle } from "./collection-titles";
 import FetchRequest from "./fetch-request";
 import {
@@ -22,11 +23,16 @@ import {
 } from "./page";
 
 /**
+ * Represents the types of data that can be used to generate breadcrumb trails.
+ */
+export type BreadcrumbData = DatabaseObject | SearchResults | Schema | Profiles;
+
+/**
  * Each element of the breadcrumb trail is represented by an object with a title and an optional
  * href. The title is the text that gets displayed in the breadcrumb trail, and the href is the URL
  * that the breadcrumb element links to. If the href is missing, the breadcrumb element is disabled.
  */
-type Breadcrumb = {
+export type Breadcrumb = {
   title: string;
   href?: string;
 };
@@ -60,21 +66,23 @@ export interface PageBreadcrumbMeta extends BreadcrumbMeta {
 
 /**
  * Given an item object from the server, return breadcrumb data for this item.
- * @param item Item data from the server
- * @param title Name of the item to use as the breadcrumb title
- * @param meta Contains current user's admin status
- * @param collectionTitles Maps collection names to their human-readable titles
+ *
+ * @param item - Item data from the server
+ * @param title - Name of the item to use as the breadcrumb title
+ * @param meta - Contains current user's admin status
+ * @param collectionTitles - Maps collection names to their human-readable titles
  * @returns Breadcrumb data for the given item
  */
 function buildItemBreadcrumbs(
-  item: DatabaseObject,
+  item: BreadcrumbData,
   title: string,
   meta: BreadcrumbMeta,
   collectionTitles?: CollectionTitles
 ): Breadcrumb[] {
   const itemMeta = meta as ItemBreadcrumbMeta;
   const itemType = item["@type"][0];
-  const parentTitle = getCollectionTitle(collectionTitles, itemType) || itemType;
+  const parentTitle =
+    getCollectionTitle(collectionTitles, itemType) || itemType;
   const statusQuery = itemMeta.isAdmin ? "&status!=deleted" : "";
 
   // Build the breadcrumb data from the collection and item.
@@ -93,9 +101,10 @@ function buildItemBreadcrumbs(
 /**
  * Generate the breadcrumb data for a page. Pages can have any path, so each breadcrumb element
  * represents one element of the path.
- * @param {object} page Object for the displayed page
- * @param {string} cookie Server cookie to authenticate the request
- * @returns {array} Breadcrumb data for the given page
+ *
+ * @param page - Object for the displayed page
+ * @param cookie - Server cookie to authenticate the request
+ * @returns Breadcrumb data for the given page
  */
 function buildPageBreadcrumbs(
   page: PageObject,
@@ -118,8 +127,9 @@ function buildPageBreadcrumbs(
 
 /**
  * Generate the breadcrumb data for a search-result page -- both the list and report.
- * @param data Search results data from the servers
- * @param collectionTitles Maps collection names to their human-readable titles
+ *
+ * @param data - Search results data from the servers
+ * @param collectionTitles - Maps collection names to their human-readable titles
  * @returns Breadcrumb data for the given search results
  */
 function buildSearchResultBreadcrumbs(
@@ -143,8 +153,9 @@ function buildSearchResultBreadcrumbs(
 
 /**
  * Generate the breadcrumb data for a schema page.
- * @param schema {DatabaseObject} The schema object, or null for the schema index page
- * @param title {string} The data type associated with a schema, e.g. "Biomarker"
+ *
+ * @param schema - Schema object, or null for the schema index page
+ * @param title - Data type associated with a schema, e.g. "Biomarker"
  * @returns {Breadcrumb[]} Breadcrumb data for the given schema
  */
 function buildSchemaBreadcrumbs(schema: Schema, title: string): Breadcrumb[] {
@@ -169,13 +180,14 @@ function buildSchemaBreadcrumbs(schema: Schema, title: string): Breadcrumb[] {
 /**
  * Given data from the server, return breadcrumb data appropriate for that data. In some cases we
  * have to retrieve additional data from the server to build the breadcrumb data.
- * @param data Object from the server
- * @param title Name of the item to use as the breadcrumb title
- * @param cookie Server cookie to authenticate the request
+ *
+ * @param data - Object from the server
+ * @param title - Name of the item to use as the breadcrumb title
+ * @param cookie - Server cookie to authenticate the request
  * @returns Breadcrumb data for the given item or collection
  */
 export default function buildBreadcrumbs(
-  data: DatabaseObject,
+  data: BreadcrumbData,
   title: string,
   meta: BreadcrumbMeta = {},
   collectionTitles?: CollectionTitles
@@ -213,12 +225,13 @@ export default function buildBreadcrumbs(
 /**
  * Get the breadcrumb meta for a given data object. This is used to provide additional information
  * to the front end about how to render the breadcrumbs.
- * @param data Object from the data provider to retrieve meta for
- * @param request FetchRequest object to use for fetching data
+ *
+ * @param data - Object from the data provider to retrieve meta for
+ * @param request - FetchRequest object to use for fetching data
  * @returns BreadcrumbMeta object for the given data
  */
 export async function getBreadcrumbMeta(
-  data: DatabaseObject,
+  data: BreadcrumbData,
   request: FetchRequest
 ): Promise<BreadcrumbMeta> {
   if (data["@type"].includes("Page")) {
