@@ -129,7 +129,7 @@ This defines a single row within the table. This includes top-level rows as well
 
 This string gets used as a React key when rendering rows in the table, so it must contain a unique value among all rows within the data table, or all child rows of a cell.
 
-**`cells`** (`Cells[]`)
+**`cells`** (`Cell[]`)
 
 This defines the contents of every cell in the row.
 
@@ -149,13 +149,22 @@ This string gets used as a React key when rendering cells in a row, so it must c
 
 Place the contents that appear in the cell here.
 
-**`component`** (`React.ComponentType`)
+**`component`** (`React.ElementType`)
 
 If you want to customize the rendering of a cell, put that component here. This has a different effect from providing a React component in `content`. That puts a React component within the default cell, including any padding. This is good for displaying a link within a cell that otherwise looks like the default cell. `component` is better when you need to do something like change the color of an entire cell.
 
 **`componentProps`** (`Record<string, unknown>`)
 
-Use this object to pass extra props you need to `component`. You might pass extra data it needs to render its contents. You could pass extra CSS classes or styles needed for a specific usage of `component`.
+Use this object for props required by `component` that `DataTable` does not provide automatically. For example, it can contain data needed to build a link or CSS classes that customize one use of the component.
+
+Always construct a cell that has `componentProps` with the `createCell()` helper. The underlying `Cell` type stores custom props as `Record<string, unknown>` because one table can contain many components with unrelated prop types. `createCell()` checks the specific component and its props together before returning that general `Cell` type. It detects missing, misspelled, extra, and incorrectly typed custom props.
+
+Do not include these `DataTable`-managed props in `componentProps`:
+
+- `children` comes from the cell's `content` property.
+- `rowSpan` is calculated from the cell's `childRows`.
+- `colSpan` comes from the cell's top-level `colSpan` property.
+- `meta` comes from the top-level `meta` prop passed to `DataTable`.
 
 **`childRows`** (`Row[]`)
 
@@ -186,9 +195,11 @@ This component is also passed `rowSpan` and `colSpan` properties if needed.
 ```tsx
 function CustomCell({
   rowSpan,
+  colSpan,
   children,
 }: {
   rowSpan: number;
+  colSpan?: number;
   children: React.ReactNode;
 }) {
   return (
@@ -202,11 +213,30 @@ function CustomCell({
 }
 ```
 
-You can also pass any other properties you like to this component through the `componentProps` property of a cell.
+You can pass additional properties to a custom component through `componentProps`. Import and call `createCell()` so TypeScript verifies those properties against the component's declared props.
 
 ```tsx
+import { createCell, type DataTableFormat } from "../lib/data-table";
+
+function CustomCell({
+  value,
+  minimumWidth,
+  colSpan,
+  children,
+}: {
+  value: string;
+  minimumWidth: number;
+  colSpan?: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <td colSpan={colSpan} style={{ minWidth: minimumWidth }}>
+      {value}: {children}
+    </td>
+  );
+}
+
 const data: DataTableFormat = [
-  {
   {
     id: "data-0",
     cells: [
@@ -214,12 +244,16 @@ const data: DataTableFormat = [
         id: "0",
         content: 500,
       },
-      {
+      createCell({
         id: "1",
         content: "500 more",
         component: CustomCell,
-        componentProps: { value: "this value", other: 5 }
-      },
+        componentProps: {
+          value: "This value",
+          minimumWidth: 200,
+        },
+        colSpan: 2,
+      }),
       {
         id: "2",
         content: <a href="#">1000</a>,
@@ -227,16 +261,8 @@ const data: DataTableFormat = [
     ],
   },
 ];
-
-function CustomCell({
-  value: string,
-  other: number,
-}) {
-  return (
-    <td style={{ width: other }}>
-      {value} {children}
-    </td>
-  )
-}
-
 ```
+
+In this example, `value` and `minimumWidth` belong in `componentProps` because they are specific to `CustomCell`. `colSpan` stays at the top level of the cell, and `content` becomes the component's `children`.
+
+If `value` were omitted, `minimumWidth` were given a string, or either property were misspelled, TypeScript would report the problem at the `createCell()` call.

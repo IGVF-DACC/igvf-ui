@@ -25,14 +25,16 @@ import {
 import FetchRequest from "../../lib/fetch-request";
 import { errorObjectToProps } from "../../lib/errors";
 import { toShishkebabCase } from "../../lib/general";
-import { type ColumnMap, generateMatrixColumnMap } from "../../lib/matrix";
+import {
+  type ColumnMap,
+  generateMatrixColumnMap,
+  getMatrixAxisGroups,
+  getMatrixBuckets,
+  type MatrixBucket,
+  type MatrixResults,
+  type MatrixResultsObject,
+} from "../../lib/matrix";
 import { encodeUriElement } from "../../lib/query-encoding";
-// root
-import type {
-  MatrixBucket,
-  MatrixResults,
-  MatrixResultsObject,
-} from "../../globals";
 
 /**
  * Source data for cell renderers in the matrix.
@@ -250,7 +252,7 @@ function generateChildRow(
 
   // Fill in the actual counts for the cells that have a non-zero count. The bucket keys match the
   // column labels in the matrix, so use `columnMap` to find the correct column index for each key.
-  const childColumnBuckets = childBucket[majorXProp].buckets;
+  const childColumnBuckets = getMatrixBuckets(childBucket, majorXProp);
   for (const columnBucket of childColumnBuckets) {
     const columnIndex = columnMap[columnBucket.key] + 1;
     (childCells[columnIndex].source as CellSource).href = `${
@@ -277,21 +279,26 @@ function convertMatrixToDataGrid(
   matrix: MatrixResultsObject,
   taxa: string
 ): DataGridFormat {
-  const majorXProp = matrix.x.group_by as string;
-  const majorYProp = matrix.y.group_by[0];
-  const minorYProp = matrix.y.group_by[1];
+  const [majorXProp] = getMatrixAxisGroups(matrix.x);
+  const [majorYProp, minorYProp] = getMatrixAxisGroups(matrix.y);
+  if (!majorXProp || !majorYProp || !minorYProp) {
+    throw new Error("Tissue summary matrix has unexpected axis groups");
+  }
+
+  const columnBuckets = getMatrixBuckets(matrix.x, majorXProp);
+  const rowBuckets = getMatrixBuckets(matrix.y, majorYProp);
 
   // Make a map of the x column labels to their index so we know what column to put each cell in.
-  const columnMap = generateMatrixColumnMap(matrix.x[majorXProp].buckets);
+  const columnMap = generateMatrixColumnMap(columnBuckets);
 
   // Generate the data grid rows we can pass to `<DataGrid>`, excluding the header row that we'll
   // add later.
-  const sortedBuckets = _.sortBy(matrix.y[majorYProp].buckets, (bucket) =>
+  const sortedBuckets = _.sortBy(rowBuckets, (bucket) =>
     bucket.key.toLowerCase()
   );
   const dataGrid: DataGridFormat = sortedBuckets.map((bucket) => {
     const bucketId = toShishkebabCase(bucket.key);
-    const childBuckets = bucket[minorYProp].buckets;
+    const childBuckets = getMatrixBuckets(bucket, minorYProp);
     const majorYQuery = `${majorYProp}=${encodeUriElement(bucket.key)}`;
     const childRows = childBuckets.map((childBucket) => {
       return generateChildRow(
@@ -407,7 +414,7 @@ export default function TissueSummary({
 
   // Switch to the new path for the tab the user clicked.
   function onTabChange(tabId: string) {
-    router.push(taxaQueries[tabId].pagePath);
+    void router.push(taxaQueries[tabId].pagePath);
   }
 
   return (
