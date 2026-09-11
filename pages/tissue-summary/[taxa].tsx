@@ -407,7 +407,7 @@ export default function TissueSummary({
 
   // Switch to the new path for the tab the user clicked.
   function onTabChange(tabId: string) {
-    router.push(taxaQueries[tabId].pagePath);
+    void router.push(taxaQueries[tabId].pagePath);
   }
 
   return (
