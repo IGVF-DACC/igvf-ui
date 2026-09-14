@@ -59,7 +59,6 @@ config: Dict[str, Any] = {
                     },
                 ],
             },
-            'backend_url': 'https://igvfd-igvf-3702-diff-series-matrix.demo.igvf.org',
             'frontend': {
                 'cpu': 1024,
                 'memory_limit_mib': 2048,
