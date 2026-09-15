@@ -72,11 +72,13 @@ export default function SoftwareVersion({
           <StatusPreviewDetail item={softwareVersion} />
           <DataPanel>
             <DataArea>
-              <DataItemLabel>Software</DataItemLabel>
               {software && (
-                <DataItemValue>
-                  <Link href={software["@id"]}>{software.title}</Link>
-                </DataItemValue>
+                <>
+                  <DataItemLabel>Software</DataItemLabel>
+                  <DataItemValue>
+                    <Link href={software["@id"]}>{software.title}</Link>
+                  </DataItemValue>
+                </>
               )}
               {softwareVersion.description && (
                 <>
