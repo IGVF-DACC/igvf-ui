@@ -621,7 +621,7 @@ export async function getServerSideProps({
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const results = (
     await request.getObject<MatrixResults>(
-      "/matrix/?type=AnalysisSet&config=CellFates&samples.classifications!=multiplexed+sample&samples.classifications=differentiated+cell+specimen&samples.classifications=reprogrammed+cell+specimen&file_set_type=principal+analysis"
+      "/matrix/?type=AnalysisSet&config=CellFates&status=released&samples.classifications!=multiplexed+sample&samples.classifications=differentiated+cell+specimen&samples.classifications=reprogrammed+cell+specimen&file_set_type=principal+analysis"
     )
   ).union();
   if (FetchRequest.isResponseSuccess(results)) {
