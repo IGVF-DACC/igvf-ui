@@ -83,7 +83,7 @@ export function LinkedTableCell({
     >
       <Link
         href={href}
-        className="block h-full w-full px-2 text-left whitespace-nowrap no-underline after:absolute after:inset-0 after:content-['']"
+        className="block h-full w-full px-2 whitespace-nowrap no-underline after:absolute after:inset-0 after:content-['']"
       >
         {children}
       </Link>

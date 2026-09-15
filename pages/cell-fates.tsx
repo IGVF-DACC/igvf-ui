@@ -100,6 +100,13 @@ export default function DifferentiationSeries({
   );
 }
 
+/**
+ * Displays the top-left corner cell of the table. It displays the the column title for the starting
+ * sample terms, and a count of the total number of analysis sets in the matrix.
+ *
+ * @param totalCount - Total number of analysis sets in the matrix
+ * @param children - Content to be displayed in the corner cell
+ */
 function MatrixTableCornerCell({
   totalCount,
   children,
@@ -250,13 +257,15 @@ function MatrixYAxisSubheaderCell({
   return (
     <LinkedTableCell
       href={`/search/?type=AnalysisSet&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}&${targetedSampleTermQuery}`}
-      className={`font-normal [&>a]:flex [&>a]:items-center [&>a]:justify-between [&>a]:gap-2 [&>a]:py-1 ${subheaderCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
+      className={`h-px font-normal ${subheaderCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
       as="th"
       data-highlight
     >
-      <div>{children}</div>
-      <div className="flex rounded-full bg-zinc-500 px-2 text-xs font-semibold text-white">
-        {termCount}
+      <div className="flex h-full items-center justify-between gap-2 py-1">
+        <span>{children}</span>
+        <span className="inline-flex items-center justify-center rounded-full bg-zinc-500 px-2 text-xs font-semibold text-white">
+          {termCount}
+        </span>
       </div>
     </LinkedTableCell>
   );
@@ -271,24 +280,35 @@ function MatrixYAxisSubheaderCell({
 function MatrixClassificationTitleRow({
   classification,
   colSpan,
+  classificationCount,
   children,
 }: {
   classification: Classification;
   colSpan: number;
+  classificationCount: number;
   children: React.ReactNode;
 }) {
+  const classificationQuery = `samples.classifications=${encodeUriElement(classification)}`;
+
   const headerCellClass =
     classification === "differentiated cell specimen"
       ? "bg-cell-fates-diff-matrix-classification"
       : "bg-cell-fates-repr-matrix-classification";
 
   return (
-    <th
-      className={`border-matrix-lines border-b py-0.5 whitespace-nowrap capitalize ${headerCellClass}`}
+    <LinkedTableCell
+      href={`/search/?type=AnalysisSet&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}`}
       colSpan={colSpan}
+      className={`capitalize ${headerCellClass}`}
+      as="th"
     >
-      {children}
-    </th>
+      <div className="flex w-full items-center justify-center gap-2 py-0.5">
+        <span>{children}</span>
+        <span className="inline-flex items-center justify-center rounded-full bg-zinc-500 px-2 text-xs font-semibold text-white">
+          {abbreviateNumber(classificationCount)}
+        </span>
+      </div>
+    </LinkedTableCell>
   );
 }
 
@@ -477,6 +497,7 @@ function convertBucketsToRows(
         colSpan: headerBuckets.length + 2,
         componentProps: {
           classification,
+          classificationCount: classificationBuckets.doc_count,
         },
       }),
     ],
