@@ -263,9 +263,7 @@ function MatrixYAxisSubheaderCell({
     >
       <div className="flex h-full items-center justify-between gap-2 py-1">
         <span>{children}</span>
-        <span className="inline-flex items-center justify-center rounded-full bg-zinc-500 px-2 text-xs font-semibold text-white">
-          {termCount}
-        </span>
+        <CountBadge count={termCount} />
       </div>
     </LinkedTableCell>
   );
@@ -304,9 +302,7 @@ function MatrixClassificationTitleRow({
     >
       <div className="flex w-full items-center justify-center gap-2 py-0.5">
         <span>{children}</span>
-        <span className="inline-flex items-center justify-center rounded-full bg-zinc-500 px-2 text-xs font-semibold text-white">
-          {abbreviateNumber(classificationCount)}
-        </span>
+        <CountBadge count={classificationCount} />
       </div>
     </LinkedTableCell>
   );
@@ -365,6 +361,19 @@ function MatrixDataCell({
     <td className="border-matrix-lines bg-table-data-cell border-r border-b">
       {children}
     </td>
+  );
+}
+
+/**
+ * Display a badge containing a count of items.
+ *
+ * @param count - Number of items to display in the badge
+ */
+function CountBadge({ count }: { count: number }) {
+  return (
+    <span className="inline-flex items-center justify-center rounded-full bg-zinc-500 px-2 text-xs font-semibold text-white dark:bg-zinc-400 dark:text-black">
+      {abbreviateNumber(count)}
+    </span>
   );
 }
 
