@@ -38,9 +38,13 @@ import { type PageProps } from "../lib/next-js";
 
 /**
  * Props for the DifferentiationSeries page component.
+ *
+ * @property matrix - Matrix results object containing the x and y axes of the data to be displayed
+ * @property totalCount - Total number of datasets represented in the matrix
  */
 interface DifferentiationSeriesProps extends PageProps {
   matrix: MatrixResultsObject;
+  totalCount: number;
 }
 
 /**
@@ -56,8 +60,9 @@ type Classification =
  */
 export default function DifferentiationSeries({
   matrix,
+  totalCount,
 }: DifferentiationSeriesProps) {
-  const dataGrid = convertMatrixToDataGrid(matrix);
+  const dataGrid = convertMatrixToDataGrid(matrix, totalCount);
 
   if (dataGrid.length === 0) {
     return (
@@ -95,14 +100,32 @@ export default function DifferentiationSeries({
   );
 }
 
+function MatrixTableCornerCell({
+  totalCount,
+  children,
+}: {
+  totalCount: number;
+  children: React.ReactNode;
+}) {
+  // Set the height of the table header cell to a minimal pixel value to allow the flex container to
+  // control the layout of its children.
+  return (
+    <th className="bg-table-data-cell border-matrix-lines sticky top-0 z-2 h-px border-r border-b px-2 py-1 text-left last:border-r-0">
+      <div className="flex h-full flex-col items-center justify-between">
+        <div className="text-center text-zinc-500">
+          <div className="text-2xl font-bold">{totalCount}</div>
+          <div className="text-sm font-normal">Total Datasets</div>
+        </div>
+        <div className="text-sm">{children}</div>
+      </div>
+    </th>
+  );
+}
+
 /**
  * Custom cell renderer for the three fixed header cells for Target Category, Assay, and Preferred.
  */
-export function MatrixXAxisCornerCell({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function MatrixXAxisCornerCell({ children }: { children: React.ReactNode }) {
   return (
     <th className="bg-table-data-cell border-matrix-lines sticky top-0 z-2 border-r border-b px-2 py-1 text-left align-bottom last:border-r-0">
       {children}
@@ -324,7 +347,10 @@ function MatrixDataCell({
  * @param matrix - Matrix of results to convert
  * @returns Data table representation of the matrix
  */
-function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
+function convertMatrixToDataGrid(
+  matrix: MatrixResultsObject,
+  totalCount: number
+): DataTableFormat {
   // Get the group-by properties for the x-axis and the y-axis and ensure they exist. Even with no
   // data these group property names should still exist, so throw if we can't even get that.
   const [xGroupBy] = getMatrixAxisGroups(matrix.x);
@@ -345,7 +371,7 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
   }
 
   // Generate the cells for the header row.
-  const headerCells = generateHeaderRow(headerBuckets);
+  const headerCells = generateHeaderRow(headerBuckets, totalCount);
 
   // Get the buckets for the y-axis sample classification. With no data, the classification row will
   // be empty, so we return an empty array to indicate no data grid can be generated.
@@ -569,7 +595,10 @@ function generateRows(
  * @param headerBuckets - Buckets for the x-axis header row
  * @returns Array of cells representing the header row including the blank corner cell
  */
-function generateHeaderRow(headerBuckets: MatrixBucket[]): Cell[] {
+function generateHeaderRow(
+  headerBuckets: MatrixBucket[],
+  totalCount: number
+): Cell[] {
   const headerCells: Cell[] = headerBuckets.map((bucket) => ({
     id: toShishkebabCase(bucket.key),
     content: bucket.key,
@@ -580,7 +609,10 @@ function generateHeaderRow(headerBuckets: MatrixBucket[]): Cell[] {
     {
       id: "blank-parent",
       content: "Starting Sample Terms",
-      component: MatrixXAxisCornerCell,
+      component: MatrixTableCornerCell,
+      componentProps: {
+        totalCount,
+      },
     },
     {
       id: "blank-child",
@@ -624,10 +656,12 @@ export async function getServerSideProps({
       "/matrix/?type=AnalysisSet&config=CellFates&status=released&samples.classifications!=multiplexed+sample&samples.classifications=differentiated+cell+specimen&samples.classifications=reprogrammed+cell+specimen&file_set_type=principal+analysis"
     )
   ).union();
+
   if (FetchRequest.isResponseSuccess(results)) {
     return {
       props: {
         matrix: results.matrix,
+        totalCount: results.total,
         pageContext: { title: "Cell Fates" },
         isJson: false,
       },
