@@ -1,11 +1,32 @@
 import {
   calculateRowSpan,
+  createCell,
   flattenCells,
   splitRowsIntoSegments,
   type Cell,
   type DataTableFormat,
   type Row,
 } from "../data-table";
+
+describe("Test createCell()", () => {
+  it("returns the type-checked custom cell definition", () => {
+    function CustomCell({ children }: { label: string; children: string }) {
+      return children;
+    }
+
+    const cellDefinition = {
+      id: "custom-cell",
+      content: "Cell content",
+      component: CustomCell,
+      componentProps: { label: "Cell label" },
+      colSpan: 2,
+    };
+
+    const cell = createCell(cellDefinition);
+
+    expect(cell).toBe(cellDefinition);
+  });
+});
 
 describe("Test splitRowsIntoSegments()", () => {
   it("splits data into header and data rows", () => {

@@ -2,6 +2,7 @@
 import _ from "lodash";
 // lib
 import FetchRequest from "./fetch-request";
+import { type GroupByValue } from "./matrix";
 
 /**
  * Label to display for file sets that have no assay title.
@@ -101,12 +102,6 @@ type BucketData = {
 type AxisData = {
   buckets?: BucketData[];
 };
-
-/**
- * The `group_by` array in the `LabData` object can contain a single string, an array of strings, or
- * an array of any combination of strings and arrays of strings.
- */
-export type GroupByValue = string | Array<string | string[]>;
 
 /**
  * Represents the matrix data used for lab charts, but only the object under the `y` axis data. The
