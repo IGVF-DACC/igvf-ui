@@ -21,7 +21,7 @@ import {
 } from "../lib/data-table";
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
-import { toShishkebabCase } from "../lib/general";
+import { abbreviateNumber, toShishkebabCase } from "../lib/general";
 import { getPreferredAssayTitleDescriptionMap } from "../lib/ontology-terms";
 import { encodeUriElement } from "../lib/query-encoding";
 import {
@@ -112,8 +112,10 @@ function MatrixTableCornerCell({
   return (
     <th className="bg-table-data-cell border-matrix-lines sticky top-0 z-2 h-px border-r border-b px-2 py-1 text-left last:border-r-0">
       <div className="flex h-full flex-col items-center justify-between">
-        <div className="text-center text-zinc-500">
-          <div className="text-2xl font-bold">{totalCount}</div>
+        <div className="text-center text-zinc-600 dark:text-zinc-400">
+          <div className="text-2xl font-bold">
+            {abbreviateNumber(totalCount)}
+          </div>
           <div className="text-sm font-normal">Total Datasets</div>
         </div>
         <div className="text-sm">{children}</div>
@@ -226,12 +228,14 @@ function MatrixYAxisSubheaderCell({
   classification,
   sampleTerm,
   targetedSampleTerm,
+  termCount,
   children,
 }: {
   isBottomEdgeCell: boolean;
   classification: Classification;
   sampleTerm: string;
   targetedSampleTerm: string;
+  termCount: number;
   children: React.ReactNode;
 }) {
   const subheaderCellClass =
@@ -246,11 +250,14 @@ function MatrixYAxisSubheaderCell({
   return (
     <LinkedTableCell
       href={`/search/?type=AnalysisSet&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}&${targetedSampleTermQuery}`}
-      className={`font-normal [&>a]:py-1 ${subheaderCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
+      className={`font-normal [&>a]:flex [&>a]:items-center [&>a]:justify-between [&>a]:gap-2 [&>a]:py-1 ${subheaderCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
       as="th"
       data-highlight
     >
-      {children}
+      <div>{children}</div>
+      <div className="flex rounded-full bg-zinc-500 px-2 text-xs font-semibold text-white">
+        {termCount}
+      </div>
     </LinkedTableCell>
   );
 }
@@ -555,6 +562,7 @@ function generateRows(
             classification,
             sampleTerm: parentBucket.key,
             targetedSampleTerm: childBucket.key,
+            termCount: childBucket.doc_count,
           },
         }),
         ...dataRowCells,
