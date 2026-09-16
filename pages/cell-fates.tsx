@@ -258,8 +258,8 @@ function MatrixYAxisSubheaderCell({
 /**
  * Renders a title row for a classification section of the matrix.
  *
- * @param classification - Classification of the matrix section
  * @param colSpan - Number of columns across the entire matrix
+ * @param tableCount - Total count of analysis sets in the table
  */
 function MatrixTitleRow({
   colSpan,
@@ -272,7 +272,7 @@ function MatrixTitleRow({
 }) {
   return (
     <LinkedTableCell
-      href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis`}
+      href="/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&samples.classifications=differentiated+cell+specimen&samples.classifications=reprogrammed+cell+specimen&file_set_type=principal+analysis"
       colSpan={colSpan}
       className={`bg-cell-fates-matrix-title-header sticky top-0 z-4 h-(--matrix-title-height) border-r-0 capitalize [&>a]:contain-[inline-size]`}
       as="th"
