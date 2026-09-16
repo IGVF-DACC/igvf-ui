@@ -90,7 +90,7 @@ export default function DifferentiationSeries({
           <LabelYAxis label={matrix.y.label} />
           <div
             role="table"
-            className="[container-type:inline-size] mb-8 grid min-w-0 flex-1 auto-rows-min text-sm"
+            className="@container mb-8 grid min-w-0 flex-1 auto-rows-min text-sm"
           >
             <DataTable
               className="table-row-hl"
@@ -218,7 +218,7 @@ function MatrixYAxisHeaderCell({
     <LinkedTableCell
       href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}`}
       rowSpan={rowSpan}
-      className={`font-semibold ${headerCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
+      className={`py-1 text-left align-top font-semibold ${headerCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
       as="th"
     >
       {children}
@@ -301,7 +301,7 @@ function MatrixClassificationTitleRow({
     <LinkedTableCell
       href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}`}
       colSpan={colSpan}
-      className={`capitalize [&>a]:[contain:inline-size] ${headerCellClass}`}
+      className={`[&>a]:[contain-[inline-size]] capitalize ${headerCellClass}`}
       as="th"
     >
       <div className="sticky left-2 flex w-[min(100%,calc(100cqw-1rem))] items-center justify-center gap-2 py-0.5">
