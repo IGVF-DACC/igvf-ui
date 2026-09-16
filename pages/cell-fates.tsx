@@ -93,7 +93,7 @@ export default function DifferentiationSeries({
             className="@container mb-8 grid min-w-0 flex-1 auto-rows-min text-sm"
           >
             <DataTable
-              className="table-row-hl"
+              className="table-row-hl [--matrix-title-height:calc(1.5rem+1px)]"
               scrollContainerClassName="max-w-full"
               data={dataGrid}
             />
@@ -105,43 +105,12 @@ export default function DifferentiationSeries({
 }
 
 /**
- * Displays the top-left corner cell of the table. It displays the the column title for the starting
- * sample terms, and a count of the total number of analysis sets in the matrix.
- *
- * @param totalCount - Total number of analysis sets in the matrix
- * @param children - Content to be displayed in the corner cell
- */
-function MatrixTableCornerCell({
-  totalCount,
-  children,
-}: {
-  totalCount: number;
-  children: React.ReactNode;
-}) {
-  // Set the height of the table header cell to a minimal pixel value to allow the flex container to
-  // control the layout of its children.
-  return (
-    <th className="bg-table-data-cell border-matrix-lines sticky top-0 z-2 h-px border-r border-b px-2 py-1 text-left last:border-r-0">
-      <div className="flex h-full flex-col items-center justify-between">
-        <div className="text-center text-zinc-600 dark:text-zinc-400">
-          <div className="text-2xl font-bold">
-            {abbreviateNumber(totalCount)}
-          </div>
-          <div className="text-sm font-normal">Total Datasets</div>
-        </div>
-        <div className="text-sm">{children}</div>
-      </div>
-    </th>
-  );
-}
-
-/**
  * Custom cell renderer for the three fixed header cells for Target Category, Assay, and Preferred.
  */
 function MatrixXAxisCornerCell({ children }: { children: React.ReactNode }) {
   return (
-    <th className="bg-table-data-cell border-matrix-lines sticky top-0 z-2 border-r border-b px-2 py-1 text-left align-bottom last:border-r-0">
-      {children}
+    <th className="bg-table-data-cell border-matrix-lines sticky top-(--matrix-title-height) z-2 border-r border-b px-2 py-1 text-left align-bottom last:border-r-0">
+      <div className="whitespace-normal contain-[inline-size]">{children}</div>
     </th>
   );
 }
@@ -168,7 +137,7 @@ function MatrixXAxisHeaderCell({
   return (
     <LinkedTableCell
       href={href}
-      className="bg-matrix-header sticky top-0 z-2 w-8 min-w-8 align-bottom last:border-r-0 [&>a]:pt-2"
+      className="bg-matrix-header sticky top-(--matrix-title-height) z-2 w-8 min-w-8 align-bottom last:border-r-0 [&>a]:pt-2"
       as="th"
     >
       <div className="relative z-1 flex w-full justify-center pb-2">
@@ -279,6 +248,36 @@ function MatrixYAxisSubheaderCell({
  * @param classification - Classification of the matrix section
  * @param colSpan - Number of columns across the entire matrix
  */
+function MatrixTitleRow({
+  colSpan,
+  tableCount,
+  children,
+}: {
+  colSpan: number;
+  tableCount: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <LinkedTableCell
+      href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis`}
+      colSpan={colSpan}
+      className={`bg-cell-fates-matrix-title-header sticky top-0 z-3 h-(--matrix-title-height) border-r-0 capitalize [&>a]:contain-[inline-size]`}
+      as="th"
+    >
+      <div className="sticky left-2 flex w-[min(100%,calc(100cqw-1rem))] items-center justify-center gap-2 py-0.5">
+        <span>{children}</span>
+        <CountBadge count={tableCount} />
+      </div>
+    </LinkedTableCell>
+  );
+}
+
+/**
+ * Renders a title row for a classification section of the matrix.
+ *
+ * @param classification - Classification of the matrix section
+ * @param colSpan - Number of columns across the entire matrix
+ */
 function MatrixClassificationTitleRow({
   classification,
   colSpan,
@@ -301,7 +300,7 @@ function MatrixClassificationTitleRow({
     <LinkedTableCell
       href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}`}
       colSpan={colSpan}
-      className={`[&>a]:[contain-[inline-size]] capitalize ${headerCellClass}`}
+      className={`[&>a]:[contain-[inline-size]] border-r-0 capitalize ${headerCellClass}`}
       as="th"
     >
       <div className="sticky left-2 flex w-[min(100%,calc(100cqw-1rem))] items-center justify-center gap-2 py-0.5">
@@ -411,7 +410,7 @@ function convertMatrixToDataGrid(
   }
 
   // Generate the cells for the header row.
-  const headerCells = generateHeaderRow(headerBuckets, totalCount);
+  const headerCells = generateHeaderRow(headerBuckets);
 
   // Get the buckets for the y-axis sample classification. With no data, the classification row will
   // be empty, so we return an empty array to indicate no data grid can be generated.
@@ -457,6 +456,21 @@ function convertMatrixToDataGrid(
   );
 
   return [
+    {
+      id: "table-header",
+      isHeaderRow: true,
+      cells: [
+        createCell({
+          id: "table-header-cell",
+          content: "Total Datasets",
+          colSpan: headerBuckets.length + 2,
+          component: MatrixTitleRow,
+          componentProps: {
+            tableCount: totalCount,
+          },
+        }),
+      ],
+    },
     {
       id: "header",
       cells: headerCells,
@@ -637,10 +651,7 @@ function generateRows(
  * @param headerBuckets - Buckets for the x-axis header row
  * @returns Array of cells representing the header row including the blank corner cell
  */
-function generateHeaderRow(
-  headerBuckets: MatrixBucket[],
-  totalCount: number
-): Cell[] {
+function generateHeaderRow(headerBuckets: MatrixBucket[]): Cell[] {
   const headerCells: Cell[] = headerBuckets.map((bucket) => ({
     id: toShishkebabCase(bucket.key),
     content: bucket.key,
@@ -651,10 +662,7 @@ function generateHeaderRow(
     {
       id: "blank-parent",
       content: "Starting Sample Terms",
-      component: MatrixTableCornerCell,
-      componentProps: {
-        totalCount,
-      },
+      component: MatrixXAxisCornerCell,
     },
     {
       id: "blank-child",

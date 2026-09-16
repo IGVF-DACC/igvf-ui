@@ -143,6 +143,7 @@
   --color-matrix-data-cell: oklch(0.736 0.0683 82.41);
 
   /** Cell fates matrix colors */
+  --color-cell-fates-matrix-title-header: var(--color-zinc-300);
   --color-cell-fates-diff-matrix-header: var(--color-matrix-header);
   --color-cell-fates-diff-matrix-subheader: var(--color-matrix-subheader);
   --color-cell-fates-diff-matrix-subheader-hl: oklch(
@@ -237,6 +238,7 @@
     --color-matrix-data-cell: oklch(0.4652 0.0683 82.41);
 
     /** Cell fates matrix colors */
+    --color-cell-fates-matrix-title-header: var(--color-zinc-600);
     --color-cell-fates-diff-matrix-header: var(--color-matrix-header);
     --color-cell-fates-diff-matrix-subheader: var(--color-matrix-subheader);
     --color-cell-fates-diff-matrix-classification: oklch(
