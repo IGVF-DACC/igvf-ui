@@ -158,20 +158,28 @@ function SingleRow<TMeta = unknown>({
  * @param data - The data to render including the rows and their child rows
  * @param meta - Metadata object passed through to custom cell components
  * @param className - Additional CSS classes to apply to the `<table>` element
+ * @param scrollContainerClassName - Additional CSS classes for the scrolling wrapper
  */
 export function DataTable<TMeta = unknown>({
   data,
   meta,
   className,
+  scrollContainerClassName,
 }: {
   data: DataTableFormat;
   meta?: TMeta;
   className?: string;
+  scrollContainerClassName?: string;
 }) {
   const rowsSegments = splitRowsIntoSegments(data);
 
   return (
-    <div className="border-panel max-h-[90vh] w-fit overflow-auto border">
+    <div
+      className={twMerge(
+        "border-panel max-h-[90vh] w-fit overflow-auto border",
+        scrollContainerClassName
+      )}
+    >
       <table
         className={twMerge(
           "min-w-max table-fixed border-separate border-spacing-0",

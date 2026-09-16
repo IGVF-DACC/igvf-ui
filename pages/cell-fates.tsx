@@ -90,9 +90,13 @@ export default function DifferentiationSeries({
           <LabelYAxis label={matrix.y.label} />
           <div
             role="table"
-            className="border-panel mb-8 grid w-max auto-rows-min gap-px overflow-x-auto border bg-gray-400 text-sm dark:bg-gray-600 dark:outline-gray-700"
+            className="[container-type:inline-size] mb-8 grid min-w-0 flex-1 auto-rows-min text-sm"
           >
-            <DataTable className="table-row-hl" data={dataGrid} />
+            <DataTable
+              className="table-row-hl"
+              scrollContainerClassName="max-w-full"
+              data={dataGrid}
+            />
           </div>
         </div>
       </div>
@@ -297,10 +301,10 @@ function MatrixClassificationTitleRow({
     <LinkedTableCell
       href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}`}
       colSpan={colSpan}
-      className={`capitalize ${headerCellClass}`}
+      className={`capitalize [&>a]:[contain:inline-size] ${headerCellClass}`}
       as="th"
     >
-      <div className="flex w-full items-center justify-center gap-2 py-0.5">
+      <div className="sticky left-2 flex w-[min(100%,calc(100cqw-1rem))] items-center justify-center gap-2 py-0.5">
         <span>{children}</span>
         <CountBadge count={classificationCount} />
       </div>
