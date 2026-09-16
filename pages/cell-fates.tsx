@@ -79,7 +79,7 @@ export default function DifferentiationSeries({
       <p className="my-4">
         This table displays samples from differentiated and reprogrammed cell
         specimens. You can also explore a{" "}
-        <Link href="/search/?type=AnalysisSet&samples.classifications=*&advancedQuery=samples.classifications:(%22multiplexed+sample%22+AND+%22differentiated+cell+specimen%22)+OR+samples.classifications:(%22multiplexed+sample%22+AND+%22reprogrammed+cell+specimen%22)">
+        <Link href="/search/?type=AnalysisSet&status=released&samples.classifications=*&advancedQuery=samples.classifications:(%22multiplexed+sample%22+AND+%22differentiated+cell+specimen%22)+OR+samples.classifications:(%22multiplexed+sample%22+AND+%22reprogrammed+cell+specimen%22)">
           list of multiplexed samples
         </Link>
         .
@@ -159,7 +159,7 @@ function MatrixXAxisHeaderCell({
   const preferredAssayTitleDescriptionMap =
     getPreferredAssayTitleDescriptionMap(profiles);
   const assayQuery = `preferred_assay_titles=${encodeUriElement(assay)}`;
-  const href = `/search/?type=AnalysisSet&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${assayQuery}`;
+  const href = `/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${assayQuery}`;
 
   return (
     <LinkedTableCell
@@ -212,7 +212,7 @@ function MatrixYAxisHeaderCell({
 
   return (
     <LinkedTableCell
-      href={`/search/?type=AnalysisSet&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}`}
+      href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}`}
       rowSpan={rowSpan}
       className={`font-semibold ${headerCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
       as="th"
@@ -256,7 +256,7 @@ function MatrixYAxisSubheaderCell({
 
   return (
     <LinkedTableCell
-      href={`/search/?type=AnalysisSet&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}&${targetedSampleTermQuery}`}
+      href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}&${targetedSampleTermQuery}`}
       className={`h-px font-normal ${subheaderCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
       as="th"
       data-highlight
@@ -295,7 +295,7 @@ function MatrixClassificationTitleRow({
 
   return (
     <LinkedTableCell
-      href={`/search/?type=AnalysisSet&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}`}
+      href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}`}
       colSpan={colSpan}
       className={`capitalize ${headerCellClass}`}
       as="th"
@@ -348,7 +348,7 @@ function MatrixDataCell({
 
     return (
       <LinkedTableCell
-        href={`/search/?type=AnalysisSet&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}&${targetedSampleTermQuery}&${assayQuery}`}
+        href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}&${targetedSampleTermQuery}&${assayQuery}`}
         className={`[&>a]:py-1 ${dataCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
         data-highlight
       >
