@@ -93,7 +93,7 @@ export default function DifferentiationSeries({
             className="@container mb-8 grid min-w-0 flex-1 auto-rows-min text-sm"
           >
             <DataTable
-              className="table-row-hl [--matrix-title-height:calc(1.5rem+1px)]"
+              className="table-row-hl [--matrix-first-column-width:10rem] [--matrix-title-height:calc(1.5rem+1px)]"
               scrollContainerClassName="max-w-full"
               data={dataGrid}
             />
@@ -105,11 +105,24 @@ export default function DifferentiationSeries({
 }
 
 /**
- * Custom cell renderer for the three fixed header cells for Target Category, Assay, and Preferred.
+ * Custom cell renderer for the two sample-term column headers. Freeze them horizontally only
+ * when the table viewport has room for the labels and data columns.
  */
-function MatrixXAxisCornerCell({ children }: { children: React.ReactNode }) {
+function MatrixXAxisCornerCell({
+  isFirstColumn = false,
+  children,
+}: {
+  isFirstColumn?: boolean;
+  children: React.ReactNode;
+}) {
   return (
-    <th className="bg-table-data-cell border-matrix-lines sticky top-(--matrix-title-height) z-2 border-r border-b px-2 py-1 text-left align-bottom last:border-r-0">
+    <th
+      className={`bg-table-data-cell border-matrix-lines sticky top-(--matrix-title-height) z-3 border-r border-b px-2 py-1 text-left align-bottom last:border-r-0 ${
+        isFirstColumn
+          ? "w-(--matrix-first-column-width) max-w-(--matrix-first-column-width) min-w-(--matrix-first-column-width) @min-3xl:left-0"
+          : "@min-3xl:left-(--matrix-first-column-width)"
+      }`}
+    >
       <div className="whitespace-normal contain-[inline-size]">{children}</div>
     </th>
   );
@@ -187,7 +200,7 @@ function MatrixYAxisHeaderCell({
     <LinkedTableCell
       href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}`}
       rowSpan={rowSpan}
-      className={`py-1 text-left align-top font-semibold ${headerCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
+      className={`z-1 w-(--matrix-first-column-width) max-w-(--matrix-first-column-width) min-w-(--matrix-first-column-width) py-1 text-left align-top font-semibold @min-3xl:sticky @min-3xl:left-0 [&>a]:wrap-anywhere [&>a]:whitespace-normal [&>a]:contain-[inline-size] ${headerCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
       as="th"
     >
       {children}
@@ -230,7 +243,7 @@ function MatrixYAxisSubheaderCell({
   return (
     <LinkedTableCell
       href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}&${targetedSampleTermQuery}`}
-      className={`h-px font-normal ${subheaderCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
+      className={`z-1 h-px font-normal @min-3xl:sticky @min-3xl:left-(--matrix-first-column-width) ${subheaderCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
       as="th"
       data-highlight
     >
@@ -261,7 +274,7 @@ function MatrixTitleRow({
     <LinkedTableCell
       href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis`}
       colSpan={colSpan}
-      className={`bg-cell-fates-matrix-title-header sticky top-0 z-3 h-(--matrix-title-height) border-r-0 capitalize [&>a]:contain-[inline-size]`}
+      className={`bg-cell-fates-matrix-title-header sticky top-0 z-4 h-(--matrix-title-height) border-r-0 capitalize [&>a]:contain-[inline-size]`}
       as="th"
     >
       <div className="sticky left-2 flex w-[min(100%,calc(100cqw-1rem))] items-center justify-center gap-2 py-0.5">
@@ -663,6 +676,7 @@ function generateHeaderRow(headerBuckets: MatrixBucket[]): Cell[] {
       id: "blank-parent",
       content: "Starting Sample Terms",
       component: MatrixXAxisCornerCell,
+      componentProps: { isFirstColumn: true },
     },
     {
       id: "blank-child",
