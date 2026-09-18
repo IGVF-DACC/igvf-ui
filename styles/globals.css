@@ -194,6 +194,12 @@
     from var(--color-cell-fates-repr-matrix-data-cell) calc(l - 0.06) c h
   );
 
+  /** Coding Variants page matrix colors */
+  --color-protein-scan-outline: oklch(0.5954 0.1333 251.08);
+  --color-protein-scan-button: oklch(0.9505 0.07 251.08);
+  --color-protein-scan-button-hl: oklch(0.9005 0.07 251.08);
+  --color-protein-scan-label: oklch(0.3 0 0);
+
   /** Radio Button Cards */
   --color-radio-card-outline: var(--color-gray-300);
   --color-radio-card-outline-checked: var(--color-blue-500);
@@ -303,6 +309,12 @@
     --color-cell-fates-repr-matrix-classification: oklch(
       from var(--color-cell-fates-repr-matrix-header) calc(l + 0.04) c h
     );
+
+    /** Coding Variants page matrix colors */
+    --color-protein-scan-outline: oklch(0.5954 0.1333 251.08);
+    --color-protein-scan-button: oklch(0.3 0.07 251.08);
+    --color-protein-scan-button-hl: oklch(0.4 0.07 251.08);
+    --color-protein-scan-label: oklch(0.85 0 0);
 
     /** Radio Button Cards */
     --color-radio-card-outline: var(--color-gray-700);
