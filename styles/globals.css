@@ -194,6 +194,31 @@
     from var(--color-cell-fates-repr-matrix-data-cell) calc(l - 0.06) c h
   );
 
+  /** Coding Variants page matrix colors */
+  --color-protein-scan-outline: oklch(0.5954 0.1333 251.08);
+  --color-protein-scan-button: oklch(0.9505 0.07 251.08);
+  --color-protein-scan-button-hl: oklch(0.9005 0.07 251.08);
+  --color-protein-scan-label: oklch(0.3 0 0);
+  --color-protein-scan-all-outline: var(--color-zinc-600);
+  --color-protein-scan-all-button: var(--color-zinc-100);
+  --color-protein-scan-all-button-hl: var(--color-zinc-200);
+  --color-protein-interaction-outline: oklch(0.6655 0.0851 179.16);
+  --color-protein-interaction-button: oklch(0.9153 0.0748 179.16);
+  --color-protein-interaction-hl: oklch(0.8476 0.0748 179.16);
+  --color-protein-interaction-label: oklch(0.3 0 0);
+  --color-protein-expression-outline: oklch(0.6655 0.0851 179.16);
+  --color-protein-expression-button: oklch(0.9153 0.0748 179.16);
+  --color-protein-expression-hl: oklch(0.8476 0.0748 179.16);
+  --color-protein-expression-label: oklch(0.3 0 0);
+  --color-imaging-outline: oklch(0.6655 0.0621 102.55);
+  --color-imaging-button: oklch(0.9622 0.0621 102.55);
+  --color-imaging-hl: oklch(0.9014 0.0621 102.55);
+  --color-imaging-label: oklch(0.3 0 0);
+  --color-coding-variants-title: oklch(0.84 0.0376 227.68);
+  --color-protein-scan-match: var(--color-yellow-200);
+  --color-protein-scan-match-hover: var(--color-yellow-300);
+  --color-protein-scan-match-border: var(--color-yellow-500);
+
   /** Radio Button Cards */
   --color-radio-card-outline: var(--color-gray-300);
   --color-radio-card-outline-checked: var(--color-blue-500);
@@ -303,6 +328,31 @@
     --color-cell-fates-repr-matrix-classification: oklch(
       from var(--color-cell-fates-repr-matrix-header) calc(l + 0.04) c h
     );
+
+    /** Coding Variants page matrix colors */
+    --color-protein-scan-outline: oklch(0.5954 0.1333 251.08);
+    --color-protein-scan-button: oklch(0.3 0.07 251.08);
+    --color-protein-scan-button-hl: oklch(0.4 0.07 251.08);
+    --color-protein-scan-label: oklch(0.85 0 0);
+    --color-protein-scan-all-outline: var(--color-zinc-400);
+    --color-protein-scan-all-button: var(--color-zinc-800);
+    --color-protein-scan-all-button-hl: var(--color-zinc-700);
+    --color-protein-interaction-outline: oklch(0.5954 0.0851 179.16);
+    --color-protein-interaction-button: oklch(0.3 0.0748 179.16);
+    --color-protein-interaction-hl: oklch(0.4 0.0748 179.16);
+    --color-protein-interaction-label: oklch(0.85 0 0);
+    --color-protein-expression-outline: oklch(0.5954 0.0851 179.16);
+    --color-protein-expression-button: oklch(0.3 0.0748 179.16);
+    --color-protein-expression-hl: oklch(0.4 0.0748 179.16);
+    --color-protein-expression-label: oklch(0.85 0 0);
+    --color-imaging-outline: oklch(0.5954 0.0621 102.55);
+    --color-imaging-button: oklch(0.4 0.0621 102.55);
+    --color-imaging-hl: oklch(0.46 0.0621 102.55);
+    --color-imaging-label: oklch(0.85 0 0);
+    --color-coding-variants-title: oklch(0.3 0.0385 227.68);
+    --color-protein-scan-match: var(--color-yellow-800);
+    --color-protein-scan-match-hover: var(--color-yellow-700);
+    --color-protein-scan-match-border: var(--color-yellow-700);
 
     /** Radio Button Cards */
     --color-radio-card-outline: var(--color-gray-700);

@@ -8,6 +8,12 @@ import { type LinkTo, LinkToArray } from "./lib/types";
 import { type WorkflowObject } from "./lib/workflow";
 
 /**
+ * Represents a React node that is guaranteed to be synchronous, i.e., not a Promise. Newer React
+ * features like Suspense may introduce asynchronous nodes, which this type explicitly excludes.
+ */
+export type SynchronousReactNode = Exclude<ReactNode, Promise<unknown>>;
+
+/**
  * Single audit within an audit category.
  */
 export interface Audit {
@@ -203,6 +209,13 @@ export interface SearchResults<T extends DatabaseObject = DatabaseObject> {
   title: string;
   total: number;
   actions?: ObjectActions[];
+}
+
+/**
+ * Search results object returned by the `/search-quick/` endpoint.
+ */
+export interface SearchQuickResults<T extends DatabaseObject = DatabaseObject> {
+  "@graph": T[];
 }
 
 export interface SearchResultsColumns {
