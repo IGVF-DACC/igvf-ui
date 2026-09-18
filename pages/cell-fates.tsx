@@ -40,11 +40,9 @@ import { type PageProps } from "../lib/next-js";
  * Props for the DifferentiationSeries page component.
  *
  * @property matrix - Matrix results object containing the x and y axes of the data to be displayed
- * @property totalCount - Total number of datasets represented in the matrix
  */
 interface DifferentiationSeriesProps extends PageProps {
   matrix: MatrixResultsObject;
-  totalCount: number;
 }
 
 /**
@@ -60,9 +58,8 @@ type Classification =
  */
 export default function DifferentiationSeries({
   matrix,
-  totalCount,
 }: DifferentiationSeriesProps) {
-  const dataGrid = convertMatrixToDataGrid(matrix, totalCount);
+  const dataGrid = convertMatrixToDataGrid(matrix);
 
   if (dataGrid.length === 0) {
     return (
@@ -93,7 +90,7 @@ export default function DifferentiationSeries({
             className="@container mb-8 grid min-w-0 flex-1 auto-rows-min text-sm"
           >
             <DataTable
-              className="table-row-hl [--matrix-first-column-width:10rem] [--matrix-title-height:calc(1.5rem+1px)]"
+              className="table-row-hl [--matrix-first-column-width:10rem]"
               scrollContainerClassName="max-w-full"
               data={dataGrid}
             />
@@ -117,7 +114,7 @@ function MatrixXAxisCornerCell({
 }) {
   return (
     <th
-      className={`bg-table-data-cell border-matrix-lines sticky top-(--matrix-title-height) z-3 border-r border-b px-2 py-1 text-left align-bottom last:border-r-0 ${
+      className={`bg-table-data-cell border-matrix-lines sticky top-0 z-3 border-r border-b px-2 py-1 text-left align-bottom last:border-r-0 ${
         isFirstColumn
           ? "w-(--matrix-first-column-width) max-w-(--matrix-first-column-width) min-w-(--matrix-first-column-width) @min-3xl:left-0"
           : "@min-3xl:left-(--matrix-first-column-width)"
@@ -150,7 +147,7 @@ function MatrixXAxisHeaderCell({
   return (
     <LinkedTableCell
       href={href}
-      className="bg-matrix-header sticky top-(--matrix-title-height) z-2 w-8 min-w-8 align-bottom last:border-r-0 [&>a]:pt-2"
+      className="bg-matrix-header sticky top-0 z-2 w-8 min-w-8 align-bottom last:border-r-0 [&>a]:pt-2"
       as="th"
     >
       <div className="relative z-1 flex w-full justify-center pb-2">
@@ -250,36 +247,6 @@ function MatrixYAxisSubheaderCell({
       <div className="flex h-full items-center justify-between gap-2 py-1">
         <span>{children}</span>
         <CountBadge count={termCount} />
-      </div>
-    </LinkedTableCell>
-  );
-}
-
-/**
- * Renders a title row for a classification section of the matrix.
- *
- * @param colSpan - Number of columns across the entire matrix
- * @param tableCount - Total count of analysis sets in the table
- */
-function MatrixTitleRow({
-  colSpan,
-  tableCount,
-  children,
-}: {
-  colSpan: number;
-  tableCount: number;
-  children: React.ReactNode;
-}) {
-  return (
-    <LinkedTableCell
-      href="/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&samples.classifications=differentiated+cell+specimen&samples.classifications=reprogrammed+cell+specimen&file_set_type=principal+analysis"
-      colSpan={colSpan}
-      className={`bg-cell-fates-matrix-title-header sticky top-0 z-4 h-(--matrix-title-height) border-r-0 capitalize [&>a]:contain-[inline-size]`}
-      as="th"
-    >
-      <div className="sticky left-2 flex w-[min(100%,calc(100cqw-1rem))] items-center justify-center gap-2 py-0.5">
-        <span>{children}</span>
-        <CountBadge count={tableCount} />
       </div>
     </LinkedTableCell>
   );
@@ -399,10 +366,7 @@ function CountBadge({ count }: { count: number }) {
  * @param matrix - Matrix of results to convert
  * @returns Data table representation of the matrix
  */
-function convertMatrixToDataGrid(
-  matrix: MatrixResultsObject,
-  totalCount: number
-): DataTableFormat {
+function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
   // Get the group-by properties for the x-axis and the y-axis and ensure they exist. Even with no
   // data these group property names should still exist, so throw if we can't even get that.
   const [xGroupBy] = getMatrixAxisGroups(matrix.x);
@@ -469,21 +433,6 @@ function convertMatrixToDataGrid(
   );
 
   return [
-    {
-      id: "table-header",
-      isHeaderRow: true,
-      cells: [
-        createCell({
-          id: "table-header-cell",
-          content: "Total Datasets",
-          colSpan: headerBuckets.length + 2,
-          component: MatrixTitleRow,
-          componentProps: {
-            tableCount: totalCount,
-          },
-        }),
-      ],
-    },
     {
       id: "header",
       cells: headerCells,
@@ -725,7 +674,6 @@ export async function getServerSideProps({
     return {
       props: {
         matrix: results.matrix,
-        totalCount: results.total,
         pageContext: { title: "Cell Fates" },
         isJson: false,
       },
