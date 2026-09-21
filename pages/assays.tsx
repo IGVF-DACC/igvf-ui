@@ -40,6 +40,17 @@ import {
 import type { Profiles } from "../globals";
 
 /**
+ * Props for the Assay Summary page component from getServerSideProps.
+ */
+interface Props {
+  assaySummary: MatrixResultsObject;
+  assayTitleDescriptionMap: Record<string, string>;
+  pageContext: {
+    title: string;
+  };
+}
+
+/**
  * List of sample classifications that should be hidden from the matrix data.
  */
 const hiddenClassifications = ["multiplexed sample", "pooled cell specimen"];
@@ -79,6 +90,46 @@ const totalCell: Cell = {
   content: "Grand Total",
   component: CounterHeaderCell,
 };
+
+/**
+ * Main component for the Assay Summary page.
+ */
+export default function AssaySummary({
+  assaySummary,
+  assayTitleDescriptionMap,
+}: {
+  assaySummary: MatrixResultsObject;
+  assayTitleDescriptionMap: Record<string, string>;
+}) {
+  const sessionContext = useContext(SessionContext);
+  const preferredAssayTitleDescriptionMap =
+    sessionContext && "profiles" in sessionContext
+      ? getPreferredAssayTitleDescriptionMap(
+          sessionContext.profiles as Profiles
+        )
+      : {};
+
+  const assayTableData = convertMatrixToDataTable(assaySummary);
+
+  return (
+    <div className="@container">
+      <PagePreamble pageTitle="Assays" />
+      <div
+        id="assay-summary-table"
+        role="table"
+        className="overflow-x-auto text-xs"
+      >
+        <DataTable
+          data={assayTableData}
+          meta={{
+            assayTitleDescriptionMap,
+            preferredAssayTitleDescriptionMap,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 /**
  * Custom cell renderer for the three fixed header cells for Target Category, Assay, and Preferred.
@@ -429,54 +480,6 @@ function convertMatrixToDataTable(
   // Generate the header row and combine it with the data rows.
   const headerRow = generateHeaderRow(columnMap);
   return [headerRow].concat(dataRows);
-}
-
-/**
- * Main component for the Assay Summary page.
- */
-export default function AssaySummary({
-  assaySummary,
-  assayTitleDescriptionMap,
-}: {
-  assaySummary: MatrixResultsObject;
-  assayTitleDescriptionMap: Record<string, string>;
-}) {
-  const sessionContext = useContext(SessionContext);
-  const preferredAssayTitleDescriptionMap =
-    sessionContext && "profiles" in sessionContext
-      ? getPreferredAssayTitleDescriptionMap(
-          sessionContext.profiles as Profiles
-        )
-      : {};
-
-  const assayTableData = convertMatrixToDataTable(assaySummary);
-
-  return (
-    <div className="@container">
-      <PagePreamble pageTitle="Assays" />
-      <div
-        id="assay-summary-table"
-        role="table"
-        className="overflow-x-auto text-xs"
-      >
-        <DataTable
-          data={assayTableData}
-          meta={{
-            assayTitleDescriptionMap,
-            preferredAssayTitleDescriptionMap,
-          }}
-        />
-      </div>
-    </div>
-  );
-}
-
-interface Props {
-  assaySummary: MatrixResultsObject;
-  assayTitleDescriptionMap: Record<string, string>;
-  pageContext: {
-    title: string;
-  };
 }
 
 /**
