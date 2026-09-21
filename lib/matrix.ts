@@ -167,6 +167,24 @@ export function isMatrixBucketWrapper(
 }
 
 /**
+ * Type guard to check if an item is a MatrixResults object, which is the expected shape of the
+ * response from the backend for the assay summary data.
+ *
+ * @param item - Response from backend to test if it's likely a matrix object or not
+ * @returns True if the item is a MatrixResults object
+ */
+export function isMatrixResultsObject(item: unknown): item is MatrixResults {
+  return (
+    typeof item === "object" &&
+    item !== null &&
+    "@type" in item &&
+    ((typeof item["@type"] === "string" && item["@type"] === "Omnimatrix") ||
+      (Array.isArray(item["@type"]) && item["@type"].includes("Matrix"))) &&
+    "matrix" in item
+  );
+}
+
+/**
  * Get the group-by property names for a matrix axis. You need these names to access the buckets of
  * that axis, as well as the nested buckets, if that applies to the given axis.
  *
