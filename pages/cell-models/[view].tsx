@@ -2,7 +2,6 @@
 import _ from "lodash";
 import { useRouter } from "next/router";
 // components
-import Breadcrumbs from "../../components/breadcrumbs";
 import DataGrid from "../../components/data-grid";
 import Link from "../../components/link-no-prefetch";
 import { LabelXAxis, LabelYAxis } from "../../components/matrix";
@@ -420,12 +419,11 @@ export default function TissueSummary({
   const dataGrid = convertMatrixToDataGrid(cellModel.matrix, view);
 
   function handleTabClick(tabId) {
-    router.push(viewQueries[tabId].pagePath);
+    void router.push(viewQueries[tabId].pagePath);
   }
 
   return (
     <>
-      <Breadcrumbs item={cellModel} />
       <PagePreamble pageTitle="Cell Models" />
       <TabGroup onChange={handleTabClick} defaultId={view}>
         <TabList>

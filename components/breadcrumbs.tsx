@@ -1,5 +1,4 @@
 // node_modules
-import { PropTypes } from "prop-types";
 import { useContext } from "react";
 // components
 import GlobalContext from "./global-context";
@@ -7,13 +6,37 @@ import Link from "./link-no-prefetch";
 import SeparatedList from "./separated-list";
 import SessionContext from "./session-context";
 // lib
-import buildBreadcrumbs from "../lib/breadcrumbs";
+import buildBreadcrumbs, {
+  type Breadcrumb,
+  type BreadcrumbMeta,
+} from "../lib/breadcrumbs";
+// root
+import type {
+  DatabaseObject,
+  Profiles,
+  Schema,
+  SearchResults,
+} from "../globals";
 
 /**
  * Render a single breadcrumb element. If no `href` provided, the element only displays its title
  * with no link.
+ *
+ * @param href - URL to navigate to when the breadcrumb is clicked
+ * @param className - CSS class to apply to the breadcrumb element
+ * @param id - Unique identifier for the breadcrumb element
  */
-function BreadcrumbElement({ href = "", className, id, children }) {
+function BreadcrumbElement({
+  href,
+  className,
+  id,
+  children,
+}: {
+  href?: string;
+  className?: string;
+  id: string;
+  children: React.ReactNode;
+}) {
   // For all but the last element...
   if (href) {
     return (
@@ -38,19 +61,10 @@ function BreadcrumbElement({ href = "", className, id, children }) {
   );
 }
 
-BreadcrumbElement.propTypes = {
-  // Link to navigate to
-  href: PropTypes.string,
-  // Class name to apply to the element; last element displayed in a specific color
-  className: PropTypes.string.isRequired,
-  // Unique ID within the breadcrumb trail
-  id: PropTypes.string.isRequired,
-};
-
 /**
  * Static breadcrumb for the home page.
  */
-const homeBreadcrumb = [
+const homeBreadcrumb: Breadcrumb[] = [
   {
     title: "Home",
     href: "/",
@@ -59,8 +73,20 @@ const homeBreadcrumb = [
 
 /**
  * Render a breadcrumb trail for the current page.
+ *
+ * @param item - Database object for which to render breadcrumbs
+ * @param title - Title of the current page or item
+ * @param meta - Additional metadata for building the breadcrumb trail
  */
-export default function Breadcrumbs({ item, title = "", meta = {} }) {
+export default function Breadcrumbs({
+  item,
+  title,
+  meta = {},
+}: {
+  item: DatabaseObject | SearchResults | Schema | Profiles;
+  title?: string;
+  meta?: BreadcrumbMeta;
+}) {
   const { page } = useContext(GlobalContext);
   const { collectionTitles, sessionProperties } = useContext(SessionContext);
 
@@ -81,7 +107,7 @@ export default function Breadcrumbs({ item, title = "", meta = {} }) {
       <SeparatedList
         className="mb-4 flex items-center text-xs"
         separator={
-          <div className="mt-[-2px] px-2 font-bold text-gray-800 dark:text-gray-200">
+          <div className="-mt-0.5 px-2 font-bold text-gray-800 dark:text-gray-200">
             /
           </div>
         }
@@ -102,12 +128,3 @@ export default function Breadcrumbs({ item, title = "", meta = {} }) {
     </nav>
   );
 }
-
-Breadcrumbs.propTypes = {
-  // Item to display breadcrumbs for
-  item: PropTypes.object.isRequired,
-  // Title of the item if not from pageProps.title
-  title: PropTypes.string,
-  // Metadata about the item
-  meta: PropTypes.object,
-};
