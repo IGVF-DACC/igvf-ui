@@ -381,6 +381,13 @@ function MatrixDataCell({
     );
   }
 
+  return <MatrixEmptyDataCell />;
+}
+
+/**
+ * Renders an empty matrix data cell with the same borders as populated matrix cells.
+ */
+function MatrixEmptyDataCell() {
   return (
     <td className="border-matrix-lines bg-table-data-cell border-r border-b" />
   );
@@ -430,9 +437,6 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
     return [];
   }
 
-  // Generate the cells for the header row.
-  const headerCells = generateHeaderRow(headerBuckets);
-
   // Get the buckets for the y-axis sample classification. With no data, the classification row will
   // be empty, so we return an empty array to indicate no data grid can be generated.
   const classificationBuckets = getMatrixBuckets(
@@ -443,6 +447,9 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
   // Generate a mapping of column keys to their indices for quick lookup when determining the column
   // of a data cell.
   const columnMap = generateMatrixColumnMap(headerBuckets);
+
+  // Generate the header cells in the same order represented by the column map.
+  const headerCells = generateHeaderRow(columnMap);
 
   // Determine if the reprogrammed classifications have any populated data. This will help determine
   // whether the differentiated section should render its bottom table line because the reprogrammed
@@ -622,7 +629,12 @@ function generateRows(
 
       // Initialize the data row cells for the current child row with empty cells. We'll populate
       // them with the actual data from the column buckets next.
-      const dataRowCells = generateEmptyRowCells(headerBuckets.length);
+      const dataRowCells: Cell[] = generateEmptyRowCells(
+        headerBuckets.length
+      ).map((cell) => ({
+        ...cell,
+        component: MatrixEmptyDataCell,
+      }));
 
       // Populate the data row cells with the actual data from the column buckets.
       columnBucketPairs.forEach((columnBucketPair) => {
@@ -746,13 +758,13 @@ function pairTaxaBuckets(
  * Generates the header row for the x-axis of the data grid. Include a blank cell at the beginning
  * of the row for the blank upper-left corner cell between the X and Y axis labels.
  *
- * @param headerBuckets - Buckets for the x-axis header row
+ * @param columnMap - Assay titles mapped to their displayed column indexes
  * @returns Array of cells representing the header row including the blank corner cell
  */
-function generateHeaderRow(headerBuckets: MatrixBucket[]): Cell[] {
-  const headerCells: Cell[] = headerBuckets.map((bucket) => ({
-    id: toShishkebabCase(bucket.key),
-    content: bucket.key,
+function generateHeaderRow(columnMap: ColumnMap): Cell[] {
+  const headerCells: Cell[] = Object.keys(columnMap).map((assay) => ({
+    id: toShishkebabCase(assay),
+    content: assay,
     component: MatrixXAxisHeaderCell,
   }));
 

@@ -617,14 +617,6 @@ function NavigationExpanded({ navigationClick, toggleNavCollapsed }) {
           handleGroupClick={handleParentClick}
         >
           <NavigationHrefItem
-            id="cell-fates"
-            href="/cell-fates"
-            navigationClick={navigationClick}
-            isChildItem
-          >
-            Cell Fates
-          </NavigationHrefItem>
-          <NavigationHrefItem
             id="raw-datasets"
             href={`/search/?type=MeasurementSet${extraQueries}`}
             navigationClick={navigationClick}
