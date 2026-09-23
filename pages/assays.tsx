@@ -219,7 +219,35 @@ function CounterHeaderCell({
 /**
  * Displays the data cells for the data columns, using a right-aligned number.
  */
-function CounterCell({ children }: { children: React.ReactNode }) {
+function CounterCell({
+  assaySlims,
+  assayTerms,
+  preferredAssay,
+  samplesClassification,
+  children,
+}: {
+  assaySlims: string;
+  assayTerms: string;
+  preferredAssay: string;
+  samplesClassification: string;
+  children: string;
+}) {
+  if (children) {
+    return (
+      <LinkedTableCell
+        href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(assayTerms)}&preferred_assay_titles=${encodeUriElement(preferredAssay)}&samples.classifications=${encodeUriElement(samplesClassification)}`}
+        className={`${
+          children
+            ? "bg-assay-summary-matrix-data-cell"
+            : "bg-white dark:bg-black"
+        } border-panel w-8 border-r border-b p-2 text-center align-middle last:border-r-0`}
+        data-highlight
+      >
+        {children}
+      </LinkedTableCell>
+    );
+  }
+
   return (
     <td
       className={`${
@@ -227,7 +255,6 @@ function CounterCell({ children }: { children: React.ReactNode }) {
           ? "bg-assay-summary-matrix-data-cell"
           : "bg-white dark:bg-black"
       } border-panel w-8 border-r border-b p-2 text-center align-middle last:border-r-0`}
-      data-highlight
     >
       {children}
     </td>
@@ -490,6 +517,12 @@ function convertMatrixToDataTable(
                 id: `counter-${toShishkebabCase(bucket.key)}`,
                 content: abbreviateNumber(bucket.doc_count),
                 component: CounterCell,
+                componentProps: {
+                  assaySlims: bucket0.key,
+                  assayTerms: bucket1.key,
+                  preferredAssay: bucket2.key,
+                  samplesClassification: bucket.key,
+                },
               };
 
               // Update the totals for the row and column.
