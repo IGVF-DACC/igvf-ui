@@ -244,6 +244,7 @@ function TotalCell({ children }: { children: React.ReactNode }) {
 
 /**
  * Displays the row header cells for the Target Category, Assay, and Preferred Assay Title columns.
+ *
  * @param rowSpan - Number of rows that the cell should span
  */
 function RowHeaderCell({
@@ -266,31 +267,35 @@ function RowHeaderCell({
 
 /**
  * Displays the assay title cell with a tooltip for the corresponding definition, if any.
+ *
  * @param rowSpan - Number of rows that the cell should span
  * @param meta - Contains the Assay title to definition map
  */
 function AssayCell({
   rowSpan,
+  assaySlims,
   meta,
   children,
 }: {
   rowSpan: number;
+  assaySlims: string;
   meta?: AssayTableMeta;
-  children: React.ReactNode;
+  children: string;
 }) {
   // Convert children to assayTitle regardless of type, and use that to get the corresponding
   // definition.
   const assayTitle = arbitraryTypeToText(children);
 
   return (
-    <th
+    <LinkedTableCell
+      href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(children)}`}
       className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
       {...(rowSpan > 1 ? { rowSpan } : {})}
     >
       <AnnotatedValue externalAnnotations={meta?.assayTitleDescriptionMap}>
         {assayTitle}
       </AnnotatedValue>
-    </th>
+    </LinkedTableCell>
   );
 }
 
@@ -429,6 +434,9 @@ function convertMatrixToDataTable(
         id: `assay-${toShishkebabCase(bucket1.key)}`,
         content: bucket1.key,
         component: AssayCell,
+        componentProps: {
+          assaySlims: bucket0.key,
+        },
       };
 
       // Generate the preferred assay title child rows for the assay row.
