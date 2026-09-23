@@ -24,11 +24,12 @@ import {
   toShishkebabCase,
 } from "../lib/general";
 import {
-  type ColumnMap,
   generateEmptyRowCells,
   generateMatrixColumnMap,
   getMatrixAxisGroups,
   getMatrixBuckets,
+  isMatrixResultsObject,
+  type ColumnMap,
   type MatrixResults,
   type MatrixResultsObject,
 } from "../lib/matrix";
@@ -500,23 +501,6 @@ function getAssayTerms(assaySummary: MatrixResultsObject): string[] {
   return [...terms];
 }
 
-/**
- * Type guard to check if an item is a MatrixResults object, which is the expected shape of the
- * response from the backend for the assay summary data.
- *
- * @param item - Response from backend to test if it's likely a matrix object or not
- * @returns True if the item is a MatrixResults object
- */
-function isMatrixResultsObject(item: unknown): item is MatrixResults {
-  return (
-    typeof item === "object" &&
-    item !== null &&
-    "@type" in item &&
-    typeof item["@type"] === "string" &&
-    item["@type"] === "Omnimatrix"
-  );
-}
-
 export async function getServerSideProps(
   context: GetServerSidePropsContext
 ): Promise<GetServerSidePropsResult<Props>> {
@@ -537,8 +521,8 @@ export async function getServerSideProps(
   const extraQueryParams = params.toString();
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const assaySummary = (
-    await request.getObject(
-      `/omnimatrix/?type=MeasurementSet&config=AssaySummary${
+    await request.getObject<MatrixResults>(
+      `/matrix/?type=MeasurementSet&config=AssaySummary&status=released${
         extraQueryParams ? `&${extraQueryParams}` : ""
       }`
     )
@@ -550,6 +534,7 @@ export async function getServerSideProps(
       );
     }
 
+    // Get the mapping of assay terms to their titles and descriptions.
     const assayTerms = getAssayTerms(assaySummary.matrix);
     const assayTitleDescriptionMap = await getAssayTitleDescriptionMap(
       assayTerms,
