@@ -251,15 +251,16 @@ function RowHeaderCell({
   children,
 }: {
   rowSpan: number;
-  children: React.ReactNode;
+  children: string;
 }) {
   return (
-    <th
+    <LinkedTableCell
+      href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(children)}`}
       className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
       {...(rowSpan > 1 ? { rowSpan } : {})}
     >
       {children}
-    </th>
+    </LinkedTableCell>
   );
 }
 
