@@ -61,6 +61,12 @@ interface Props extends PageProps {
   pageQuery: string;
 }
 
+type AssayTableMeta = {
+  assayTitleDescriptionMap: Record<string, string>;
+  preferredAssayTitleDescriptionMap: Record<string, string>;
+  pageQuery: string;
+};
+
 /**
  * List of sample classifications that should be hidden from the matrix data.
  */
@@ -128,7 +134,7 @@ export default function AssaySummary({
         role="table"
         className="overflow-x-auto text-xs"
       >
-        <DataTable
+        <DataTable<AssayTableMeta>
           data={assayTableData}
           meta={{
             assayTitleDescriptionMap,
@@ -239,7 +245,7 @@ function AssayCell({
   children,
 }: {
   rowSpan: number;
-  meta?: { assayTitleDescriptionMap: Record<string, string> };
+  meta?: AssayTableMeta;
   children: React.ReactNode;
 }) {
   // Convert children to assayTitle regardless of type, and use that to get the corresponding
@@ -271,7 +277,7 @@ function PreferredAssayHeaderCell({
   children,
 }: {
   rowSpan: number;
-  meta?: { preferredAssayTitleDescriptionMap: Record<string, string> };
+  meta?: AssayTableMeta;
   children: React.ReactNode;
 }) {
   const preferredAssayTitle = arbitraryTypeToText(children);
@@ -335,7 +341,7 @@ function TermCategoryTotalsDataCell({
  */
 function generateHeaderRow(columnMap: ColumnMap): Row {
   const dynamicHeaderCells = Object.keys(columnMap).map((key) => ({
-    id: toShishkebabCase(key),
+    id: `counter-${toShishkebabCase(key)}`,
     content: key,
     component: CounterHeaderCell,
   }));
@@ -378,7 +384,7 @@ function convertMatrixToDataTable(
 
     // Generate the term category header cell for the row.
     const termCategoryCell: Cell = {
-      id: toShishkebabCase(bucket0.key),
+      id: `term-category-${toShishkebabCase(bucket0.key)}`,
       content: bucket0.key,
       component: RowHeaderCell,
     };
@@ -387,7 +393,7 @@ function convertMatrixToDataTable(
     const assayRows = getMatrixBuckets(bucket0, yProp1).map((bucket1) => {
       // Generate the assay cell for the row.
       const assayCell: Cell = {
-        id: toShishkebabCase(bucket1.key),
+        id: `assay-${toShishkebabCase(bucket1.key)}`,
         content: bucket1.key,
         component: AssayCell,
       };
@@ -396,7 +402,7 @@ function convertMatrixToDataTable(
       const preferredAssayRows = getMatrixBuckets(bucket1, yProp2).map(
         (bucket2) => {
           const preferredAssayCell: Cell = {
-            id: toShishkebabCase(bucket2.key),
+            id: `preferred-assay-${toShishkebabCase(bucket2.key)}`,
             content: bucket2.key,
             component: PreferredAssayHeaderCell,
           };
@@ -419,7 +425,7 @@ function convertMatrixToDataTable(
             const columnIndex = columnMap[bucket.key];
             if (columnIndex !== undefined) {
               dataCells[columnIndex] = {
-                id: toShishkebabCase(bucket.key),
+                id: `counter-${toShishkebabCase(bucket.key)}`,
                 content: abbreviateNumber(bucket.doc_count),
                 component: CounterCell,
               };
