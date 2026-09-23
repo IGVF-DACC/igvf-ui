@@ -75,6 +75,12 @@ type AssayTableMeta = {
 const hiddenClassifications = ["multiplexed sample", "pooled cell specimen"];
 
 /**
+ * Responsive width and maximum width for the Assay column.
+ */
+const assayColumnWidthClasses =
+  "w-[140px] max-w-[140px] @xl:w-[200px] @xl:max-w-[200px] @6xl:w-[340px] @6xl:max-w-[340px]";
+
+/**
  * The first three columns have fixed content that doesn't come from the matrix data.
  */
 const fixedHeaderCells: Cell[] = [
@@ -89,7 +95,7 @@ const fixedHeaderCells: Cell[] = [
     id: "assay",
     content: "Assay",
     component: FixedHeaderCell,
-    componentProps: { widthClasses: "w-[140px] @xl:w-[200px] @6xl:w-[340px]" },
+    componentProps: { widthClasses: assayColumnWidthClasses },
     isHeaderCell: true,
   }),
   createCell({
@@ -290,7 +296,7 @@ function AssayCell({
   return (
     <LinkedTableCell
       href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(children)}`}
-      className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
+      className={`${assayColumnWidthClasses} border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black [&>a]:wrap-break-word [&>a]:whitespace-normal`}
       as="th"
       {...(rowSpan > 1 ? { rowSpan } : {})}
     >
@@ -313,27 +319,33 @@ function AssayCell({
  */
 function PreferredAssayHeaderCell({
   rowSpan,
+  assaySlims,
+  assayTerms,
   meta,
   children,
 }: {
   rowSpan: number;
+  assaySlims: string;
+  assayTerms: string;
   meta?: AssayTableMeta;
-  children: React.ReactNode;
+  children: string;
 }) {
   const preferredAssayTitle = arbitraryTypeToText(children);
 
   return (
-    <th
+    <LinkedTableCell
+      href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(assayTerms)}&preferred_assay_titles=${encodeUriElement(children)}`}
       className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
       {...(rowSpan > 1 ? { rowSpan } : {})}
       data-highlight
     >
       <AnnotatedValue
+        className="relative z-1"
         externalAnnotations={meta?.preferredAssayTitleDescriptionMap}
       >
         {preferredAssayTitle}
       </AnnotatedValue>
-    </th>
+    </LinkedTableCell>
   );
 }
 
@@ -451,6 +463,10 @@ function convertMatrixToDataTable(
             id: `preferred-assay-${toShishkebabCase(bucket2.key)}`,
             content: bucket2.key,
             component: PreferredAssayHeaderCell,
+            componentProps: {
+              assaySlims: bucket0.key,
+              assayTerms: bucket1.key,
+            },
           };
 
           // Initialize the data cells with empty content, and add a last Total cell.
