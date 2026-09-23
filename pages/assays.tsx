@@ -7,6 +7,7 @@ import { useContext } from "react";
 // components
 import { AnnotatedValue } from "../components/annotated-value";
 import { DataTable } from "../components/data-table";
+import { LinkedTableCell } from "../components/matrix";
 import PagePreamble from "../components/page-preamble";
 import SessionContext from "../components/session-context";
 // lib
@@ -38,6 +39,7 @@ import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
 } from "../lib/ontology-terms";
+import { encodeUriElement } from "../lib/query-encoding";
 // root
 import type { Profiles } from "../globals";
 
@@ -106,6 +108,9 @@ const totalCell: Cell = {
   id: "total",
   content: "Grand Total",
   component: CounterHeaderCell,
+  componentProps: {
+    isTotalCell: true,
+  },
 };
 
 /**
@@ -171,13 +176,37 @@ function FixedHeaderCell({
 /**
  * Displays the vertical header cells for the data columns, using sideways text.
  */
-function CounterHeaderCell({ children }: { children: React.ReactNode }) {
+function CounterHeaderCell({
+  isTotalCell,
+  meta,
+  children,
+}: {
+  isTotalCell: boolean;
+  meta?: AssayTableMeta;
+  children: string;
+}) {
+  if (isTotalCell) {
+    // This header cell shows the grand total, so it shouldn't link to a search.
+    return (
+      <th className="bg-assay-summary-matrix-data-column-header border-panel sticky top-0 z-2 w-12.5 border-r border-b px-1 py-2 align-bottom font-semibold whitespace-nowrap text-black last:border-r-0">
+        <div className="mx-auto inline-flex rotate-180 justify-self-center text-start text-black [writing-mode:vertical-lr] dark:text-white">
+          {children}
+        </div>
+      </th>
+    );
+  }
+
+  // Not a cell that shows the grand total, so it should link to a corresponding search.
   return (
-    <th className="bg-assay-summary-matrix-data-column-header border-panel sticky top-0 z-2 w-12.5 border-r border-b px-1 py-2 align-bottom font-semibold whitespace-nowrap text-black last:border-r-0">
+    <LinkedTableCell
+      href={`/search/?${meta.pageQuery}&samples.classifications=${encodeUriElement(children)}`}
+      as="th"
+      className="bg-assay-summary-matrix-data-column-header border-panel sticky top-0 z-2 w-12.5 border-r border-b px-1 py-2 align-bottom font-semibold whitespace-nowrap text-black last:border-r-0"
+    >
       <div className="mx-auto inline-flex rotate-180 justify-self-center text-start text-black [writing-mode:vertical-lr] dark:text-white">
         {children}
       </div>
-    </th>
+    </LinkedTableCell>
   );
 }
 
@@ -344,6 +373,9 @@ function generateHeaderRow(columnMap: ColumnMap): Row {
     id: `counter-${toShishkebabCase(key)}`,
     content: key,
     component: CounterHeaderCell,
+    componentProps: {
+      isTotalCell: false,
+    },
   }));
   const headerCells = fixedHeaderCells
     .concat(dynamicHeaderCells)
