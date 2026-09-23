@@ -33,6 +33,7 @@ import {
   type MatrixResults,
   type MatrixResultsObject,
 } from "../lib/matrix";
+import { type PageProps } from "../lib/next-js";
 import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
@@ -41,14 +42,23 @@ import {
 import type { Profiles } from "../globals";
 
 /**
- * Props for the Assay Summary page component from getServerSideProps.
+ * Base query string for the Assay Summary page.
  */
-interface Props {
+const BASE_PAGE_QUERY = "type=MeasurementSet&status=released";
+
+/**
+ * Props for the Assay Summary page component from getServerSideProps. This doesn't extend
+ * `PageProps` because this page doesn't use many of its properties.
+ *
+ * @property assaySummary - The matrix results object for the assay summary.
+ * @property assayTitleDescriptionMap - A mapping of assay titles to their descriptions.
+ * @property pageQuery - The base query string used for the page.
+ * @property pageContext - Contextual information for the page, including the title.
+ */
+interface Props extends PageProps {
   assaySummary: MatrixResultsObject;
   assayTitleDescriptionMap: Record<string, string>;
-  pageContext: {
-    title: string;
-  };
+  pageQuery: string;
 }
 
 /**
@@ -98,10 +108,8 @@ const totalCell: Cell = {
 export default function AssaySummary({
   assaySummary,
   assayTitleDescriptionMap,
-}: {
-  assaySummary: MatrixResultsObject;
-  assayTitleDescriptionMap: Record<string, string>;
-}) {
+  pageQuery,
+}: Props) {
   const sessionContext = useContext(SessionContext);
   const preferredAssayTitleDescriptionMap =
     sessionContext && "profiles" in sessionContext
@@ -114,7 +122,7 @@ export default function AssaySummary({
 
   return (
     <div className="@container">
-      <PagePreamble pageTitle="Assays" />
+      <PagePreamble />
       <div
         id="assay-summary-table"
         role="table"
@@ -125,6 +133,7 @@ export default function AssaySummary({
           meta={{
             assayTitleDescriptionMap,
             preferredAssayTitleDescriptionMap,
+            pageQuery,
           }}
         />
       </div>
@@ -134,6 +143,7 @@ export default function AssaySummary({
 
 /**
  * Custom cell renderer for the three fixed header cells for Target Category, Assay, and Preferred.
+ *
  * @param widthClasses - Tailwind CSS classes to define the width of the cell
  */
 function FixedHeaderCell({
@@ -251,6 +261,7 @@ function AssayCell({
 /**
  * Displays the header cell for the Preferred Assay Title column. This includes a hover highlight
  * data attribute.
+ *
  * @param rowSpan - Number of rows that the cell should span; for now always 1
  * @param meta - Contains the preferred assay title to description map
  */
@@ -522,16 +533,14 @@ export async function getServerSideProps(
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const assaySummary = (
     await request.getObject<MatrixResults>(
-      `/matrix/?type=MeasurementSet&config=AssaySummary&status=released${
+      `/matrix/?${BASE_PAGE_QUERY}&config=AssaySummary${
         extraQueryParams ? `&${extraQueryParams}` : ""
       }`
     )
   ).union();
   if (FetchRequest.isResponseSuccess(assaySummary)) {
     if (!isMatrixResultsObject(assaySummary)) {
-      throw new Error(
-        `Unexpected response shape for assay summary data: ${JSON.stringify(assaySummary)}`
-      );
+      throw new Error("Unexpected response shape for assay summary data");
     }
 
     // Get the mapping of assay terms to their titles and descriptions.
@@ -545,7 +554,9 @@ export async function getServerSideProps(
       props: {
         assaySummary: assaySummary.matrix,
         assayTitleDescriptionMap,
+        pageQuery: `${BASE_PAGE_QUERY}${extraQueryParams ? `&${extraQueryParams}` : ""}`,
         pageContext: { title: "Assay Summary" },
+        isJson: false,
       },
     };
   }
