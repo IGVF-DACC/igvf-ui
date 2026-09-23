@@ -100,8 +100,8 @@ export default function DifferentiationSeries({
     <div>
       <PagePreamble />
       <p className="my-4">
-        This table displays samples from differentiated and reprogrammed cell
-        specimens. You can also explore a{" "}
+        This table displays processed data from differentiated and reprogrammed
+        cell specimens. You can also explore a{" "}
         <Link href="/search/?type=AnalysisSet&status=released&samples.classifications=*&advancedQuery=samples.classifications:(%22multiplexed+sample%22+AND+%22differentiated+cell+specimen%22)+OR+samples.classifications:(%22multiplexed+sample%22+AND+%22reprogrammed+cell+specimen%22)">
           list of multiplexed samples
         </Link>
