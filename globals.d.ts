@@ -265,37 +265,6 @@ export interface SearchResultsSort {
 }
 
 /**
- * Types within the `matrix` property of matrix search results.
- */
-type MatrixBucket = {
-  key: string;
-  doc_count: number;
-} & {
-  [key: string]: MatrixBucketWrapper | undefined;
-};
-
-type MatrixBucketWrapper = {
-  doc_count_error_upper_bound: number;
-  sum_other_doc_count: number;
-  buckets: MatrixBucket[];
-};
-
-type MatrixAxis = {
-  group_by: string | string[];
-  doc_count: number;
-  label?: string;
-} & Record<string, MatrixBucketWrapper>;
-
-type MatrixResultsObject = {
-  x: MatrixAxis;
-  y: MatrixAxis;
-};
-
-export interface MatrixResults extends SearchResults {
-  matrix: MatrixResultsObject;
-}
-
-/**
  * Result from PUT or POST requests to the data provider.
  */
 export interface DatabaseWriteResponse {
