@@ -258,6 +258,7 @@ function RowHeaderCell({
     <LinkedTableCell
       href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(children)}`}
       className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
+      as="th"
       {...(rowSpan > 1 ? { rowSpan } : {})}
     >
       {children}
@@ -290,9 +291,13 @@ function AssayCell({
     <LinkedTableCell
       href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(children)}`}
       className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
+      as="th"
       {...(rowSpan > 1 ? { rowSpan } : {})}
     >
-      <AnnotatedValue externalAnnotations={meta?.assayTitleDescriptionMap}>
+      <AnnotatedValue
+        className="relative z-1"
+        externalAnnotations={meta?.assayTitleDescriptionMap}
+      >
         {assayTitle}
       </AnnotatedValue>
     </LinkedTableCell>
