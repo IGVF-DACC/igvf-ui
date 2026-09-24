@@ -264,14 +264,25 @@ function CounterCell({
 /**
  * Displays the total count for each row in the last column of the table.
  */
-function TotalCell({ children }: { children: React.ReactNode }) {
+function TotalCell({
+  assaySlims,
+  assayTerms,
+  preferredAssay,
+  children,
+}: {
+  assaySlims: string;
+  assayTerms: string;
+  preferredAssay: string;
+  children: string;
+}) {
   return (
-    <td
+    <LinkedTableCell
+      href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(assayTerms)}&preferred_assay_titles=${encodeUriElement(preferredAssay)}`}
       className="bg-assay-summary-matrix-total-cell border-panel w-8 border-r border-b p-2 text-center align-middle font-semibold last:border-r-0"
       data-highlight
     >
       {children}
-    </td>
+    </LinkedTableCell>
   );
 }
 
@@ -537,6 +548,11 @@ function convertMatrixToDataTable(
             id: "total",
             content: abbreviateNumber(rowTotal),
             component: TotalCell,
+            componentProps: {
+              assaySlims: bucket0.key,
+              assayTerms: bucket1.key,
+              preferredAssay: bucket2.key,
+            },
           };
           columnTotals[dataCells.length - 1] += rowTotal;
 
