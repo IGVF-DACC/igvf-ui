@@ -146,6 +146,7 @@ export default function AssaySummary({
         className="overflow-x-auto text-xs"
       >
         <DataTable<AssayTableMeta>
+          className="table-row-hl"
           data={assayTableData}
           meta={{
             assayTitleDescriptionMap,
@@ -238,7 +239,7 @@ function CounterCell({
         href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(assayTerms)}&preferred_assay_titles=${encodeUriElement(preferredAssay)}&samples.classifications=${encodeUriElement(samplesClassification)}`}
         className={`${
           children
-            ? "bg-assay-summary-matrix-data-cell"
+            ? "bg-assay-summary-matrix-data-cell row-hl-assay-summary-matrix-data-cell-hl"
             : "bg-white dark:bg-black"
         } border-panel w-8 border-r border-b p-2 text-center align-middle last:border-r-0`}
         data-highlight
@@ -278,7 +279,7 @@ function TotalCell({
   return (
     <LinkedTableCell
       href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(assayTerms)}&preferred_assay_titles=${encodeUriElement(preferredAssay)}`}
-      className="bg-assay-summary-matrix-total-cell border-panel w-8 border-r border-b p-2 text-center align-middle font-semibold last:border-r-0"
+      className="bg-assay-summary-matrix-total-cell row-hl-assay-summary-matrix-total-cell-hl border-panel w-8 border-r border-b p-2 text-center align-middle font-semibold last:border-r-0"
       data-highlight
     >
       {children}
@@ -373,7 +374,7 @@ function PreferredAssayHeaderCell({
   return (
     <LinkedTableCell
       href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(assayTerms)}&preferred_assay_titles=${encodeUriElement(children)}`}
-      className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
+      className="row-hl-assay-summary-matrix-header-cell-hl border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
       {...(rowSpan > 1 ? { rowSpan } : {})}
       data-highlight
     >
@@ -427,7 +428,8 @@ function TermCategoryTotalsDataCell({
     return (
       <LinkedTableCell
         href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}${samplesClassificationQuery}`}
-        className="bg-assay-summary-matrix-term-category-total border-panel w-8 border-r border-b px-2 py-1 text-center align-middle font-semibold last:border-r-0"
+        className="bg-assay-summary-matrix-term-category-total row-hl-assay-summary-matrix-term-category-total-hl border-panel w-8 border-r border-b px-2 py-1 text-center align-middle font-semibold last:border-r-0"
+        data-highlight
       >
         {children}
       </LinkedTableCell>
@@ -539,13 +541,6 @@ function convertMatrixToDataTable(
           const dataCells = generateEmptyRowCells(
             Object.keys(columnMap).length + 1
           );
-          Object.entries(columnMap).forEach(([key, value]) => {
-            dataCells[value] = {
-              id: toShishkebabCase(key),
-              content: "",
-              component: CounterCell,
-            };
-          });
 
           // Fill in the data cells with the actual data from the matrix.
           let rowTotal = 0;
