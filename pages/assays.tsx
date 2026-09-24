@@ -411,10 +411,29 @@ function TermCategoryTotalsHeaderCell({
  * Displays the data cell for the Term Category Total rows.
  */
 function TermCategoryTotalsDataCell({
+  assaySlims,
+  samplesClassification,
   children,
 }: {
-  children: React.ReactNode;
+  assaySlims: string;
+  samplesClassification?: string;
+  children: string;
 }) {
+  if (children) {
+    const samplesClassificationQuery = samplesClassification
+      ? `&samples.classifications=${encodeUriElement(samplesClassification)}`
+      : "";
+
+    return (
+      <LinkedTableCell
+        href={`/search/?${BASE_PAGE_QUERY}&assay_term.assay_slims=${encodeUriElement(assaySlims)}${samplesClassificationQuery}`}
+        className="bg-assay-summary-matrix-term-category-total border-panel w-8 border-r border-b px-2 py-1 text-center align-middle font-semibold last:border-r-0"
+      >
+        {children}
+      </LinkedTableCell>
+    );
+  }
+
   return (
     <td className="bg-assay-summary-matrix-term-category-total border-panel w-8 border-r border-b px-2 py-1 text-center align-middle font-semibold last:border-r-0">
       {children}
@@ -466,6 +485,15 @@ function convertMatrixToDataTable(
   const columnMap = generateMatrixColumnMap(
     columnBuckets,
     hiddenClassifications
+  );
+
+  // Generate an array of column keys in the order of their column indices.
+  const columnKeys = Object.entries(columnMap).reduce<string[]>(
+    (keys, [key, columnIndex]) => {
+      keys[columnIndex] = key;
+      return keys;
+    },
+    []
   );
 
   // Generate the data rows for the table, one row with child rows for each term category. Use a
@@ -597,6 +625,10 @@ function convertMatrixToDataTable(
       id: `total-${termCategoryKey}-${i}`,
       content: total ? abbreviateNumber(total) : "",
       component: TermCategoryTotalsDataCell,
+      componentProps: {
+        assaySlims: bucket0.key,
+        samplesClassification: columnKeys[i],
+      },
     }));
 
     // Push the term category totals row to the data rows.
