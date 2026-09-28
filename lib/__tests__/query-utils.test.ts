@@ -2,6 +2,7 @@ import {
   getQueryStringFromServerQuery,
   getUserQueryExtras,
   isJsonFormat,
+  mergeQueryStringParams,
   splitPathAndQueryString,
 } from "../query-utils";
 
@@ -30,6 +31,44 @@ describe("Test the getQueryStringFromServerQuery utility function", () => {
     expect(
       getQueryStringFromServerQuery({ a: "1", b: ["2", "2"], c: "3" })
     ).toEqual("a=1&b=2&c=3");
+  });
+});
+
+describe("Test the mergeQueryStringParams utility function", () => {
+  it("adds new query parameters", () => {
+    expect(mergeQueryStringParams("a=1", { b: "2" })).toEqual("a=1&b=2");
+  });
+
+  it("replaces existing query parameters", () => {
+    expect(mergeQueryStringParams("a=1&b=2", { b: "3" })).toEqual(
+      "a=1&b=3"
+    );
+  });
+
+  it("replaces a positive parameter with its negative form", () => {
+    expect(
+      mergeQueryStringParams("type=AnalysisSet&status=released", {
+        "status!": "deleted",
+      })
+    ).toEqual("type=AnalysisSet&status%21=deleted");
+  });
+
+  it("replaces a negative parameter with its positive form", () => {
+    expect(
+      mergeQueryStringParams("type=AnalysisSet&status%21=deleted", {
+        status: "released",
+      })
+    ).toEqual("type=AnalysisSet&status=released");
+  });
+
+  it("replaces an existing parameter with multiple values", () => {
+    expect(mergeQueryStringParams("a=1&a=2&b=3", { a: ["4", "5"] })).toEqual(
+      "b=3&a=4&a=5"
+    );
+  });
+
+  it("ignores undefined query parameters", () => {
+    expect(mergeQueryStringParams("a=1", { b: undefined })).toEqual("a=1");
   });
 });
 
