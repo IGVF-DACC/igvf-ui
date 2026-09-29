@@ -23,7 +23,7 @@ import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
 import { abbreviateNumber, toShishkebabCase } from "../lib/general";
 import { getPreferredAssayTitleDescriptionMap } from "../lib/ontology-terms";
-import { encodeUriElement } from "../lib/query-encoding";
+import { mergeQueryStringParams } from "../lib/query-utils";
 import {
   generateEmptyRowCells,
   generateMatrixColumnMap,
@@ -37,13 +37,37 @@ import {
 import { type PageProps } from "../lib/next-js";
 
 /**
+ * Base query string for fetching data for the matrix object to generate cell-fates data.
+ */
+const BASE_QUERY_STRING = new URLSearchParams([
+  ["type", "AnalysisSet"],
+  ["status", "released"],
+  ["samples.classifications!", "multiplexed sample"],
+  ["samples.classifications", "differentiated cell specimen"],
+  ["samples.classifications", "reprogrammed cell specimen"],
+  ["file_set_type", "principal analysis"],
+]).toString();
+
+/**
  * Props for the DifferentiationSeries page component.
  *
  * @property matrix - Matrix results object containing the x and y axes of the data to be displayed
+ * @property pageQuery - Full query string used to request the matrix data
  */
 interface DifferentiationSeriesProps extends PageProps {
   matrix: MatrixResultsObject;
+  pageQuery: string;
 }
+
+/**
+ * Metadata for cell-fates data table, including mappings of assay titles to descriptions and the
+ * base page query.
+ *
+ * @property pageQuery - Base query string used for the page including any extra query parameters
+ */
+type CellFatesTableMeta = {
+  pageQuery: string;
+};
 
 /**
  * Classification of cell specimens as indicated in the matrix data.
@@ -84,6 +108,7 @@ type TaxaBucketPair = {
  */
 export default function DifferentiationSeries({
   matrix,
+  pageQuery,
 }: DifferentiationSeriesProps) {
   const dataGrid = convertMatrixToDataGrid(matrix);
 
@@ -119,6 +144,7 @@ export default function DifferentiationSeries({
               className="table-row-hl [--matrix-first-column-width:10rem]"
               scrollContainerClassName="max-w-full"
               data={dataGrid}
+              meta={{ pageQuery }}
             />
           </div>
         </div>
@@ -155,8 +181,10 @@ function MatrixXAxisCornerCell({
  * Displays the vertical header cells for the data columns, using sideways text.
  */
 function MatrixXAxisHeaderCell({
+  meta,
   children,
 }: {
+  meta: CellFatesTableMeta;
   children: string | number | React.ReactNode;
 }) {
   if (typeof children !== "string") {
@@ -167,8 +195,12 @@ function MatrixXAxisHeaderCell({
   const { profiles } = useContext(SessionContext);
   const preferredAssayTitleDescriptionMap =
     getPreferredAssayTitleDescriptionMap(profiles);
-  const assayQuery = `preferred_assay_titles=${encodeUriElement(assay)}`;
-  const href = `/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${assayQuery}`;
+
+  // Build the query string for the cell based on the assay and current page query.
+  const queryString = mergeCellFatesQueryStringParams(meta.pageQuery, {
+    preferred_assay_titles: assay,
+  });
+  const href = `/search/?${queryString}`;
 
   return (
     <LinkedTableCell
@@ -197,18 +229,21 @@ function MatrixXAxisHeaderCell({
  * @param isBottomEdgeCell - Whether this cell is at the bottom edge of the matrix
  * @param classification - Classification of the cell specimen
  * @param sampleTerm - sample term name associated with the cell specimen
+ * @param meta - Metadata for the cell fates table
  */
 function MatrixYAxisHeaderCell({
   rowSpan,
   isBottomEdgeCell,
   classification,
   sampleTerm,
+  meta,
   children,
 }: {
   rowSpan: number;
   isBottomEdgeCell: boolean;
   classification: Classification;
   sampleTerm: string;
+  meta: CellFatesTableMeta;
   children: React.ReactNode;
 }) {
   const headerCellClass =
@@ -216,12 +251,14 @@ function MatrixYAxisHeaderCell({
       ? "bg-cell-fates-diff-matrix-header"
       : "bg-cell-fates-repr-matrix-header";
 
-  const classificationQuery = `samples.classifications=${encodeUriElement(classification)}`;
-  const sampleTermQuery = `samples.sample_terms.term_name=${encodeUriElement(sampleTerm)}`;
+  const queryString = mergeCellFatesQueryStringParams(meta.pageQuery, {
+    "samples.classifications": classification,
+    "samples.sample_terms.term_name": sampleTerm,
+  });
 
   return (
     <LinkedTableCell
-      href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}`}
+      href={`/search/?${queryString}`}
       rowSpan={rowSpan}
       className={`z-1 w-(--matrix-first-column-width) max-w-(--matrix-first-column-width) min-w-(--matrix-first-column-width) py-1 text-left align-top font-semibold @min-3xl:sticky @min-3xl:left-0 [&>a]:wrap-anywhere [&>a]:whitespace-normal [&>a]:contain-[inline-size] ${headerCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
       as="th"
@@ -245,6 +282,7 @@ function MatrixYAxisSubheaderCell({
   sampleTerm,
   targetedSampleTerm,
   termCount,
+  meta,
   children,
 }: {
   isBottomEdgeCell: boolean;
@@ -252,6 +290,7 @@ function MatrixYAxisSubheaderCell({
   sampleTerm: string;
   targetedSampleTerm: string;
   termCount: number;
+  meta: CellFatesTableMeta;
   children: React.ReactNode;
 }) {
   const subheaderCellClass =
@@ -259,13 +298,15 @@ function MatrixYAxisSubheaderCell({
       ? "bg-cell-fates-diff-matrix-subheader row-hl-cell-fates-diff-matrix-subheader-hl"
       : "bg-cell-fates-repr-matrix-subheader row-hl-cell-fates-repr-matrix-subheader-hl";
 
-  const classificationQuery = `samples.classifications=${encodeUriElement(classification)}`;
-  const sampleTermQuery = `samples.sample_terms.term_name=${encodeUriElement(sampleTerm)}`;
-  const targetedSampleTermQuery = `samples.targeted_sample_term.term_name=${encodeUriElement(targetedSampleTerm)}`;
+  const queryString = mergeCellFatesQueryStringParams(meta.pageQuery, {
+    "samples.classifications": classification,
+    "samples.sample_terms.term_name": sampleTerm,
+    "samples.targeted_sample_term.term_name": targetedSampleTerm,
+  });
 
   return (
     <LinkedTableCell
-      href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}&${targetedSampleTermQuery}`}
+      href={`/search/?${queryString}`}
       className={`z-1 h-px font-normal @min-3xl:sticky @min-3xl:left-(--matrix-first-column-width) ${subheaderCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
       as="th"
       data-highlight
@@ -288,23 +329,27 @@ function MatrixClassificationTitleRow({
   classification,
   colSpan,
   classificationCount,
+  meta,
   children,
 }: {
   classification: Classification;
   colSpan: number;
   classificationCount: number;
+  meta: CellFatesTableMeta;
   children: React.ReactNode;
 }) {
-  const classificationQuery = `samples.classifications=${encodeUriElement(classification)}`;
-
   const headerCellClass =
     classification === "differentiated cell specimen"
       ? "bg-cell-fates-diff-matrix-classification"
       : "bg-cell-fates-repr-matrix-classification";
 
+  const queryString = mergeCellFatesQueryStringParams(meta.pageQuery, {
+    "samples.classifications": classification,
+  });
+
   return (
     <LinkedTableCell
-      href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}`}
+      href={`/search/?${queryString}`}
       colSpan={colSpan}
       className={`[&>a]:[contain-[inline-size]] border-r-0 capitalize ${headerCellClass}`}
       as="th"
@@ -332,6 +377,7 @@ function MatrixDataCell({
   sampleTerm,
   targetedSampleTerm,
   assay,
+  meta,
   children,
 }: {
   isBottomEdgeCell: boolean;
@@ -339,13 +385,16 @@ function MatrixDataCell({
   sampleTerm: string;
   targetedSampleTerm: string;
   assay: string;
+  meta: CellFatesTableMeta;
   children: DataCellContent;
 }) {
   if (children.human > 0 || children.mouse > 0) {
-    const classificationQuery = `samples.classifications=${encodeUriElement(classification)}`;
-    const sampleTermQuery = `samples.sample_terms.term_name=${encodeUriElement(sampleTerm)}`;
-    const targetedSampleTermQuery = `samples.targeted_sample_term.term_name=${encodeUriElement(targetedSampleTerm)}`;
-    const assayQuery = `preferred_assay_titles=${encodeUriElement(assay)}`;
+    const queryString = mergeCellFatesQueryStringParams(meta.pageQuery, {
+      "samples.classifications": classification,
+      "samples.sample_terms.term_name": sampleTerm,
+      "samples.targeted_sample_term.term_name": targetedSampleTerm,
+      preferred_assay_titles: assay,
+    });
 
     const { human, mouse } = children;
 
@@ -372,7 +421,7 @@ function MatrixDataCell({
 
     return (
       <LinkedTableCell
-        href={`/search/?type=AnalysisSet&status=released&samples.classifications!=multiplexed+sample&file_set_type=principal+analysis&${classificationQuery}&${sampleTermQuery}&${targetedSampleTermQuery}&${assayQuery}`}
+        href={`/search/?${queryString}`}
         className={`text-center align-middle text-xs [&>a]:flex [&>a]:items-center [&>a]:justify-center [&>a]:px-0.5 [&>a]:py-1 ${dataCellClass} ${isBottomEdgeCell ? "border-b-0" : ""}`}
         data-highlight
       >
@@ -785,6 +834,24 @@ function generateHeaderRow(columnMap: ColumnMap): Cell[] {
 }
 
 /**
+ * Merge parameters into a Cell Fates query while preserving the required exclusion of multiplexed
+ * samples.
+ *
+ * @param queryString - Existing Cell Fates query string
+ * @param params - Additional parameters to merge into the query string
+ * @returns Merged query string with the multiplexed-sample exclusion
+ */
+function mergeCellFatesQueryStringParams(
+  queryString: string,
+  params: Parameters<typeof mergeQueryStringParams>[1]
+): string {
+  const mergedQueryString = mergeQueryStringParams(queryString, params);
+  const mergedParams = new URLSearchParams(mergedQueryString);
+  mergedParams.set("samples.classifications!", "multiplexed sample");
+  return mergedParams.toString();
+}
+
+/**
  * Checks if a specific classification is populated within the given classification buckets.
  *
  * @param classificationBuckets - Array of classification buckets to check
@@ -806,15 +873,20 @@ function isClassificationPopulated(
  *
  * @param req - Incoming HTTP request object containing headers and cookies.
  */
-export async function getServerSideProps({
-  req,
-}: GetServerSidePropsContext): Promise<
-  GetServerSidePropsResult<DifferentiationSeriesProps>
-> {
+export async function getServerSideProps(
+  context: GetServerSidePropsContext
+): Promise<GetServerSidePropsResult<DifferentiationSeriesProps>> {
+  const { req, query } = context;
+
+  // Merge the base query string with any additional query parameters from the current page query.
+  const pageQuery = mergeCellFatesQueryStringParams(BASE_QUERY_STRING, query);
+
+  // Construct the full page query string including the base query for the page and any extra query
+  // parameters.
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const results = (
     await request.getObject<MatrixResults>(
-      "/matrix/?type=AnalysisSet&config=CellFates&status=released&samples.classifications!=multiplexed+sample&samples.classifications=differentiated+cell+specimen&samples.classifications=reprogrammed+cell+specimen&file_set_type=principal+analysis"
+      `/matrix/?${pageQuery}&config=CellFates`
     )
   ).union();
 
@@ -822,6 +894,7 @@ export async function getServerSideProps({
     return {
       props: {
         matrix: results.matrix,
+        pageQuery,
         pageContext: { title: "Cell Fates" },
         isJson: false,
       },
