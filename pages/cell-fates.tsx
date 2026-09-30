@@ -505,7 +505,8 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
   // section that follows has data.
   const isReprogrammedPopulated = isClassificationPopulated(
     classificationBuckets,
-    "reprogrammed cell specimen"
+    "reprogrammed cell specimen",
+    yGroupByTaxa
   );
 
   // Generate the rows for the "differentiated cell specimen" classification.
@@ -578,8 +579,12 @@ function convertBucketsToRows(
     return [];
   }
 
-  // Get the buckets containing the sample taxa.
+  // Get the buckets containing the sample taxa. It's possible that there are no taxa buckets for
+  // this classification if all samples have no taxa information.
   const taxaBuckets = getMatrixBuckets(classificationBucket, yGroupByTaxa);
+  if (!taxaBuckets || taxaBuckets.length === 0) {
+    return [];
+  }
 
   // Get the bucket containing human and mouse taxa.
   const humanBucket = taxaBuckets.find(
@@ -860,11 +865,14 @@ function mergeCellFatesQueryStringParams(
  */
 function isClassificationPopulated(
   classificationBuckets: MatrixBucket[],
-  classificationKey: Classification
+  classificationKey: Classification,
+  yGroupByTaxa: string
 ): boolean {
-  return classificationBuckets.some(
+  const bucket = classificationBuckets.find(
     (bucket) => bucket.key === classificationKey
   );
+  const yGroupByTaxaBuckets = getMatrixBuckets(bucket, yGroupByTaxa);
+  return yGroupByTaxaBuckets.length > 0;
 }
 
 /**
