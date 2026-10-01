@@ -44,10 +44,16 @@ import { encodeUriElement } from "../lib/query-encoding";
 import type { Profiles } from "../globals";
 
 /**
- * Base query string for the Assay Summary page.
+ * Base query string for the Assay Summary page matrix requests.
  */
 const BASE_PAGE_QUERY =
   "type=MeasurementSet&samples.classifications!=multiplexed+sample&samples.classifications!=pooled+cell+specimen&status=released";
+
+/**
+ * Base query string for the Assay Summary page links to list views.
+ */
+const BASE_LIST_QUERY =
+  "type=AnalysisSet&status=release&file_set_type=principal+analysis";
 
 /**
  * Props for the Assay Summary page component from getServerSideProps. This doesn't extend
@@ -186,75 +192,43 @@ function FixedHeaderCell({
 
 /**
  * Displays the vertical header cells for the data columns, using sideways text.
- *
- * @param isTotalCell - Indicates if the cell is the total cell for the row
- * @param meta - Metadata for the assay data table
  */
-function CounterHeaderCell({
-  isTotalCell,
-  meta,
-  children,
-}: {
-  isTotalCell: boolean;
-  meta?: AssayTableMeta;
-  children: string;
-}) {
-  if (isTotalCell) {
-    // This header cell shows the grand total, so it shouldn't link to a search.
-    return (
-      <th className="bg-assay-summary-matrix-data-column-header border-panel sticky top-0 z-2 w-12.5 border-r border-b px-1 py-2 align-bottom font-semibold whitespace-nowrap text-black last:border-r-0">
-        <div className="mx-auto inline-flex rotate-180 justify-self-center text-start text-black [writing-mode:vertical-lr] dark:text-white">
-          {children}
-        </div>
-      </th>
-    );
-  }
-
-  // Not a cell that shows the grand total, so it should link to a corresponding search.
-  const pageQuery = meta ? meta.pageQuery : BASE_PAGE_QUERY;
+function CounterHeaderCell({ children }: { children: React.ReactNode }) {
   return (
-    <LinkedTableCell
-      href={`/search/?${pageQuery}&samples.classifications=${encodeUriElement(children)}`}
-      as="th"
-      className="bg-assay-summary-matrix-data-column-header border-panel sticky top-0 z-2 w-12.5 border-r border-b px-1 py-2 align-bottom font-semibold whitespace-nowrap text-black last:border-r-0"
-    >
+    <th className="bg-assay-summary-matrix-data-column-header border-panel sticky top-0 z-2 w-12.5 border-r border-b px-1 py-2 align-bottom font-semibold whitespace-nowrap text-black last:border-r-0">
       <div className="mx-auto inline-flex rotate-180 justify-self-center text-start text-black [writing-mode:vertical-lr] dark:text-white">
         {children}
       </div>
-    </LinkedTableCell>
+    </th>
   );
 }
 
 /**
- * Displays the data cells for the data columns, using a right-aligned number.
+ * Displays the data cells for the data columns.
  *
- * @param assaySlims - Assay slims for the row
- * @param assayTerms - Assay terms for the row
  * @param preferredAssay - Preferred assay for the row
  * @param samplesClassification - Samples classification for the row
  * @param meta - Metadata for the assay data table
  */
 function CounterCell({
-  assaySlims,
-  assayTerms,
   preferredAssay,
   samplesClassification,
-  meta,
   children,
 }: {
-  assaySlims: string;
-  assayTerms: string;
   preferredAssay: string;
   samplesClassification: string;
-  meta?: AssayTableMeta;
   children: string;
 }) {
   if (children) {
-    const pageQuery = meta ? meta.pageQuery : BASE_PAGE_QUERY;
+    // Create search params for the list view link from BASE_LIST_QUERY and the preferred assay and
+    // samples classification.
+    const params = new URLSearchParams(BASE_LIST_QUERY);
+    params.set("preferred_assay_titles", preferredAssay);
+    params.set("samples.classifications", samplesClassification);
 
     return (
       <LinkedTableCell
-        href={`/search/?${pageQuery}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(assayTerms)}&preferred_assay_titles=${encodeUriElement(preferredAssay)}&samples.classifications=${encodeUriElement(samplesClassification)}`}
+        href={`/search/?${params.toString()}`}
         className={`${
           children
             ? "bg-assay-summary-matrix-data-cell row-hl-assay-summary-matrix-data-cell-hl"
@@ -267,6 +241,7 @@ function CounterCell({
     );
   }
 
+  // No data to render, so render an empty table cell.
   return (
     <td
       className={`${
@@ -283,63 +258,39 @@ function CounterCell({
 /**
  * Displays the total count for each row in the last column of the table.
  *
- * @param assaySlims - Assay slims for the row
- * @param assayTerms - Assay terms for the row
- * @param preferredAssay - Preferred assay for the row
  * @param meta - Metadata for the assay data table
  */
-function TotalCell({
-  assaySlims,
-  assayTerms,
-  preferredAssay,
-  meta,
-  children,
-}: {
-  assaySlims: string;
-  assayTerms: string;
-  preferredAssay: string;
-  meta?: AssayTableMeta;
-  children: string;
-}) {
-  const pageQuery = meta ? meta.pageQuery : BASE_PAGE_QUERY;
-
+function TotalCell({ children }: { children: React.ReactNode }) {
   return (
-    <LinkedTableCell
-      href={`/search/?${pageQuery}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(assayTerms)}&preferred_assay_titles=${encodeUriElement(preferredAssay)}`}
-      className="bg-assay-summary-matrix-total-cell row-hl-assay-summary-matrix-total-cell-hl border-panel w-8 border-r border-b p-2 text-center align-middle font-semibold last:border-r-0"
+    <td
+      className="bg-assay-summary-matrix-total-cell border-panel w-8 border-r border-b p-2 text-center align-middle font-semibold last:border-r-0"
       data-highlight
     >
       {children}
-    </LinkedTableCell>
+    </td>
   );
 }
 
 /**
- * Displays the row header cells for the Target Category, Assay, and Preferred Assay Title columns.
+ * Displays the row header cells for the Target Category and Preferred Assay Title columns.
  *
  * @param rowSpan - Number of rows that the cell should span
  * @param meta - Metadata for the assay data table
  */
 function RowHeaderCell({
   rowSpan,
-  meta,
   children,
 }: {
   rowSpan: number;
-  meta?: AssayTableMeta;
   children: string;
 }) {
-  const pageQuery = meta ? meta.pageQuery : BASE_PAGE_QUERY;
-
   return (
-    <LinkedTableCell
-      href={`/search/?${pageQuery}&assay_term.assay_slims=${encodeUriElement(children)}`}
+    <th
       className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
-      as="th"
       {...(rowSpan > 1 ? { rowSpan } : {})}
     >
       {children}
-    </LinkedTableCell>
+    </th>
   );
 }
 
@@ -347,37 +298,30 @@ function RowHeaderCell({
  * Displays the assay title cell with a tooltip for the corresponding definition, if any.
  *
  * @param rowSpan - Number of rows that the cell should span
- * @param assaySlims - Assay slims for the row
  * @param meta - Contains the Assay title to definition map
  */
 function AssayCell({
   rowSpan,
-  assaySlims,
   meta,
   children,
 }: {
   rowSpan: number;
-  assaySlims: string;
-  meta?: AssayTableMeta;
-  children: string;
+  meta?: { assayTitleDescriptionMap: Record<string, string> };
+  children: React.ReactNode;
 }) {
+  // Convert children to assayTitle regardless of type, and use that to get the corresponding
+  // definition.
   const assayTitle = arbitraryTypeToText(children);
-  const pageQuery = meta ? meta.pageQuery : BASE_PAGE_QUERY;
 
   return (
-    <LinkedTableCell
-      href={`/search/?${pageQuery}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(children)}`}
-      className={`${assayColumnWidthClasses} border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black [&>a]:wrap-break-word [&>a]:whitespace-normal`}
-      as="th"
+    <th
+      className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
       {...(rowSpan > 1 ? { rowSpan } : {})}
     >
-      <AnnotatedValue
-        className="relative z-1"
-        externalAnnotations={meta?.assayTitleDescriptionMap}
-      >
+      <AnnotatedValue externalAnnotations={meta?.assayTitleDescriptionMap}>
         {assayTitle}
       </AnnotatedValue>
-    </LinkedTableCell>
+    </th>
   );
 }
 
@@ -386,40 +330,31 @@ function AssayCell({
  * data attribute.
  *
  * @param rowSpan - Number of rows that the cell should span; for now always 1
- * @param assaySlims - Assay slims for the row
- * @param assayTerms - Assay terms for the row
  * @param meta - Contains the preferred assay title to description map
  */
 function PreferredAssayHeaderCell({
   rowSpan,
-  assaySlims,
-  assayTerms,
   meta,
   children,
 }: {
   rowSpan: number;
-  assaySlims: string;
-  assayTerms: string;
-  meta?: AssayTableMeta;
-  children: string;
+  meta?: { preferredAssayTitleDescriptionMap: Record<string, string> };
+  children: React.ReactNode;
 }) {
   const preferredAssayTitle = arbitraryTypeToText(children);
-  const pageQuery = meta ? meta.pageQuery : BASE_PAGE_QUERY;
 
   return (
-    <LinkedTableCell
-      href={`/search/?${pageQuery}&assay_term.assay_slims=${encodeUriElement(assaySlims)}&assay_term.term_name=${encodeUriElement(assayTerms)}&preferred_assay_titles=${encodeUriElement(children)}`}
-      className="row-hl-assay-summary-matrix-header-cell-hl border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
+    <th
+      className="border-panel border-r border-b bg-white p-2 text-left align-top font-normal last:border-r-0 dark:bg-black"
       {...(rowSpan > 1 ? { rowSpan } : {})}
       data-highlight
     >
       <AnnotatedValue
-        className="relative z-1"
         externalAnnotations={meta?.preferredAssayTitleDescriptionMap}
       >
         {preferredAssayTitle}
       </AnnotatedValue>
-    </LinkedTableCell>
+    </th>
   );
 }
 
@@ -447,39 +382,12 @@ function TermCategoryTotalsHeaderCell({
 
 /**
  * Displays the data cell for the Term Category Total rows.
- *
- * @param assaySlims - Assay slims for the row
- * @param samplesClassification - Samples classification for the row
- * @param meta - Metadata for the assay data table
  */
 function TermCategoryTotalsDataCell({
-  assaySlims,
-  samplesClassification,
-  meta,
   children,
 }: {
-  assaySlims: string;
-  samplesClassification?: string;
-  meta?: AssayTableMeta;
-  children: string;
+  children: React.ReactNode;
 }) {
-  if (children) {
-    const samplesClassificationQuery = samplesClassification
-      ? `&samples.classifications=${encodeUriElement(samplesClassification)}`
-      : "";
-    const pageQuery = meta ? meta.pageQuery : BASE_PAGE_QUERY;
-
-    return (
-      <LinkedTableCell
-        href={`/search/?${pageQuery}&assay_term.assay_slims=${encodeUriElement(assaySlims)}${samplesClassificationQuery}`}
-        className="bg-assay-summary-matrix-term-category-total row-hl-assay-summary-matrix-term-category-total-hl border-panel w-8 border-r border-b px-2 py-1 text-center align-middle font-semibold last:border-r-0"
-        data-highlight
-      >
-        {children}
-      </LinkedTableCell>
-    );
-  }
-
   return (
     <td className="bg-assay-summary-matrix-term-category-total border-panel w-8 border-r border-b px-2 py-1 text-center align-middle font-semibold last:border-r-0">
       {children}
