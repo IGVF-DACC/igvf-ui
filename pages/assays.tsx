@@ -39,7 +39,6 @@ import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
 } from "../lib/ontology-terms";
-import { encodeUriElement } from "../lib/query-encoding";
 // root
 import type { Profiles } from "../globals";
 
