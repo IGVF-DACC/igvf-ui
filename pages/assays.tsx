@@ -39,6 +39,7 @@ import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
 } from "../lib/ontology-terms";
+import { encodeUriElement } from "../lib/query-encoding";
 // root
 import type { Profiles } from "../globals";
 
@@ -257,16 +258,23 @@ function CounterCell({
 /**
  * Displays the total count for each row in the last column of the table.
  *
- * @param meta - Metadata for the assay data table
+ * @param preferredAssay - Preferred assay for the row
  */
-function TotalCell({ children }: { children: React.ReactNode }) {
+function TotalCell({
+  preferredAssay,
+  children,
+}: {
+  preferredAssay: string;
+  children: string;
+}) {
   return (
-    <td
-      className="bg-assay-summary-matrix-total-cell border-panel w-8 border-r border-b p-2 text-center align-middle font-semibold last:border-r-0"
+    <LinkedTableCell
+      href={`/search/?${BASE_LIST_QUERY}&preferred_assay_titles=${encodeUriElement(preferredAssay)}`}
+      className="bg-assay-summary-matrix-total-cell row-hl-assay-summary-matrix-total-cell-hl border-panel w-8 border-r border-b p-2 text-center align-middle font-semibold last:border-r-0"
       data-highlight
     >
       {children}
-    </td>
+    </LinkedTableCell>
   );
 }
 
@@ -407,9 +415,6 @@ function generateHeaderRow(columnMap: ColumnMap): Row {
     id: `counter-${toShishkebabCase(key)}`,
     content: key,
     component: CounterHeaderCell,
-    componentProps: {
-      isTotalCell: false,
-    },
   }));
   const headerCells = fixedHeaderCells
     .concat(dynamicHeaderCells)
@@ -439,15 +444,6 @@ function convertMatrixToDataTable(
   const columnBuckets = getMatrixBuckets(matrix.x, xProp);
   const columnMap = generateMatrixColumnMap(columnBuckets);
 
-  // Generate an array of column keys in the order of their column indices.
-  const columnKeys = Object.entries(columnMap).reduce<string[]>(
-    (keys, [key, columnIndex]) => {
-      keys[columnIndex] = key;
-      return keys;
-    },
-    []
-  );
-
   // Generate the data rows for the table, one row with child rows for each term category. Use a
   // `forEach` loop instead of `map` so we can insert total-count rows after each term category row.
   const dataRows = [];
@@ -469,9 +465,6 @@ function convertMatrixToDataTable(
         id: `assay-${toShishkebabCase(bucket1.key)}`,
         content: bucket1.key,
         component: AssayCell,
-        componentProps: {
-          assaySlims: bucket0.key,
-        },
       };
 
       // Generate the preferred assay title child rows for the assay row.
@@ -481,10 +474,6 @@ function convertMatrixToDataTable(
             id: `preferred-assay-${toShishkebabCase(bucket2.key)}`,
             content: bucket2.key,
             component: PreferredAssayHeaderCell,
-            componentProps: {
-              assaySlims: bucket0.key,
-              assayTerms: bucket1.key,
-            },
           };
 
           // Initialize the data cells with empty content, and add a last Total cell.
@@ -502,8 +491,6 @@ function convertMatrixToDataTable(
                 content: abbreviateNumber(bucket.doc_count),
                 component: CounterCell,
                 componentProps: {
-                  assaySlims: bucket0.key,
-                  assayTerms: bucket1.key,
                   preferredAssay: bucket2.key,
                   samplesClassification: bucket.key,
                 },
@@ -522,8 +509,6 @@ function convertMatrixToDataTable(
             content: abbreviateNumber(rowTotal),
             component: TotalCell,
             componentProps: {
-              assaySlims: bucket0.key,
-              assayTerms: bucket1.key,
               preferredAssay: bucket2.key,
             },
           };
@@ -570,10 +555,6 @@ function convertMatrixToDataTable(
       id: `total-${termCategoryKey}-${i}`,
       content: total ? abbreviateNumber(total) : "",
       component: TermCategoryTotalsDataCell,
-      componentProps: {
-        assaySlims: bucket0.key,
-        samplesClassification: columnKeys[i],
-      },
     }));
 
     // Push the term category totals row to the data rows.
