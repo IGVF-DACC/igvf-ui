@@ -76,29 +76,34 @@ type Classification =
   "differentiated cell specimen" | "reprogrammed cell specimen";
 
 /**
- * Represents the content of a data cell, including counts for human and mouse samples.
+ * Represents the content of a data cell, including counts for human, mouse, and mixed samples.
  *
  * @property human - Count of human samples
  * @property mouse - Count of mouse samples
+ * @property mixed - Count of mixed human and mouse samples
  */
 type DataCellContent = {
   human: number;
   mouse: number;
+  mixed: number;
 };
 
 /**
- * Represents a pair of matrix buckets for the same term, separated by taxa. Either bucket can be
+ * Represents a group of matrix buckets for the same term, separated by taxa. Any bucket can be
  * absent when a term only has data for one taxon. The key uniquely identifies the matrix term based
  * on the term's key.
  *
  * @property key - Key identifying the matrix term
  * @property human - Human sample matrix bucket
  * @property mouse - Mouse sample matrix bucket
+ * @property mixed - Mixed sample matrix bucket where both human and mouse samples are present on
+ *                   one sample
  */
-type TaxaBucketPair = {
+type TaxaBucketGroup = {
   key: string;
   human?: MatrixBucket;
   mouse?: MatrixBucket;
+  mixed?: MatrixBucket;
 };
 
 /**
@@ -388,7 +393,7 @@ function MatrixDataCell({
   meta: CellFatesTableMeta;
   children: DataCellContent;
 }) {
-  if (children.human > 0 || children.mouse > 0) {
+  if (children.human > 0 || children.mouse > 0 || children.mixed > 0) {
     const queryString = mergeCellFatesQueryStringParams(meta.pageQuery, {
       "samples.classifications": classification,
       "samples.sample_terms.term_name": sampleTerm,
@@ -396,19 +401,19 @@ function MatrixDataCell({
       preferred_assay_titles: assay,
     });
 
-    const { human, mouse } = children;
+    const { human, mouse, mixed } = children;
 
     let dataCellClass = "";
     let content: React.ReactNode = "";
-    if (human > 0 && mouse === 0) {
+    if (human > 0 && mouse === 0 && mixed === 0) {
       dataCellClass =
         "bg-cell-fates-human-matrix-data-cell row-hl-cell-fates-human-matrix-data-cell-hl";
       content = "Hs";
-    } else if (mouse > 0 && human === 0) {
+    } else if (mouse > 0 && human === 0 && mixed === 0) {
       dataCellClass =
         "bg-cell-fates-mouse-matrix-data-cell row-hl-cell-fates-mouse-matrix-data-cell-hl";
       content = "Mm";
-    } else if (human > 0 && mouse > 0) {
+    } else if ((human > 0 && mouse > 0) || mixed > 0) {
       dataCellClass =
         "bg-cell-fates-mixed-matrix-data-cell row-hl-cell-fates-mixed-matrix-data-cell-hl";
       content = (
@@ -593,10 +598,14 @@ function convertBucketsToRows(
   const mouseBucket = taxaBuckets.find(
     (bucket) => bucket.key === "Mus musculus"
   );
+  const mixedBucket = taxaBuckets.find(
+    (bucket) => bucket.key === "no_samples_taxa"
+  );
 
   // Get the sample buckets for human and mouse taxa.
   const humanSampleBuckets = getMatrixBuckets(humanBucket, yGroupByParent);
   const mouseSampleBuckets = getMatrixBuckets(mouseBucket, yGroupByParent);
+  const mixedSampleBuckets = getMatrixBuckets(mixedBucket, yGroupByParent);
 
   // Create the section title row for the classification.
   const sectionTitle: Row = {
@@ -620,6 +629,7 @@ function convertBucketsToRows(
   const rows = generateRows(
     humanSampleBuckets,
     mouseSampleBuckets,
+    mixedSampleBuckets,
     classification,
     headerBuckets,
     columnMap,
@@ -647,6 +657,7 @@ function convertBucketsToRows(
 function generateRows(
   humanSampleBuckets: MatrixBucket[],
   mouseSampleBuckets: MatrixBucket[],
+  mixedSampleBuckets: MatrixBucket[],
   classification: Classification,
   headerBuckets: MatrixBucket[],
   columnMap: ColumnMap,
@@ -657,9 +668,10 @@ function generateRows(
   // Pair the human and mouse sample buckets by their starting sample term key. "Parent" refers to
   // the starting sample term.
   const parentRows: Row[] = [];
-  const parentBucketPairs = pairTaxaBuckets(
+  const parentBucketPairs = groupTaxaBuckets(
     humanSampleBuckets,
-    mouseSampleBuckets
+    mouseSampleBuckets,
+    mixedSampleBuckets
   );
 
   // Iterate over each pair of parent buckets to generate the corresponding child rows and data
@@ -667,18 +679,20 @@ function generateRows(
   parentBucketPairs.forEach((parentBucketPair, index) => {
     // Generate the child bucket pairs for the current parent bucket pair. "Child" refers to the
     // targeted sample term.
-    const childBucketPairs = pairTaxaBuckets(
+    const childBucketPairs = groupTaxaBuckets(
       getMatrixBuckets(parentBucketPair.human, yGroupByChild),
-      getMatrixBuckets(parentBucketPair.mouse, yGroupByChild)
+      getMatrixBuckets(parentBucketPair.mouse, yGroupByChild),
+      getMatrixBuckets(parentBucketPair.mixed, yGroupByChild)
     );
 
     const childRows: Row[] = [];
     childBucketPairs.forEach((childBucketPair, subIndex) => {
       // Generate the column bucket pairs for the current child bucket pair. "Column" refers to the
       // preferred assay titles.
-      const columnBucketPairs = pairTaxaBuckets(
+      const columnBucketPairs = groupTaxaBuckets(
         getMatrixBuckets(childBucketPair.human, xGroupBy),
-        getMatrixBuckets(childBucketPair.mouse, xGroupBy)
+        getMatrixBuckets(childBucketPair.mouse, xGroupBy),
+        getMatrixBuckets(childBucketPair.mixed, xGroupBy)
       );
 
       // Initialize the data row cells for the current child row with empty cells. We'll populate
@@ -702,6 +716,7 @@ function generateRows(
         const content = {
           human: columnBucketPair.human?.doc_count ?? 0,
           mouse: columnBucketPair.mouse?.doc_count ?? 0,
+          mixed: columnBucketPair.mixed?.doc_count ?? 0,
         };
         dataRowCells[columnIndex] = createCell({
           id: toShishkebabCase(columnBucketPair.key),
@@ -736,7 +751,8 @@ function generateRows(
             targetedSampleTerm: childBucketPair.key,
             termCount:
               (childBucketPair.human?.doc_count ?? 0) +
-              (childBucketPair.mouse?.doc_count ?? 0),
+              (childBucketPair.mouse?.doc_count ?? 0) +
+              (childBucketPair.mixed?.doc_count ?? 0),
           },
         }),
         ...dataRowCells,
@@ -780,32 +796,29 @@ function generateRows(
  * @returns Paired human and mouse buckets, preserving human bucket order and appending mouse-only
  *          buckets
  */
-function pairTaxaBuckets(
+function groupTaxaBuckets(
   humanBuckets: MatrixBucket[],
-  mouseBuckets: MatrixBucket[]
-): TaxaBucketPair[] {
-  // Initialize a map to store paired human and mouse buckets by their key.
-  const pairs = new Map<string, TaxaBucketPair>();
+  mouseBuckets: MatrixBucket[],
+  mixedBuckets: MatrixBucket[]
+): TaxaBucketGroup[] {
+  const groups = new Map<string, TaxaBucketGroup>();
 
-  // Add all human buckets to the map according to their key.
-  humanBuckets.forEach((bucket) => {
-    pairs.set(bucket.key, { key: bucket.key, human: bucket });
-  });
+  function addBuckets(
+    buckets: MatrixBucket[],
+    taxon: "human" | "mouse" | "mixed"
+  ) {
+    buckets.forEach((bucket) => {
+      const group = groups.get(bucket.key) ?? { key: bucket.key };
+      group[taxon] = bucket;
+      groups.set(bucket.key, group);
+    });
+  }
 
-  // Add all mouse buckets to the map, keyed by their key. If a human bucket with the same key
-  // already exists, pair it with the mouse bucket; otherwise, create a new entry for the mouse-only
-  // bucket.
-  mouseBuckets.forEach((bucket) => {
-    const pair = pairs.get(bucket.key);
-    if (pair) {
-      pair.mouse = bucket;
-    } else {
-      pairs.set(bucket.key, { key: bucket.key, mouse: bucket });
-    }
-  });
+  addBuckets(humanBuckets, "human");
+  addBuckets(mouseBuckets, "mouse");
+  addBuckets(mixedBuckets, "mixed");
 
-  // Convert the map of paired buckets to an array and return it.
-  return Array.from(pairs.values());
+  return Array.from(groups.values());
 }
 
 /**
@@ -894,7 +907,7 @@ export async function getServerSideProps(
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const results = (
     await request.getObject<MatrixResults>(
-      `/matrix/?${pageQuery}&config=CellFates`
+      `/missing-matrix/?${pageQuery}&config=CellFates`
     )
   ).union();
 
