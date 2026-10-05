@@ -552,6 +552,7 @@ export type UserActionObject = {
  * Data structure common to all document object types.
  */
 export interface DocumentObject extends DatabaseObject {
+  aliases?: string[];
   attachment: AttachmentObject;
   characterization_method?: string;
   description: string;

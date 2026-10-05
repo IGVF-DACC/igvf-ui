@@ -732,12 +732,14 @@ export async function requestLibraryDesignFiles(
  * @param item - Item to request supersedes and superseded_by from
  * @param type - `@type` of the items that could supersede or be superseded by the item
  * @param request - Request object to use to make the request
+ * @param includedProps - Properties to include in the requested objects (default is ["accession"])
  * @returns Objects that the item supersedes and is superseded by
  */
 export async function requestSupersedes<T extends DatabaseObject>(
   item: DatabaseObject,
   type: string,
-  request: FetchRequest
+  request: FetchRequest,
+  includedProps: string[] = ["accession"]
 ): Promise<{ supersedes: T[]; supersededBy: T[] }> {
   const itemSupersedes = item.supersedes || [];
   const itemSupersededBy = item.superseded_by || [];
@@ -747,7 +749,7 @@ export async function requestSupersedes<T extends DatabaseObject>(
       ? ((
           await request.getMultipleObjectsBulk<T>(
             itemSupersedes,
-            ["accession"],
+            includedProps,
             [type]
           )
         ).unwrap_or([]) as T[])
@@ -756,7 +758,7 @@ export async function requestSupersedes<T extends DatabaseObject>(
       ? ((
           await request.getMultipleObjectsBulk<T>(
             itemSupersededBy,
-            ["accession"],
+            includedProps,
             [type]
           )
         ).unwrap_or([]) as T[])

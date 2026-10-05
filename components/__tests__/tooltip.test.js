@@ -39,4 +39,55 @@ describe("Test tooltips", () => {
 
     jest.useRealTimers();
   });
+
+  it("does not add aria-describedby for a custom child without the attribute", () => {
+    function CustomButton({ children }) {
+      return <button>{children}</button>;
+    }
+
+    function TestComponent() {
+      const tooltipAttr = useTooltip("custom-child");
+
+      return (
+        <TooltipRef tooltipAttr={tooltipAttr}>
+          <CustomButton>Custom child</CustomButton>
+        </TooltipRef>
+      );
+    }
+
+    render(<TestComponent />);
+
+    const button = screen.getByRole("button", { name: "Custom child" });
+    expect(button).not.toHaveAttribute("aria-describedby");
+    expect(button.parentElement).not.toHaveAttribute("aria-describedby");
+  });
+
+  it("does not duplicate aria-describedby on the wrapper when a custom child has it", () => {
+    function CustomButton(props) {
+      return <button {...props} />;
+    }
+
+    function TestComponent() {
+      const tooltipAttr = useTooltip("described-custom-child");
+
+      return (
+        <TooltipRef tooltipAttr={tooltipAttr}>
+          <CustomButton aria-describedby={tooltipAttr.id}>
+            Described custom child
+          </CustomButton>
+        </TooltipRef>
+      );
+    }
+
+    render(<TestComponent />);
+
+    const button = screen.getByRole("button", {
+      name: "Described custom child",
+    });
+    expect(button).toHaveAttribute(
+      "aria-describedby",
+      "tooltip-described-custom-child"
+    );
+    expect(button.parentElement).not.toHaveAttribute("aria-describedby");
+  });
 });

@@ -71,6 +71,29 @@ A button makes the best child of `<TooltipRef>`. This lets people who use screen
 
 If you have a link as the tooltip-ref child, make sure the tooltip text mentions that the user can click this link so that people using screen readers understand this. You can include clickable elements within the tooltip, but this can cause [accessibility issues](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/tooltip_role#description).
 
+### DOM Elements and Custom Components
+
+When the direct child of `<TooltipRef>` is a DOM element such as a `<button>`, `<a>`, or `<div>`, `TooltipRef` adds its interaction handlers, positioning ref, and `aria-describedby` directly to that element. This associates the element with the corresponding tooltip for assistive technologies.
+
+When the direct child is a custom React component, `TooltipRef` instead wraps it in a `<span>` that receives the interaction handlers and positioning ref. It cannot safely pass these properties directly to an arbitrary custom component because the component might not forward them to its underlying DOM element.
+
+For a custom component that renders an interactive element, add `aria-describedby={tooltipAttr.id}` to the custom component and make sure it forwards that property to the focusable DOM element. ARIA attributes on a wrapper are not inherited by its descendants.
+
+```tsx
+const tooltipAttr = useTooltip("document-link");
+
+return (
+  <>
+    <TooltipRef tooltipAttr={tooltipAttr}>
+      <Link href="/documents/example" aria-describedby={tooltipAttr.id}>
+        Example document
+      </Link>
+    </TooltipRef>
+    <Tooltip tooltipAttr={tooltipAttr}>Full document description</Tooltip>
+  </>
+);
+```
+
 ## Tooltip Wrapper
 
 You can put any number of HTML elements and React Components as children of the `<Tooltip>` wrapper. Tooltips generally display simple text though, so try to keep it simple.
