@@ -21,7 +21,7 @@ import {
 } from "../lib/data-table";
 import { errorObjectToProps } from "../lib/errors";
 import FetchRequest from "../lib/fetch-request";
-import { abbreviateNumber, toShishkebabCase } from "../lib/general";
+import { toShishkebabCase } from "../lib/general";
 import { getPreferredAssayTitleDescriptionMap } from "../lib/ontology-terms";
 import { mergeQueryStringParams } from "../lib/query-utils";
 import {
@@ -286,7 +286,6 @@ function MatrixYAxisSubheaderCell({
   classification,
   sampleTerm,
   targetedSampleTerm,
-  termCount,
   meta,
   children,
 }: {
@@ -294,7 +293,6 @@ function MatrixYAxisSubheaderCell({
   classification: Classification;
   sampleTerm: string;
   targetedSampleTerm: string;
-  termCount: number;
   meta: CellFatesTableMeta;
   children: React.ReactNode;
 }) {
@@ -317,8 +315,7 @@ function MatrixYAxisSubheaderCell({
       data-highlight
     >
       <div className="flex h-full items-center justify-between gap-2 py-1">
-        <span>{children}</span>
-        <CountBadge count={termCount} />
+        {children}
       </div>
     </LinkedTableCell>
   );
@@ -333,13 +330,11 @@ function MatrixYAxisSubheaderCell({
 function MatrixClassificationTitleRow({
   classification,
   colSpan,
-  classificationCount,
   meta,
   children,
 }: {
   classification: Classification;
   colSpan: number;
-  classificationCount: number;
   meta: CellFatesTableMeta;
   children: React.ReactNode;
 }) {
@@ -360,8 +355,7 @@ function MatrixClassificationTitleRow({
       as="th"
     >
       <div className="sticky left-2 flex w-[min(100%,calc(100cqw-1rem))] items-center justify-center gap-2 py-0.5">
-        <span>{children}</span>
-        <CountBadge count={classificationCount} />
+        {children}
       </div>
     </LinkedTableCell>
   );
@@ -444,19 +438,6 @@ function MatrixDataCell({
 function MatrixEmptyDataCell() {
   return (
     <td className="border-matrix-lines bg-table-data-cell border-r border-b" />
-  );
-}
-
-/**
- * Display a badge containing a count of items.
- *
- * @param count - Number of items to display in the badge
- */
-function CountBadge({ count }: { count: number }) {
-  return (
-    <span className="inline-flex items-center justify-center rounded-full bg-zinc-500 px-2 text-xs font-semibold text-white dark:bg-zinc-400 dark:text-black">
-      {abbreviateNumber(count)}
-    </span>
   );
 }
 
@@ -618,7 +599,6 @@ function convertBucketsToRows(
         colSpan: headerBuckets.length + 2,
         componentProps: {
           classification,
-          classificationCount: classificationBucket.doc_count,
         },
       }),
     ],
@@ -749,10 +729,6 @@ function generateRows(
             classification,
             sampleTerm: parentBucketPair.key,
             targetedSampleTerm: childBucketPair.key,
-            termCount:
-              (childBucketPair.human?.doc_count ?? 0) +
-              (childBucketPair.mouse?.doc_count ?? 0) +
-              (childBucketPair.mixed?.doc_count ?? 0),
           },
         }),
         ...dataRowCells,
