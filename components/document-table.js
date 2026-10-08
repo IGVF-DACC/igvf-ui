@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 // components
 import AttachmentThumbnail from "./attachment-thumbnail";
 import { DataAreaTitle } from "./data-area";
-import DocumentAttachmentLink from "./document-link";
+import { DocumentAttachmentLink } from "./documents";
 import ItemLink from "./item-link";
 import SortableGrid from "./sortable-grid";
 import Status from "./status";

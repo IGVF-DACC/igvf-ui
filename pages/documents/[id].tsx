@@ -15,7 +15,7 @@ import {
   DataItemValue,
   DataPanel,
 } from "../../components/data-area";
-import DocumentAttachmentLink from "../../components/document-link";
+import { DocumentAttachmentLink } from "../../components/documents";
 import { EditableItem } from "../../components/edit";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";

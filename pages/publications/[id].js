@@ -11,7 +11,7 @@ import {
   DataPanel,
 } from "../../components/data-area";
 import DbxrefList from "../../components/dbxref-list";
-import DocumentAttachmentLink from "../../components/document-link";
+import { DocumentAttachmentLink } from "../../components/documents";
 import DonorTable from "../../components/donor-table";
 import { EditableItem } from "../../components/edit";
 import FileSetTable from "../../components/file-set-table";
