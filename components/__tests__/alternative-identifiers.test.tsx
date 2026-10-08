@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import {
   AlternativeIdentifiers,
   AlternateAccessions,
@@ -12,11 +13,13 @@ describe("AlternativeIdentifiers", () => {
       "@id": "/measurement-sets/IGVFDS0001AAAA/",
       "@type": ["MeasurementSet", "FileSet", "Item"],
       accession: "IGVFDS0001AAAA",
+      status: "released",
     },
     {
       "@id": "/measurement-sets/IGVFDS0002AAAA/",
       "@type": ["MeasurementSet", "FileSet", "Item"],
       accession: "IGVFDS0002AAAA",
+      status: "released",
     },
   ];
 
@@ -25,6 +28,7 @@ describe("AlternativeIdentifiers", () => {
       "@id": "/measurement-sets/IGVFDS0003AAAA/",
       "@type": ["MeasurementSet", "FileSet", "Item"],
       accession: "IGVFDS0003AAAA",
+      status: "released",
     },
   ];
 
@@ -99,6 +103,85 @@ describe("AlternativeIdentifiers", () => {
     );
     const mainDiv = container.firstChild as HTMLElement;
     expect(mainDiv).toHaveClass("text-sm", "text-gray-500");
+  });
+
+  it("displays and sorts items by a specified property", () => {
+    const documents: DatabaseObject[] = [
+      {
+        "@id": "/documents/zebra/",
+        "@type": ["Document", "Item"],
+        description: "Zebra protocol",
+        status: "released",
+      },
+      {
+        "@id": "/documents/apple/",
+        "@type": ["Document", "Item"],
+        description: "apple protocol",
+        status: "released",
+      },
+    ];
+
+    render(
+      <AlternativeIdentifiers supersedes={documents} property="description" />
+    );
+
+    expect(screen.getAllByRole("link").map((link) => link.textContent)).toEqual(
+      ["apple protocol", "Zebra protocol"]
+    );
+  });
+
+  it("displays the object @id when the specified property is missing or empty", () => {
+    const documents: DatabaseObject[] = [
+      {
+        "@id": "/documents/missing/",
+        "@type": ["Document", "Item"],
+        status: "released",
+      },
+      {
+        "@id": "/documents/empty/",
+        "@type": ["Document", "Item"],
+        description: "",
+        status: "released",
+      },
+    ];
+
+    render(
+      <AlternativeIdentifiers supersededBy={documents} property="description" />
+    );
+
+    expect(
+      screen.getByRole("link", { name: "/documents/missing/" })
+    ).toHaveAttribute("href", "/documents/missing");
+    expect(
+      screen.getByRole("link", { name: "/documents/empty/" })
+    ).toHaveAttribute("href", "/documents/empty");
+  });
+
+  it("truncates a long property and displays its full value in a tooltip", async () => {
+    const user = userEvent.setup();
+    const description =
+      "This document description is long enough to require truncation";
+    const documents: DatabaseObject[] = [
+      {
+        "@id": "/documents/long-description/",
+        "@type": ["Document", "Item"],
+        description,
+        status: "released",
+      },
+    ];
+
+    render(
+      <AlternativeIdentifiers supersedes={documents} property="description" />
+    );
+
+    const link = screen.getByRole("link", {
+      name: "This document description is long…",
+    });
+    expect(link).toHaveAttribute("href", "/documents/long-description");
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+
+    await user.hover(link);
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(description);
   });
 });
 
@@ -180,11 +263,13 @@ describe("Edge cases and integration", () => {
         "@id": "/measurement-sets/IGVFDS0001AAAA/",
         "@type": ["MeasurementSet", "FileSet", "Item"],
         accession: "IGVFDS0001AAAA",
+        status: "released",
       },
       {
         "@id": "/auxiliary-sets/IGVFDS0002AAAA/",
         "@type": ["AuxiliarySet", "FileSet", "Item"],
         accession: "IGVFDS0002AAAA",
+        status: "released",
       },
     ];
 
@@ -202,6 +287,7 @@ describe("Edge cases and integration", () => {
           "@id": "/measurement-sets/IGVFDS1000AAAA/",
           "@type": ["MeasurementSet", "FileSet", "Item"],
           accession: "IGVFDS1000AAAA",
+          status: "released",
         },
       ],
       supersededBy: [
@@ -209,6 +295,7 @@ describe("Edge cases and integration", () => {
           "@id": "/measurement-sets/IGVFDS2000AAAA/",
           "@type": ["MeasurementSet", "FileSet", "Item"],
           accession: "IGVFDS2000AAAA",
+          status: "released",
         },
       ],
     };

@@ -1,5 +1,8 @@
 // node_modules
-import PropTypes from "prop-types";
+import {
+  type GetServerSidePropsContext,
+  type GetServerSidePropsResult,
+} from "next";
 // components
 import AliasList from "../../components/alias-list";
 import AttachmentThumbnail from "../../components/attachment-thumbnail";
@@ -26,9 +29,36 @@ import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { truncateText } from "../../lib/general";
+import { PageProps } from "../../lib/next-js";
 import { isJsonFormat } from "../../lib/query-utils";
+// root
+import type { DocumentObject } from "../../globals";
+import { requestSupersedes } from "../../lib/common-requests";
+import { AlternativeIdentifiers } from "../../components/alternative-identifiers";
 
-export default function Document({ document, attribution = null, isJson }) {
+/**
+ * Document page properties, which for this case only contains the document object to be displayed.
+ */
+interface DocumentPageProps extends PageProps {
+  document: DocumentObject;
+}
+
+/**
+ * Document page component.
+ *
+ * @param document - Document object to be displayed on the page
+ * @param supersedes - List of documents that this document supersedes
+ * @param supersededBy - List of documents that supersede this document
+ * @param attribution - Attribution information for the document
+ * @param isJson - Flag indicating if the page is being rendered in JSON format
+ */
+export default function Document({
+  document,
+  supersedes,
+  supersededBy,
+  attribution = null,
+  isJson,
+}: DocumentPageProps) {
   const sections = useSecDir({ isJson });
 
   return (
@@ -39,6 +69,11 @@ export default function Document({ document, attribution = null, isJson }) {
       />
       <EditableItem item={document}>
         <PagePreamble sections={sections} />
+        <AlternativeIdentifiers
+          supersedes={supersedes}
+          supersededBy={supersededBy}
+          property="description"
+        />
         <ObjectPageHeader item={document} isJsonFormat={isJson}>
           {document.standardized_file_format && (
             <PillBadge className="bg-standardized-file-format ring-standardized-file-format">
@@ -113,20 +148,27 @@ export default function Document({ document, attribution = null, isJson }) {
   );
 }
 
-Document.propTypes = {
-  // Document object to display
-  document: PropTypes.object.isRequired,
-  // Attribution for this document
-  attribution: PropTypes.object,
-  // Is the format JSON?
-  isJson: PropTypes.bool.isRequired,
-};
-
-export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+/**
+ * Fetches the server-side props for the document page, including the document object,
+ * its supersedes and supersededBy relationships, attribution, and JSON format flag.
+ *
+ * @param params - Parameters object containing the request parameters, including the document ID.
+ * @param req - HTTP request object.
+ * @param query - Query parameters from the request URL.
+ * @param resolvedUrl - The resolved URL of the request.
+ */
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+  resolvedUrl,
+}: GetServerSidePropsContext<{ id: string }>): Promise<
+  GetServerSidePropsResult<DocumentPageProps>
+> {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const document = (
-    await request.getObject(`/documents/${params.id}/`)
+    await request.getObject<DocumentObject>(`/documents/${params.id}/`)
   ).union();
   if (FetchRequest.isResponseSuccess(document)) {
     const canonicalRedirect = createCanonicalUrlRedirect(
@@ -138,10 +180,20 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
       return canonicalRedirect;
     }
 
+    const { supersedes, supersededBy } = await requestSupersedes(
+      document,
+      "Document",
+      request,
+      ["description"]
+    );
+
     const attribution = await buildAttribution(document, req.headers.cookie);
+
     return {
       props: {
         document,
+        supersedes,
+        supersededBy,
         pageContext: { title: document.description },
         attribution,
         isJson,

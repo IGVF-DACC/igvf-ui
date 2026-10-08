@@ -126,12 +126,13 @@ export function useTooltip(id: string): TooltipAttr {
  * element; more than one causes an error. This tooltip ref wrapper can contain any kind of HTML
  * element or custom React component without modifying the child element itself.
  *
- * For DOM elements, we clone the child to attach tooltip handlers/refs directly. For custom React
- * components (which might not forward refs/props), we wrap them in a simple wrapper element that
- * receives the tooltip handlers/refs so we don't interfere with the child's own event handling.
+ * For DOM elements, TooltipRef adds the tooltip attributes directly. Custom components are wrapped
+ * for positioning and interaction handling. Callers must add `aria-describedby={tooltipAttr.id}` to
+ * custom interactive children and ensure they forward it to the underlying DOM element.
  *
  * @param tooltipAttr - Object returned by `useTooltip()` that contains props to pass to this and the
- *   corresponding `<Tooltip>` component
+ *                      corresponding `<Tooltip>` component
+ * @param className - Optional additional class names to apply to the wrapper element
  */
 export function TooltipRef({
   tooltipAttr,
@@ -145,8 +146,8 @@ export function TooltipRef({
   // Make sure only one child exists.
   const child = Children.only(children);
 
-  // Check if this is a DOM element (oddly indicated by the string type) or a custom component. We
-  // can safely clone and add props directly to DOM elements.
+  // Native DOM elements have a string element type. We can safely clone them and attach the tooltip
+  // attributes directly.
   const isDOMElement = isValidElement(child) && typeof child.type === "string";
   if (isDOMElement) {
     const clonedElement = cloneElement(child, {
@@ -163,7 +164,6 @@ export function TooltipRef({
     <span
       className={twMerge("inline-block", className)}
       ref={tooltipAttr.refEl}
-      aria-describedby={tooltipAttr.id}
       {...tooltipAttr.refProps()}
     >
       {child}
