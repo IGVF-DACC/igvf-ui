@@ -1,7 +1,7 @@
 // node_modules
 import { ArrowDownTrayIcon } from "@heroicons/react/20/solid";
 // components
-import DocumentAttachmentLink from "./document-link";
+import { DocumentAttachmentLink } from "./documents";
 import Link from "./link-no-prefetch";
 // lib
 import { generateButtonClasses } from "../lib/form-elements";

@@ -6,6 +6,7 @@ import { AnnotatedValue } from "./annotated-value";
 import { BatchDownloadActuator } from "./batch-download";
 import { DataAreaTitle, DataAreaTitleLink, DataPanel } from "./data-area";
 import { DeprecatedFileFilterControl } from "./deprecated-files";
+import { DocumentListAbbr } from "./documents";
 import { FileAccessionAndDownload } from "./file-download";
 import { HostedFilePreview } from "./hosted-file-preview";
 import {
@@ -103,6 +104,23 @@ const filesColumns: SortableGridConfig<FileObject, FileTableMeta>[] = [
           (item.workflows && isEmbeddedArray(item.workflows)) ||
           item.derived_manually
       ),
+    isSortable: false,
+  },
+  {
+    id: "file_format_specifications",
+    title: "File Format Spec",
+    display: ({ source }) => {
+      return source.file_format_specifications &&
+        isEmbeddedArray(source.file_format_specifications) ? (
+        <DocumentListAbbr documents={source.file_format_specifications} />
+      ) : null;
+    },
+    hide: (files) => {
+      const anyFileFormatSpecs = files.some((item) =>
+        isEmbeddedArray(item.file_format_specifications)
+      );
+      return !anyFileFormatSpecs;
+    },
     isSortable: false,
   },
   {
