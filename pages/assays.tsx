@@ -7,6 +7,7 @@ import { useContext } from "react";
 // components
 import { AnnotatedValue } from "../components/annotated-value";
 import { DataTable } from "../components/data-table";
+import { LinkedTableCell } from "../components/matrix";
 import PagePreamble from "../components/page-preamble";
 import SessionContext from "../components/session-context";
 // lib
@@ -24,14 +25,16 @@ import {
   toShishkebabCase,
 } from "../lib/general";
 import {
-  type ColumnMap,
   generateEmptyRowCells,
   generateMatrixColumnMap,
   getMatrixAxisGroups,
   getMatrixBuckets,
+  isMatrixResultsObject,
+  type ColumnMap,
   type MatrixResults,
   type MatrixResultsObject,
 } from "../lib/matrix";
+import { type PageProps } from "../lib/next-js";
 import {
   getAssayTitleDescriptionMap,
   getPreferredAssayTitleDescriptionMap,
@@ -40,9 +43,45 @@ import {
 import type { Profiles } from "../globals";
 
 /**
- * List of sample classifications that should be hidden from the matrix data.
+ * Base query string for the Assay Summary page matrix requests.
  */
-const hiddenClassifications = ["multiplexed sample", "pooled cell specimen"];
+const BASE_PAGE_QUERY =
+  "type=AnalysisSet&status=released&file_set_type=principal+analysis";
+
+/**
+ * Props for the Assay Summary page component from getServerSideProps. This doesn't extend
+ * `PageProps` because this page doesn't use many of its properties.
+ *
+ * @property assaySummary - The matrix results object for the assay summary.
+ * @property assayTitleDescriptionMap - A mapping of assay titles to their descriptions.
+ * @property pageQuery - The base query string used for the page.
+ * @property pageContext - Contextual information for the page, including the title.
+ */
+interface Props extends PageProps {
+  assaySummary: MatrixResultsObject;
+  assayTitleDescriptionMap: Record<string, string>;
+  pageQuery: string;
+}
+
+/**
+ * Metadata for the assay data table, including mappings of assay titles to descriptions and the
+ * base page query.
+ *
+ * @property assayTitleDescriptionMap - Mapping of assay titles to their descriptions.
+ * @property preferredAssayTitleDescriptionMap - Mapping of preferred assay titles to their descriptions.
+ * @property pageQuery - Base query string used for the page.
+ */
+type AssayTableMeta = {
+  assayTitleDescriptionMap: Record<string, string>;
+  preferredAssayTitleDescriptionMap: Record<string, string>;
+  pageQuery: string;
+};
+
+/**
+ * Responsive width and maximum width for the Assay column.
+ */
+const assayColumnWidthClasses =
+  "w-[140px] max-w-[140px] @xl:w-[200px] @xl:max-w-[200px] @6xl:w-[340px] @6xl:max-w-[340px]";
 
 /**
  * The first three columns have fixed content that doesn't come from the matrix data.
@@ -59,7 +98,7 @@ const fixedHeaderCells: Cell[] = [
     id: "assay",
     content: "Assay",
     component: FixedHeaderCell,
-    componentProps: { widthClasses: "w-[140px] @xl:w-[200px] @6xl:w-[340px]" },
+    componentProps: { widthClasses: assayColumnWidthClasses },
     isHeaderCell: true,
   }),
   createCell({
@@ -78,10 +117,54 @@ const totalCell: Cell = {
   id: "total",
   content: "Grand Total",
   component: CounterHeaderCell,
+  componentProps: {
+    isTotalCell: true,
+  },
 };
 
 /**
+ * Main component for the Assay Summary page.
+ */
+export default function AssaySummary({
+  assaySummary,
+  assayTitleDescriptionMap,
+  pageQuery,
+}: Props) {
+  const sessionContext = useContext(SessionContext);
+  const preferredAssayTitleDescriptionMap =
+    sessionContext && "profiles" in sessionContext
+      ? getPreferredAssayTitleDescriptionMap(
+          sessionContext.profiles as Profiles
+        )
+      : {};
+
+  const assayTableData = convertMatrixToDataTable(assaySummary);
+
+  return (
+    <div className="@container">
+      <PagePreamble />
+      <div
+        id="assay-summary-table"
+        role="table"
+        className="overflow-x-auto text-xs"
+      >
+        <DataTable<AssayTableMeta>
+          className="table-row-hl"
+          data={assayTableData}
+          meta={{
+            assayTitleDescriptionMap,
+            preferredAssayTitleDescriptionMap,
+            pageQuery,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
  * Custom cell renderer for the three fixed header cells for Target Category, Assay, and Preferred.
+ *
  * @param widthClasses - Tailwind CSS classes to define the width of the cell
  */
 function FixedHeaderCell({
@@ -114,9 +197,50 @@ function CounterHeaderCell({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Displays the data cells for the data columns, using a right-aligned number.
+ * Displays the data cells for the data columns.
+ *
+ * @param preferredAssay - Preferred assay for the row
+ * @param samplesClassification - Samples classification for the row
+ * @param meta - Metadata for the assay data table
  */
-function CounterCell({ children }: { children: React.ReactNode }) {
+function CounterCell({
+  preferredAssay,
+  samplesClassification,
+  assay,
+  termCategory,
+  children,
+}: {
+  preferredAssay: string;
+  samplesClassification: string;
+  assay: string;
+  termCategory: string;
+  children: string;
+}) {
+  if (children) {
+    // Create search params for the list view link from BASE_LIST_QUERY and the preferred assay and
+    // samples classification.
+    const params = new URLSearchParams(BASE_PAGE_QUERY);
+    params.set("samples.classifications", samplesClassification);
+    params.set("preferred_assay_titles", preferredAssay);
+    params.set("input_file_sets.assay_term.term_name", assay);
+    params.set("input_file_sets.assay_term.assay_slims", termCategory);
+
+    return (
+      <LinkedTableCell
+        href={`/search/?${params.toString()}`}
+        className={`${
+          children
+            ? "bg-assay-summary-matrix-data-cell row-hl-assay-summary-matrix-data-cell-hl"
+            : "bg-white dark:bg-black"
+        } border-panel w-8 border-r border-b p-2 text-center align-middle last:border-r-0`}
+        data-highlight
+      >
+        {children}
+      </LinkedTableCell>
+    );
+  }
+
+  // No data to render, so render an empty table cell.
   return (
     <td
       className={`${
@@ -124,7 +248,6 @@ function CounterCell({ children }: { children: React.ReactNode }) {
           ? "bg-assay-summary-matrix-data-cell"
           : "bg-white dark:bg-black"
       } border-panel w-8 border-r border-b p-2 text-center align-middle last:border-r-0`}
-      data-highlight
     >
       {children}
     </td>
@@ -133,28 +256,48 @@ function CounterCell({ children }: { children: React.ReactNode }) {
 
 /**
  * Displays the total count for each row in the last column of the table.
+ *
+ * @param preferredAssay - Preferred assay for the row
  */
-function TotalCell({ children }: { children: React.ReactNode }) {
+function TotalCell({
+  preferredAssay,
+  assay,
+  termCategory,
+  children,
+}: {
+  preferredAssay: string;
+  assay: string;
+  termCategory: string;
+  children: string;
+}) {
+  const params = new URLSearchParams(BASE_PAGE_QUERY);
+  params.set("preferred_assay_titles", preferredAssay);
+  params.set("input_file_sets.assay_term.term_name", assay);
+  params.set("input_file_sets.assay_term.assay_slims", termCategory);
+
   return (
-    <td
-      className="bg-assay-summary-matrix-total-cell border-panel w-8 border-r border-b p-2 text-center align-middle font-semibold last:border-r-0"
+    <LinkedTableCell
+      href={`/search/?${params.toString()}`}
+      className="bg-assay-summary-matrix-total-cell row-hl-assay-summary-matrix-total-cell-hl border-panel w-8 border-r border-b p-2 text-center align-middle font-semibold last:border-r-0"
       data-highlight
     >
       {children}
-    </td>
+    </LinkedTableCell>
   );
 }
 
 /**
- * Displays the row header cells for the Target Category, Assay, and Preferred Assay Title columns.
+ * Displays the row header cells for the Target Category and Preferred Assay Title columns.
+ *
  * @param rowSpan - Number of rows that the cell should span
+ * @param meta - Metadata for the assay data table
  */
 function RowHeaderCell({
   rowSpan,
   children,
 }: {
   rowSpan: number;
-  children: React.ReactNode;
+  children: string;
 }) {
   return (
     <th
@@ -168,6 +311,7 @@ function RowHeaderCell({
 
 /**
  * Displays the assay title cell with a tooltip for the corresponding definition, if any.
+ *
  * @param rowSpan - Number of rows that the cell should span
  * @param meta - Contains the Assay title to definition map
  */
@@ -199,6 +343,7 @@ function AssayCell({
 /**
  * Displays the header cell for the Preferred Assay Title column. This includes a hover highlight
  * data attribute.
+ *
  * @param rowSpan - Number of rows that the cell should span; for now always 1
  * @param meta - Contains the preferred assay title to description map
  */
@@ -230,6 +375,8 @@ function PreferredAssayHeaderCell({
 
 /**
  * Displays the header cell for the Term Category Total row.
+ *
+ * @param colSpan - Number of columns that the cell should span
  */
 function TermCategoryTotalsHeaderCell({
   colSpan,
@@ -267,12 +414,13 @@ function TermCategoryTotalsDataCell({
  * Generate the header row for the data table. The leftmost columns are fixed and don't come from
  * the matrix data. The rest of the columns are dynamic and come from the x axis of the matrix
  * data. The last column holds the total count of the dynamic columns in the row.
+ *
  * @param columnMap Maps column labels to their 0-based column index in the matrix
  * @returns Data table header row
  */
 function generateHeaderRow(columnMap: ColumnMap): Row {
   const dynamicHeaderCells = Object.keys(columnMap).map((key) => ({
-    id: toShishkebabCase(key),
+    id: `counter-${toShishkebabCase(key)}`,
     content: key,
     component: CounterHeaderCell,
   }));
@@ -288,6 +436,7 @@ function generateHeaderRow(columnMap: ColumnMap): Row {
 
 /**
  * Convert the matrix data to a format that can be used by the `<DataTable>` component.
+ *
  * @param matrix `matrix` property from the matrix results object
  * @returns Corresponding data in `DataTableFormat` format
  */
@@ -301,10 +450,7 @@ function convertMatrixToDataTable(
   }
 
   const columnBuckets = getMatrixBuckets(matrix.x, xProp);
-  const columnMap = generateMatrixColumnMap(
-    columnBuckets,
-    hiddenClassifications
-  );
+  const columnMap = generateMatrixColumnMap(columnBuckets);
 
   // Generate the data rows for the table, one row with child rows for each term category. Use a
   // `forEach` loop instead of `map` so we can insert total-count rows after each term category row.
@@ -315,7 +461,7 @@ function convertMatrixToDataTable(
 
     // Generate the term category header cell for the row.
     const termCategoryCell: Cell = {
-      id: toShishkebabCase(bucket0.key),
+      id: `term-category-${toShishkebabCase(bucket0.key)}`,
       content: bucket0.key,
       component: RowHeaderCell,
     };
@@ -324,7 +470,7 @@ function convertMatrixToDataTable(
     const assayRows = getMatrixBuckets(bucket0, yProp1).map((bucket1) => {
       // Generate the assay cell for the row.
       const assayCell: Cell = {
-        id: toShishkebabCase(bucket1.key),
+        id: `assay-${toShishkebabCase(bucket1.key)}`,
         content: bucket1.key,
         component: AssayCell,
       };
@@ -333,7 +479,7 @@ function convertMatrixToDataTable(
       const preferredAssayRows = getMatrixBuckets(bucket1, yProp2).map(
         (bucket2) => {
           const preferredAssayCell: Cell = {
-            id: toShishkebabCase(bucket2.key),
+            id: `preferred-assay-${toShishkebabCase(bucket2.key)}`,
             content: bucket2.key,
             component: PreferredAssayHeaderCell,
           };
@@ -342,13 +488,6 @@ function convertMatrixToDataTable(
           const dataCells = generateEmptyRowCells(
             Object.keys(columnMap).length + 1
           );
-          Object.entries(columnMap).forEach(([key, value]) => {
-            dataCells[value] = {
-              id: toShishkebabCase(key),
-              content: "",
-              component: CounterCell,
-            };
-          });
 
           // Fill in the data cells with the actual data from the matrix.
           let rowTotal = 0;
@@ -356,9 +495,15 @@ function convertMatrixToDataTable(
             const columnIndex = columnMap[bucket.key];
             if (columnIndex !== undefined) {
               dataCells[columnIndex] = {
-                id: toShishkebabCase(bucket.key),
+                id: `counter-${toShishkebabCase(bucket.key)}`,
                 content: abbreviateNumber(bucket.doc_count),
                 component: CounterCell,
+                componentProps: {
+                  preferredAssay: bucket2.key,
+                  samplesClassification: bucket.key,
+                  assay: bucket1.key,
+                  termCategory: bucket0.key,
+                },
               };
 
               // Update the totals for the row and column.
@@ -371,8 +516,13 @@ function convertMatrixToDataTable(
           // for the row totals.
           dataCells[dataCells.length - 1] = {
             id: "total",
-            content: abbreviateNumber(rowTotal),
+            content: abbreviateNumber(bucket2.doc_count),
             component: TotalCell,
+            componentProps: {
+              preferredAssay: bucket2.key,
+              assay: bucket1.key,
+              termCategory: bucket0.key,
+            },
           };
           columnTotals[dataCells.length - 1] += rowTotal;
 
@@ -432,55 +582,8 @@ function convertMatrixToDataTable(
 }
 
 /**
- * Main component for the Assay Summary page.
- */
-export default function AssaySummary({
-  assaySummary,
-  assayTitleDescriptionMap,
-}: {
-  assaySummary: MatrixResultsObject;
-  assayTitleDescriptionMap: Record<string, string>;
-}) {
-  const sessionContext = useContext(SessionContext);
-  const preferredAssayTitleDescriptionMap =
-    sessionContext && "profiles" in sessionContext
-      ? getPreferredAssayTitleDescriptionMap(
-          sessionContext.profiles as Profiles
-        )
-      : {};
-
-  const assayTableData = convertMatrixToDataTable(assaySummary);
-
-  return (
-    <div className="@container">
-      <PagePreamble pageTitle="Assays" />
-      <div
-        id="assay-summary-table"
-        role="table"
-        className="overflow-x-auto text-xs"
-      >
-        <DataTable
-          data={assayTableData}
-          meta={{
-            assayTitleDescriptionMap,
-            preferredAssayTitleDescriptionMap,
-          }}
-        />
-      </div>
-    </div>
-  );
-}
-
-interface Props {
-  assaySummary: MatrixResultsObject;
-  assayTitleDescriptionMap: Record<string, string>;
-  pageContext: {
-    title: string;
-  };
-}
-
-/**
  * Get a list of unique assay term names from the assay summary matrix.
+ *
  * @param assaySummary Assay matrix data
  * @returns All unique assay term names found in the assay matrix
  */
@@ -495,23 +598,6 @@ function getAssayTerms(assaySummary: MatrixResultsObject): string[] {
     });
   }
   return [...terms];
-}
-
-/**
- * Type guard to check if an item is a MatrixResults object, which is the expected shape of the
- * response from the backend for the assay summary data.
- *
- * @param item - Response from backend to test if it's likely a matrix object or not
- * @returns True if the item is a MatrixResults object
- */
-function isMatrixResultsObject(item: unknown): item is MatrixResults {
-  return (
-    typeof item === "object" &&
-    item !== null &&
-    "@type" in item &&
-    typeof item["@type"] === "string" &&
-    item["@type"] === "Omnimatrix"
-  );
 }
 
 export async function getServerSideProps(
@@ -534,19 +620,18 @@ export async function getServerSideProps(
   const extraQueryParams = params.toString();
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const assaySummary = (
-    await request.getObject(
-      `/omnimatrix/?type=MeasurementSet&config=AssaySummary${
+    await request.getObject<MatrixResults>(
+      `/matrix/?${BASE_PAGE_QUERY}&config=AssaySummary${
         extraQueryParams ? `&${extraQueryParams}` : ""
       }`
     )
   ).union();
   if (FetchRequest.isResponseSuccess(assaySummary)) {
     if (!isMatrixResultsObject(assaySummary)) {
-      throw new Error(
-        `Unexpected response shape for assay summary data: ${JSON.stringify(assaySummary)}`
-      );
+      throw new Error("Unexpected response shape for assay summary data");
     }
 
+    // Get the mapping of assay terms to their titles and descriptions.
     const assayTerms = getAssayTerms(assaySummary.matrix);
     const assayTitleDescriptionMap = await getAssayTitleDescriptionMap(
       assayTerms,
@@ -557,7 +642,9 @@ export async function getServerSideProps(
       props: {
         assaySummary: assaySummary.matrix,
         assayTitleDescriptionMap,
+        pageQuery: `${BASE_PAGE_QUERY}${extraQueryParams ? `&${extraQueryParams}` : ""}`,
         pageContext: { title: "Assay Summary" },
+        isJson: false,
       },
     };
   }
