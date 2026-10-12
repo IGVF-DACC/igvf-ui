@@ -142,6 +142,23 @@
   --color-matrix-lines: oklch(0.62 0 0);
   --color-matrix-data-cell: oklch(0.736 0.0683 82.41);
 
+  /** Assay Summary Matrix */
+  --color-assay-summary-matrix-term-category-total: oklch(0.9021 0.0424 161.62);
+  --color-assay-summary-matrix-term-category-total-hl: oklch(
+    from var(--color-assay-summary-matrix-term-category-total) calc(l - 0.06) c
+      h
+  );
+  --color-assay-summary-matrix-data-column-header: oklch(0.8699 0.0593 274.59);
+  --color-assay-summary-matrix-data-cell: oklch(0.8921 0.0872 96.33);
+  --color-assay-summary-matrix-data-cell-hl: oklch(
+    from var(--color-assay-summary-matrix-data-cell) calc(l - 0.06) c h
+  );
+  --color-assay-summary-matrix-total-cell: oklch(0.9021 0.0424 161.62);
+  --color-assay-summary-matrix-total-cell-hl: oklch(
+    from var(--color-assay-summary-matrix-total-cell) calc(l - 0.06) c h
+  );
+  --color-assay-summary-matrix-header-cell-hl: oklch(0.931 0 0);
+
   /** Cell fates matrix colors */
   --color-cell-fates-matrix-title-header: var(--color-zinc-300);
   --color-cell-fates-diff-matrix-header: var(--color-matrix-header);
@@ -244,6 +261,23 @@
     --color-matrix-subheader: oklch(0.3572 0.0593 274.59);
     --color-matrix-lines: oklch(0.62 0 0);
     --color-matrix-data-cell: oklch(0.4652 0.0683 82.41);
+
+    /** Assay Summary Matrix */
+    --color-assay-summary-matrix-term-category-total: oklch(0.46 0.0424 161.62);
+    --color-assay-summary-matrix-term-category-total-hl: oklch(
+      from var(--color-assay-summary-matrix-term-category-total) calc(l - 0.06)
+        c h
+    );
+    --color-assay-summary-matrix-data-column-header: oklch(0.52 0.0593 274.59);
+    --color-assay-summary-matrix-data-cell: oklch(0.52 0.0872 96.33);
+    --color-assay-summary-matrix-data-cell-hl: oklch(
+      from var(--color-assay-summary-matrix-data-cell) calc(l - 0.06) c h
+    );
+    --color-assay-summary-matrix-total-cell: oklch(0.46 0.0424 161.62);
+    --color-assay-summary-matrix-total-cell-hl: oklch(
+      from var(--color-assay-summary-matrix-total-cell) calc(l - 0.06) c h
+    );
+    --color-assay-summary-matrix-header-cell-hl: oklch(0.3715 0 0);
 
     /** Cell fates matrix colors */
     --color-cell-fates-matrix-title-header: var(--color-zinc-600);
@@ -578,12 +612,6 @@
   --color-cell-model-matrix-row-subheader-differentiated-specimens: #dbe2ff;
   --color-cell-model-matrix-highlight-differentiated-specimens: #e8ecff;
 
-  /** Assay Summary Matrix */
-  --color-assay-summary-matrix-term-category-total: #c7e8d6ff;
-  --color-assay-summary-matrix-data-column-header: #c8d2fc;
-  --color-assay-summary-matrix-data-cell: #ecdc99;
-  --color-assay-summary-matrix-total-cell: #c7e8d6ff;
-
   /** Computational Tools Table */
   --color-computational-tools-header-background: #606060;
   --color-computational-tools-header-foreground: #ffffff;
@@ -873,12 +901,6 @@
   --color-cell-model-matrix-row-subheader-differentiated-specimens: #545f8f;
   --color-cell-model-matrix-highlight-differentiated-specimens: #424554;
 
-  /** Assay Summary Matrix */
-  --color-assay-summary-matrix-term-category-total: #064e3b;
-  --color-assay-summary-matrix-data-column-header: #40434f;
-  --color-assay-summary-matrix-data-cell: #4b4631;
-  --color-assay-summary-matrix-total-cell: #064e3b;
-
   /** Computational Tools Table */
   --color-computational-tools-header-background: #404040;
   --color-computational-tools-header-foreground: #ffffff;
@@ -1033,30 +1055,6 @@
     animation: flash-multi 2s ease-in-out forwards;
     pointer-events: none;
   }
-}
-
-/**
- * Handle row highlighting on hover on the Assay Summary table. This handles hovering over the
- * Preferred Assay Title header, the data cells, or the row total cell.
- */
-#assay-summary-table
-  tr:has(td[data-highlight]:hover, th[data-highlight]:hover)
-  td,
-#assay-summary-table
-  tr:has(td[data-highlight]:hover, th[data-highlight]:hover)
-  th[data-highlight] {
-  background-color: #e9ecfd;
-}
-
-.dark
-  #assay-summary-table
-  tr:has(td[data-highlight]:hover, th[data-highlight]:hover)
-  td,
-.dark
-  #assay-summary-table
-  tr:has(td[data-highlight]:hover, th[data-highlight]:hover)
-  th[data-highlight] {
-  background-color: #232326;
 }
 
 /**
