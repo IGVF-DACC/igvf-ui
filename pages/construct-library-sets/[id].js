@@ -78,6 +78,7 @@ function LibraryDetails({ library }) {
                   {library.small_scale_gene_list.map((gene) => (
                     <Link href={gene["@id"]} key={gene["@id"]}>
                       {gene.symbol}
+                      {gene.allele ? ` (${gene.allele}) allele` : ""}
                     </Link>
                   ))}
                 </SeparatedList>
