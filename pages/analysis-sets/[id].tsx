@@ -669,13 +669,23 @@ export async function getServerSideProps({
     const samplesWithConstructLibrarySetsByPath = new Map(
       samplesWithConstructLibrarySets.map((sample) => [sample["@id"], sample])
     );
-    const samples: SampleObject[] = embeddedSamples.map((sample) => {
-      const constructLibrarySets = samplesWithConstructLibrarySetsByPath.get(
+    // The search also filters out samples the current user can't view. Preserve that behavior by
+    // displaying only embedded samples returned by the targeted request.
+    const samples: SampleObject[] = embeddedSamples.flatMap((sample) => {
+      const requestedSample = samplesWithConstructLibrarySetsByPath.get(
         sample["@id"]
-      )?.construct_library_sets;
-      return constructLibrarySets
-        ? { ...sample, construct_library_sets: constructLibrarySets }
-        : sample;
+      );
+      if (!requestedSample) {
+        return [];
+      }
+      return [
+        requestedSample.construct_library_sets
+          ? {
+              ...sample,
+              construct_library_sets: requestedSample.construct_library_sets,
+            }
+          : sample,
+      ];
     });
     const embeddedSamplePathSet = new Set(embeddedSamplePaths);
     const inputFileSetSamplePaths = [
