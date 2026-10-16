@@ -47,10 +47,12 @@ import {
   requestFiles,
   requestGenes,
   requestOntologyTerms,
+  requestSamples,
   requestSupersedes,
 } from "../../lib/common-requests";
 import {
   filterDatabaseObjectsByReferences,
+  isDatabaseObjectArrayOfType,
   pathsFromDatabaseObjects,
 } from "../../lib/database-object";
 import { isDeprecatedStatus } from "../../lib/deprecated-files";
@@ -61,7 +63,6 @@ import {
   requestPipelineParameters,
   requestFileSetDonors,
   requestFileSetPublications,
-  requestFileSetSamples,
   requestFileSetAssociatedFiles,
   type AnalysisSetObject,
   type ConstructLibrarySetObject,
@@ -640,21 +641,60 @@ export async function getServerSideProps({
       request
     );
 
-    // Request the analysis set's samples and its input file sets' samples together. These lists
-    // often contain the same paths, so separate requests can produce identical search requests.
-    const allSamples = await requestFileSetSamples(
-      [analysisSet, ...inputFileSets],
-      request
-    );
-    const samples = filterDatabaseObjectsByReferences(
+    // The analysis set embeds the samples displayed in its sample table, so avoid requesting those
+    // objects again. Its input file sets usually reference the same samples, except when the
+    // analysis set defines subset_samples. Request only input-file-set samples not already embedded
+    // in the analysis set.
+    const embeddedSamples = isDatabaseObjectArrayOfType(
       analysisSet.samples,
-      allSamples
+      "Sample"
+    )
+      ? analysisSet.samples
+      : [];
+    const embeddedSamplePaths = pathsFromDatabaseObjects(embeddedSamples);
+
+    // The analysis-set sample embedding doesn't include construct_library_sets, which the sample
+    // table displays. Request only that missing property instead of requesting the complete sample
+    // objects again, then add it to the embedded samples.
+    const samplesWithConstructLibrarySets =
+      embeddedSamplePaths.length > 0
+        ? (
+            await request.getMultipleObjectsBulk<SampleObject>(
+              embeddedSamplePaths,
+              ["construct_library_sets"],
+              ["Sample"]
+            )
+          ).unwrap_or([])
+        : [];
+    const samplesWithConstructLibrarySetsByPath = new Map(
+      samplesWithConstructLibrarySets.map((sample) => [sample["@id"], sample])
     );
-    const inputFileSetSamples = filterDatabaseObjectsByReferences(
-      inputFileSets.flatMap((fileSet) =>
-        pathsFromDatabaseObjects(fileSet.samples)
+    const samples: SampleObject[] = embeddedSamples.map((sample) => {
+      const constructLibrarySets = samplesWithConstructLibrarySetsByPath.get(
+        sample["@id"]
+      )?.construct_library_sets;
+      return constructLibrarySets
+        ? { ...sample, construct_library_sets: constructLibrarySets }
+        : sample;
+    });
+    const embeddedSamplePathSet = new Set(embeddedSamplePaths);
+    const inputFileSetSamplePaths = [
+      ...new Set(
+        inputFileSets.flatMap((fileSet) =>
+          pathsFromDatabaseObjects(fileSet.samples)
+        )
       ),
-      allSamples
+    ];
+    const missingInputFileSetSamplePaths = inputFileSetSamplePaths.filter(
+      (samplePath) => !embeddedSamplePathSet.has(samplePath)
+    );
+    const missingInputFileSetSamples =
+      missingInputFileSetSamplePaths.length > 0
+        ? await requestSamples(missingInputFileSetSamplePaths, request)
+        : [];
+    const inputFileSetSamples = filterDatabaseObjectsByReferences(
+      inputFileSetSamplePaths,
+      samples.concat(missingInputFileSetSamples)
     );
 
     const functionalAssayMechanismPaths = pathsFromDatabaseObjects(
