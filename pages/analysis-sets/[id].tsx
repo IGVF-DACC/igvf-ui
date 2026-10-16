@@ -49,7 +49,10 @@ import {
   requestOntologyTerms,
   requestSupersedes,
 } from "../../lib/common-requests";
-import { pathsFromDatabaseObjects } from "../../lib/database-object";
+import {
+  filterDatabaseObjectsByReferences,
+  pathsFromDatabaseObjects,
+} from "../../lib/database-object";
 import { isDeprecatedStatus } from "../../lib/deprecated-files";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -574,7 +577,6 @@ export async function getServerSideProps({
     const fileFileSets = await getFilesFileSets(combinedFiles, request);
 
     // Request objects associated with the analysis set.
-    const samples = await requestFileSetSamples([analysisSet], request);
     const donors = await requestFileSetDonors(analysisSet, request);
     const publications = await requestFileSetPublications(analysisSet, request);
     const constructLibrarySets =
@@ -638,9 +640,21 @@ export async function getServerSideProps({
       request
     );
 
-    const inputFileSetSamples = await requestFileSetSamples(
-      inputFileSets,
+    // Request the analysis set's samples and its input file sets' samples together. These lists
+    // often contain the same paths, so separate requests can produce identical search requests.
+    const allSamples = await requestFileSetSamples(
+      [analysisSet, ...inputFileSets],
       request
+    );
+    const samples = filterDatabaseObjectsByReferences(
+      analysisSet.samples,
+      allSamples
+    );
+    const inputFileSetSamples = filterDatabaseObjectsByReferences(
+      inputFileSets.flatMap((fileSet) =>
+        pathsFromDatabaseObjects(fileSet.samples)
+      ),
+      allSamples
     );
 
     const functionalAssayMechanismPaths = pathsFromDatabaseObjects(
