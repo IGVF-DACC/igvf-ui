@@ -60,29 +60,6 @@ const sampleColumns = [
     isSortable: false,
   },
   {
-    id: "disease_terms",
-    title: "Disease Terms",
-    display: ({ source }) => {
-      if (source.disease_terms?.length > 0) {
-        const sortedTerms = _.sortBy(source.disease_terms, (disease) =>
-          disease.term_name.toLowerCase()
-        );
-        return (
-          <SeparatedList>
-            {sortedTerms.map((term) => (
-              <Link href={term["@id"]} key={term["@id"]}>
-                {term.term_name}
-              </Link>
-            ))}
-          </SeparatedList>
-        );
-      }
-      return null;
-    },
-    hide: (samples) => samples.every((sample) => !sample.disease_terms),
-    isSortable: false,
-  },
-  {
     id: "construct-library-sets",
     title: "Associated Construct Library Sets",
     display: ({ source }) => {

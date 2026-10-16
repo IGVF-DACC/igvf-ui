@@ -758,7 +758,7 @@ describe("Test all the common requests", () => {
       request
     );
     expect(mockFetch).toHaveBeenCalledWith(
-      "/search-quick/?type=Sample&field=accession&field=barcode_map&field=construct_library_sets&field=disease_terms&field=protocols&field=sample_terms&field=status&field=summary&@id=/tissues/IGVFSM0003DDDD/&@id=/technical-samples/IGVFSM3106NGJL/&limit=2",
+      "/search-quick/?type=Sample&field=accession&field=barcode_map&field=construct_library_sets&field=protocols&field=sample_terms&field=status&field=summary&@id=/tissues/IGVFSM0003DDDD/&@id=/technical-samples/IGVFSM3106NGJL/&limit=2",
       expect.anything()
     );
     expect(result).toHaveLength(2);

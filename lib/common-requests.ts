@@ -452,7 +452,6 @@ export async function requestSamples(
         "accession",
         "barcode_map",
         "construct_library_sets",
-        "disease_terms",
         "protocols",
         "sample_terms",
         "status",
