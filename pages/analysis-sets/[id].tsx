@@ -613,28 +613,22 @@ export async function getServerSideProps({
     );
 
     // Request file sets associated with the analysis set's input file sets.
-    const auxiliarySets = await requestAssociatedFileSets(
-      inputFileSets,
-      "auxiliary_sets",
-      request
-    );
-    const measurementSets = await requestAssociatedFileSets(
-      inputFileSets,
-      "measurement_sets",
-      request
-    );
-    const controlFileSets = await requestAssociatedFileSets(
-      inputFileSets,
-      "control_file_sets",
-      request
-    );
-    const inputConstructLibrarySets =
-      await requestAssociatedFileSets<ConstructLibrarySetObject>(
+    const [
+      auxiliarySets,
+      measurementSets,
+      controlFileSets,
+      inputConstructLibrarySets,
+    ] = await Promise.all([
+      requestAssociatedFileSets(inputFileSets, "auxiliary_sets", request),
+      requestAssociatedFileSets(inputFileSets, "measurement_sets", request),
+      requestAssociatedFileSets(inputFileSets, "control_file_sets", request),
+      requestAssociatedFileSets<ConstructLibrarySetObject>(
         inputFileSets,
         "construct_library_sets",
         request,
         ["integrated_content_files"]
-      );
+      ),
+    ]);
     const clsLibraryDesignFiles = await requestFileSetAssociatedFiles(
       inputConstructLibrarySets,
       "integrated_content_files",
@@ -669,6 +663,7 @@ export async function getServerSideProps({
     const samplesWithConstructLibrarySetsByPath = new Map(
       samplesWithConstructLibrarySets.map((sample) => [sample["@id"], sample])
     );
+
     // The search also filters out samples the current user can't view. Preserve that behavior by
     // displaying only embedded samples returned by the targeted request.
     const samples: SampleObject[] = embeddedSamples.flatMap((sample) => {
