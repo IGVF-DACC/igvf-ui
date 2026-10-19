@@ -1,4 +1,5 @@
 // lib
+import { pathsFromDatabaseObjects } from "../../../lib/database-object";
 import { isFileSetObjectType } from "../../../lib/file-sets";
 // file-graph
 import { type FileSetNode } from "../types";
@@ -99,18 +100,16 @@ function buildRelatedMeasurementSetAdjacency(
     ) {
       // Collect up all the measurement sets in all `related_measurement_sets.measurement_sets`
       // arrays, deduplicating by `@id` in case the same measurement set appears in multiple arrays.
-      const relatedMeasurementSets = [
-        ...new Map(
-          fileSet.related_measurement_sets
-            .flatMap(
-              (relatedMeasurementSet) => relatedMeasurementSet.measurement_sets
-            )
-            .map((measurementSet) => [measurementSet["@id"], measurementSet])
-        ).values(),
+      const relatedMeasurementSetPaths = [
+        ...new Set(
+          fileSet.related_measurement_sets.flatMap((relatedMeasurementSet) =>
+            pathsFromDatabaseObjects(relatedMeasurementSet?.measurement_sets)
+          )
+        ),
       ];
 
-      for (const measurementSet of relatedMeasurementSets) {
-        const msNodes = nodesByFileSetPath.get(measurementSet["@id"]);
+      for (const measurementSetPath of relatedMeasurementSetPaths) {
+        const msNodes = nodesByFileSetPath.get(measurementSetPath);
         if (msNodes) {
           for (const msNode of msNodes) {
             adjacency.get(node.id)?.add(msNode.id);

@@ -607,14 +607,49 @@ export default class FetchRequest {
       logRequest("getObject", url, this.usingPersistentConnections);
       const response = await fetch(url, headerOptions);
       if (!response.ok) {
-        const error = {
-          ...(await response.json()),
-          isError: true,
-        } as ErrorObject;
-        return err(error);
+        try {
+          // Attempt to parse the response as JSON to extract error details.
+          const error = {
+            ...(await response.json()),
+            isError: true,
+          } as ErrorObject;
+          return err(error);
+        } catch (_error) {
+          // Some upstream handlers return an HTML error page even when we request JSON. Preserve
+          // their HTTP status.
+          const statusCode =
+            response.status || HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR;
+          const statusText = response.statusText || "Invalid server response";
+          return err({
+            isError: true,
+            "@type": ["HTTPError", "Error"],
+            status: "error",
+            errors: [],
+            code: statusCode,
+            title: statusText,
+            description: `The server returned a non-JSON response with HTTP status ${statusCode}.`,
+            detail: `Expected a JSON response from ${url}.`,
+          });
+        }
       }
-      const results = (await response.json()) as T;
-      return ok(results);
+      try {
+        // Attempt to parse the successful response as JSON.
+        const results = (await response.json()) as T;
+        return ok(results);
+      } catch (_error) {
+        // A successful response that cannot be parsed as JSON violates getObject's contract. Treat
+        // it as a bad upstream response, not a network outage.
+        return err({
+          isError: true,
+          "@type": ["HTTPError", "Error"],
+          status: "error",
+          errors: [],
+          code: HTTP_STATUS_CODE.BAD_GATEWAY,
+          title: "Invalid server response",
+          description: "The server returned a non-JSON response.",
+          detail: `Expected a JSON response from ${url}.`,
+        });
+      }
     } catch (error) {
       console.log("NETWORK ERROR: ", error);
       return err(NETWORK_ERROR_RESPONSE);

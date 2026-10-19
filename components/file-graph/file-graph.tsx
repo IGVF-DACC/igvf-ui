@@ -55,6 +55,7 @@ import {
   MAX_LINE_LENGTH,
   NODE_HEIGHT,
   NODE_WIDTH,
+  validFileGraphData,
 } from "./lib";
 import { FILE_NODE_STATUS_BADGE_DIAMETER, NodeStatus } from "./status";
 import {
@@ -1009,6 +1010,19 @@ export function FileGraph({
   const [deprecatedVisible, setDeprecatedVisible] = useState(
     defaultDeprecatedVisible
   );
+
+  // Validate the file graph data early and bail if invalid.
+  if (
+    !validFileGraphData({
+      files,
+      fileFileSets,
+      derivedFromFiles,
+      referenceFiles,
+      qualityMetrics,
+    })
+  ) {
+    return null;
+  }
 
   // Determine the deprecated file visibility and toggle control, either from props or local state.
   const resolvedDeprecated = resolveDeprecatedFileProps(

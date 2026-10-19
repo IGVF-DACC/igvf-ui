@@ -1,3 +1,5 @@
+// lib
+import { pathsFromDatabaseObjects } from "../../lib/database-object";
 // root
 import { FileObject } from "../../globals";
 
@@ -142,8 +144,8 @@ function buildAdjacencyMap(files: FileObject[]): {
   files.forEach((file) => {
     // Filter `file.derived_from` to only include `@id` that are present in the graph. This handles the case where a
     // file derives from an external file that isn't included in the graph. We still want to render the graph and not consider this a cycle, so we ignore derived_from references to files that aren't included in the graph.
-    const validDerivedFrom = (file.derived_from || []).filter((id) =>
-      files.some((f) => f["@id"] === id)
+    const validDerivedFrom = pathsFromDatabaseObjects(file.derived_from).filter(
+      (id) => files.some((f) => f["@id"] === id)
     );
     adjacencyById.set(file["@id"], validDerivedFrom);
   });

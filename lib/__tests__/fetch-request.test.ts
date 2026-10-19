@@ -587,6 +587,63 @@ describe("Test GET requests to the data provider", () => {
     );
     expect(labItem.optional()).toBe(null);
   });
+
+  it("preserves the HTTP status when an error response is not JSON", async () => {
+    window.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 404,
+      statusText: "Not Found",
+      json: () => Promise.reject(new SyntaxError("Unexpected token '<'")),
+    });
+
+    const request = new FetchRequest();
+    const result = await request.getObject(
+      "/.well-known/appspecific/com.chrome.devtools.json"
+    );
+
+    expect(result.isErr()).toBe(true);
+    expect(result.unwrap_err()).toMatchObject({
+      "@type": ["HTTPError", "Error"],
+      code: 404,
+      title: "Not Found",
+    });
+  });
+
+  it("uses fallback error details when a non-JSON response has no status", async () => {
+    window.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      json: () => Promise.reject(new SyntaxError("Unexpected token '<'")),
+    });
+
+    const request = new FetchRequest();
+    const result = await request.getObject("/invalid-response");
+
+    expect(result.isErr()).toBe(true);
+    expect(result.unwrap_err()).toMatchObject({
+      "@type": ["HTTPError", "Error"],
+      code: HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+      title: "Invalid server response",
+    });
+  });
+
+  it("returns a bad-gateway error when a successful response is not JSON", async () => {
+    window.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: () => Promise.reject(new SyntaxError("Unexpected token '<'")),
+    });
+
+    const request = new FetchRequest();
+    const result = await request.getObject("/unexpected-html");
+
+    expect(result.isErr()).toBe(true);
+    expect(result.unwrap_err()).toMatchObject({
+      "@type": ["HTTPError", "Error"],
+      code: HTTP_STATUS_CODE.BAD_GATEWAY,
+      title: "Invalid server response",
+    });
+  });
 });
 
 describe("Test URL-specific fetch requests", () => {

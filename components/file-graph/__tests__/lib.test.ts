@@ -9,9 +9,11 @@ import {
   generateIncludedFiles,
   generateSVGContent,
   getFileMetrics,
+  MAX_LINE_LENGTH,
   NODE_WIDTH,
   NODE_HEIGHT,
   trimIsolatedFiles,
+  validFileGraphData,
 } from "../lib";
 import type { FileObject } from "../../../globals";
 import { type FileSetObject } from "../../../lib/file-sets";
@@ -41,6 +43,92 @@ describe("Constants", () => {
   it("should export correct node dimensions", () => {
     expect(NODE_WIDTH).toBe(156);
     expect(NODE_HEIGHT).toBe(60);
+    expect(MAX_LINE_LENGTH).toBe(24);
+  });
+});
+
+describe("validFileGraphData", () => {
+  const file: FileObject = {
+    "@id": "/files/test",
+    "@type": ["File", "Item"],
+    content_type: "reads",
+    file_format: "fastq",
+    file_set: "/file-sets/test",
+    md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+    status: "released",
+  };
+  const fileSet: FileSetObject = {
+    "@id": "/file-sets/test",
+    "@type": ["AnalysisSet", "FileSet", "Item"],
+    file_set_type: "intermediate analysis",
+    status: "released",
+    summary: "Test file set",
+  };
+  const qualityMetric: QualityMetricObject = {
+    "@id": "/quality-metrics/test",
+    "@type": ["QualityMetric", "Item"],
+    analysis_step_version: "/analysis-step-versions/test",
+    quality_metric_of: [file["@id"]],
+    status: "released",
+  };
+  const validData = {
+    files: [file],
+    fileFileSets: [fileSet],
+    derivedFromFiles: [file],
+    referenceFiles: [file],
+    qualityMetrics: [qualityMetric],
+  };
+
+  beforeEach(() => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("accepts valid graph data with populated related-object arrays", () => {
+    expect(validFileGraphData(validData)).toBe(true);
+  });
+
+  it("accepts empty optional related-object arrays", () => {
+    expect(
+      validFileGraphData({
+        ...validData,
+        derivedFromFiles: [],
+        referenceFiles: [],
+        qualityMetrics: [],
+      })
+    ).toBe(true);
+  });
+
+  it.each([
+    ["files", { files: [] }, "Invalid files array"],
+    ["fileFileSets", { fileFileSets: [] }, "Invalid fileFileSets array"],
+    [
+      "derivedFromFiles",
+      { derivedFromFiles: ["/files/test"] as unknown as FileObject[] },
+      "Invalid derivedFromFiles array",
+    ],
+    [
+      "referenceFiles",
+      { referenceFiles: ["/files/test"] as unknown as FileObject[] },
+      "Invalid referenceFiles array",
+    ],
+    [
+      "qualityMetrics",
+      {
+        qualityMetrics: [
+          "/quality-metrics/test",
+        ] as unknown as QualityMetricObject[],
+      },
+      "Invalid qualityMetrics array",
+    ],
+  ])("rejects invalid %s", (_name, override, expectedMessage) => {
+    expect(validFileGraphData({ ...validData, ...override })).toBe(false);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining(expectedMessage)
+    );
   });
 });
 
@@ -575,9 +663,7 @@ describe("generateGraphData", () => {
         "@type": ["File", "Item"],
         content_type: "reads",
         file_format: "fastq",
-        file_set: {
-          "@id": "/file-sets/external",
-        },
+        file_set: "/file-sets/external",
         derived_from: [],
         md5sum: "02d89923100d9385f7fa351e9c35d4ca",
         status: "released",
@@ -607,6 +693,39 @@ describe("generateGraphData", () => {
 
     expect(result).not.toBeNull();
     expect(result?.children?.length).toBeGreaterThan(0);
+  });
+
+  it("should ignore an external file whose file-set object is unavailable", () => {
+    const nativeFiles: FileObject[] = [
+      {
+        "@id": "/files/native1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/native",
+        derived_from: ["/files/external1"],
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
+      },
+    ];
+    const externalFiles: FileObject[] = [
+      {
+        "@id": "/files/external1",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/unavailable",
+        md5sum: "02d89923100d9385f7fa351e9c35d4ca",
+        status: "released",
+      },
+    ];
+
+    const result = generateGraphData(nativeFiles, externalFiles, [], [], []);
+
+    expect(result).not.toBeNull();
+    expect(result?.children).toHaveLength(1);
+    expect(result?.children?.[0].id).toBe("/files/native1");
+    expect(result?.edges).toEqual([]);
   });
 
   it("should reuse an external file-set node and append downstream files", () => {
@@ -694,7 +813,7 @@ describe("generateGraphData", () => {
         file_format: "fastq",
         file_set: "/file-sets/test",
         derived_from: ["/files/file2"],
-        reference_files: ["/files/reference1"],
+        reference_files: [{ "@id": "/files/reference1" }] as FileObject[],
         md5sum: "02d89923100d9385f7fa351e9c35d4ca",
         status: "released",
       },
@@ -746,6 +865,9 @@ describe("generateGraphData", () => {
 
     expect(result).not.toBeNull();
     expect(result?.children?.length).toBeGreaterThan(0);
+    expect(
+      result?.children?.find((node) => node.id === "/files/file1")
+    ).toHaveProperty("metadata.referenceFiles", referenceFiles);
   });
 
   it("should generate graph data with quality metrics filtering", () => {
@@ -779,7 +901,7 @@ describe("generateGraphData", () => {
       {
         "@id": "/quality-metrics/metric1",
         "@type": ["QualityMetric", "Item"],
-        quality_metric_of: ["/files/file1"],
+        quality_metric_of: [{ "@id": "/files/file1" } as FileObject],
         analysis_step_version: "/analysis-step-versions/test",
         status: "released",
       },
@@ -795,6 +917,9 @@ describe("generateGraphData", () => {
 
     expect(result).not.toBeNull();
     expect(result?.children?.length).toBeGreaterThan(0);
+    expect(
+      result?.children?.find((node) => node.id === "/files/file1")
+    ).toHaveProperty("metadata.qualityMetrics", qualityMetrics);
   });
 
   it("should generate graph data with files having null derived_from", () => {
