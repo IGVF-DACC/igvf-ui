@@ -120,4 +120,4 @@ jobs:
       - run: |
           nvm install 24
           nvm use 24
-          pytest tests/
+          JSII_RUNTIME_PACKAGE_CACHE=disabled pytest tests/
