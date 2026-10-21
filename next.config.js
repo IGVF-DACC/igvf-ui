@@ -40,6 +40,11 @@ module.exports = {
   async redirects() {
     return [
       {
+        source: "/coding-variants/",
+        destination: "/coding-variants/analysis/",
+        permanent: true,
+      },
+      {
         source: "/profiles/graph.dot",
         destination: "/profiles/graph.svg",
         permanent: true,
