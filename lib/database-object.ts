@@ -12,6 +12,7 @@ import {
   type PseudobulkSetObject,
 } from "./file-sets";
 import { type OntologyTermObject } from "./ontology-terms";
+import { type QualityMetricObject } from "./quality-metric";
 import { type SampleObject } from "./samples";
 import { isPathArray } from "./types";
 import { type WorkflowObject } from "./workflow";
@@ -60,6 +61,7 @@ type DatabaseTypeMap = {
   OntologyTerm: OntologyTermObject;
   Page: PageObject;
   Publication: PublicationObject;
+  QualityMetric: QualityMetricObject;
   Sample: SampleObject;
   Software: SoftwareObject;
   SoftwareVersion: SoftwareVersionObject;

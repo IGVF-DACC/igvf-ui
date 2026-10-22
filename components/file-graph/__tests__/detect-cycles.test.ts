@@ -276,6 +276,29 @@ describe("Test the detectCycles function", () => {
     expect(cycles).toEqual([]);
   });
 
+  it("should handle embedded objects in derived_from", () => {
+    const fileObjects = [
+      {
+        "@id": "A",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: [{ "@id": "B" }],
+      },
+      {
+        "@id": "B",
+        "@type": ["File", "Item"],
+        content_type: "reads",
+        file_format: "fastq",
+        file_set: "/file-sets/test",
+        derived_from: [{ "@id": "A" }],
+      },
+    ] as unknown as FileObject[];
+
+    expect(detectCycles(fileObjects)).toEqual([["A", "B", "A"]]);
+  });
+
   it("should detect longer cycles (5+ nodes)", () => {
     const fileObjects: FileObject[] = [
       {

@@ -8,6 +8,11 @@ import { colorVariableToColorHex } from "../../lib/color";
 import { type FileSetObject } from "../../lib/file-sets";
 import { pathToId } from "../../lib/general";
 import { type QualityMetricObject } from "../../lib/quality-metric";
+import {
+  isDatabaseObjectArrayOfType,
+  pathsFromDatabaseObjects,
+} from "../../lib/database-object";
+import { isEmbedded } from "../../lib/types";
 // local
 import { groupingPipelineRunner, type GroupNodeMap } from "./grouping-pipeline";
 import {
@@ -145,9 +150,9 @@ export function trimIsolatedFiles(
   const filesWithIncomingEdges = new Set<string>();
   nativeFiles.forEach((file) => {
     // Get all derived_from paths for files that have loaded.
-    const loadedDerivedFromPaths = (file.derived_from || []).filter((path) =>
-      allFilePaths.has(path)
-    );
+    const loadedDerivedFromPaths = pathsFromDatabaseObjects(
+      file.derived_from
+    ).filter((path) => allFilePaths.has(path));
 
     // This file has incoming edges if it derives from loaded files.
     if (loadedDerivedFromPaths.length > 0) {
@@ -191,8 +196,9 @@ export function generateIncludedFiles(
   // Copy the files but with unavailable files filtered out of their `derived_from` arrays.
   const filesWithFilteredDerived = files.map((file) => ({
     ...file,
-    derived_from:
-      file.derived_from?.filter((path) => availableFilePaths.has(path)) || [],
+    derived_from: pathsFromDatabaseObjects(file.derived_from).filter((path) =>
+      availableFilePaths.has(path)
+    ),
   }));
 
   // Only consider native files that derive from other files or that other files derive from.
@@ -233,7 +239,7 @@ function findUsedExternalFiles(
   nativeFiles: FileObject[]
 ): FileObject[] {
   const derivedFromFilePaths = new Set(
-    nativeFiles.flatMap((file) => file.derived_from || [])
+    nativeFiles.flatMap((file) => pathsFromDatabaseObjects(file.derived_from))
   );
   return externalFiles.filter((file) => derivedFromFilePaths.has(file["@id"]));
 }
@@ -255,7 +261,7 @@ function getUpstreamFiles(
   nativeFiles: FileObject[],
   externalFiles: FileObject[]
 ): { upstreamNativeFiles: FileObject[]; upstreamExternalFiles: FileObject[] } {
-  const allDerivedFromPaths = file.derived_from || [];
+  const allDerivedFromPaths = pathsFromDatabaseObjects(file.derived_from);
   const nativeFilePaths = new Set(
     nativeFiles.map((nativeFile) => nativeFile["@id"])
   );
@@ -331,12 +337,17 @@ function generateFileNodes(
 
     // Get all quality metric objects associated with the current file.
     const fileQualityMetrics = qualityMetrics.filter((metric) =>
-      (metric.quality_metric_of as string[]).includes(nativeFile["@id"])
+      pathsFromDatabaseObjects(metric.quality_metric_of).includes(
+        nativeFile["@id"]
+      )
     );
 
     // Get all reference-file objects associated with the current file.
+    const nativeReferenceFilePaths = pathsFromDatabaseObjects(
+      nativeFile.reference_files
+    );
     const fileReferenceFiles = referenceFiles.filter((referenceFile) =>
-      (nativeFile.reference_files as string[])?.includes(referenceFile["@id"])
+      nativeReferenceFilePaths.includes(referenceFile["@id"])
     );
 
     // Initialize the node data for the native file.
@@ -389,13 +400,21 @@ function generateFileSetNodes(
     // generate one file-set node for each group.
     const externalFilesByFileSet = _.groupBy(
       upstreamExternalFiles,
-      (externalFile) => externalFile.file_set["@id"]
+      (externalFile) =>
+        isEmbedded(externalFile.file_set)
+          ? externalFile.file_set["@id"]
+          : externalFile.file_set
     );
 
     // Process file-set nodes for each file set group, with each group representing a unique
     // combination of a file set and its external files (external to the viewed file set).
     Object.entries(externalFilesByFileSet).forEach(
       ([fileSetPath, externalFiles]) => {
+        const fileSet = fileSetMap.get(fileSetPath);
+        if (!fileSet) {
+          return;
+        }
+
         // Find an already-added file-set node with a matching path and combination of external
         // files. Do this through the file-set node ID which combines the file-set path and all the
         // external files' IDs combined into a single hash. Use the hash for lookup here, and they
@@ -412,7 +431,7 @@ function generateFileSetNodes(
             height: NODE_HEIGHT,
             metadata: {
               kind: NODE_KINDS.FILESET,
-              fileSet: fileSetMap.get(fileSetPath),
+              fileSet,
               externalFiles,
               downstreamFiles: [fileNode.metadata.file],
             } satisfies FileSetMetadata,
@@ -907,4 +926,73 @@ function generateLayoutEdgeId(groupId: string, targetFileId: string): string {
  */
 function isLayoutEdgeId(edgeId: string): boolean {
   return edgeId.startsWith("layout-");
+}
+
+/**
+ * Validate the data provided to the FileGraph component so we can bail on file-graph rendering
+ * early if the data is invalid.
+ *
+ * @param files - Files belonging to the file set being visualized in the FileGraph component
+ * @param fileFileSets - File sets that the graphed files belong to
+ * @param derivedFromFiles - Files in other file sets that `files` derive from
+ * @param referenceFiles - Reference files associated with `files`
+ * @param qualityMetrics - Quality metrics for `files`
+ * @returns True if the data is valid, false otherwise.
+ */
+export function validFileGraphData({
+  files,
+  fileFileSets,
+  derivedFromFiles,
+  referenceFiles,
+  qualityMetrics,
+}: {
+  files: FileObject[];
+  fileFileSets: FileSetObject[];
+  derivedFromFiles: FileObject[];
+  referenceFiles: FileObject[];
+  qualityMetrics: QualityMetricObject[];
+}): boolean {
+  if (!isDatabaseObjectArrayOfType(files, "File")) {
+    console.error("Invalid files array provided to FileGraph component.");
+    return false;
+  }
+
+  if (!isDatabaseObjectArrayOfType(fileFileSets, "FileSet")) {
+    console.error(
+      "Invalid fileFileSets array provided to FileGraph component."
+    );
+    return false;
+  }
+
+  if (
+    derivedFromFiles.length > 0 &&
+    !isDatabaseObjectArrayOfType(derivedFromFiles, "File")
+  ) {
+    console.error(
+      "Invalid derivedFromFiles array provided to FileGraph component."
+    );
+    return false;
+  }
+
+  if (
+    referenceFiles.length > 0 &&
+    !isDatabaseObjectArrayOfType(referenceFiles, "File")
+  ) {
+    console.error(
+      "Invalid referenceFiles array provided to FileGraph component."
+    );
+    return false;
+  }
+
+  if (
+    qualityMetrics.length > 0 &&
+    !isDatabaseObjectArrayOfType(qualityMetrics, "QualityMetric")
+  ) {
+    console.error(
+      "Invalid qualityMetrics array provided to FileGraph component."
+    );
+    return false;
+  }
+
+  return true;
 }
