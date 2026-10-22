@@ -114,7 +114,7 @@ export function TabTitle({
   return (
     <Tab
       disabled={isDisabled}
-      className={`flex items-stretch ${className}`}
+      className={`flex cursor-pointer items-stretch ${className}`}
       aria-label={label}
     >
       {({ selected }) => {

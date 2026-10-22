@@ -4,6 +4,7 @@ import {
   type GetServerSidePropsResult,
 } from "next";
 // components
+import { CodingVariantsLayout } from "../../components/coding-variants";
 import PagePreamble from "../../components/page-preamble";
 import { SearchList } from "../../components/search";
 // lib
@@ -66,13 +67,13 @@ export default function CodingVariantsPage({
   return (
     <>
       <PagePreamble />
-      <div className="@container mt-8">
+      <CodingVariantsLayout pageId="prediction-content">
         <SearchList
           items={predictions}
           className="grid gap-x-1.5 @3xl:grid-cols-2"
           isItemMarginTrimmed={false}
         />
-      </div>
+      </CodingVariantsLayout>
     </>
   );
 }

@@ -7,7 +7,7 @@ import {
 import { useContext } from "react";
 // components
 import { AnnotatedValue } from "../../components/annotated-value";
-import { DataPanel } from "../../components/data-area";
+import { CodingVariantsLayout } from "../../components/coding-variants";
 import Link from "../../components/link-no-prefetch";
 import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
@@ -109,9 +109,9 @@ export default function CodingVariantsPage({
   return (
     <>
       <PagePreamble />
-      <DataPanel className="mt-8">
+      <CodingVariantsLayout pageId="analysis-content">
         <ProteinScanningSection assayToGenes={assayToGenes} />
-      </DataPanel>
+      </CodingVariantsLayout>
     </>
   );
 }
