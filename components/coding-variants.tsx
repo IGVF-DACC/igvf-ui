@@ -14,8 +14,8 @@ const IdToPathMap: Record<string, string> = {
 };
 
 /**
- * Layout component for the Coding Variants pages.
- * It includes a tab navigation for "Analysis" and "Prediction" sections.
+ * Layout component for the Coding Variants pages. It includes a tab navigation for "Analysis" and
+ * "Prediction" sections.
  *
  * @param pageId - ID of the current page's tab
  */
@@ -36,13 +36,13 @@ export function CodingVariantsLayout({
   }
 
   return (
-    <DataPanel className="@container mt-8 pt-0">
+    <DataPanel className="@container mt-8 pt-0" isPaddingSuppressed>
       <TabGroup defaultId={pageId} onChange={tabClickHandler}>
-        <TabList>
+        <TabList className="border-tab-group border-b">
           <TabTitle id="analysis-content">Analysis</TabTitle>
           <TabTitle id="prediction-content">Prediction</TabTitle>
         </TabList>
-        {children}
+        <div className="p-4">{children}</div>
       </TabGroup>
     </DataPanel>
   );
