@@ -205,6 +205,13 @@ export interface SearchResults<T extends DatabaseObject = DatabaseObject> {
   actions?: ObjectActions[];
 }
 
+/**
+ * Search results object returned by the `/search-quick/` endpoint.
+ */
+export interface SearchQuickResults<T extends DatabaseObject = DatabaseObject> {
+  "@graph": T[];
+}
+
 export interface SearchResultsColumns {
   [key: string]: {
     title: string;

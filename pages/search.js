@@ -6,13 +6,12 @@ import Breadcrumbs from "../components/breadcrumbs";
 import { FacetSection, FacetTags } from "../components/facets";
 import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
+import { getAccessoryData, getItemListsByType } from "../components/search";
 import {
-  getAccessoryData,
-  getItemListsByType,
-  getSearchListItemRenderer,
-  SearchListItem,
-} from "../components/search";
-import { SearchPager, useSearchLimits } from "../components/search-results";
+  SearchList,
+  SearchPager,
+  useSearchLimits,
+} from "../components/search-results";
 import { SearchResultsHeader } from "../components/search-results";
 import SessionContext from "../components/session-context";
 import TableCount from "../components/table-count";
@@ -70,26 +69,10 @@ export default function Search({
               <SearchResultsHeader searchResults={searchResults} />
               <TableCount count={searchResults.total} />
               {totalPages > 1 && <SearchPager searchResults={searchResults} />}
-              <ul data-testid="search-list">
-                {searchResults["@graph"].map((item) => {
-                  // For each item, get the appropriate search-list item renderer for it, or the
-                  // fallback render if the item type doesn't have one.
-                  const SearchListItemRenderer =
-                    getSearchListItemRenderer(item);
-                  return (
-                    <SearchListItem
-                      key={item["@id"]}
-                      testid={item["@id"]}
-                      href={item["@id"]}
-                    >
-                      <SearchListItemRenderer
-                        item={item}
-                        accessoryData={accessoryData}
-                      />
-                    </SearchListItem>
-                  );
-                })}
-              </ul>
+              <SearchList
+                items={searchResults["@graph"]}
+                accessoryData={accessoryData}
+              />
             </>
           ) : (
             <NoCollectionData pageTitle="list items" />
