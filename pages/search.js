@@ -6,13 +6,16 @@ import Breadcrumbs from "../components/breadcrumbs";
 import { FacetSection, FacetTags } from "../components/facets";
 import NoCollectionData from "../components/no-collection-data";
 import PagePreamble from "../components/page-preamble";
-import { getAccessoryData, getItemListsByType } from "../components/search";
 import {
+  getAccessoryData,
+  getItemListsByType,
   SearchList,
+} from "../components/search";
+import {
   SearchPager,
+  SearchResultsHeader,
   useSearchLimits,
 } from "../components/search-results";
-import { SearchResultsHeader } from "../components/search-results";
 import SessionContext from "../components/session-context";
 import TableCount from "../components/table-count";
 // lib

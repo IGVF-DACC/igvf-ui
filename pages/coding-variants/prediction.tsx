@@ -5,7 +5,7 @@ import {
 } from "next";
 // components
 import PagePreamble from "../../components/page-preamble";
-import { SearchList } from "../../components/search-results";
+import { SearchList } from "../../components/search";
 // lib
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
@@ -66,7 +66,13 @@ export default function CodingVariantsPage({
   return (
     <>
       <PagePreamble />
-      <SearchList items={predictions} />
+      <div className="@container mt-8">
+        <SearchList
+          items={predictions}
+          className="grid gap-x-1.5 @3xl:grid-cols-2"
+          isItemMarginTrimmed={false}
+        />
+      </div>
     </>
   );
 }

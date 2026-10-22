@@ -6,6 +6,5 @@
 import SearchResultsHeader from "./header";
 import useSearchLimits from "./search-limits";
 import SearchPager from "./search-pager";
-import { SearchList } from "./search-list";
 
-export { SearchList, SearchPager, SearchResultsHeader, useSearchLimits };
+export { SearchPager, SearchResultsHeader, useSearchLimits };
