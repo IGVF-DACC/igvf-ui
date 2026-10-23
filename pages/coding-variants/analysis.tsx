@@ -152,6 +152,17 @@ const nonScanningSlimTitleMap: Record<NonScanningSlims, string> = {
 };
 
 /**
+ * Constants for the Arrayed Semi-qY2H assay prefix and its description. Assays starting with the
+ * prefix need to be annotated with this description instead of getting it from the measurement-set
+ * schema which has entries for each of the versions of Arrayed Semi-qY2H assays. If someone
+ * modifies the descriptions of the Arrayed Semi-qY2H assay entries in the measurement-set schema,
+ * they need to update this description accordingly.
+ */
+const ARRAYED_SEMI_QY2H_PREFIX = "Arrayed semi-qY2H";
+const ARRAYED_SEMI_QY2H_DESCRIPTION =
+  "Arrayed Semi-q Yeast two-hybrid (Y2H) is a yeast-based protein-protein interaction assay that fuses proteins to DNA-binding and Activation domains and measures His3 and Ade2 reporter expression in the presences of increasing competitive inhibitors to detect an interaction between pairs of proteins tested individually using a low level of expression of a N-terminal AD fusion.";
+
+/**
  * Coding Variants page component.
  *
  * @param codingVariants - Matrix results for the coding variants
@@ -281,6 +292,10 @@ function NonScanningSection({
 }: {
   nonScanningSlims: Record<string, AnalysisSetObject[]>;
 }) {
+  const { profiles } = useContext(SessionContext);
+  const preferredAssayTitleDescriptionMap =
+    getPreferredAssayTitleDescriptionMap(profiles);
+  console.log(preferredAssayTitleDescriptionMap);
   const slims = Object.keys(nonScanningSlims);
 
   return (
@@ -299,7 +314,14 @@ function NonScanningSection({
                   ([assayTitle, analysisSets]) => (
                     <div key={assayTitle} className="@md:contents">
                       <dt className="mb-1 whitespace-nowrap @md:mb-0">
-                        {assayTitle}
+                        <AnnotatedValue
+                          externalAnnotations={getAssayAnnotations(
+                            assayTitle,
+                            preferredAssayTitleDescriptionMap
+                          )}
+                        >
+                          {assayTitle}
+                        </AnnotatedValue>
                       </dt>
                       <dd className="min-w-0 text-left">
                         {generateNonScanningCount(analysisSets)}
@@ -473,6 +495,26 @@ function groupNonScanning(
     }
   }
   return grouped;
+}
+
+/**
+ * Returns the updated annotations mapping, potentially including a specific description for the
+ * given assay title.
+ *
+ * @param assayTitle - Title of the assay to check for specific annotations
+ * @param annotations - Existing annotations mapping assay titles to descriptions
+ * @returns Updated annotations including any specific description for the given assay title
+ */
+function getAssayAnnotations(
+  assayTitle: string,
+  annotations: Record<string, string>
+): Record<string, string> {
+  return assayTitle.startsWith(ARRAYED_SEMI_QY2H_PREFIX)
+    ? {
+        ...annotations,
+        [assayTitle]: ARRAYED_SEMI_QY2H_DESCRIPTION,
+      }
+    : annotations;
 }
 
 /**
