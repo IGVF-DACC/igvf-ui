@@ -287,6 +287,11 @@ function ProteinScanningAssaySection({
   );
 }
 
+/**
+ * Non-scanning section for the Coding Variants page analysis tab.
+ *
+ * @param nonScanningSlims - Non-scanning slim categories and their associated analysis sets.
+ */
 function NonScanningSection({
   nonScanningSlims,
 }: {
@@ -370,7 +375,7 @@ function CodingVariantButton({
 /**
  * Component for rendering the title of a slim section.
  *
- * @param title - The title of the slim section.
+ * @param title - Title of the slim section.
  */
 function SlimTitle({ title }: { title: string }) {
   return <h2 className="mb-2 text-lg font-bold">{title}</h2>;
