@@ -5,6 +5,7 @@ import {
   type GetServerSidePropsResult,
 } from "next";
 import { useContext } from "react";
+import { twMerge } from "tailwind-merge";
 // components
 import { AnnotatedValue } from "../../components/annotated-value";
 import { CodingVariantsLayout } from "../../components/coding-variants";
@@ -273,13 +274,12 @@ function ProteinScanningAssaySection({
         </dt>
         <dd className="flex min-w-0 flex-wrap gap-0.5">
           {genes.map((gene) => (
-            <Link
+            <CodingVariantButton
               key={gene.symbol}
+              value={gene.symbol}
               href={`${BASE_SCANNING_LIST_QUERY}&preferred_assay_titles=${encodeUriElement(assay)}${assay === "SGE" ? `&preferred_assay_titles!=SGE-RNA` : ""}&construct_library_sets.small_scale_gene_list.symbol=${encodeUriElement(gene.symbol)}`}
-              className="border-protein-scan-outline bg-protein-scan-button hover:bg-protein-scan-button-hl text-protein-scan-label rounded-xs border px-2 py-1 text-sm no-underline"
-            >
-              {gene.symbol}
-            </Link>
+              className="border-protein-scan-outline bg-protein-scan-button hover:bg-protein-scan-button-hl text-protein-scan-label"
+            />
           ))}
         </dd>
       </div>
@@ -335,6 +335,35 @@ function NonScanningSection({
         }
       })}
     </section>
+  );
+}
+
+/**
+ * Render a button on the coding variants page analysis tab.
+ *
+ * @param value - The text to display on the button.
+ * @param href - The URL the button should link to.
+ * @param className - Optional additional CSS classes for the button.
+ */
+function CodingVariantButton({
+  value,
+  href,
+  className,
+}: {
+  value: string;
+  href: string;
+  className?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={twMerge(
+        "rounded-xs border px-2 py-1 text-sm no-underline",
+        className
+      )}
+    >
+      {value}
+    </Link>
   );
 }
 
