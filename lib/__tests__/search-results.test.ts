@@ -1,9 +1,35 @@
 import {
   generateSearchResultsTypes,
+  isSearchQuickResults,
   isSearchResults,
   stripLimitQueryIfNeeded,
 } from "../search-results";
-import { CollectionTitles, Profiles, SearchResults } from "../../globals.d";
+import {
+  CollectionTitles,
+  Profiles,
+  SearchQuickResults,
+  SearchResults,
+} from "../../globals.d";
+
+describe("isSearchQuickResults()", () => {
+  it("returns true for a valid SearchQuickResults object", () => {
+    const searchQuickResults: SearchQuickResults = {
+      "@graph": [],
+    };
+
+    expect(isSearchQuickResults(searchQuickResults)).toBe(true);
+  });
+
+  it("returns false when @graph is missing or is not an array", () => {
+    expect(isSearchQuickResults({})).toBe(false);
+    expect(isSearchQuickResults({ "@graph": {} })).toBe(false);
+  });
+
+  it("returns false for a non-object value", () => {
+    expect(isSearchQuickResults("not an object")).toBe(false);
+    expect(isSearchQuickResults(null)).toBe(false);
+  });
+});
 
 describe("Test generateSearchResultsTypes()", () => {
   it("returns an empty array if profiles is null", () => {

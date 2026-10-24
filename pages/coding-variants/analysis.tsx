@@ -41,8 +41,8 @@ interface CodingVariantsProps extends PageProps {
 }
 
 /**
- * Represents a gene and the number of times it appears in the dataset. This data comes directly
- * from the matrix results.
+ * Represents a gene and the number of times it appears in the dataset for the protein-scanning
+ * display. This data comes directly from the matrix results.
  *
  * @property symbol - Gene symbol
  * @property count - Number of times the gene appears for a given assay
@@ -91,20 +91,14 @@ const BASE_SCANNING_LIST_QUERY =
   "/search/?type=AnalysisSet&status=released&file_set_type=principal+analysis";
 
 /**
- * Versioned Arrayed semi-qY2H assays that share one display group.
+ * Base query string for the non-scanning assays in the Coding Variants page report requests. If
+ * more versions of Arrayed semi-qY2H are added, this should be the only place to add them. The rest
+ * of the code should accommodate these changes automatically.
  */
-const arrayedSemiQy2hAssays = [
+const nonScanningAssays = [
   "Arrayed semi-qY2H v1",
   "Arrayed semi-qY2H v2",
   "Arrayed semi-qY2H v3",
-] as const;
-const arrayedSemiQy2hAssaySet = new Set<string>(arrayedSemiQy2hAssays);
-
-/**
- * Base query string for the non-scanning assays in the Coding Variants page report requests.
- */
-const nonScanningAssays = [
-  ...arrayedSemiQy2hAssays,
   "DUAL-IPA",
   "Pooled Y2H",
   "Variant painting via fluorescence",
@@ -406,10 +400,9 @@ function SlimTitle({ title }: { title: string }) {
 }
 
 /**
- * Group analysis sets within a preferred assay slim by their preferred assay title. All available
- * Arrayed semi-qY2H versions share a single group whose label lists only the versions represented
- * in the supplied analysis sets. They appear as "Arrayed semi-qY2H <version1>, <version2>, ..." in
- * the display title.
+ * Group analysis sets within a preferred assay slim by their preferred assay title. All titles
+ * beginning with Arrayed semi-qY2H share a single group. The shared prefix appears once, followed
+ * by each title's otherwise-uninterpreted suffix.
  *
  * @param items - Analysis sets within one preferred-assay-slim group
  * @returns Analysis sets grouped by their display assay title
@@ -418,33 +411,31 @@ function groupNonScanningByAssayTitle(
   items: AnalysisSetObject[]
 ): Record<string, AnalysisSetObject[]> {
   const grouped: Record<string, AnalysisSetObject[]> = {};
-  const arrayedSemiQy2hVersions = new Set<string>();
+  const arrayedSemiQy2hTitles = new Set<string>();
   const arrayedSemiQy2hItems = new Map<string, AnalysisSetObject>();
 
-  // Group items by their preferred assay titles, handling Arrayed semi-qY2H versions separately.
+  // Group items by their preferred assay titles, handling Arrayed semi-qY2H titles separately.
   for (const item of items) {
     for (const assayTitle of item.preferred_assay_titles || []) {
-      if (arrayedSemiQy2hAssaySet.has(assayTitle)) {
-        // The assay title is a versioned Arrayed semi-qY2H assay, so they'll get treated as a
-        // single group later.
-        arrayedSemiQy2hVersions.add(assayTitle);
+      if (assayTitle.startsWith(ARRAYED_SEMI_QY2H_PREFIX)) {
+        // Titles with the Arrayed semi-qY2H prefix get treated as a single group later.
+        arrayedSemiQy2hTitles.add(assayTitle);
         arrayedSemiQy2hItems.set(item["@id"], item);
       } else {
-        // The assay title is not a versioned Arrayed semi-qY2H assay, so group it normally.
+        // The assay title does not have the Arrayed semi-qY2H prefix, so group it normally.
         (grouped[assayTitle] ??= []).push(item);
       }
     }
   }
 
-  // If there are any Arrayed semi-qY2H versions, create a single group for them with a display
-  // title and their combined version numbers.
-  if (arrayedSemiQy2hVersions.size > 0) {
-    const availableVersions = arrayedSemiQy2hAssays.filter((assay) =>
-      arrayedSemiQy2hVersions.has(assay)
-    );
-    const displayTitle = availableVersions
+  // Combine the Arrayed semi-qY2H titles without interpreting the contents of their suffixes.
+  if (arrayedSemiQy2hTitles.size > 0) {
+    const displayTitle = [...arrayedSemiQy2hTitles]
+      .sort((titleA, titleB) => titleA.localeCompare(titleB))
       .map((assay, index) =>
-        index === 0 ? assay : assay.replace("Arrayed semi-qY2H ", "")
+        index === 0
+          ? assay
+          : assay.slice(ARRAYED_SEMI_QY2H_PREFIX.length).trim()
       )
       .join(", ");
     grouped[displayTitle] = [...arrayedSemiQy2hItems.values()];
@@ -529,8 +520,8 @@ function buildAssayToGenesMapping(
 
 /**
  * Builds a URL for non-scanning analysis sets filtered by assay slim and assay title. For the
- * special case of arrayed semi-QY2H assays, it generates separate query parameters for each of the
- * comma-separated suffixes.
+ * special case of Arrayed semi-qY2H assays, it generates separate query parameters for each
+ * comma-separated suffix without interpreting its contents.
  *
  * @param assaySlim The preferred assay slim to filter by.
  * @param assayTitle The preferred assay title to filter by.
@@ -545,7 +536,7 @@ function buildNonScanningHrefs(assaySlim: string, assayTitle: string): string {
     .trim();
 
   if (
-    assayTitle.startsWith(`${ARRAYED_SEMI_QY2H_PREFIX} `) &&
+    assayTitle.startsWith(ARRAYED_SEMI_QY2H_PREFIX) &&
     arrayedSemiQy2hSuffixes
   ) {
     assayTitleQuery = arrayedSemiQy2hSuffixes

@@ -6,10 +6,28 @@ import type {
   NextJsServerQuery,
   Profiles,
   ProfilesProps,
+  SearchQuickResults,
   SearchResults,
   SearchResultsFacetTerm,
   SearchResultsFilter,
 } from "../globals";
+
+/**
+ * Type guard for responses returned by the `/search-quick/` endpoint.
+ *
+ * @param item - Potential quick-search response object
+ * @returns True if item matches the SearchQuickResults shape
+ */
+export function isSearchQuickResults(
+  item: unknown
+): item is SearchQuickResults {
+  return (
+    item !== null &&
+    typeof item === "object" &&
+    "@graph" in item &&
+    Array.isArray(item["@graph"])
+  );
+}
 
 /**
  * Type guard for search responses returned by the data provider.
