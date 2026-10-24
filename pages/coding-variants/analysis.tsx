@@ -144,6 +144,9 @@ const nonScanningFieldQuery = nonScanningFields
  */
 const BASE_NON_SCANNING_PAGE_QUERY = `type=AnalysisSet&status=released&file_set_type=principal+analysis&${nonScanningAssayQuery}&${nonScanningFieldQuery}`;
 
+const BASE_NON_SCANNING_LIST_QUERY =
+  "type=AnalysisSet&status=released&file_set_type=principal+analysis";
+
 /**
  * Mapping from non-scanning assay slim keys to their display titles.
  */
@@ -313,7 +316,6 @@ function NonScanningSection({
   const { profiles } = useContext(SessionContext);
   const preferredAssayTitleDescriptionMap =
     getPreferredAssayTitleDescriptionMap(profiles);
-  console.log(preferredAssayTitleDescriptionMap);
   const slims = Object.keys(nonScanningSlims);
 
   return (
@@ -324,35 +326,37 @@ function NonScanningSection({
           const assayGroups = groupNonScanningByAssayTitle(
             nonScanningSlims[slim]
           );
-          console.log("SLIM ", slim);
           return (
             <div key={slim}>
               <SlimTitle title={title} />
               <dl className="grid grid-cols-1 gap-3 @md:grid-cols-[max-content_minmax(0,1fr)] @md:items-baseline @md:gap-x-6">
                 {Object.entries(assayGroups).map(
-                  ([assayTitle, analysisSets]) => (
-                    <div key={assayTitle} className="@md:contents">
-                      <dt className="mb-1 whitespace-nowrap @md:mb-0">
-                        <AnnotatedValue
-                          externalAnnotations={getAssayAnnotations(
-                            assayTitle,
-                            preferredAssayTitleDescriptionMap
-                          )}
-                        >
-                          {assayTitle}
-                        </AnnotatedValue>
-                      </dt>
-                      <dd className="min-w-0 text-left">
-                        <CodingVariantButton
-                          value={abbreviateNumber(
-                            generateNonScanningCount(analysisSets)
-                          )}
-                          href="#"
-                          className={`px-4 ${nonScanningSlimColorMap[slim]}`}
-                        />
-                      </dd>
-                    </div>
-                  )
+                  ([assayTitle, analysisSets]) => {
+                    const href = buildNonScanningHrefs(slim, assayTitle);
+                    return (
+                      <div key={assayTitle} className="@md:contents">
+                        <dt className="mb-1 whitespace-nowrap @md:mb-0">
+                          <AnnotatedValue
+                            externalAnnotations={getAssayAnnotations(
+                              assayTitle,
+                              preferredAssayTitleDescriptionMap
+                            )}
+                          >
+                            {assayTitle}
+                          </AnnotatedValue>
+                        </dt>
+                        <dd className="min-w-0 text-left">
+                          <CodingVariantButton
+                            value={abbreviateNumber(
+                              generateNonScanningCount(analysisSets)
+                            )}
+                            href={href}
+                            className={`px-4 ${nonScanningSlimColorMap[slim]}`}
+                          />
+                        </dd>
+                      </div>
+                    );
+                  }
                 )}
               </dl>
             </div>
@@ -521,6 +525,45 @@ function buildAssayToGenesMapping(
   return _.mapValues(assayToGenes, (genes) =>
     _.sortBy(genes, (gene) => gene.symbol.toLowerCase())
   );
+}
+
+/**
+ * Builds a URL for non-scanning analysis sets filtered by assay slim and assay title. For the
+ * special case of arrayed semi-QY2H assays, it generates separate query parameters for each of the
+ * comma-separated suffixes.
+ *
+ * @param assaySlim The preferred assay slim to filter by.
+ * @param assayTitle The preferred assay title to filter by.
+ * @returns A URL string for the search page with the specified filters applied.
+ */
+function buildNonScanningHrefs(assaySlim: string, assayTitle: string): string {
+  let assayTitleQuery = `preferred_assay_titles=${encodeUriElement(
+    assayTitle
+  )}`;
+  const arrayedSemiQy2hSuffixes = assayTitle
+    .slice(ARRAYED_SEMI_QY2H_PREFIX.length)
+    .trim();
+
+  if (
+    assayTitle.startsWith(`${ARRAYED_SEMI_QY2H_PREFIX} `) &&
+    arrayedSemiQy2hSuffixes
+  ) {
+    assayTitleQuery = arrayedSemiQy2hSuffixes
+      .split(",")
+      .map((suffix) => suffix.trim())
+      .filter(Boolean)
+      .map(
+        (suffix) =>
+          `preferred_assay_titles=${encodeUriElement(
+            `${ARRAYED_SEMI_QY2H_PREFIX} ${suffix}`
+          )}`
+      )
+      .join("&");
+  }
+
+  return `/search/?${BASE_NON_SCANNING_LIST_QUERY}&preferred_assay_slims=${encodeUriElement(
+    assaySlim
+  )}&${assayTitleQuery}`;
 }
 
 /**
