@@ -17,6 +17,7 @@ import SessionContext from "../../components/session-context";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
 import { type AnalysisSetObject } from "../../lib/file-sets";
+import { abbreviateNumber } from "../../lib/general";
 import {
   getMatrixAxisGroups,
   getMatrixBuckets,
@@ -150,6 +151,18 @@ const nonScanningSlimTitleMap: Record<NonScanningSlims, string> = {
   "protein interaction": "Protein-Protein Interaction",
   "protein expression": "Protein Expression",
   imaging: "Imaging",
+};
+
+/**
+ * Mapping from non-scanning assay slim keys to their color classes for styling.
+ */
+const nonScanningSlimColorMap: Record<NonScanningSlims, string> = {
+  "protein interaction":
+    "border-protein-interaction-outline bg-protein-interaction-button hover:bg-protein-interaction-hl text-protein-interaction-label px-4",
+  "protein expression":
+    "border-protein-expression-outline bg-protein-expression-button hover:bg-protein-expression-hl text-protein-expression-label px-4",
+  imaging:
+    "border-imaging-outline bg-imaging-button hover:bg-imaging-hl text-imaging-label px-4",
 };
 
 /**
@@ -304,13 +317,14 @@ function NonScanningSection({
   const slims = Object.keys(nonScanningSlims);
 
   return (
-    <section className="flex flex-col gap-6">
+    <section className="flex flex-col gap-8">
       {slims.map((slim) => {
         const title = nonScanningSlimTitleMap[slim];
         if (title) {
           const assayGroups = groupNonScanningByAssayTitle(
             nonScanningSlims[slim]
           );
+          console.log("SLIM ", slim);
           return (
             <div key={slim}>
               <SlimTitle title={title} />
@@ -329,7 +343,13 @@ function NonScanningSection({
                         </AnnotatedValue>
                       </dt>
                       <dd className="min-w-0 text-left">
-                        {generateNonScanningCount(analysisSets)}
+                        <CodingVariantButton
+                          value={abbreviateNumber(
+                            generateNonScanningCount(analysisSets)
+                          )}
+                          href="#"
+                          className={`px-4 ${nonScanningSlimColorMap[slim]}`}
+                        />
                       </dd>
                     </div>
                   )

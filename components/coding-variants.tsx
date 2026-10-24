@@ -42,7 +42,7 @@ export function CodingVariantsLayout({
           <TabTitle id="analysis-content">Analysis</TabTitle>
           <TabTitle id="prediction-content">Prediction</TabTitle>
         </TabList>
-        <div className="flex flex-col gap-6 p-4">{children}</div>
+        <div className="flex flex-col gap-8 p-4">{children}</div>
       </TabGroup>
     </DataPanel>
   );
