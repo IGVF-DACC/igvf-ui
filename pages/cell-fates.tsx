@@ -133,7 +133,7 @@ export default function DifferentiationSeries({
         This table displays processed data from differentiated and reprogrammed
         cell specimens. You can also explore a{" "}
         <Link href="/search/?type=AnalysisSet&status=released&samples.classifications=*&advancedQuery=samples.classifications:(%22multiplexed+sample%22+AND+%22differentiated+cell+specimen%22)+OR+samples.classifications:(%22multiplexed+sample%22+AND+%22reprogrammed+cell+specimen%22)">
-          list of multiplexed samples
+          list of analyses of multiplexed samples
         </Link>
         .
       </p>
