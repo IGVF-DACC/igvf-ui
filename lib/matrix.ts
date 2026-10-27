@@ -150,6 +150,23 @@ export function generateMatrixColumnMap(
 }
 
 /**
+ * Type guard to check if a value has the form of a MatrixAxis object.
+ *
+ * @param value - Value to check
+ * @returns True if the value has the form of a MatrixAxis object
+ */
+function isMatrixAxis(value: unknown): value is MatrixAxis {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "group_by" in value &&
+    (typeof value.group_by === "string" || Array.isArray(value.group_by)) &&
+    "doc_count" in value &&
+    typeof value.doc_count === "number"
+  );
+}
+
+/**
  * Type guard to check if a value has the form of a MatrixBucketWrapper object.
  *
  * @param value - Value to check
@@ -180,7 +197,13 @@ export function isMatrixResultsObject(item: unknown): item is MatrixResults {
     "@type" in item &&
     ((typeof item["@type"] === "string" && item["@type"] === "Omnimatrix") ||
       (Array.isArray(item["@type"]) && item["@type"].includes("Matrix"))) &&
-    "matrix" in item
+    "matrix" in item &&
+    typeof item.matrix === "object" &&
+    item.matrix !== null &&
+    "x" in item.matrix &&
+    "y" in item.matrix &&
+    isMatrixAxis(item.matrix.x) &&
+    isMatrixAxis(item.matrix.y)
   );
 }
 

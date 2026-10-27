@@ -71,4 +71,16 @@ describe("Test a search-list item", () => {
     );
     expect(supplementContent).toHaveTextContent("Term A, Term B, Term C");
   });
+
+  it("does not trim the item margins when disabled", () => {
+    render(
+      <SearchListItem href="#" testid="untrimmed" isMarginTrimmed={false}>
+        Item content
+      </SearchListItem>
+    );
+
+    const item = screen.getByTestId("search-list-item-untrimmed");
+    expect(item).not.toHaveClass("first:mt-0");
+    expect(item).not.toHaveClass("last:mb-0");
+  });
 });

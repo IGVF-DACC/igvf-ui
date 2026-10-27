@@ -137,6 +137,7 @@ export interface AnalysisSetObject extends FileSetObject {
   functional_assay_mechanisms?: LinkToArray<PhenotypeTermObject>;
   input_file_sets?: LinkToArray<FileSetObject>;
   pipeline_parameters?: LinkToArray<FileObject | DocumentObject>;
+  preferred_assay_slims?: string[];
   preferred_assay_titles?: string[];
   protocols?: string[];
   simplified_sample_summary?: string;
@@ -164,6 +165,7 @@ export interface ConstructLibrarySetObject extends FileSetObject {
   exon?: string;
   file_sets?: LinkToArray<FileSetObject>;
   integrated_content_files?: LinkToArray<FileObject>;
+  large_gene_count?: number;
   large_scale_gene_list?: LinkTo<FileObject>;
   large_scale_loci_list?: LinkTo<FileObject>;
   lower_bound_guide_coverage?: number;
