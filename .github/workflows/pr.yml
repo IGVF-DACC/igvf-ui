@@ -9,13 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python 3.9
+      - name: Set up Python 3.11
         uses: actions/setup-python@v3
         with:
-          python-version: 3.9
+          python-version: 3.11
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          echo "pip==26.2.2 --hash=sha256:fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70" > /tmp/pip-bootstrap.txt \
+            && python -m pip install --require-hashes -r /tmp/pip-bootstrap.txt \
+            && rm /tmp/pip-bootstrap.txt
           python -m pip install -r requirements.txt -r requirements-dev.txt
         working-directory: ./cdk
       - name: Check config
