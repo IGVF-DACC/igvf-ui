@@ -543,10 +543,18 @@ export function OntologyTermDataItems({ item, isA, children }) {
     <>
       <DataItemLabel>Term Name</DataItemLabel>
       <DataItemValue>{item.term_name}</DataItemValue>
-      <DataItemLabel>External Reference</DataItemLabel>
+      <DataItemLabel>Term ID</DataItemLabel>
       <DataItemValue>
         <DbxrefList dbxrefs={[item.term_id]} />
       </DataItemValue>
+      {item.dbxrefs?.length > 0 && (
+        <>
+          <DataItemLabel>External Resources</DataItemLabel>
+          <DataItemValue>
+            <DbxrefList dbxrefs={item.dbxrefs} />
+          </DataItemValue>
+        </>
+      )}
       {isA.length > 0 && (
         <>
           <DataItemLabel>Is A</DataItemLabel>
