@@ -3253,7 +3253,7 @@ describe("Test Prediction Set component", () => {
       {
         type: "PredictionSet",
         paths: ["/prediction-sets/IGVFDS8323PSET/"],
-        fields: ["cell_annotation", "cell_type"],
+        fields: ["cell_annotation", "cell_type", "software_versions"],
       },
     ]);
   });
@@ -3360,6 +3360,65 @@ describe("Test Prediction Set component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+  });
+
+  it("deduplicates software by @id and sorts it by title ignoring case", () => {
+    const item = {
+      "@id": "/prediction-sets/IGVFDS8323PSET/",
+      "@type": ["PredictionSet", "FileSet", "Item"],
+      accession: "IGVFDS8323PSET",
+      lab: "/labs/j-michael-cherry/",
+      files: [],
+      status: "released",
+      file_set_type: "functional effect",
+      summary: "Prediction set",
+    };
+    const alphaSoftware = {
+      "@id": "/software/alpha/",
+      title: "alpha",
+      description: "Alpha software",
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PredictionSet
+          item={item}
+          accessoryData={{
+            [item["@id"]]: {
+              "@id": item["@id"],
+              "@type": item["@type"],
+              software_versions: [
+                {
+                  "@id": "/software-versions/beta/",
+                  software: {
+                    "@id": "/software/beta/",
+                    title: "Beta",
+                    description: "Beta software",
+                  },
+                },
+                {
+                  "@id": "/software-versions/alpha-1/",
+                  software: alphaSoftware,
+                },
+                {
+                  "@id": "/software-versions/alpha-2/",
+                  software: { ...alphaSoftware },
+                },
+                {
+                  "@id": "/software-versions/unembedded/",
+                  software: "/software/unembedded/",
+                },
+              ],
+            },
+          }}
+        />
+      </SessionContext.Provider>
+    );
+
+    const supplementContent = screen.getByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(supplementContent).toHaveTextContent(/^alpha, Beta$/);
   });
 });
 
