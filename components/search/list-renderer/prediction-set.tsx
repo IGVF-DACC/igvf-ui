@@ -18,21 +18,15 @@ import { AnnotatedItem } from "../../annotated-value";
 import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 import { SampleAnnotatedSummary } from "../../sample-annotated-summary";
-import SeparatedList from "../../separated-list";
 // lib
 import { type PredictionSetObject } from "../../../lib/file-sets";
-import { isEmbedded, isEmbeddedArray } from "../../../lib/types";
-// root
-import type { SoftwareObject } from "../../../globals";
+import { isEmbedded } from "../../../lib/types";
 
 /**
  * A subset of the `PseudobulkSetObject` fields that appears in accessory data for the pseudobulk
  * set list renderer.
  */
-type PredictionSetSubset = Pick<
-  PredictionSetObject,
-  "@id" | "@type" | "cell_annotation" | "cell_type" | "software_versions"
->;
+type PredictionSetSubset = Pick<PredictionSetObject, "@id" | "cell_type">;
 
 export default function PredictionSet({
   item: predictionSet,
@@ -63,37 +57,12 @@ export default function PredictionSet({
     ? [accessoryPredictionSet.cell_type]
     : [];
 
-  // Collect all software from software versions and deduplicate.
-  const softwareVersions = isEmbeddedArray(
-    accessoryPredictionSet?.software_versions
-  )
-    ? accessoryPredictionSet.software_versions
-    : [];
-
-  // Build a map of software by their @id to deduplicate entries.
-  const softwareById = softwareVersions.reduce(
-    (softwareMap, softwareVersion) => {
-      return isEmbedded(softwareVersion.software)
-        ? softwareMap.set(
-            softwareVersion.software["@id"],
-            softwareVersion.software
-          )
-        : softwareMap;
-    },
-    new Map<string, SoftwareObject>()
-  );
-
-  // Sort software by title case insensitively.
-  const software = [...softwareById.values()].sort((a, b) =>
-    a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
-  );
-
   const isSupplementsVisible =
-    predictionSet.alternate_accessions ||
-    accessoryPredictionSet?.cell_annotation ||
+    predictionSet.alternate_accessions?.length > 0 ||
+    predictionSet.cell_annotation ||
+    isEmbedded(predictionSet.software) ||
     fileContentType.length > 0 ||
-    sampleSummaries.length > 0 ||
-    software.length > 0;
+    sampleSummaries.length > 0;
 
   return (
     <SearchListItemContent>
@@ -126,14 +95,14 @@ export default function PredictionSet({
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {accessoryPredictionSet?.cell_annotation && (
+            {predictionSet.cell_annotation && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Cell Annotation
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
                   <SampleAnnotatedSummary
-                    summary={accessoryPredictionSet.cell_annotation}
+                    summary={predictionSet.cell_annotation}
                     terms={allSampleTerms}
                   />
                 </SearchListItemSupplementContent>
@@ -149,23 +118,18 @@ export default function PredictionSet({
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {software.length > 0 && (
+            {isEmbedded(predictionSet.software) && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Software
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
-                  <SeparatedList>
-                    {software.map((softwareItem) => (
-                      <AnnotatedItem
-                        key={softwareItem["@id"]}
-                        tooltipKey={softwareItem["@id"]}
-                        annotation={softwareItem.description}
-                      >
-                        {softwareItem.title}
-                      </AnnotatedItem>
-                    ))}
-                  </SeparatedList>
+                  <AnnotatedItem
+                    tooltipKey={predictionSet.software["@id"]}
+                    annotation={predictionSet.software.description}
+                  >
+                    {predictionSet.software.title}
+                  </AnnotatedItem>
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
@@ -182,12 +146,12 @@ export default function PredictionSet({
   );
 }
 
-PredictionSet.getAccessoryDataPaths = (items) => {
+PredictionSet.getAccessoryDataPaths = (items: PredictionSetObject[]) => {
   return [
     {
       type: "PredictionSet",
       paths: items.map((item) => item["@id"]),
-      fields: ["cell_annotation", "cell_type", "software_versions"],
+      fields: ["cell_type"],
     },
   ];
 };
