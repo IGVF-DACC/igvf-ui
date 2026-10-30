@@ -1,4 +1,3 @@
-// node_modules
 // components/search/list-renderer
 import {
   SearchListItemContent,
@@ -15,6 +14,7 @@ import {
   SearchListItemUniqueId,
 } from "./search-list-item";
 // components
+import { AnnotatedItem } from "../../annotated-value";
 import { ControlledAccessIndicator } from "../../controlled-access";
 import { DataUseLimitationSummaries } from "../../data-use-limitation-status";
 import { SampleAnnotatedSummary } from "../../sample-annotated-summary";
@@ -26,10 +26,7 @@ import { isEmbedded } from "../../../lib/types";
  * A subset of the `PseudobulkSetObject` fields that appears in accessory data for the pseudobulk
  * set list renderer.
  */
-type PredictionSetSubset = Pick<
-  PredictionSetObject,
-  "@id" | "@type" | "cell_annotation" | "cell_type"
->;
+type PredictionSetSubset = Pick<PredictionSetObject, "@id" | "cell_type">;
 
 export default function PredictionSet({
   item: predictionSet,
@@ -61,8 +58,9 @@ export default function PredictionSet({
     : [];
 
   const isSupplementsVisible =
-    predictionSet.alternate_accessions ||
-    accessoryPredictionSet?.cell_annotation ||
+    predictionSet.alternate_accessions?.length > 0 ||
+    predictionSet.cell_annotation ||
+    isEmbedded(predictionSet.software) ||
     fileContentType.length > 0 ||
     sampleSummaries.length > 0;
 
@@ -97,14 +95,14 @@ export default function PredictionSet({
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
-            {accessoryPredictionSet?.cell_annotation && (
+            {predictionSet.cell_annotation && (
               <SearchListItemSupplementSection>
                 <SearchListItemSupplementLabel>
                   Cell Annotation
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
                   <SampleAnnotatedSummary
-                    summary={accessoryPredictionSet.cell_annotation}
+                    summary={predictionSet.cell_annotation}
                     terms={allSampleTerms}
                   />
                 </SearchListItemSupplementContent>
@@ -117,6 +115,21 @@ export default function PredictionSet({
                 </SearchListItemSupplementLabel>
                 <SearchListItemSupplementContent>
                   {sampleSummaries.join(", ")}
+                </SearchListItemSupplementContent>
+              </SearchListItemSupplementSection>
+            )}
+            {isEmbedded(predictionSet.software) && (
+              <SearchListItemSupplementSection>
+                <SearchListItemSupplementLabel>
+                  Software
+                </SearchListItemSupplementLabel>
+                <SearchListItemSupplementContent>
+                  <AnnotatedItem
+                    tooltipKey={predictionSet.software["@id"]}
+                    annotation={predictionSet.software.description}
+                  >
+                    {predictionSet.software.title}
+                  </AnnotatedItem>
                 </SearchListItemSupplementContent>
               </SearchListItemSupplementSection>
             )}
@@ -133,12 +146,12 @@ export default function PredictionSet({
   );
 }
 
-PredictionSet.getAccessoryDataPaths = (items) => {
+PredictionSet.getAccessoryDataPaths = (items: PredictionSetObject[]) => {
   return [
     {
       type: "PredictionSet",
       paths: items.map((item) => item["@id"]),
-      fields: ["cell_annotation", "cell_type"],
+      fields: ["cell_type"],
     },
   ];
 };

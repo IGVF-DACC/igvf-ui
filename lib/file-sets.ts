@@ -33,6 +33,7 @@ import type {
   LabObject,
   OpenReadingFrameObject,
   PublicationObject,
+  SoftwareObject,
   SoftwareVersionObject,
   SourceObject,
 } from "../globals";
@@ -251,6 +252,7 @@ export interface PredictionSetObject extends FileSetObject {
   scope?: string;
   small_scale_gene_list?: LinkToArray<GeneObject>;
   small_scale_loci_list?: GeneLocation[];
+  software?: LinkTo<SoftwareObject>;
   software_versions?: LinkToArray<SoftwareVersionObject>;
 }
 
