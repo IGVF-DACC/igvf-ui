@@ -515,10 +515,14 @@ export function convertGroupsToElkNodes(groups: GroupNodeMap): ElkNodeEx[] {
  * Generate edges between file and file-set nodes based on their relationships described by every
  * node's metadata.
  *
- * @param nodes - The file and file-set nodes to generate edges for
+ * @param fileNodes - File nodes to generate incoming edges for
+ * @param groupedFileSetNodeIds - IDs of file-set nodes represented by group edges
  * @returns Edges connecting the file nodes
  */
-function generateEdges(fileNodes: FileElkNode[]): ElkExtendedEdge[] {
+function generateEdges(
+  fileNodes: FileElkNode[],
+  groupedFileSetNodeIds: Set<string>
+): ElkExtendedEdge[] {
   const edges: ElkExtendedEdge[] = [];
   fileNodes.forEach((fileNode) => {
     const fileNodeMetadata = fileNode.metadata;
@@ -532,24 +536,24 @@ function generateEdges(fileNodes: FileElkNode[]): ElkExtendedEdge[] {
       });
     });
 
-    // Create edges from upstream file set nodes to this file.
+    // Create edges from upstream file set nodes to this file. Grouped file-set nodes are
+    // represented by a single edge from their containing group.
     fileNodeMetadata.upstreamFileSetNodes.forEach((fileSetNode) => {
-      edges.push({
-        id: `${fileSetNode.id}-${fileNode.id}`,
-        sources: [fileSetNode.id],
-        targets: [fileNode.id],
-      });
+      if (!groupedFileSetNodeIds.has(fileSetNode.id)) {
+        edges.push({
+          id: `${fileSetNode.id}-${fileNode.id}`,
+          sources: [fileSetNode.id],
+          targets: [fileNode.id],
+        });
+      }
     });
   });
   return edges;
 }
 
 /**
- * Generate edges between group nodes and file nodes based on the group metadata. This is necessary to
- * help ELK lay out the group nodes with their member file nodes. The edges are generated from the
- * group node to the file nodes, but they don't represent any real relationships in the data -- they're
- * just for layout purposes. We can identify them by their IDs which start with `layout-`. We skip these
- * edges when converting ELK edges to React Flow edges, so they don't get rendered in the final graph.
+ * Generate edges between group nodes and files that derive from files in the group's file sets.
+ * These replace the individual edges from each grouped file-set node to the same downstream files.
  *
  * @param fileSetNodes - All file-set and file-set group nodes in the graph
  * @returns ELK edge objects representing edges from group nodes to file nodes
@@ -567,7 +571,7 @@ export function generateGroupEdges(
     if (groupMetadata) {
       groupMetadata.targetFileIds.forEach((targetFileId) => {
         edges.push({
-          id: generateLayoutEdgeId(fileSetNode.id, targetFileId),
+          id: `group-${fileSetNode.id}-${targetFileId}`,
           sources: [fileSetNode.id],
           targets: [targetFileId],
         });
@@ -609,15 +613,23 @@ export function generateGraphData(
     );
     const fileSetNodes = generateFileSetNodes(fileNodes, fileFileSets);
 
-    // Generate the graph edges between the file nodes and file-set nodes.
-    const edges = generateEdges(fileNodes);
-    const additionalEdges = generateGroupEdges(fileSetNodes);
+    // Generate the graph edges between file nodes and ungrouped file-set nodes. Grouped file-set
+    // nodes instead share one edge per downstream file from their containing group.
+    const groupedFileSetNodeIds = new Set(
+      fileSetNodes.flatMap((node) =>
+        isGroupNodeMetadata(node.metadata)
+          ? node.children!.map((child) => child.id)
+          : []
+      )
+    );
+    const edges = generateEdges(fileNodes, groupedFileSetNodeIds);
+    const groupEdges = generateGroupEdges(fileSetNodes);
 
     // Add nodes and edges to a copy of the static root node.
     return {
       ...rootElkNode,
       children: [...fileNodes, ...fileSetNodes],
-      edges: [...edges, ...additionalEdges],
+      edges: [...edges, ...groupEdges],
     } as ElkNode;
   }
 
@@ -675,8 +687,8 @@ export function elkToReactFlowNodes(
       };
       rfNodes.push(groupNode);
 
-      // Add the group node's children to the cumulative array, recursively processing them to maintain
-      // correct parent-child relationships.
+      // Add the group node's children to the cumulative array, recursively processing them to
+      // maintain correct parent-child relationships.
       if (elkNode.children) {
         const childNodes = elkToReactFlowNodes(elkNode.children, elkNode.id!);
         rfNodes.push(...childNodes);
@@ -718,15 +730,12 @@ export function elkToReactFlowNodes(
 function elkToReactFlowEdges(elkNodes: ElkNode) {
   const rfEdges: Edge[] = [];
   elkNodes.edges.forEach((edge) => {
-    // Skip edges belonging to groups. We don't yet support this, but we will.
-    if (!isLayoutEdgeId(edge.id)) {
-      const rfEdge: Edge = {
-        id: edge.id,
-        source: edge.sources[0],
-        target: edge.targets[0],
-      };
-      rfEdges.push(rfEdge);
-    }
+    const rfEdge: Edge = {
+      id: edge.id,
+      source: edge.sources[0],
+      target: edge.targets[0],
+    };
+    rfEdges.push(rfEdge);
   });
   return rfEdges;
 }
@@ -903,29 +912,6 @@ export function generateSVGContent(
   // Close the SVG element. We now have the entire SVG to download as a string.
   svgContent += "</svg>";
   return svgContent;
-}
-
-/**
- * Generate a unique ID for a layout edge between a group node and a file node. This is necessary to
- * help ELK lay out the group nodes with their member file nodes.
- *
- * @param groupId - Node ID of the group that has a layout edge to a file node
- * @param targetFileId - Node ID of the file node that has a layout edge from a group node
- * @returns Layout edge ID
- */
-function generateLayoutEdgeId(groupId: string, targetFileId: string): string {
-  return `layout-${groupId}-${targetFileId}`;
-}
-
-/**
- * Check if an edge ID represents a layout edge between a group node and a file node. This is necessary
- * to help ELK lay out the group nodes with their member file nodes.
- *
- * @param edgeId - ELK ID of an edge to test
- * @returns True if the ID represents a layout edge.
- */
-function isLayoutEdgeId(edgeId: string): boolean {
-  return edgeId.startsWith("layout-");
 }
 
 /**

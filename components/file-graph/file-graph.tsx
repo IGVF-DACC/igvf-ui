@@ -364,16 +364,19 @@ function FileSetNodeContent(props: NodeProps) {
  */
 function GroupNodeContent() {
   return (
-    <svg width="100%" height="100%" data-group-node>
-      <rect
-        x="0"
-        y="0"
-        width="100%"
-        height="100%"
-        className={`${groupTypeColorMap.bg} ${groupTypeColorMap.border}`}
-        strokeWidth="1"
-      />
-    </svg>
+    <>
+      <svg width="100%" height="100%" data-group-node>
+        <rect
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          className={`${groupTypeColorMap.bg} ${groupTypeColorMap.border}`}
+          strokeWidth="1"
+        />
+      </svg>
+      <NodeHandles />
+    </>
   );
 }
 

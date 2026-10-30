@@ -695,6 +695,69 @@ describe("generateGraphData", () => {
     expect(result?.children?.length).toBeGreaterThan(0);
   });
 
+  it("should replace grouped file-set edges with one edge from the group", () => {
+    const nativeFile = {
+      "@id": "/files/native1",
+      "@type": ["File", "Item"],
+      content_type: "reads",
+      file_format: "fastq",
+      file_set: "/file-sets/native",
+      derived_from: ["/files/external1", "/files/external2"],
+      status: "released",
+    } as FileObject;
+    const externalFiles = [
+      {
+        "@id": "/files/external1",
+        "@type": ["File", "Item"],
+        file_set: "/measurement-sets/measurement1",
+      },
+      {
+        "@id": "/files/external2",
+        "@type": ["File", "Item"],
+        file_set: "/auxiliary-sets/auxiliary1",
+      },
+    ] as FileObject[];
+    const auxiliarySet = {
+      "@id": "/auxiliary-sets/auxiliary1",
+      "@type": ["AuxiliarySet", "FileSet", "Item"],
+      accession: "AUX001",
+      file_set_type: "auxiliary",
+      summary: "Auxiliary set",
+    } as FileSetObject;
+    const measurementSet = {
+      "@id": "/measurement-sets/measurement1",
+      "@type": ["MeasurementSet", "FileSet", "Item"],
+      accession: "MEAS001",
+      file_set_type: "experimental data",
+      summary: "Measurement set",
+      auxiliary_sets: [auxiliarySet],
+    } as FileSetObject;
+
+    const result = generateGraphData(
+      [nativeFile],
+      externalFiles,
+      [measurementSet, auxiliarySet],
+      [],
+      []
+    );
+    const groupNode = result?.children?.find((node) =>
+      node.metadata ? node.metadata.kind === NODE_KINDS.GROUP : false
+    );
+    const childIds = new Set(groupNode?.children?.map((child) => child.id));
+
+    expect(groupNode).toBeDefined();
+    expect(result?.edges).toEqual([
+      {
+        id: `group-${groupNode?.id}-${nativeFile["@id"]}`,
+        sources: [groupNode?.id],
+        targets: [nativeFile["@id"]],
+      },
+    ]);
+    expect(
+      result?.edges?.some((edge) => childIds.has(edge.sources[0]))
+    ).toBe(false);
+  });
+
   it("should ignore an external file whose file-set object is unavailable", () => {
     const nativeFiles: FileObject[] = [
       {
@@ -1078,17 +1141,17 @@ describe("generateGroupEdges", () => {
     expect(result).toEqual(
       expect.arrayContaining([
         {
-          id: "layout-group-a-/files/file1",
+          id: "group-group-a-/files/file1",
           sources: ["group-a"],
           targets: ["/files/file1"],
         },
         {
-          id: "layout-group-a-/files/file2",
+          id: "group-group-a-/files/file2",
           sources: ["group-a"],
           targets: ["/files/file2"],
         },
         {
-          id: "layout-group-b-/files/file3",
+          id: "group-group-b-/files/file3",
           sources: ["group-b"],
           targets: ["/files/file3"],
         },
