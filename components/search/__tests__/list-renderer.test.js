@@ -3247,15 +3247,6 @@ describe("Test Prediction Set component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
-
-    const paths = PredictionSet.getAccessoryDataPaths([item]);
-    expect(paths).toEqual([
-      {
-        type: "PredictionSet",
-        paths: ["/prediction-sets/IGVFDS8323PSET/"],
-        fields: ["cell_annotation", "cell_type"],
-      },
-    ]);
   });
 
   it("renders a prediction set item with no samples, no files or alternate_accessions", () => {
@@ -3302,7 +3293,7 @@ describe("Test Prediction Set component", () => {
     expect(status).toHaveTextContent("released");
   });
 
-  it("renders a prediction set item with accessory data", () => {
+  it("renders a prediction set item with embedded annotation data", () => {
     const item = {
       "@id": "/prediction-sets/IGVFDS8323PSET/",
       "@type": ["PredictionSet", "FileSet", "Item"],
@@ -3314,29 +3305,21 @@ describe("Test Prediction Set component", () => {
       file_set_type: "functional effect",
       summary: "binding effect prediction for FOXM1 using SEMVAR v1.0.0",
       scope: "genes",
+      cell_annotation: "Cell annotation value",
+      cell_type: {
+        "@id": "/sample-terms/UBERON_0005439/",
+        definition:
+          "An embryonic structure that is the internal layer of the embryonic gut, formed by the recruitment of epiblast cells through the primitive streak.",
+        status: "released",
+        term_id: "UBERON:0005439",
+        term_name: "definitive endoderm",
+      },
       uuid: "a053168a-82aa-4f7e-10e3-c19fa3cd13f6",
     };
 
     render(
       <SessionContext.Provider value={{ profiles }}>
-        <PredictionSet
-          item={item}
-          accessoryData={{
-            "/prediction-sets/IGVFDS8323PSET/": {
-              "@id": "/prediction-sets/IGVFDS8323PSET/",
-              "@type": ["PredictionSet", "FileSet", "Item"],
-              cell_annotation: "Cell annotation value",
-              cell_type: {
-                "@id": "/sample-terms/UBERON_0005439/",
-                definition:
-                  "An embryonic structure that is the internal layer of the embryonic gut, formed by the recruitment of epiblast cells through the primitive streak.",
-                status: "released",
-                term_id: "UBERON:0005439",
-                term_name: "definitive endoderm",
-              },
-            },
-          }}
-        />
+        <PredictionSet item={item} />
       </SessionContext.Provider>
     );
 
@@ -3360,6 +3343,35 @@ describe("Test Prediction Set component", () => {
 
     const status = screen.getByTestId("search-list-item-quality");
     expect(status).toHaveTextContent("released");
+  });
+
+  it("renders embedded software", () => {
+    const item = {
+      "@id": "/prediction-sets/IGVFDS8323PSET/",
+      "@type": ["PredictionSet", "FileSet", "Item"],
+      accession: "IGVFDS8323PSET",
+      lab: "/labs/j-michael-cherry/",
+      files: [],
+      status: "released",
+      file_set_type: "functional effect",
+      summary: "Prediction set",
+      software: {
+        "@id": "/software/alpha/",
+        title: "alpha",
+        description: "Alpha software",
+      },
+    };
+
+    render(
+      <SessionContext.Provider value={{ profiles }}>
+        <PredictionSet item={item} />
+      </SessionContext.Provider>
+    );
+
+    const supplementContent = screen.getByTestId(
+      "search-list-item-supplement-content"
+    );
+    expect(supplementContent).toHaveTextContent("alpha");
   });
 });
 

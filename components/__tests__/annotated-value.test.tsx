@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { AnnotatedItem, AnnotatedValue } from "../annotated-value";
 import SessionContext from "../session-context";
 import { TooltipPortalRoot } from "../tooltip";
@@ -326,6 +327,7 @@ describe("AnnotatedValue", () => {
     const el = screen.getByText("fastq");
     expect(el.tagName.toLowerCase()).toBe("div");
     expect(el).toHaveClass("underline");
+    expect(el).toHaveAttribute("tabindex", "0");
   });
 });
 
@@ -375,6 +377,43 @@ describe("AnnotatedItem", () => {
     const el = screen.getByText("test value");
     expect(el).toHaveClass("underline");
     expect(el).toHaveClass("custom-class");
+  });
+
+  it("makes annotated text keyboard focusable and shows its tooltip on focus", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <TooltipPortalRoot />
+        <AnnotatedItem tooltipKey="test-key" annotation="Test annotation">
+          test value
+        </AnnotatedItem>
+      </>
+    );
+
+    const el = screen.getByText("test value");
+    expect(el).toHaveAttribute("tabindex", "0");
+
+    await user.tab();
+
+    expect(el).toHaveFocus();
+    expect(screen.getByRole("tooltip")).toHaveTextContent("Test annotation");
+  });
+
+  it("does not add a tab index to a natively focusable annotated element", () => {
+    render(
+      <>
+        <TooltipPortalRoot />
+        <AnnotatedItem
+          as="button"
+          tooltipKey="test-key"
+          annotation="Test annotation"
+        >
+          test value
+        </AnnotatedItem>
+      </>
+    );
+
+    expect(screen.getByRole("button")).not.toHaveAttribute("tabindex");
   });
 
   it("renders a span by default when no as prop is given", () => {

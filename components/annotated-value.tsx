@@ -10,6 +10,17 @@ import { toShishkebabCase } from "../lib/general";
 import { extractSchema } from "../lib/profiles";
 
 /**
+ * Native elements that already participate in keyboard navigation without an explicit tab index.
+ */
+const NATIVE_FOCUSABLE_ELEMENTS = new Set([
+  "button",
+  "input",
+  "select",
+  "summary",
+  "textarea",
+]);
+
+/**
  * Display a single data-item value with an annotation that appears in a tooltip. If no annotation
  * is provided, this renders the children without any underline nor tooltip.
  *
@@ -33,6 +44,8 @@ export function AnnotatedItem({
 }) {
   const Tag = as ?? "span";
   const tooltipRef = useTooltip(tooltipKey);
+  const shouldAddTabIndex =
+    typeof Tag === "string" && !NATIVE_FOCUSABLE_ELEMENTS.has(Tag);
 
   if (annotation) {
     return (
@@ -43,6 +56,7 @@ export function AnnotatedItem({
               "decoration-help-underline underline decoration-dotted underline-offset-2",
               className
             )}
+            tabIndex={shouldAddTabIndex ? 0 : undefined}
           >
             {children}
           </Tag>
