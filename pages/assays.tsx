@@ -200,27 +200,27 @@ function CounterHeaderCell({ children }: { children: React.ReactNode }) {
  * Displays the data cells for the data columns.
  *
  * @param preferredAssay - Preferred assay for the row
- * @param samplesClassification - Samples classification for the row
+ * @param samplesClass - Samples class for the row
  * @param meta - Metadata for the assay data table
  */
 function CounterCell({
   preferredAssay,
-  samplesClassification,
+  samplesClass,
   assay,
   termCategory,
   children,
 }: {
   preferredAssay: string;
-  samplesClassification: string;
+  samplesClass: string;
   assay: string;
   termCategory: string;
   children: string;
 }) {
   if (children) {
     // Create search params for the list view link from BASE_LIST_QUERY and the preferred assay and
-    // samples classification.
+    // samples class.
     const params = new URLSearchParams(BASE_PAGE_QUERY);
-    params.set("samples.classifications", samplesClassification);
+    params.set("samples_class", samplesClass);
     params.set("preferred_assay_titles", preferredAssay);
     params.set("input_file_sets.assay_term.term_name", assay);
     params.set("input_file_sets.assay_term.assay_slims", termCategory);
@@ -500,7 +500,7 @@ function convertMatrixToDataTable(
                 component: CounterCell,
                 componentProps: {
                   preferredAssay: bucket2.key,
-                  samplesClassification: bucket.key,
+                  samplesClass: bucket.key,
                   assay: bucket1.key,
                   termCategory: bucket0.key,
                 },
