@@ -61,11 +61,11 @@ const BASE_QUERY =
 const REQ_QUERY = `${BASE_QUERY}&${preferredAssayTitles.map((title) => `preferred_assay_titles=${encodeUriElement(title)}`).join("&")}`;
 
 export default function Analysis({ matrix }: SingleCellAnalysisProps) {
+  console.log("MATRIX", matrix);
   const dataGrid = convertMatrixToDataGrid(matrix);
-  console.log("DATA", dataGrid);
   return (
     <DataTable
-      className="table-row-hl [--matrix-first-column-width:10rem]"
+      className="table-row-hl border-collapse [--matrix-first-column-width:10rem]"
       scrollContainerClassName="max-w-full"
       data={dataGrid}
     />
@@ -77,7 +77,7 @@ export default function Analysis({ matrix }: SingleCellAnalysisProps) {
  * when the table viewport has room for the labels and data columns.
  */
 function MatrixXAxisCornerCell({ children }: { children: React.ReactNode }) {
-  return <th>{children}</th>;
+  return <th className="border border-gray-500">{children}</th>;
 }
 
 /**
@@ -92,7 +92,15 @@ function MatrixXAxisHeaderCell({
     throw new TypeError("Matrix X-axis header content must be a string");
   }
 
-  return <th>{children}</th>;
+  return (
+    <th className="top-0 z-2 w-8 min-w-8 border border-gray-500 align-bottom [&>a]:pt-2">
+      <div className="relative z-1 flex w-full justify-center pb-2">
+        <div className="inline-flex rotate-180 text-start [writing-mode:vertical-lr]">
+          {children}
+        </div>
+      </div>
+    </th>
+  );
 }
 
 /**
@@ -101,22 +109,42 @@ function MatrixXAxisHeaderCell({
  * @param classification - Classification of the matrix section
  * @param colSpan - Number of columns across the entire matrix
  */
-function MatrixClassTitleRow({ children }: { children: React.ReactNode }) {
-  return <th colSpan={1}>{children}</th>;
+function MatrixClassTitleRow({
+  colSpan,
+  children,
+}: {
+  colSpan: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <th className="border border-gray-500" colSpan={colSpan}>
+      <div className="">{children}</div>
+    </th>
+  );
 }
 
 /**
  * Renders a sample-term header cell for the Y-axis of the matrix.
  */
-function MatrixYAxisHeaderCell({ children }: { children: React.ReactNode }) {
-  return <th className="py-1 font-semibold">{children}</th>;
+function MatrixYAxisHeaderCell({
+  rowSpan,
+  children,
+}: {
+  rowSpan: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <th className="border border-gray-500 py-1 font-semibold" rowSpan={rowSpan}>
+      {children}
+    </th>
+  );
 }
 
 /**
  * Renders a subheader cell for the Y-axis of the matrix.
  */
 function MatrixYAxisSubheaderCell({ children }: { children: React.ReactNode }) {
-  return <th>{children}</th>;
+  return <th className="border border-gray-500">{children}</th>;
 }
 
 /**
@@ -183,7 +211,7 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
   const headerCells = generateHeaderRow(columnMap);
 
   // Generate one section of rows for every sample class represented in the matrix.
-  const sampleClassRows = sampleClassBuckets.flatMap((bucket, index) =>
+  const sampleClassRows = sampleClassBuckets.flatMap((bucket) =>
     convertBucketsToRows(
       sampleClassBuckets,
       bucket.key,
@@ -191,8 +219,7 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
       yGroupByTargetedTerm,
       headerBuckets,
       columnMap,
-      xGroupBy,
-      index === sampleClassBuckets.length - 1
+      xGroupBy
     )
   );
 
@@ -217,7 +244,6 @@ function convertMatrixToDataGrid(matrix: MatrixResultsObject): DataTableFormat {
  * @param headerBuckets - Buckets for the x-axis header row
  * @param columnMap - Mapping of column keys to their indices
  * @param xGroupBy - Field name to group column buckets by
- * @param isLastSampleClass - Whether this is the final sample-class section
  * @returns Rows representing the sample class, sample terms, and data cells
  */
 function convertBucketsToRows(
@@ -227,8 +253,7 @@ function convertBucketsToRows(
   yGroupByTargetedTerm: string,
   headerBuckets: MatrixBucket[],
   columnMap: ColumnMap,
-  xGroupBy: string,
-  isLastSampleClass: boolean
+  xGroupBy: string
 ): Row[] {
   const sampleClassBucket = buckets.find(
     (bucket) => bucket.key === sampleClass
@@ -261,8 +286,7 @@ function convertBucketsToRows(
     headerBuckets,
     columnMap,
     yGroupByTargetedTerm,
-    xGroupBy,
-    isLastSampleClass
+    xGroupBy
   );
 
   return [sectionTitle, ...rows];
@@ -277,7 +301,6 @@ function convertBucketsToRows(
  * @param columnMap - Mapping of column keys to their indices
  * @param yGroupByTargetedTerm - Field name to group targeted-sample-term buckets by
  * @param xGroupBy - Field name to group column buckets by
- * @param isLastSampleClass - Whether these rows belong to the final sample-class section
  * @returns Rows representing the sample terms, targeted sample terms, and assay data cells
  */
 function generateRows(
@@ -285,17 +308,16 @@ function generateRows(
   headerBuckets: MatrixBucket[],
   columnMap: ColumnMap,
   yGroupByTargetedTerm: string,
-  xGroupBy: string,
-  isLastSampleClass: boolean
+  xGroupBy: string
 ): Row[] {
-  return sampleTermBuckets.map((sampleTermBucket, index) => {
+  return sampleTermBuckets.map((sampleTermBucket) => {
     const targetedSampleTermBuckets = getMatrixBuckets(
       sampleTermBucket,
       yGroupByTargetedTerm
     );
 
     const childRows: Row[] = targetedSampleTermBuckets.map(
-      (targetedSampleTermBucket, subIndex) => {
+      (targetedSampleTermBucket) => {
         const assayBuckets = getMatrixBuckets(
           targetedSampleTermBucket,
           xGroupBy
@@ -323,12 +345,7 @@ function generateRows(
             id: toShishkebabCase(assayBucket.key),
             content: assayBucket.doc_count,
             component: MatrixDataCell,
-            componentProps: {
-              isBottomEdgeCell:
-                subIndex === targetedSampleTermBuckets.length - 1 &&
-                index === sampleTermBuckets.length - 1 &&
-                isLastSampleClass,
-            },
+            componentProps: {},
           });
         });
 
