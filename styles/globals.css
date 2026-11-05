@@ -194,6 +194,9 @@
     from var(--color-cell-fates-repr-matrix-data-cell) calc(l - 0.06) c h
   );
 
+  /** Single cell analysis matrix colors */
+  --color-single-cell-analysis-header: var(--color-zinc-200);
+
   /** Coding Variants page matrix colors */
   --color-protein-scan-outline: oklch(0.5954 0.1333 251.08);
   --color-protein-scan-button: oklch(0.9505 0.07 251.08);
@@ -328,6 +331,9 @@
     --color-cell-fates-repr-matrix-classification: oklch(
       from var(--color-cell-fates-repr-matrix-header) calc(l + 0.04) c h
     );
+
+    /** Single cell analysis matrix colors */
+    --color-single-cell-analysis-header: var(--color-zinc-800);
 
     /** Coding Variants page matrix colors */
     --color-protein-scan-outline: oklch(0.5954 0.1333 251.08);

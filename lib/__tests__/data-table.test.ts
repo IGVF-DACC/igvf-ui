@@ -117,6 +117,34 @@ describe("Test splitRowsIntoSegments()", () => {
     ]);
   });
 
+  it("starts a new data segment without changing row order", () => {
+    const rows: Row[] = [
+      { id: "1", cells: [{ id: "1", content: "Section 1" }] },
+      { id: "2", cells: [{ id: "1", content: "Data 1" }] },
+      {
+        id: "3",
+        cells: [{ id: "1", content: "Section 2" }],
+        startsNewSegment: true,
+      },
+      { id: "4", cells: [{ id: "1", content: "Data 2" }] },
+    ];
+
+    expect(splitRowsIntoSegments(rows)).toEqual([
+      [
+        { id: "1", cells: [{ id: "1", content: "Section 1" }] },
+        { id: "2", cells: [{ id: "1", content: "Data 1" }] },
+      ],
+      [
+        {
+          id: "3",
+          cells: [{ id: "1", content: "Section 2" }],
+          startsNewSegment: true,
+        },
+        { id: "4", cells: [{ id: "1", content: "Data 2" }] },
+      ],
+    ]);
+  });
+
   it("handles alternating header and data rows", () => {
     const rows: DataTableFormat = [
       { id: "1", cells: [{ id: "1", content: "Header 1" }], isHeaderRow: true },

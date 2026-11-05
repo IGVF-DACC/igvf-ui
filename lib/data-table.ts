@@ -79,11 +79,14 @@ export function createCell<TComponent extends React.ElementType>(
  * @property id - ID for the row, unique among all rows
  * @property cells - Cells in the row
  * @property isHeaderRow - True if the row is a header row, false or undefined for a data row
+ * @property startsNewSegment - True to begin a new table section without changing whether the row
+ *                              is a header or data row
  */
 export type Row = {
   id: string;
   cells: Cell[];
   isHeaderRow?: boolean;
+  startsNewSegment?: boolean;
 };
 
 /**
@@ -108,38 +111,29 @@ export type DataTableFormat = Row[];
 export function splitRowsIntoSegments(
   rows: DataTableFormat
 ): DataTableFormat[] {
-  let headerRows: Row[] = [];
-  let dataRows: Row[] = [];
   const result: DataTableFormat[] = [];
+  let currentSegment: Row[] = [];
 
   for (const row of rows) {
-    if (row.isHeaderRow) {
-      headerRows.push(row);
+    const segmentChangesType =
+      currentSegment.length > 0 &&
+      Boolean(currentSegment[0].isHeaderRow) !== Boolean(row.isHeaderRow);
 
-      // If we had been collecting data rows, add them all to the result and reset the data rows.
-      if (dataRows.length > 0) {
-        result.push(dataRows);
-        dataRows = [];
-      }
-    } else {
-      dataRows.push(row);
-
-      // If we had been collecting header rows, add them all to the result and reset the header rows.
-      if (headerRows.length > 0) {
-        result.push(headerRows);
-        headerRows = [];
-      }
+    if (
+      currentSegment.length > 0 &&
+      (segmentChangesType || row.startsNewSegment)
+    ) {
+      result.push(currentSegment);
+      currentSegment = [];
     }
+
+    currentSegment.push(row);
   }
 
-  // Add remaining header and data rows to the result. We can do this in either order because if
-  // the table ends in header rows, `dataRows` is empty.
-  if (headerRows.length > 0) {
-    result.push(headerRows);
+  if (currentSegment.length > 0) {
+    result.push(currentSegment);
   }
-  if (dataRows.length > 0) {
-    result.push(dataRows);
-  }
+
   return result;
 }
 
