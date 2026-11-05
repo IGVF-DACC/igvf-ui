@@ -155,7 +155,10 @@ function MatrixYAxisSubheaderCell({ children }: { children: React.ReactNode }) {
 function MatrixDataCell({ children }: { children: number }) {
   if (children > 0) {
     return (
-      <td className="text-center align-middle text-xs" data-highlight>
+      <td
+        className="border border-gray-500 text-center align-middle text-xs"
+        data-highlight
+      >
         {children}
       </td>
     );
