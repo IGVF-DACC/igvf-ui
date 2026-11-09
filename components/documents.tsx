@@ -11,16 +11,24 @@ import { truncateText } from "../lib/general";
 import type { DocumentObject } from "../globals";
 
 /**
- * Common prefixes in document descriptions that can be removed for display purposes.
+ * Common prefixes in document descriptions that can be removed for display purposes. Sort by length
+ * in descending order to match the longest prefix first.
  */
 const deletedDocumentDescriptionPrefixes = [
-  "file format description for",
-  "file format for",
   "file format specification file for",
+  "file format specifications for",
   "file format specification for",
   "file format specification of",
-  "file format specifications for",
+  "description of columns from",
+  "file format description for",
+  "column definitions for the",
+  "description of columns in",
+  "column specification for",
   "format specification for",
+  "column definitions for",
+  "column definition for",
+  "specification of",
+  "file format for",
 ];
 
 /**
@@ -61,7 +69,7 @@ export function DocumentAttachmentLink({
  */
 export function DocumentListAbbr({
   documents,
-  maxLength = 20,
+  maxLength = 26,
   className = "",
 }: {
   documents: DocumentObject[];
