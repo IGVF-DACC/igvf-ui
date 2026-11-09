@@ -33,6 +33,17 @@ describe("Test the document list", () => {
     expect(link.getAttribute("aria-describedby")).toMatch(/^tooltip-/);
   });
 
+  it("prefers a longer matching description prefix over a shorter one", () => {
+    const document = {
+      "@id": "/documents/overlapping-prefixes/",
+      description: "Column definitions for the BED format",
+    };
+
+    render(<DocumentListAbbr documents={[document]} />);
+
+    expect(screen.getByRole("link")).toHaveTextContent(/^BED format$/);
+  });
+
   it("uses the default abbreviation length", () => {
     const document = {
       "@id": "/documents/abbreviated-document/",
@@ -41,7 +52,9 @@ describe("Test the document list", () => {
 
     render(<DocumentListAbbr documents={[document]} />);
 
-    expect(screen.getByRole("link")).toHaveTextContent("A description that…");
+    expect(screen.getByRole("link")).toHaveTextContent(
+      "A description that is…"
+    );
   });
 
   it("uses unique tooltip IDs for repeated documents", () => {
