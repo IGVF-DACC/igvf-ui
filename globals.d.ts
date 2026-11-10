@@ -130,7 +130,9 @@ export interface SchemaProperties {
 /**
  * Describes schema objects.
  */
-export interface Schema {
+export interface Schema<
+  Properties extends SchemaProperties = SchemaProperties,
+> {
   $id: string;
   $schema: string;
   "@type": string[];
@@ -142,7 +144,7 @@ export interface Schema {
   fuzzy_searchable_fields?: string[];
   identifyingProperties?: string[];
   mixinProperties: object[];
-  properties: SchemaProperties;
+  properties: Properties;
   required?: string[];
   oneOf?: RequiredFieldObject[];
   title: string;

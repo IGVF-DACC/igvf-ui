@@ -4,18 +4,25 @@ import { API_URL } from "./constants";
 /**
  * Supported MIME types for attachments.
  */
-export type MimeTypes =
-  | "application/json"
-  | "application/pdf"
-  | "image/gif"
-  | "image/jpeg"
-  | "image/png"
-  | "image/svs"
-  | "image/tiff"
-  | "text/autosql"
-  | "text/html"
-  | "text/plain"
-  | "text/tab-separated-values";
+const supportedMimeTypes = [
+  "application/json",
+  "application/pdf",
+  "image/gif",
+  "image/jpeg",
+  "image/png",
+  "image/svs",
+  "image/tiff",
+  "text/autosql",
+  "text/csv",
+  "text/html",
+  "text/plain",
+  "text/tab-separated-values",
+] as const;
+
+/**
+ * Union type allowing only the supported MIME types for attachments.
+ */
+export type MimeTypes = (typeof supportedMimeTypes)[number];
 
 /**
  * Type definition for an attachment object. This is embedded in other objects, not linked, as
@@ -51,4 +58,43 @@ export function attachmentToServerHref(
   ownerPath: string
 ): string {
   return `${API_URL}${ownerPath}${attachment.href}`;
+}
+
+/**
+ * Type guard to check whether a value has the shape of an attachment object.
+ *
+ * @param obj - Value to check
+ * @returns True if the value looks like an attachment object
+ */
+export function isAttachmentObject(obj: unknown): obj is AttachmentObject {
+  if (obj && typeof obj === "object" && !Array.isArray(obj)) {
+    const attachment = obj as Record<string, unknown>;
+    return (
+      typeof attachment.download === "string" &&
+      typeof attachment.href === "string" &&
+      typeof attachment.type === "string" &&
+      isSupportedMimeType(attachment.type) &&
+      (attachment.md5sum === undefined ||
+        typeof attachment.md5sum === "string") &&
+      (attachment.size === undefined || typeof attachment.size === "number") &&
+      (attachment.width === undefined ||
+        typeof attachment.width === "number") &&
+      (attachment.height === undefined || typeof attachment.height === "number")
+    );
+  }
+  return false;
+}
+
+/**
+ * Type guard to check whether a value is a supported MIME type for attachments. This uses the list
+ * of supported MIME types defined in `supportedMimeTypes`.
+ *
+ * @param value - Value to check if it's a supported MIME type for attachments
+ * @returns True if the value is a supported MIME type for attachments
+ */
+export function isSupportedMimeType(value: string): value is MimeTypes {
+  return (
+    typeof value === "string" &&
+    supportedMimeTypes.some((mimeType) => mimeType === value)
+  );
 }

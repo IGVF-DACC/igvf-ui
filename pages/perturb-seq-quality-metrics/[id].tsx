@@ -1,41 +1,56 @@
 // node_modules
 import _ from "lodash";
+import {
+  type GetServerSidePropsContext,
+  type GetServerSidePropsResult,
+} from "next";
 // components
 import Breadcrumbs from "../../components/breadcrumbs";
-import { QualityMetricDataItems } from "../../components/common-data-items";
 import { DataArea, DataPanel } from "../../components/data-area";
 import { EditableItem } from "../../components/edit";
 import FileTable from "../../components/file-table";
 import JsonDisplay from "../../components/json-display";
 import ObjectPageHeader from "../../components/object-page-header";
 import PagePreamble from "../../components/page-preamble";
-import { QualityMetricField } from "../../components/quality-metric";
+import { QualityMetricSummaryPanel } from "../../components/quality-metric";
 import { useSecDir } from "../../components/section-directory";
 import { StatusPreviewDetail } from "../../components/status";
 // lib
 import { createCanonicalUrlRedirect } from "../../lib/canonical-redirect";
 import { requestFiles } from "../../lib/common-requests";
+import { pathsFromDatabaseObjects } from "../../lib/database-object";
 import { errorObjectToProps } from "../../lib/errors";
 import FetchRequest from "../../lib/fetch-request";
+import { type PageProps } from "../../lib/next-js";
+import { extractSchema } from "../../lib/profiles";
 import {
-  perturbSeqFields,
+  filterQualityMetricSchemaSummaryProps,
+  isQualityMetricSchema,
+  qualityMetricFallbackSchema,
+  QualityMetricSchema,
   qualityMetricTitle,
   type PerturbSeqQualityMetricObject,
+  type QualityMetricProperties,
 } from "../../lib/quality-metric";
 import { isJsonFormat } from "../../lib/query-utils";
+import { retrieveProfiles } from "../../lib/server-objects";
 // root
 import type { FileObject } from "../../globals";
+
+interface PerturbSeqQualityMetricPageProps extends PageProps {
+  qualityMetric: PerturbSeqQualityMetricObject;
+  qualityMetricOf: FileObject[];
+  schemaProps: QualityMetricProperties;
+}
 
 export default function PerturbSeqQualityMetric({
   qualityMetric,
   qualityMetricOf,
+  schemaProps,
   isJson,
-}: {
-  qualityMetric: PerturbSeqQualityMetricObject;
-  qualityMetricOf: FileObject[];
-  isJson: boolean;
-}) {
+}: PerturbSeqQualityMetricPageProps) {
   const sections = useSecDir({ isJson });
+  const displayedSchema = filterQualityMetricSchemaSummaryProps(schemaProps);
 
   return (
     <>
@@ -47,19 +62,10 @@ export default function PerturbSeqQualityMetric({
           <StatusPreviewDetail item={qualityMetric} />
           <DataPanel>
             <DataArea>
-              <QualityMetricDataItems item={qualityMetric}>
-                {perturbSeqFields.map((fieldAttr) => {
-                  if (qualityMetric[fieldAttr.name]) {
-                    return (
-                      <QualityMetricField
-                        key={fieldAttr.name}
-                        fieldAttr={fieldAttr}
-                        qualityMetric={qualityMetric}
-                      />
-                    );
-                  }
-                })}
-              </QualityMetricDataItems>
+              <QualityMetricSummaryPanel
+                qualityMetric={qualityMetric}
+                schemaProps={displayedSchema}
+              />
             </DataArea>
           </DataPanel>
 
@@ -77,7 +83,14 @@ export default function PerturbSeqQualityMetric({
   );
 }
 
-export async function getServerSideProps({ params, req, query, resolvedUrl }) {
+export async function getServerSideProps({
+  params,
+  req,
+  query,
+  resolvedUrl,
+}: GetServerSidePropsContext<{ id: string }>): Promise<
+  GetServerSidePropsResult<PerturbSeqQualityMetricPageProps>
+> {
   const isJson = isJsonFormat(query);
   const request = new FetchRequest({ cookie: req.headers.cookie });
   const qualityMetric = (
@@ -98,15 +111,24 @@ export async function getServerSideProps({ params, req, query, resolvedUrl }) {
     const qualityMetricOf =
       qualityMetric.quality_metric_of?.length > 0
         ? await requestFiles(
-            qualityMetric.quality_metric_of as string[],
+            pathsFromDatabaseObjects(qualityMetric.quality_metric_of),
             request
           )
         : [];
+
+    // Get the schema for the Perturb-seq quality metric, using the cached profiles if possible.
+    const profiles = await retrieveProfiles(req.headers.cookie ?? "");
+    const extractedSchema = extractSchema(profiles, "PerturbSeqQualityMetric");
+    const schema: QualityMetricSchema =
+      extractedSchema && isQualityMetricSchema(extractedSchema)
+        ? extractedSchema
+        : qualityMetricFallbackSchema;
 
     return {
       props: {
         qualityMetric,
         qualityMetricOf,
+        schemaProps: schema.properties,
         pageContext: {
           title: qualityMetricTitle(qualityMetric),
         },
