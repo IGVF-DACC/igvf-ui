@@ -27,6 +27,7 @@ import SessionContext from "./session-context";
 // lib
 import {
   attachmentToServerHref,
+  isAttachmentObject,
   type AttachmentObject,
 } from "../lib/attachment";
 import {
@@ -42,12 +43,14 @@ import {
   starrSeqFields,
   type QualityMetricFieldAttr,
   type QualityMetricObject,
+  type QualityMetricProperties,
 } from "../lib/quality-metric";
 // root
-import type { CollectionTitles, FileObject } from "../globals";
+import type { CollectionTitles, FileObject, SchemaProperty } from "../globals";
 
 /**
  * Display an attachment link for a quality metric attachment.
+ *
  * @param qualityMetric - Quality metric object to display
  * @param attachment - Attachment object to display
  * @param className - Additional class name to apply to the link
@@ -80,6 +83,7 @@ function QualityMetricAttachmentLink({
 /**
  * Property renderer for quality metric properties that are numbers. It displays the numbers,
  * including 0, with thousand separators.
+ *
  * @param field - Information about the property to display
  * @param qualityMetric - Quality metric that includes the property specified by `field`
  * @param isSmall - True to display the property in a smaller format
@@ -106,6 +110,7 @@ function Number({
 /**
  * Property renderer for quality metric properties that are percentages. It displays the numbers as
  * percentages, including 0, with thousand separators.
+ *
  * @param field - Information about the property to display
  * @param qualityMetric - Quality metric that includes the property specified by `field`
  * @param isSmall - True to display the property in a smaller format
@@ -132,6 +137,7 @@ function Percent({
 /**
  * Property renderer for quality metric properties that are strings. It displays the string value
  * directly.
+ *
  * @param field - Information about the property to display
  * @param qualityMetric - Quality metric that includes the property specified by `field`
  * @param isSmall - True to display the property in a smaller format
@@ -158,6 +164,7 @@ function String({
 /**
  * Property renderer for quality metric properties that are attachments. It displays the attachment
  * name as a link to download the attachment.
+ *
  * @param property - Information about the property to display
  * @param qualityMetric - Quality metric that includes the property specified by `field`
  * @param isSmall - True to display the property in a smaller format
@@ -463,4 +470,98 @@ export function QualityMetricPanel({
       </>
     );
   }
+}
+
+/**
+ * Displays a single property of a quality metric based on the schema.
+ *
+ * @param property - Value of the property to display
+ * @param schemaProp - Schema property describing the property
+ */
+function QualityMetricProperty({
+  qualityMetric,
+  property,
+  schemaProp,
+}: {
+  qualityMetric: QualityMetricObject;
+  property: unknown;
+  schemaProp: SchemaProperty;
+}) {
+  // Display numeric and percent properties.
+  if (
+    (schemaProp.type === "number" || schemaProp.type === "integer") &&
+    typeof property === "number"
+  ) {
+    const titleContainsPercent = /\b(percent|percentage)\b/i.test(
+      schemaProp.title
+    );
+    return (
+      <>
+        <DataItemLabel>{schemaProp.title}</DataItemLabel>
+        <DataItemValue>
+          {titleContainsPercent ? `${property}%` : property.toLocaleString()}
+        </DataItemValue>
+      </>
+    );
+  }
+
+  // Display string properties.
+  if (schemaProp.type === "string" && typeof property === "string") {
+    return (
+      <>
+        <DataItemLabel>{schemaProp.title}</DataItemLabel>
+        <DataItemValue>{property}</DataItemValue>
+      </>
+    );
+  }
+
+  // Display attachment properties.
+  if (isAttachmentObject(property)) {
+    return (
+      <>
+        <DataItemLabel>{schemaProp.title}</DataItemLabel>
+        <DataItemValue>
+          <QualityMetricAttachmentLink
+            qualityMetric={qualityMetric}
+            attachment={property}
+          />
+        </DataItemValue>
+      </>
+    );
+  }
+  return null;
+}
+
+/**
+ * Displays a summary panel for the quality metric, showing its properties based on the provided
+ * schema. Use this for every kind of quality metric object.
+ *
+ * @param qualityMetric - Quality metric object to display
+ * @param schemaProps - Schema properties to use for displaying the quality metric
+ */
+export function QualityMetricSummaryPanel({
+  qualityMetric,
+  schemaProps,
+}: {
+  qualityMetric: QualityMetricObject;
+  schemaProps: Partial<QualityMetricProperties>;
+}) {
+  return (
+    <>
+      {Object.entries(schemaProps).map(([key, value]) => {
+        const property = qualityMetric[key];
+        if (property !== undefined && property !== null) {
+          return (
+            <QualityMetricProperty
+              key={key}
+              qualityMetric={qualityMetric}
+              property={property}
+              schemaProp={value}
+            />
+          );
+        }
+        return null;
+      })}
+    </>
+  );
 }

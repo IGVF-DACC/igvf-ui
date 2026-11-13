@@ -5,20 +5,106 @@ import {
   QualityMetricField,
   QualityMetricModal,
   QualityMetricPanel,
+  QualityMetricSummaryPanel,
 } from "../quality-metric";
 import { ModalManagerProvider } from "../modal-manager";
 import {
+  type MpraQualityMetricObject,
+  type PerturbSeqQualityMetricObject,
   type QualityMetricFieldAttr,
   type QualityMetricObject,
+  type QualityMetricProperties,
+  type SingleCellAtacSeqQualityMetricObject,
+  type SingleCellRnaSeqQualityMetricObject,
+  type StarrSeqQualityMetricObject,
 } from "../../lib/quality-metric";
 import type { FileObject } from "../../globals";
 import SessionContext from "../session-context";
 
+describe("QualityMetricSummaryPanel", () => {
+  const qualityMetric = {
+    "@id": "/quality-metrics/1/",
+    "@type": ["QualityMetric", "Item"],
+    status: "released",
+    analysis_step_version: "/analysis-step-versions/1/",
+    quality_metric_of: ["/files/1/"],
+    percentage: 95,
+    count: 12,
+    label: "passing",
+    report: {
+      download: "report.tsv",
+      href: "@@download/report.tsv",
+      type: "text/tab-separated-values",
+    },
+    hidden: 0,
+  } satisfies QualityMetricObject & Record<string, unknown>;
+
+  const requiredSchemaProps = {
+    analysis_step_version: { title: "Analysis step version", type: "string" },
+    attachment: { title: "Attachment", type: "object" },
+    description: { title: "Description", type: "string" },
+    quality_metric_of: { title: "Quality metric of", type: "array" },
+    summary: { title: "Summary", type: "string" },
+  } satisfies QualityMetricProperties;
+
+  it("renders schema-based metric properties", () => {
+    render(
+      <QualityMetricSummaryPanel
+        qualityMetric={qualityMetric}
+        schemaProps={{
+          ...requiredSchemaProps,
+          percentage: { title: "Mapped percentage", type: "number" },
+          count: { title: "Read count", type: "number" },
+          label: { title: "Result", type: "string" },
+          report: { title: "Report", type: "object" },
+          hidden: { title: "Hidden", type: "number" },
+        }}
+      />
+    );
+    expect(screen.getByText("95%")).toBeInTheDocument();
+    expect(screen.getByText("12")).toBeInTheDocument();
+    expect(screen.getByText("passing")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Download report.tsv" })).toHaveAttribute(
+      "href",
+      "/quality-metrics/1/@@download/report.tsv"
+    );
+    expect(screen.getByText("Hidden")).toBeInTheDocument();
+    expect(screen.getByText("0")).toBeInTheDocument();
+  });
+
+  it("renders nothing without displayable schema properties", () => {
+    const { container, rerender } = render(
+      <QualityMetricSummaryPanel qualityMetric={qualityMetric} schemaProps={{}} />
+    );
+    expect(container).toBeEmptyDOMElement();
+    rerender(
+      <QualityMetricSummaryPanel
+        qualityMetric={{ ...qualityMetric, summary: "Unsupported value" }}
+        schemaProps={{
+          analysis_step_version: {
+            title: "Analysis step version",
+            type: "boolean",
+          },
+          attachment: { title: "Attachment", type: "boolean" },
+          description: { title: "Description", type: "boolean" },
+          quality_metric_of: {
+            title: "Quality metric of",
+            type: "boolean",
+          },
+          summary: { title: "Unsupported", type: "boolean" },
+        }}
+      />
+    );
+    expect(container).toBeEmptyDOMElement();
+  });
+});
+
 describe("Test QCMetricPanel component", () => {
   it("renders a quality metric panel for MPRA quality metric", () => {
-    const qualityMetrics: QualityMetricObject = {
+    const qualityMetrics: MpraQualityMetricObject = {
       "@id": "/mpra-quality-metric/1",
       "@type": ["MpraQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/1",
       quality_metric_of: ["/files/1"],
       description: "This is a quality metric for MPRA.",
@@ -42,13 +128,14 @@ describe("Test QCMetricPanel component", () => {
   });
 
   it("renders a quality metric panel for PerturbSeq quality metric", () => {
-    const qualityMetrics: QualityMetricObject = {
+    const qualityMetrics: PerturbSeqQualityMetricObject = {
       "@id": "/perturb-seq-quality-metrics/2",
       "@type": ["PerturbSeqQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/2",
       quality_metric_of: ["/files/2"],
       alignment_percentage: 98,
-      avg_cells_per_target: 12.93,
+      avg_cells_per_guide: 12.93,
       description: "This is a quality metric for PerturbSeq.",
       attachment: {
         download: "Subpool_6_report.pdf",
@@ -72,7 +159,7 @@ describe("Test QCMetricPanel component", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Alignment Percentage")).toBeInTheDocument();
     expect(screen.getByText("98%")).toBeInTheDocument();
-    expect(screen.getByText("Average Cells Per Target")).toBeInTheDocument();
+    expect(screen.getByText("Average Cells Per Guide")).toBeInTheDocument();
     expect(screen.getByText("12.93")).toBeInTheDocument();
 
     expect(screen.getByText("Attachment")).toBeInTheDocument();
@@ -86,13 +173,16 @@ describe("Test QCMetricPanel component", () => {
   });
 
   it("renders a quality metric panel for SingleCellAtacSeq quality metric", () => {
-    const qualityMetrics: QualityMetricObject = {
+    const qualityMetrics: SingleCellAtacSeqQualityMetricObject = {
       "@id": "/single-cell-atac-seq-quality-metric/3",
       "@type": ["SingleCellAtacSeqQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/3",
       quality_metric_of: ["/files/3"],
       description: "This is a quality metric for SingleCellAtacSeq.",
       multi_mappings: 0.05,
+      n_output_mappings: 100,
+      n_uniquely_mapped_reads: 95,
       pct_duplicates: 0.1,
     };
 
@@ -109,9 +199,10 @@ describe("Test QCMetricPanel component", () => {
   });
 
   it("renders a quality metric panel for SingleCellRnaSeq quality metric", () => {
-    const qualityMetrics: QualityMetricObject = {
+    const qualityMetrics: SingleCellRnaSeqQualityMetricObject = {
       "@id": "/single-cell-rna-seq-quality-metric/4",
       "@type": ["SingleCellRnaSeqQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/4",
       quality_metric_of: ["/files/4"],
       description: "This is a quality metric for SingleCellRnaSeq.",
@@ -136,9 +227,10 @@ describe("Test QCMetricPanel component", () => {
   });
 
   it("renders a quality metric panel for StarrSeq quality metric", () => {
-    const qualityMetrics: QualityMetricObject = {
+    const qualityMetrics: StarrSeqQualityMetricObject = {
       "@id": "/starr-seq-quality-metric/5",
       "@type": ["StarrSeqQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/5",
       quality_metric_of: ["/files/5"],
       coverage: 30,
@@ -163,9 +255,10 @@ describe("Test QualityMetricField component", () => {
       title: "Description",
       type: "string",
     };
-    const qualityMetrics: QualityMetricObject = {
+    const qualityMetrics: StarrSeqQualityMetricObject = {
       "@id": "/starr-seq-quality-metric/5",
       "@type": ["StarrSeqQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/5",
       quality_metric_of: ["/files/5"],
       coverage: 30,
@@ -191,9 +284,10 @@ describe("Test QualityMetricField component", () => {
       title: "Coverage",
       type: "number",
     };
-    const qualityMetrics: QualityMetricObject = {
+    const qualityMetrics: StarrSeqQualityMetricObject = {
       "@id": "/starr-seq-quality-metric/5",
       "@type": ["StarrSeqQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/5",
       quality_metric_of: ["/files/5"],
       coverage: 30,
@@ -217,9 +311,10 @@ describe("Test QualityMetricField component", () => {
       title: "Alignment Percentage",
       type: "percent",
     };
-    const qualityMetrics: QualityMetricObject = {
+    const qualityMetrics: PerturbSeqQualityMetricObject = {
       "@id": "/perturb-seq-quality-metrics/2",
       "@type": ["PerturbSeqQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/2",
       quality_metric_of: ["/files/2"],
       alignment_percentage: 98,
@@ -246,6 +341,7 @@ describe("Test QualityMetricField component", () => {
     const qualityMetrics: QualityMetricObject = {
       "@id": "/perturb-seq-quality-metrics/2",
       "@type": ["PerturbSeqQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/2",
       quality_metric_of: ["/files/2"],
       attachment: {
@@ -279,6 +375,8 @@ describe("Test QualityMetricModal component", () => {
     const file: FileObject = {
       "@id": "/files/1",
       "@type": ["File", "Item"],
+      status: "released",
+      md5sum: "00000000000000000000000000000000",
       accession: "IGVFFI0000AAAA",
       content_type: "reads",
       file_format: "fastq",
@@ -286,13 +384,14 @@ describe("Test QualityMetricModal component", () => {
       quality_metrics: ["/quality_metrics/1"],
       reference_files: ["/reference_files/1"],
     };
-    const qualityMetric: QualityMetricObject = {
+    const qualityMetric: PerturbSeqQualityMetricObject = {
       "@id": "/quality_metrics/1",
       "@type": ["PerturbSeqQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/1",
       quality_metric_of: ["/files/1"],
       description: "This is a quality metric for testing.",
-      avg_cells_per_target: 1000,
+      avg_cells_per_guide: 1000,
       alignment_percentage: 95,
       attachment: {
         download: "Subpool_6_report.pdf",
@@ -324,6 +423,8 @@ describe("Test QualityMetricModal component", () => {
     const file: FileObject = {
       "@id": "/files/1",
       "@type": ["File", "Item"],
+      status: "released",
+      md5sum: "00000000000000000000000000000000",
       accession: "IGVFFI0000AAAA",
       content_type: "reads",
       file_format: "fastq",
@@ -331,9 +432,10 @@ describe("Test QualityMetricModal component", () => {
       quality_metrics: ["/quality_metrics/1"],
       reference_files: ["/reference_files/1"],
     };
-    const qualityMetric: QualityMetricObject = {
+    const qualityMetric: PerturbSeqQualityMetricObject = {
       "@id": "/quality_metrics/1",
       "@type": ["PerturbSeqQualityMetric", "QualityMetric"],
+      status: "released",
       analysis_step_version: "/analysis_steps/1",
       quality_metric_of: ["/files/1"],
       alignment_percentage: 95,
@@ -373,30 +475,35 @@ describe("Test QualityMetricPanel component", () => {
       {
         "@id": "/quality_metrics/1",
         "@type": ["MpraQualityMetric", "QualityMetric"],
+        status: "released",
         analysis_step_version: "/analysis_steps/1",
         quality_metric_of: ["/files/1"],
       },
       {
         "@id": "/quality_metrics/2",
         "@type": ["PerturbSeqQualityMetric", "QualityMetric"],
+        status: "released",
         analysis_step_version: "/analysis_steps/2",
         quality_metric_of: ["/files/2"],
       },
       {
         "@id": "/quality_metrics/3",
         "@type": ["SingleCellAtacSeqQualityMetric", "QualityMetric"],
+        status: "released",
         analysis_step_version: "/analysis_steps/3",
         quality_metric_of: ["/files/3"],
       },
       {
         "@id": "/quality_metrics/4",
         "@type": ["SingleCellRnaSeqQualityMetric", "QualityMetric"],
+        status: "released",
         analysis_step_version: "/analysis_steps/3",
         quality_metric_of: ["/files/3"],
       },
       {
         "@id": "/quality_metrics/5",
         "@type": ["StarrSeqQualityMetric", "QualityMetric"],
+        status: "released",
         analysis_step_version: "/analysis_steps/3",
         quality_metric_of: ["/files/3"],
       },
@@ -423,6 +530,7 @@ describe("Test QualityMetricPanel component", () => {
       {
         "@id": "/quality_metrics/1",
         "@type": ["MpraQualityMetric", "QualityMetric"],
+        status: "released",
         analysis_step_version: "/analysis_steps/1",
         quality_metric_of: ["/files/1"],
       },
@@ -441,6 +549,7 @@ describe("Test QualityMetricPanel component", () => {
       {
         "@id": "/quality_metrics/1",
         "@type": ["MpraQualityMetric", "QualityMetric"],
+        status: "released",
         analysis_step_version: "/analysis_steps/1",
         quality_metric_of: ["/files/1"],
       },

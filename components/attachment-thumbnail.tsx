@@ -468,6 +468,7 @@ const thumbnailIconMap: Record<MimeTypes, JSX.Element | "image"> = {
   "image/svs": thumbnailIcons.svs,
   "image/tiff": thumbnailIcons.tiff,
   "text/autosql": thumbnailIcons.autosql,
+  "text/csv": thumbnailIcons.txt,
   "text/html": thumbnailIcons.html,
   "text/plain": thumbnailIcons.txt,
   "text/tab-separated-values": thumbnailIcons.tsv,

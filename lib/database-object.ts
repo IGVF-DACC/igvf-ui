@@ -12,7 +12,14 @@ import {
   type PseudobulkSetObject,
 } from "./file-sets";
 import { type OntologyTermObject } from "./ontology-terms";
-import { type QualityMetricObject } from "./quality-metric";
+import {
+  type MpraQualityMetricObject,
+  type PerturbSeqQualityMetricObject,
+  type QualityMetricObject,
+  type SingleCellAtacSeqQualityMetricObject,
+  type SingleCellRnaSeqQualityMetricObject,
+  type StarrSeqQualityMetricObject,
+} from "./quality-metric";
 import { type SampleObject } from "./samples";
 import { isPathArray } from "./types";
 import { type WorkflowObject } from "./workflow";
@@ -53,6 +60,8 @@ type DatabaseTypeMap = {
   CuratedSet: CuratedSetObject;
   MeasurementSet: MeasurementSetObject;
   ModelSet: ModelSetObject;
+  MpraQualityMetric: MpraQualityMetricObject;
+  PerturbSeqQualityMetric: PerturbSeqQualityMetricObject;
   PredictionSet: PredictionSetObject;
   PseudobulkSet: PseudobulkSetObject;
   Gene: GeneObject;
@@ -63,8 +72,11 @@ type DatabaseTypeMap = {
   Publication: PublicationObject;
   QualityMetric: QualityMetricObject;
   Sample: SampleObject;
+  SingleCellAtacSeqQualityMetric: SingleCellAtacSeqQualityMetricObject;
+  SingleCellRnaSeqQualityMetric: SingleCellRnaSeqQualityMetricObject;
   Software: SoftwareObject;
   SoftwareVersion: SoftwareVersionObject;
+  StarrSeqQualityMetric: StarrSeqQualityMetricObject;
   User: UserObject;
   Workflow: WorkflowObject;
 };

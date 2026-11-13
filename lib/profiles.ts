@@ -247,18 +247,19 @@ export function isSchema(value: unknown): value is Schema {
  *
  * @param profiles - Profiles object containing all schemas
  * @param type - `@type` of the schema to retrieve
- * @returns The schema matching the given `@type`; null if not found
+ * @returns Schema matching the given `@type`; null if not found
  */
 export function extractSchema(
   profiles: Profiles | undefined | null,
   type: string
 ): Schema | null {
-  let extractedSchema: Schema | null = null;
   if (profiles) {
     const candidate = profiles[type];
-    extractedSchema = isSchema(candidate) ? candidate : null;
+    if (isSchema(candidate)) {
+      return candidate;
+    }
   }
-  return extractedSchema;
+  return null;
 }
 
 /**
