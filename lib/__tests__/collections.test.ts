@@ -38,6 +38,22 @@ describe("isFileInCatalog", () => {
     expect(isFileInCatalog(testFile)).toBe(false);
   });
 
+  it("should return false if the catalog file is archived", () => {
+    const testFile0 = {
+      ...baseTestFile,
+      collections: ["IGVF_catalog_beta_v0.5"],
+      status: "archived",
+    };
+    expect(isFileInCatalog(testFile0)).toBe(false);
+
+    const testFile1 = {
+      ...baseTestFile,
+      collections: ["ENCODE", "IGVF_catalog_v1.0"],
+      status: "archived",
+    };
+    expect(isFileInCatalog(testFile1)).toBe(false);
+  });
+
   it("should return false if the file has no collections", () => {
     const testFile0 = { ...baseTestFile, collections: [] };
     expect(isFileInCatalog(testFile0)).toBe(false);

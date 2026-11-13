@@ -50,11 +50,11 @@ const collectionMap = {
  * @returns True if the file is in the catalog
  */
 export function isFileInCatalog(file: FileObject): boolean {
-  return (
-    file.collections?.some((collection) =>
-      collection.startsWith(CATALOG_PREFIX)
-    ) ?? false
-  );
+  return file.collections
+    ? file.collections.some((collection) =>
+        collection.startsWith(CATALOG_PREFIX)
+      ) && file.status !== "archived"
+    : false;
 }
 
 /**
