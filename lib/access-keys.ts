@@ -4,48 +4,79 @@
  */
 
 // lib
-import FetchRequest from "./fetch-request";
+import FetchRequest, { isErrorObject } from "./fetch-request";
 // root
-import type { SessionObject } from "../globals";
+import type { AccessKeyObject, SessionObject } from "../globals";
+
+/**
+ * Access-key response returned when creating a key or resetting its secret. The plaintext secret is
+ * only included in these responses.
+ */
+export interface AccessKeySecretResponse extends AccessKeyObject {
+  secret_access_key: string;
+}
 
 /**
  * Creates an access key for the currently logged-in user. It returns the response object including
  * the new access key object in the object's `@graph` property.
- * @returns {object} Access-key response
+ *
+ * @param session - Current signed-in user's session
+ * @returns Access-key response
  */
-export async function createAccessKey(session: SessionObject) {
+export async function createAccessKey(
+  session: SessionObject
+): Promise<AccessKeySecretResponse> {
   const request = new FetchRequest({ session });
-  return request.postObject("/access-keys", {});
+  const response = await request.postObject<AccessKeySecretResponse>(
+    "/access-keys",
+    {}
+  );
+  if (isErrorObject(response)) {
+    throw response;
+  }
+  return response;
 }
 
 /**
  * Resets the access key secret for the given access key ID. It returns the response object
  * including the new access key object in the object's `@graph` property.
- * @param {string} accessKeyId - Access key ID to reset
- * @param {object} session - Current signed-in user's session
- * @returns {object} Access-key response
+ *
+ * @param accessKeyId - Access key ID to reset
+ * @param session - Current signed-in user's session
+ * @returns Access-key response
  */
 export async function resetAccessKey(
   accessKeyId: string,
   session: SessionObject
-) {
+): Promise<AccessKeySecretResponse> {
   const request = new FetchRequest({ session });
-  return request.postObject(`/access-keys/${accessKeyId}/reset-secret`, {});
+  const response = await request.postObject<AccessKeySecretResponse>(
+    `/access-keys/${accessKeyId}/reset-secret`,
+    {}
+  );
+  if (isErrorObject(response)) {
+    throw response;
+  }
+  return response;
 }
 
 /**
- * Deletes the access key secret for the given access key ID. It returns the response object
- * including the new access key object in the object's `@graph` property.
- * @param {string} accessKeyId - Access key ID to delete
- * @param {object} session - Current signed-in user's session
- * @returns {object} Access-key response
+ * Deletes the access key with the given access key ID.
+ *
+ * @param accessKeyId - Access key ID to delete
+ * @param session - Current signed-in user's session
+ * @throws The data-provider error if the access key could not be deleted
  */
 export async function deleteAccessKey(
   accessKeyId: string,
   session: SessionObject
-) {
+): Promise<void> {
   const request = new FetchRequest({ session });
-  return request.patchObject(`/access-keys/${accessKeyId}/?render=false`, {
-    status: "deleted",
-  });
+  const response = await request.patchObject<unknown>(
+    `/access-keys/${accessKeyId}/?render=false`,
+    { status: "deleted" }
+  );
+  if (isErrorObject(response)) {
+    throw response;
+  }
 }
