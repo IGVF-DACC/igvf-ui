@@ -122,7 +122,7 @@ export interface ErrorObject {
   code: number;
   description: string;
   errors: ErrorDetail[];
-  detail: string;
+  detail?: string;
   status: string;
   title: string;
 }
@@ -1046,14 +1046,15 @@ export default class FetchRequest {
 
   /**
    * Patch the object at the given path with the given payload.
-   * @param {string} path Path to resource to patch
-   * @param {object} payload Object to merge into patched object
-   * @returns {DataProviderObject|ErrorObject} Response from PATCH request
+   *
+   * @param path - Path to resource to patch
+   * @param payload - Object to merge into patched object
+   * @returns Response from PATCH request
    */
-  public async patchObject(
+  public async patchObject<T = DataProviderObject>(
     path: string,
     payload: object
-  ): Promise<DataProviderObject | ErrorObject> {
+  ): Promise<T | ErrorObject> {
     const url = this.pathUrl(path);
     const options = this.buildOptionsWithAgent(url, "PATCH", {
       accept: PAYLOAD_FORMAT.JSON,

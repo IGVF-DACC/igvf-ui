@@ -5,7 +5,6 @@ import {
   ArrowPathIcon,
   TrashIcon,
 } from "@heroicons/react/20/solid";
-import PropTypes from "prop-types";
 import { Fragment, useContext, useState } from "react";
 // components
 import { Button } from "./form-elements";
@@ -18,12 +17,44 @@ import {
   deleteAccessKey,
   resetAccessKey,
 } from "../lib/access-keys";
+import { isErrorObject } from "../lib/fetch-request";
+
+/**
+ * Gets a user-facing message from a failed access-key request.
+ *
+ * @param error - Error object returned from the failed access-key request
+ * @param action - Action being performed (e.g., "create", "reset", "delete")
+ */
+function getAccessKeyErrorMessage(error: unknown, action: string): string {
+  if (isErrorObject(error)) {
+    const messages = [error.description, error.detail]
+      .filter((message) => typeof message === "string")
+      .map((message) => message.trim())
+      .filter(Boolean);
+    return (
+      [...new Set(messages)].join(" ") || `Unable to ${action} the access key.`
+    );
+  }
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return `Unable to ${action} the access key.`;
+}
 
 /**
  * Displays the access key ID and secret for the modal used when creating or resetting an access
  * key.
+ *
+ * @param accessKeyId - Access key ID to display.
+ * @param accessKeySecret - Access key secret to display.
  */
-function AccessKeyDisplay({ accessKeyId, accessKeySecret }) {
+function AccessKeyDisplay({
+  accessKeyId,
+  accessKeySecret,
+}: {
+  accessKeyId: string;
+  accessKeySecret: string;
+}) {
   // The labels and keys appear in a two-row table. The row contents get defined here. On mobile
   // they appear in one column.
   const rows = [
@@ -62,13 +93,6 @@ function AccessKeyDisplay({ accessKeyId, accessKeySecret }) {
   );
 }
 
-AccessKeyDisplay.propTypes = {
-  // Access key ID
-  accessKeyId: PropTypes.string.isRequired,
-  // Access key secret
-  accessKeySecret: PropTypes.string.isRequired,
-};
-
 /**
  * The access key creation and reset modals have nearly identical contents except for these
  * messages.
@@ -87,12 +111,22 @@ const accessKeyModalMessages = {
 /**
  * Displays the modal to show the user their new or reset access keys. This component always shows
  * the modal, so its visibility gets controlled from the parent component.
+ *
+ * @param accessKeyId - Access key ID to display.
+ * @param accessKeySecret - Access key secret to display.
+ * @param createOrReset - Specifies whether the modal is for creating or resetting an access key.
+ * @param onClose - Callback to close the modal.
  */
 function AccessKeyModal({
   accessKeyId,
   accessKeySecret,
   createOrReset,
   onClose,
+}: {
+  accessKeyId: string;
+  accessKeySecret: string;
+  createOrReset: "create" | "reset";
+  onClose: () => void;
 }) {
   return (
     <Modal isOpen={true} onClose={onClose}>
@@ -126,28 +160,25 @@ function AccessKeyModal({
   );
 }
 
-AccessKeyModal.propTypes = {
-  // New (create) or existing (reset) access key ID
-  accessKeyId: PropTypes.string.isRequired,
-  // New access key secret
-  accessKeySecret: PropTypes.string.isRequired,
-  // Specifies either the create or reset messages to display in the modal
-  createOrReset: PropTypes.oneOf(["create", "reset"]).isRequired,
-  // Callback to close the modal
-  onClose: PropTypes.func.isRequired,
-};
-
 /**
  * Displays a button and modal to create a new access key.
+ *
+ * @param onAccessKeyChange - Callback to notify parent component that the access key list has changed
+ * @param onError - Callback to display an error message if access key creation fails
  */
-export function CreateAccessKeyTrigger({ onAccessKeyChange }) {
+export function CreateAccessKeyTrigger({
+  onAccessKeyChange,
+  onError,
+}: {
+  onAccessKeyChange: () => void;
+  onError: (message: string) => void;
+}) {
   // True if modal displaying newly created access-keys is open
   const [isOpen, setOpen] = useState(false);
   // Access key ID
   const [accessKeyId, setAccessKeyId] = useState("");
   // Access key secret
   const [accessKeySecret, setAccessKeySecret] = useState("");
-
   const { session, sessionProperties } = useContext(SessionContext);
   const canCreateAccessKeys = sessionProperties?.user?.lab !== undefined;
 
@@ -155,8 +186,10 @@ export function CreateAccessKeyTrigger({ onAccessKeyChange }) {
    * Called to create a new access key. Once that happens it opens the modal to display the new
    * access key ID and secret.
    */
-  function createKey() {
-    createAccessKey(session).then((response) => {
+  async function createKey() {
+    onError("");
+    try {
+      const response = await createAccessKey(session);
       setAccessKeyId(response.access_key_id);
       setAccessKeySecret(response.secret_access_key);
 
@@ -164,7 +197,9 @@ export function CreateAccessKeyTrigger({ onAccessKeyChange }) {
       // new access key to the user so they can copy it.
       onAccessKeyChange();
       setOpen(true);
-    });
+    } catch (error) {
+      onError(getAccessKeyErrorMessage(error, "create"));
+    }
   }
 
   function closeModal() {
@@ -191,15 +226,28 @@ export function CreateAccessKeyTrigger({ onAccessKeyChange }) {
   return null;
 }
 
-CreateAccessKeyTrigger.propTypes = {
-  // Callback to tell the parent about the new access keys
-  onAccessKeyChange: PropTypes.func.isRequired,
-};
-
 /**
  * Display a single access key control button.
+ *
+ * @param label - Label for the control for screen readers and tooltip
+ * @param onClick - Function to call when the user clicks the control
+ * @param type - Type of button to display
+ * @param hasIconOnly - True if the control contains only an icon
+ * @param children - The content of the button
  */
-function AccessKeyControl({ label, onClick, type, hasIconOnly, children }) {
+function AccessKeyControl({
+  label,
+  onClick,
+  type,
+  hasIconOnly,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  type?: string;
+  hasIconOnly?: boolean;
+  children?: React.ReactNode;
+}) {
   return (
     <Button
       label={label}
@@ -212,21 +260,18 @@ function AccessKeyControl({ label, onClick, type, hasIconOnly, children }) {
   );
 }
 
-AccessKeyControl.propTypes = {
-  // The label for the control for screen readers and tooltip
-  label: PropTypes.string.isRequired,
-  // Function to call when the user clicks the control
-  onClick: PropTypes.func.isRequired,
-  // True if the control contains only an icon
-  hasIconOnly: PropTypes.bool,
-  // Type of button to display
-  type: PropTypes.string,
-};
-
 /**
  * Displays a button and new-key modal to reset an existing access key.
+ *
+ * @param accessKeyId - Access key ID to reset
  */
-export function ResetAccessKeyTrigger({ accessKeyId }) {
+export function ResetAccessKeyTrigger({
+  accessKeyId,
+  onError,
+}: {
+  accessKeyId: string;
+  onError: (message: string) => void;
+}) {
   // True if modal displaying reset access-keys open
   const [isOpen, setOpen] = useState(false);
   // Access key secret
@@ -237,11 +282,15 @@ export function ResetAccessKeyTrigger({ accessKeyId }) {
   /**
    * Creates a new access key and opens the modal to display it.
    */
-  function resetKey() {
-    resetAccessKey(accessKeyId, session).then((response) => {
+  async function resetKey() {
+    onError("");
+    try {
+      const response = await resetAccessKey(accessKeyId, session);
       setAccessKeySecret(response.secret_access_key);
       setOpen(true);
-    });
+    } catch (error) {
+      onError(getAccessKeyErrorMessage(error, "reset"));
+    }
   }
 
   function closeModal() {
@@ -270,15 +319,21 @@ export function ResetAccessKeyTrigger({ accessKeyId }) {
   );
 }
 
-ResetAccessKeyTrigger.propTypes = {
-  // Access key ID to reset
-  accessKeyId: PropTypes.string.isRequired,
-};
-
 /**
  * Displays a button and warning modal to delete an access key.
+ *
+ * @param accessKeyId - Access key ID to delete
+ * @param onAccessKeyChange - Callback to tell the parent the access key list has changed
  */
-function DeleteAccessKeyTrigger({ accessKeyId, onAccessKeyChange }) {
+function DeleteAccessKeyTrigger({
+  accessKeyId,
+  onAccessKeyChange,
+  onError,
+}: {
+  accessKeyId: string;
+  onAccessKeyChange: () => void;
+  onError: (message: string) => void;
+}) {
   // True if access key delete warning modal is visible.
   const [isOpen, setOpen] = useState(false);
 
@@ -288,10 +343,16 @@ function DeleteAccessKeyTrigger({ accessKeyId, onAccessKeyChange }) {
    * Called to perform the deletion of the access key.
    */
   function onDelete() {
-    deleteAccessKey(accessKeyId, session).then(() => {
-      // Rerender the page with the deleted access key removed.
-      onAccessKeyChange();
-    });
+    onError("");
+    setOpen(false);
+    void deleteAccessKey(accessKeyId, session)
+      .then(() => {
+        // Rerender the page with the deleted access key removed.
+        onAccessKeyChange();
+      })
+      .catch((error) => {
+        onError(getAccessKeyErrorMessage(error, "delete"));
+      });
   }
 
   function onCancel() {
@@ -311,7 +372,7 @@ function DeleteAccessKeyTrigger({ accessKeyId, onAccessKeyChange }) {
       <Modal isOpen={isOpen} onClose={onCancel}>
         <Modal.Header
           onClose={onCancel}
-          closeModal="Cancel deleting access key"
+          closeLabel="Cancel deleting access key"
         >
           Delete Access Key
         </Modal.Header>
@@ -342,44 +403,44 @@ function DeleteAccessKeyTrigger({ accessKeyId, onAccessKeyChange }) {
   );
 }
 
-DeleteAccessKeyTrigger.propTypes = {
-  // ID of access key to delete
-  accessKeyId: PropTypes.string.isRequired,
-  // Callback to tell the parent the access key list has changed
-  onAccessKeyChange: PropTypes.func.isRequired,
-};
-
 /**
  * Displays a single access key and its associated controls.
+ *
+ * @param accessKey - Access key object to display
+ * @param onAccessKeyChange - Callback to tell the parent the access key list has changed
+ * @param onError - Callback to display or clear an access-key error
  */
-export function AccessKeyItem({ accessKey, onAccessKeyChange }) {
+export function AccessKeyItem({
+  accessKey,
+  onAccessKeyChange,
+  onError,
+}: {
+  accessKey: { access_key_id: string };
+  onAccessKeyChange: () => void;
+  onError: (message: string) => void;
+}) {
   return (
-    <>
-      <div className="border-panel flex items-center justify-between border px-3 py-2 md:px-2 md:py-1">
-        <div className="font-mono">{accessKey.access_key_id}</div>
-        <div className="flex gap-1">
-          <ResetAccessKeyTrigger accessKeyId={accessKey.access_key_id} />
-          <DeleteAccessKeyTrigger
-            accessKeyId={accessKey.access_key_id}
-            onAccessKeyChange={onAccessKeyChange}
-          />
-        </div>
+    <div className="border-panel flex items-center justify-between border px-3 py-2 md:px-2 md:py-1">
+      <div className="font-mono">{accessKey.access_key_id}</div>
+      <div className="flex gap-1">
+        <ResetAccessKeyTrigger
+          accessKeyId={accessKey.access_key_id}
+          onError={onError}
+        />
+        <DeleteAccessKeyTrigger
+          accessKeyId={accessKey.access_key_id}
+          onAccessKeyChange={onAccessKeyChange}
+          onError={onError}
+        />
       </div>
-    </>
+    </div>
   );
 }
-
-AccessKeyItem.propTypes = {
-  // Array of access keys from the session user object
-  accessKey: PropTypes.shape({ access_key_id: PropTypes.string }).isRequired,
-  // Callback to tell the parent the access key list has changed
-  onAccessKeyChange: PropTypes.func.isRequired,
-};
 
 /**
  * Displays a list of access keys and their associated controls.
  */
-export function AccessKeyList({ children }) {
+export function AccessKeyList({ children }: { children: React.ReactNode }) {
   return (
     <div className="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {children}

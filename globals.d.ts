@@ -298,7 +298,8 @@ export interface SessionObject {
 }
 
 /**
- * Session properties object from the data provider while the user has logged in.
+ * Session properties object from the data provider while the user has logged in. While logged out,
+ * this object contains no properties.
  */
 export interface SessionPropertiesObject {
   admin?: boolean;
@@ -543,6 +544,7 @@ export interface SoftwareObject extends DatabaseObject {
  * Data structure of the `User` object.
  */
 export interface UserObject extends DatabaseObject {
+  access_keys: LinkToArray<AccessKeyObject>;
   email: string;
   first_name: string;
   job_title?: string;
@@ -643,4 +645,10 @@ export interface OpenReadingFrameObject extends DatabaseObject {
   pct_coverage_protein?: number;
   pct_identical_protein?: number;
   protein_id?: string;
+}
+
+export interface AccessKeyObject extends DatabaseObject {
+  access_key_id: string;
+  description: string;
+  user: LinkTo<UserObject>;
 }
