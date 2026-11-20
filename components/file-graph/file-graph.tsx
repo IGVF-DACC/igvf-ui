@@ -1,5 +1,5 @@
 // node_modules
-import ELK from "elkjs/lib/elk.bundled.js";
+import ELK from "elkjs/lib/elk-api.js";
 import type { ElkNode } from "elkjs/lib/elk-api";
 import _ from "lodash";
 import { CSSProperties, Fragment, useEffect, useRef, useState } from "react";
@@ -26,6 +26,7 @@ import { DataAreaTitle, DataPanel } from "../data-area";
 import Link from "../link-no-prefetch";
 import { QualityMetricModal } from "../quality-metric";
 import SeparatedList from "../separated-list";
+import Spinner from "../spinner";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { isFileInCatalog } from "../../lib/collections";
@@ -127,22 +128,6 @@ const FIT_VIEW_MARGIN_PX = 56;
 const MAXIMUM_FIT_ZOOM = 1;
 
 /**
- * Convert desired pixel margin into React Flow's fit padding fraction.
- *
- * @param containerWidth - Graph container width in pixels
- * @param containerHeight - Graph container height in pixels
- */
-function getFitZoomPadding(
-  containerWidth: number,
-  containerHeight: number
-): number {
-  const shortestViewportSide = Math.min(containerWidth, containerHeight);
-  return shortestViewportSide <= 0
-    ? 0.1
-    : Math.min(FIT_VIEW_MARGIN_PX / shortestViewportSide, 0.25);
-}
-
-/**
  * Styles for the node handles. This puts the handles in the correct place for the edges to hook up
  * to, but hidden to avoid visual clutter.
  */
@@ -158,6 +143,22 @@ const NodeHandleStyle: CSSProperties = {
   border: 0,
   background: "transparent",
 };
+
+/**
+ * Convert desired pixel margin into React Flow's fit padding fraction.
+ *
+ * @param containerWidth - Graph container width in pixels
+ * @param containerHeight - Graph container height in pixels
+ */
+function getFitZoomPadding(
+  containerWidth: number,
+  containerHeight: number
+): number {
+  const shortestViewportSide = Math.min(containerWidth, containerHeight);
+  return shortestViewportSide <= 0
+    ? 0.1
+    : Math.min(FIT_VIEW_MARGIN_PX / shortestViewportSide, 0.25);
+}
 
 /**
  * Display a button within a file node that the user can click to display the quality metrics for
@@ -452,9 +453,9 @@ function GraphCore({
   graphId?: string;
   onNodeLayout?: (graphBounds: Rect) => void;
 }) {
-  const [elk] = useState(() => new ELK());
   const [laidOutNodes, setLaidOutNodes] = useState<Node<NodeMetadata>[]>([]);
   const [laidOutEdges, setLaidOutEdges] = useState<Edge[]>([]);
+  const [layoutError, setLayoutError] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Node<NodeMetadata> | null>(
     null
   );
@@ -488,21 +489,52 @@ function GraphCore({
   }
 
   useEffect(() => {
-    // After ELK loads we can start layout with ELK. Do this inside useEffect so we can set the
-    // node and edge states and render the graph once layout finishes.
+    let isMounted = true;
+
+    // Initialize ELK layout engine with a web worker so that ELK performs layout off the main
+    // thread, allowing the user to continue using the UI while ELK completes layout.
+    const elk = new ELK({
+      workerFactory: () =>
+        // Create a new web worker for ELK to perform layout off the main thread. The worker script
+        // is specified using a URL created from the ELK library's worker file.
+        new Worker(new URL("elkjs/lib/elk-worker.min.js", import.meta.url)),
+    });
+
+    setLayoutError(false);
+    setLaidOutNodes([]);
+    setLaidOutEdges([]);
+
+    // Begin the layout process using ELK to compute the positions of nodes and edges. It passes it
+    // to its web worker for off-main-thread computation. With the web worker, `.layout()`
+    // immediately returns a promise and does not block the main thread. Only after ELK completes
+    // layout will the promise resolve, executing the `.then()` callback with the computed layout.
     elk
       .layout(graphData)
-      .then((graphDataWithLayout: ElkNode) => {
-        const { nodes, edges } = elkToReactFlow(graphDataWithLayout);
-        setLaidOutNodes(nodes as Node<NodeMetadata>[]);
-        setLaidOutEdges(edges);
+      .then((graphDataWithLayout) => {
+        // This executes after ELK has completed the layout and returned the graph data with
+        // computed positions. Convert the ELK graph data to the format used by React Flow.
+        if (isMounted) {
+          const { nodes, edges } = elkToReactFlow(graphDataWithLayout);
+          setLaidOutNodes(nodes as Node<NodeMetadata>[]);
+          setLaidOutEdges(edges);
+        }
       })
       .catch((error) => {
-        console.error("ELK layout failed:", error);
+        if (isMounted) {
+          console.error("ELK layout failed:", error);
+          setLayoutError(true);
+        }
       });
-  }, [elk, graphData]);
+
+    return () => {
+      isMounted = false;
+      elk.terminateWorker();
+    };
+  }, [graphData]);
 
   useEffect(() => {
+    // Update the graph bounds whenever the laid-out nodes change, so that the graph can be
+    // properly centered and zoomed within the container.
     if (laidOutNodes.length === 0) {
       return;
     }
@@ -515,6 +547,7 @@ function GraphCore({
   }, [rf, laidOutNodes]);
 
   useEffect(() => {
+    // Notify the parent component of the updated graph bounds whenever they change.
     if (!graphBounds || !onNodeLayout) {
       return;
     }
@@ -523,6 +556,8 @@ function GraphCore({
   }, [graphBounds, onNodeLayout]);
 
   useEffect(() => {
+    // Fit the graph to the view whenever the graph bounds change, ensuring that the entire graph
+    // is visible within the container.
     if (!graphBounds) {
       return;
     }
@@ -551,6 +586,8 @@ function GraphCore({
   }, [rf, graphBounds]);
 
   useEffect(() => {
+    // Update the minimum zoom level and center the graph whenever the container size or graph
+    // bounds change.
     if (!containerRef.current || !graphBounds) {
       return;
     }
@@ -569,6 +606,8 @@ function GraphCore({
         fitZoomPadding
       );
 
+      // Update the minimum zoom level based on the computed viewport, ensuring that the graph fits
+      // within the container.
       setMinZoom(viewport.zoom);
     }
 
@@ -695,7 +734,17 @@ function GraphCore({
       </div>
     );
   }
-  return null;
+
+  if (layoutError) {
+    return <p role="alert">The file graph could not be generated.</p>;
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-2 py-8" role="status">
+      <Spinner svgClassName="h-7 w-7" />
+      <i>Generating file graph&hellip;</i>
+    </div>
+  );
 }
 
 /**
@@ -1068,9 +1117,11 @@ export function FileGraph({
   // Look for cycles caused by circular `derived_from` relationships.
   const cycles = detectCycles(includedFiles.concat(includedDerivedFromFiles));
 
-  // Final list of files now determined. Use them to generate the graph data if there are no cycles.
+  // Build the ELK input on the page. ELK layout itself is the expensive part and runs in the
+  // worker; keeping application utility imports out of the worker avoids pulling in Next.js page
+  // runtime dependencies that are unavailable there.
   const graphData =
-    cycles.length === 0
+    cycles.length === 0 && !isEmptyGraphAfterFiltering
       ? generateGraphData(
           includedFiles,
           derivedFromFiles,
@@ -1080,6 +1131,8 @@ export function FileGraph({
         )
       : null;
 
+  // Graph layout happens off the main thread. This keeps the page interactive; unmounting this
+  // graph during navigation terminates its worker and abandons the job.
   if (graphData) {
     return (
       <FileGraphContent

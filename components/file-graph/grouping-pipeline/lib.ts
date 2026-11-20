@@ -13,7 +13,7 @@ const HASH_SEED = 0x135d3f7f;
 /**
  * Generates a unique group ID for a group of nodes based on a hash of their IDs.
  *
- * @param group - Array of Elk nodes we've determined to be sharing a group
+ * @param group - Array of ELK nodes we've determined to be sharing a group
  * @returns ID unique to this group
  */
 export function generateGroupId(group: ElkNodeEx[]): GroupNodeId {
@@ -26,11 +26,11 @@ export function generateGroupId(group: ElkNodeEx[]): GroupNodeId {
 }
 
 /**
- * Builds a mapping of file-set object `@id` to all corresponding Elk nodes for each file set.
+ * Builds a mapping of file-set object `@id` to all corresponding ELK nodes for each file set.
  * Multiple nodes can share the same file-set path, so values are arrays.
  *
  * @param nodes - File-set nodes to index by file-set object path
- * @returns Map of file-set object `@id` to all matching Elk file-set nodes
+ * @returns Map of file-set object `@id` to all matching ELK file-set nodes
  */
 export function buildNodesByFileSetPath(
   nodes: FileSetNode[]

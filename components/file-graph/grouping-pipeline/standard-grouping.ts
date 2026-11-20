@@ -108,7 +108,7 @@ export function standardGroupingStage(
  *
  * @param targetFileSetNodes - File-set nodes to build adjacency for
  * @param allFileSetNodes - All file-set nodes in the graph
- * @param nodesByFileSetPath - Mapping of file-set object `@id` to all corresponding Elk nodes
+ * @param nodesByFileSetPath - Mapping of file-set object `@id` to all corresponding ELK nodes
  * @param adjacencyProperty - Property name on the file-set object that defines adjacency
  * @returns Map of node IDs to sets of adjacent node IDs
  */
