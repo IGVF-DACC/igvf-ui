@@ -76,9 +76,11 @@ export type NodeMetadata = FileMetadata | FileSetMetadata | GroupMetadata;
 
 /**
  * Extended ElkNode interface that includes metadata. You see `metadata` on every node representing
- * a file or file set in the graph, but not for the root node nor group nodes.
+ * a file, file set, or group in the graph, but not on the root node. Child nodes use this extended
+ * type recursively so their metadata remains available to TypeScript while traversing the graph.
  */
 export interface ElkNodeEx extends ElkNode {
+  children?: ElkNodeEx[];
   metadata?: NodeMetadata;
 }
 

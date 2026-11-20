@@ -1,4 +1,5 @@
 import {
+  analyzeGraphComplexity,
   collectRelevantFileSetStats,
   convertGroupsToElkNodes,
   countFileNodes,
@@ -44,6 +45,161 @@ describe("Constants", () => {
     expect(NODE_WIDTH).toBe(156);
     expect(NODE_HEIGHT).toBe(60);
     expect(MAX_LINE_LENGTH).toBe(24);
+  });
+});
+
+describe("analyzeGraphComplexity", () => {
+  type ComplexityMetric = keyof ReturnType<
+    typeof analyzeGraphComplexity
+  >["exceeded"];
+
+  function buildGraph(
+    nodeCount: number,
+    edgeCount: number,
+    getEndpoints = (index: number): [string, string] => [
+      `node-${index % nodeCount}`,
+      `node-${(index + 1) % nodeCount}`,
+    ]
+  ): ElkNodeEx {
+    return {
+      id: "root",
+      children: Array.from({ length: nodeCount }, (_, index) => ({
+        id: `node-${index}`,
+      })),
+      edges: Array.from({ length: edgeCount }, (_, index) => {
+        const [source, target] = getEndpoints(index);
+        return {
+          id: `edge-${index}`,
+          sources: [source],
+          targets: [target],
+        };
+      }),
+    };
+  }
+
+  function expectMetricBoundary(
+    metric: ComplexityMetric,
+    atLimitGraph: ElkNodeEx,
+    aboveLimitGraph: ElkNodeEx
+  ) {
+    const atLimit = analyzeGraphComplexity(atLimitGraph);
+    const aboveLimit = analyzeGraphComplexity(aboveLimitGraph);
+
+    expect(atLimit.exceeded[metric]).toBe(false);
+    expect(atLimit.isTooComplex).toBe(false);
+    expect(aboveLimit.exceeded[metric]).toBe(true);
+    expect(aboveLimit.isTooComplex).toBe(true);
+  }
+
+  it("handles a graph with no nodes or edges", () => {
+    const complexity = analyzeGraphComplexity({ id: "root" });
+
+    expect(complexity).toEqual({
+      nodeCount: 0,
+      edgeCount: 0,
+      edgeToNodeRatio: 0,
+      maxDegree: 0,
+      exceeded: {
+        nodeCount: false,
+        edgeCount: false,
+        edgeToNodeRatio: false,
+        maxDegree: false,
+      },
+      thresholds: {
+        nodeCount: 200,
+        edgeCount: 250,
+        edgeToNodeRatio: 3,
+        maxDegree: 200,
+      },
+      isTooComplex: false,
+    });
+  });
+
+  it("returns measurements without marking a simple graph as too complex", () => {
+    const graph: ElkNodeEx = {
+      id: "root",
+      children: [{ id: "a" }, { id: "b" }],
+      edges: [{ id: "a-b", sources: ["a"], targets: ["b"] }],
+    };
+
+    expect(analyzeGraphComplexity(graph)).toEqual({
+      nodeCount: 2,
+      edgeCount: 1,
+      edgeToNodeRatio: 0.5,
+      maxDegree: 1,
+      exceeded: {
+        nodeCount: false,
+        edgeCount: false,
+        edgeToNodeRatio: false,
+        maxDegree: false,
+      },
+      thresholds: {
+        nodeCount: 200,
+        edgeCount: 250,
+        edgeToNodeRatio: 3,
+        maxDegree: 200,
+      },
+      isTooComplex: false,
+    });
+  });
+
+  it("counts nested nodes and identifies the measurements that exceed their limits", () => {
+    const graph: ElkNodeEx = {
+      id: "root",
+      children: [
+        {
+          id: "group",
+          children: Array.from({ length: 200 }, (_, index) => ({
+            id: `node-${index}`,
+          })),
+        },
+      ],
+      edges: [],
+    };
+
+    const complexity = analyzeGraphComplexity(graph);
+
+    expect(complexity.nodeCount).toBe(201);
+    expect(complexity.exceeded).toEqual({
+      nodeCount: true,
+      edgeCount: false,
+      edgeToNodeRatio: false,
+      maxDegree: false,
+    });
+    expect(complexity.isTooComplex).toBe(true);
+  });
+
+  it("allows the node-count limit and rejects one node above it", () => {
+    expectMetricBoundary("nodeCount", buildGraph(200, 0), buildGraph(201, 0));
+  });
+
+  it("allows the edge-count limit and rejects one edge above it", () => {
+    expectMetricBoundary(
+      "edgeCount",
+      buildGraph(100, 250),
+      buildGraph(100, 251)
+    );
+  });
+
+  it("allows the edge-to-node ratio limit and rejects a ratio above it", () => {
+    expectMetricBoundary(
+      "edgeToNodeRatio",
+      buildGraph(50, 150),
+      buildGraph(50, 151)
+    );
+  });
+
+  it("allows the maximum-degree limit and rejects a degree above it", () => {
+    const getHubEndpoints = (index: number): [string, string] => [
+      "node-0",
+      `node-${(index % 66) + 1}`,
+    ];
+
+    expectMetricBoundary(
+      "maxDegree",
+      buildGraph(67, 200, getHubEndpoints),
+      buildGraph(67, 201, getHubEndpoints)
+    );
   });
 });
 
@@ -731,6 +887,7 @@ describe("generateGraphData", () => {
       file_set_type: "experimental data",
       summary: "Measurement set",
       auxiliary_sets: [auxiliarySet],
+      status: "in progress",
     } as FileSetObject;
 
     const result = generateGraphData(
@@ -753,9 +910,9 @@ describe("generateGraphData", () => {
         targets: [nativeFile["@id"]],
       },
     ]);
-    expect(
-      result?.edges?.some((edge) => childIds.has(edge.sources[0]))
-    ).toBe(false);
+    expect(result?.edges?.some((edge) => childIds.has(edge.sources[0]))).toBe(
+      false
+    );
   });
 
   it("should ignore an external file whose file-set object is unavailable", () => {

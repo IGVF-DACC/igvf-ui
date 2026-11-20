@@ -42,7 +42,7 @@ const groupingPipelineStages: GroupPipelineStageFunction[] = [
 ];
 
 /**
- * Runs the grouping pipeline on a set of Elk nodes. It accepts the map of file-set IDs to the
+ * Runs the grouping pipeline on a set of ELK nodes. It accepts the map of file-set IDs to the
  * corresponding nodes, calls each grouping pipeline stage in turn, collecting groups as well as
  * remaining nodes not part of that stage's groups. After all stages, it returns the final groups
  * and any nodes not part of any group.

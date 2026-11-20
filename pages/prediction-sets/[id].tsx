@@ -371,7 +371,7 @@ export default function PredictionSet({
                   visible: areDeprecatedFilesVisible,
                   setVisible: setAreDeprecatedFilesVisible,
                 }}
-                fileId={predictionSet.accession}
+                fileSetAccession={predictionSet.accession}
               />
             </>
           )}

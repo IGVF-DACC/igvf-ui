@@ -12,17 +12,18 @@ import { generateSVGContent } from "./lib";
  * in `graphId`.
  *
  * @param graphId - ID of the HTML element containing the ReactFlow graph
- * @param fileId - ID of the file the graph is for; used to customize download filename
+ * @param fileSetAccession - Accession of the file set the graph represents; used to customize the
+ * download filename
  * @param graphBounds - Bounds of the graph, used to determine SVG dimensions
  */
 export function DownloadTrigger({
   graphId,
-  fileId = "",
+  fileSetAccession = "",
   graphBounds,
   isDisabled = false,
 }: {
   graphId: string;
-  fileId?: string;
+  fileSetAccession?: string;
   graphBounds: Rect | null;
   isDisabled?: boolean;
 }) {
@@ -38,7 +39,9 @@ export function DownloadTrigger({
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = fileId ? `file-graph-${fileId}.svg` : "file-graph.svg";
+      link.download = fileSetAccession
+        ? `file-graph-${fileSetAccession}.svg`
+        : "file-graph.svg";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
