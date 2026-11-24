@@ -21,11 +21,22 @@ import {
 } from "../lib/home";
 import { encodeUriElement } from "../lib/query-encoding";
 
+/**
+ * Lab chart datum interface for Nivo bar chart.
+ *
+ * @property title - Title of the lab chart datum
+ * @property value - Value of the lab chart datum
+ */
 interface LabChartDatum extends BarDatum {
   title: string;
   value: number;
 }
 
+/**
+ * Custom bar props for the Nivo bar chart.
+ *
+ * @property type - Type of file-set data to display in the chart
+ */
 interface CustomBarProps extends BarItemProps<LabChartDatum> {
   type: keyof typeof typeConfig;
 }
