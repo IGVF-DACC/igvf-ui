@@ -109,7 +109,11 @@ CustomXTick.propTypes = {
  * `shouldIncludeLinks` is true.
  */
 function BarLink({ path, children }) {
-  return <Link href={path}>{children}</Link>;
+  return (
+    <Link className="no-underline" href={path}>
+      {children}
+    </Link>
+  );
 }
 
 BarLink.propTypes = {
@@ -133,29 +137,40 @@ function CustomBar({ bar, type }) {
       : `${termProp}=${encodeUriElement(term)}`;
 
   return (
-    <>
-      <BarLink
-        path={`/multireport/?type=${typeQuery}&lab.title=${encodeUriElement(
-          lab
-        )}&${termElement}&status=released`}
-      >
-        <g transform={`translate(${bar.x},${bar.y})`}>
-          <rect width={bar.width} height={bar.height} className={foreground} />
-        </g>
-      </BarLink>
-      <g transform={`translate(${bar.width + 5},${bar.y + 12})`}>
-        <text
+    <BarLink
+      path={`/multireport/?type=${typeQuery}&lab.title=${encodeUriElement(
+        lab
+      )}&${termElement}&status=released`}
+    >
+      <g className="group cursor-pointer">
+        <rect
           x={0}
-          y={0}
-          textAnchor="start"
-          dominantBaseline="central"
+          y={bar.y}
+          width="100%"
+          height={bar.height}
+          fill="transparent"
+          pointerEvents="all"
+        />
+
+        <rect
+          x={bar.x}
+          y={bar.y}
+          width={bar.width}
+          height={bar.height}
+          className={`${foreground} group-hover:opacity-75`}
+        />
+
+        <text
+          x={bar.x + bar.width + 5}
+          y={bar.y + 12}
           className="fill-black dark:fill-white"
           fontSize={10}
+          dominantBaseline="central"
         >
           {abbreviateNumber(dataPoint.value)}
         </text>
       </g>
-    </>
+    </BarLink>
   );
 }
 
