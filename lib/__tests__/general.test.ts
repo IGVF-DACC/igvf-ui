@@ -4,6 +4,7 @@ import {
   convertTextToTitleCase,
   dataSize,
   fileNameFromPath,
+  formatNumber,
   isObjectArrayProperty,
   isStringArrayProperty,
   isValidPath,
@@ -22,6 +23,14 @@ import {
   truthyOrZero,
   urlWithoutParams,
 } from "../general";
+
+describe("Test the formatNumber utility function", () => {
+  it("formats numbers using the en-US locale", () => {
+    expect(formatNumber(1234)).toBe("1,234");
+    expect(formatNumber(1234.56)).toBe("1,234.56");
+    expect(formatNumber(-1234)).toBe("-1,234");
+  });
+});
 
 describe("Test the pathToType utility function", () => {
   it("should return the type that the given path indicates; or the empty string", () => {

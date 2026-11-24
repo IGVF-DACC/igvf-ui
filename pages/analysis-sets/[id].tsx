@@ -421,7 +421,7 @@ export default function AnalysisSet({
                 fileFileSets={fileFileSets}
                 derivedFromFiles={derivedFromFiles}
                 qualityMetrics={qualityMetrics}
-                fileId={analysisSet.accession}
+                fileSetAccession={analysisSet.accession}
                 externalDeprecated={{
                   visible: areDeprecatedFilesVisible,
                   setVisible: setAreDeprecatedFilesVisible,

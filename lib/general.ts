@@ -94,12 +94,7 @@ export function itemId(item: string | { "@id": string }): string {
 }
 
 export type JSON =
-  | null
-  | boolean
-  | string
-  | number
-  | Array<JSON>
-  | { [key: string]: JSON };
+  null | boolean | string | number | Array<JSON> | { [key: string]: JSON };
 
 /**
  * An interface describing an Error object. If an
@@ -444,4 +439,14 @@ export function isObjectArrayProperty<T extends object, K extends keyof T>(
     );
   }
   return false;
+}
+
+/**
+ * Format a number as a string using the "en-US" locale.
+ *
+ * @param value - Number to format
+ * @returns Formatted number string
+ */
+export function formatNumber(value: number): string {
+  return value.toLocaleString("en-US");
 }

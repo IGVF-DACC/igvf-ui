@@ -1,5 +1,5 @@
 // node_modules
-import ELK from "elkjs/lib/elk.bundled.js";
+import ELK from "elkjs/lib/elk-api.js";
 import type { ElkNode } from "elkjs/lib/elk-api";
 import _ from "lodash";
 import { CSSProperties, Fragment, useEffect, useRef, useState } from "react";
@@ -26,10 +26,10 @@ import { DataAreaTitle, DataPanel } from "../data-area";
 import Link from "../link-no-prefetch";
 import { QualityMetricModal } from "../quality-metric";
 import SeparatedList from "../separated-list";
+import Spinner from "../spinner";
 import { Tooltip, TooltipRef, useTooltip } from "../tooltip";
 // lib
 import { isFileInCatalog } from "../../lib/collections";
-import { UC } from "../../lib/constants";
 import {
   computeDefaultDeprecatedVisibility,
   computeFileDisplayData,
@@ -45,8 +45,10 @@ import { detectCycles } from "./detect-cycles";
 import { DownloadTrigger } from "./download";
 import { FileModal } from "./file-modal";
 import { FileSetModal } from "./file-set-modal";
+import { GraphComplexityError } from "./graph-complexity";
 import { Legend } from "./legend";
 import {
+  analyzeGraphComplexity,
   collectRelevantFileSetStats,
   countFileNodes,
   elkToReactFlow,
@@ -127,22 +129,6 @@ const FIT_VIEW_MARGIN_PX = 56;
 const MAXIMUM_FIT_ZOOM = 1;
 
 /**
- * Convert desired pixel margin into React Flow's fit padding fraction.
- *
- * @param containerWidth - Graph container width in pixels
- * @param containerHeight - Graph container height in pixels
- */
-function getFitZoomPadding(
-  containerWidth: number,
-  containerHeight: number
-): number {
-  const shortestViewportSide = Math.min(containerWidth, containerHeight);
-  return shortestViewportSide <= 0
-    ? 0.1
-    : Math.min(FIT_VIEW_MARGIN_PX / shortestViewportSide, 0.25);
-}
-
-/**
  * Styles for the node handles. This puts the handles in the correct place for the edges to hook up
  * to, but hidden to avoid visual clutter.
  */
@@ -158,6 +144,22 @@ const NodeHandleStyle: CSSProperties = {
   border: 0,
   background: "transparent",
 };
+
+/**
+ * Convert desired pixel margin into React Flow's fit padding fraction.
+ *
+ * @param containerWidth - Graph container width in pixels
+ * @param containerHeight - Graph container height in pixels
+ */
+function getFitZoomPadding(
+  containerWidth: number,
+  containerHeight: number
+): number {
+  const shortestViewportSide = Math.min(containerWidth, containerHeight);
+  return shortestViewportSide <= 0
+    ? 0.1
+    : Math.min(FIT_VIEW_MARGIN_PX / shortestViewportSide, 0.25);
+}
 
 /**
  * Display a button within a file node that the user can click to display the quality metrics for
@@ -439,7 +441,8 @@ function CustomArrowEdge({
  * @param graphData - ELK node data structure containing files and file sets to render
  * @param nativeFiles - Files included directly in the file set the user views
  * @param graphId - ID to assign to the graph container element
- * @param onNodeLayout - Callback invoked after node layout is complete with the laid out nodes
+ * @param onNodeLayout - Callback invoked when layout starts or completes; receives null while the
+ * graph is awaiting layout
  */
 function GraphCore({
   graphData,
@@ -450,11 +453,11 @@ function GraphCore({
   graphData: ElkNode;
   nativeFiles: FileObject[];
   graphId?: string;
-  onNodeLayout?: (graphBounds: Rect) => void;
+  onNodeLayout?: (graphBounds: Rect | null) => void;
 }) {
-  const [elk] = useState(() => new ELK());
   const [laidOutNodes, setLaidOutNodes] = useState<Node<NodeMetadata>[]>([]);
   const [laidOutEdges, setLaidOutEdges] = useState<Edge[]>([]);
+  const [layoutError, setLayoutError] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Node<NodeMetadata> | null>(
     null
   );
@@ -488,21 +491,55 @@ function GraphCore({
   }
 
   useEffect(() => {
-    // After ELK loads we can start layout with ELK. Do this inside useEffect so we can set the
-    // node and edge states and render the graph once layout finishes.
-    elk
-      .layout(graphData)
-      .then((graphDataWithLayout: ElkNode) => {
-        const { nodes, edges } = elkToReactFlow(graphDataWithLayout);
-        setLaidOutNodes(nodes as Node<NodeMetadata>[]);
-        setLaidOutEdges(edges);
-      })
-      .catch((error) => {
-        console.error("ELK layout failed:", error);
-      });
-  }, [elk, graphData]);
+    let isMounted = true;
+    let elk: InstanceType<typeof ELK> | null = null;
+
+    setLayoutError(false);
+    setLaidOutNodes([]);
+    setLaidOutEdges([]);
+    setGraphBounds(null);
+    onNodeLayout?.(null);
+
+    async function layoutGraph() {
+      try {
+        // Initialize ELK with a web worker so layout runs off the main thread. Keep initialization
+        // inside this try block because creating a worker can fail synchronously, for example when
+        // blocked by browser policy.
+        elk = new ELK({
+          workerFactory: () =>
+            new Worker(new URL("elkjs/lib/elk-worker.min.js", import.meta.url)),
+        });
+
+        // Await the worker result without blocking the main thread. This try block handles both
+        // synchronous initialization errors and asynchronous layout failures.
+        const graphDataWithLayout = await elk.layout(graphData);
+
+        // This executes after ELK has completed the layout and returned the graph data with
+        // computed positions. Convert the ELK graph data to the format used by React Flow.
+        if (isMounted) {
+          const { nodes, edges } = elkToReactFlow(graphDataWithLayout);
+          setLaidOutNodes(nodes as Node<NodeMetadata>[]);
+          setLaidOutEdges(edges);
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error("ELK layout failed:", error);
+          setLayoutError(true);
+        }
+      }
+    }
+
+    void layoutGraph();
+
+    return () => {
+      isMounted = false;
+      elk?.terminateWorker();
+    };
+  }, [graphData, onNodeLayout]);
 
   useEffect(() => {
+    // Update the graph bounds whenever the laid-out nodes change, so that the graph can be
+    // properly centered and zoomed within the container.
     if (laidOutNodes.length === 0) {
       return;
     }
@@ -515,6 +552,7 @@ function GraphCore({
   }, [rf, laidOutNodes]);
 
   useEffect(() => {
+    // Notify the parent component of the updated graph bounds whenever they change.
     if (!graphBounds || !onNodeLayout) {
       return;
     }
@@ -523,6 +561,8 @@ function GraphCore({
   }, [graphBounds, onNodeLayout]);
 
   useEffect(() => {
+    // Fit the graph to the view whenever the graph bounds change, ensuring that the entire graph
+    // is visible within the container.
     if (!graphBounds) {
       return;
     }
@@ -551,6 +591,8 @@ function GraphCore({
   }, [rf, graphBounds]);
 
   useEffect(() => {
+    // Update the minimum zoom level and center the graph whenever the container size or graph
+    // bounds change.
     if (!containerRef.current || !graphBounds) {
       return;
     }
@@ -569,6 +611,8 @@ function GraphCore({
         fitZoomPadding
       );
 
+      // Update the minimum zoom level based on the computed viewport, ensuring that the graph fits
+      // within the container.
       setMinZoom(viewport.zoom);
     }
 
@@ -695,7 +739,17 @@ function GraphCore({
       </div>
     );
   }
-  return null;
+
+  if (layoutError) {
+    return <p role="alert">The file graph could not be generated.</p>;
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-2 py-8" role="status">
+      <Spinner svgClassName="h-7 w-7" />
+      <i>Generating file graph&hellip;</i>
+    </div>
+  );
 }
 
 /**
@@ -704,7 +758,8 @@ function GraphCore({
  * @param graphData - Graph data after ELK layout
  * @param nativeFiles - Files included directly in the file set the user is viewing
  * @param graphId - ID to assign to the graph container element
- * @param onNodeLayout - Callback invoked after node layout is complete with the laid out nodes
+ * @param onNodeLayout - Callback invoked when layout starts or completes; receives null while the
+ * graph is awaiting layout
  */
 function Graph({
   graphData,
@@ -715,7 +770,7 @@ function Graph({
   graphData: ElkNode;
   nativeFiles: FileObject[];
   graphId?: string;
-  onNodeLayout?: (graphBounds: Rect) => void;
+  onNodeLayout?: (graphBounds: Rect | null) => void;
 }) {
   return (
     <ReactFlowProvider>
@@ -831,7 +886,8 @@ function GraphCycleError({ cycles }: { cycles: string[][] }) {
  * @param secDirTitle - Title for the section directory if the graph is within a section.
  * @param showDeprecatedToggle - True to show the deprecated file toggle control
  * @param deprecatedProps - Props for handling the visibility of deprecated files in the graph.
- * @param fileId - ID of the file the graph is for; used to customize download filename
+ * @param fileSetAccession - Accession of the file set the graph represents; used to customize the
+ * download filename
  * @param isDisabled - True to disable the download button (e.g., when cycles are detected)
  * @param graphBounds - The bounds of the graph for download purposes
  */
@@ -842,7 +898,7 @@ function FileGraphTitle({
   secDirTitle,
   showDeprecatedToggle,
   deprecatedProps,
-  fileId,
+  fileSetAccession,
   isDisabled,
   graphBounds,
 }: {
@@ -852,7 +908,7 @@ function FileGraphTitle({
   secDirTitle: string;
   showDeprecatedToggle: boolean;
   deprecatedProps: DeprecatedFileFilterProps;
-  fileId: string;
+  fileSetAccession: string;
   isDisabled: boolean;
   graphBounds: Rect | null;
 }) {
@@ -878,7 +934,7 @@ function FileGraphTitle({
         <TooltipRef tooltipAttr={tooltipAttr}>
           <DownloadTrigger
             graphId={graphId}
-            fileId={fileId}
+            fileSetAccession={fileSetAccession}
             graphBounds={graphBounds}
             isDisabled={isDisabled || !graphBounds}
           />
@@ -911,7 +967,8 @@ function FileGraphTitle({
  * @param secDirTitle - Title for the section directory if the graph is within a section.
  * @param showDeprecatedToggle - True to show the deprecated file toggle control
  * @param deprecatedProps - Props for handling the visibility of deprecated files in the graph.
- * @param fileId - ID of the file the graph is for; used to customize download filename
+ * @param fileSetAccession - Accession of the file set the graph represents; used to customize the
+ * download filename
  */
 function FileGraphContent({
   graphData,
@@ -922,7 +979,7 @@ function FileGraphContent({
   secDirTitle,
   showDeprecatedToggle,
   deprecatedProps,
-  fileId,
+  fileSetAccession,
 }: {
   graphData: ElkNode;
   nativeFiles: FileObject[];
@@ -932,7 +989,7 @@ function FileGraphContent({
   secDirTitle: string;
   showDeprecatedToggle: boolean;
   deprecatedProps: DeprecatedFileFilterProps;
-  fileId: string;
+  fileSetAccession: string;
 }) {
   const [graphBounds, setGraphBounds] = useState<Rect | null>(null);
 
@@ -945,7 +1002,7 @@ function FileGraphContent({
         secDirTitle={secDirTitle}
         showDeprecatedToggle={showDeprecatedToggle}
         deprecatedProps={deprecatedProps}
-        fileId={fileId}
+        fileSetAccession={fileSetAccession}
         isDisabled={false}
         graphBounds={graphBounds}
       />
@@ -976,7 +1033,8 @@ function FileGraphContent({
  * @param secDirTitle - Title for the section directory if the graph is within a section.
  * @param panelId - ID of the file-graph panel unique on the page for the section directory
  * @param graphId - ID of the graph container element unique on the page
- * @param fileId - ID of the file the graph is for; used to customize download filename
+ * @param fileSetAccession - Accession of the file set the graph represents; used to customize the
+ * download filename
  * @param areDeprecatedFilesVisible - True to show deprecated files in the graph
  * @param setAreDeprecatedFilesVisible - Function to set the visibility of deprecated files
  */
@@ -991,7 +1049,7 @@ export function FileGraph({
   secDirTitle = "File Association Graph",
   panelId = "file-graph",
   graphId = "file-graph-container",
-  fileId = "",
+  fileSetAccession = "",
 }: {
   files: FileObject[];
   fileFileSets: FileSetObject[];
@@ -1003,7 +1061,7 @@ export function FileGraph({
   secDirTitle?: string;
   panelId?: string;
   graphId?: string;
-  fileId?: string;
+  fileSetAccession?: string;
 }) {
   // Local state for deprecated file visibility if not controlled externally via props
   const defaultDeprecatedVisible = computeDefaultDeprecatedVisibility(
@@ -1068,9 +1126,11 @@ export function FileGraph({
   // Look for cycles caused by circular `derived_from` relationships.
   const cycles = detectCycles(includedFiles.concat(includedDerivedFromFiles));
 
-  // Final list of files now determined. Use them to generate the graph data if there are no cycles.
+  // Build the ELK input on the page. ELK layout itself is the expensive part and runs in the
+  // worker; keeping application utility imports out of the worker avoids pulling in Next.js page
+  // runtime dependencies that are unavailable there.
   const graphData =
-    cycles.length === 0
+    cycles.length === 0 && !isEmptyGraphAfterFiltering
       ? generateGraphData(
           includedFiles,
           derivedFromFiles,
@@ -1080,7 +1140,13 @@ export function FileGraph({
         )
       : null;
 
-  if (graphData) {
+  // Analyze the complexity of the graph if it exists. This helps determine if the graph is too
+  // complex to render.
+  const complexity = graphData ? analyzeGraphComplexity(graphData) : null;
+
+  // Graph layout happens off the main thread. This keeps the page interactive; unmounting this
+  // graph during navigation terminates its worker and abandons the job.
+  if (graphData && !complexity?.isTooComplex) {
     return (
       <FileGraphContent
         graphData={graphData}
@@ -1091,12 +1157,18 @@ export function FileGraph({
         secDirTitle={secDirTitle}
         showDeprecatedToggle={showDeprecatedToggle}
         deprecatedProps={resolvedDeprecated}
-        fileId={fileId}
+        fileSetAccession={fileSetAccession}
       />
     );
   }
 
-  if (cycles.length > 0 || isEmptyGraphAfterFiltering) {
+  // Explain why the graph is unavailable. A graph that is too complex never reaches the ELK layout
+  // component above.
+  if (
+    complexity?.isTooComplex ||
+    cycles.length > 0 ||
+    isEmptyGraphAfterFiltering
+  ) {
     return (
       <section role="region" aria-labelledby={`${panelId}-label`}>
         <FileGraphTitle
@@ -1106,21 +1178,26 @@ export function FileGraph({
           secDirTitle={secDirTitle}
           showDeprecatedToggle={showDeprecatedToggle}
           deprecatedProps={resolvedDeprecated}
-          fileId={fileId}
-          isDisabled={cycles.length > 0 || isEmptyGraphAfterFiltering}
+          fileSetAccession={fileSetAccession}
+          isDisabled
           graphBounds={null}
         />
-        {isEmptyGraphAfterFiltering ? (
-          <DataPanel>
-            The graph doesn{UC.rsquo}t appear because files are deprecated.
-            Select <b>Include deprecated files</b> to view the graph.
-          </DataPanel>
-        ) : (
-          <DataPanel>
+        <DataPanel>
+          {complexity?.isTooComplex ? (
+            <GraphComplexityError complexity={complexity} panelId={panelId} />
+          ) : isEmptyGraphAfterFiltering ? (
+            <>
+              The graph doesn’t appear because files are deprecated. Select{" "}
+              <b>Include deprecated files</b> to view the graph.
+            </>
+          ) : (
             <GraphCycleError cycles={cycles} />
-          </DataPanel>
-        )}
+          )}
+        </DataPanel>
       </section>
     );
   }
+
+  // If none of the above conditions are met, return null to render nothing.
+  return null;
 }

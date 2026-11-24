@@ -316,7 +316,7 @@ export default function PseudobulkSet({
                 fileFileSets={fileFileSets}
                 derivedFromFiles={derivedFromFiles}
                 qualityMetrics={qualityMetrics}
-                fileId={pseudobulkSet.accession}
+                fileSetAccession={pseudobulkSet.accession}
                 externalDeprecated={{
                   visible: areDeprecatedFilesVisible,
                   setVisible: setAreDeprecatedFilesVisible,

@@ -58,6 +58,15 @@ const HASH_SEED = 0xe8c0f852;
 const SVG_CONTENT_PADDING = 10;
 
 /**
+ * Thresholds for determining if a graph is too complex based on node count, edge count,
+ * edge-to-node ratio, and maximum node degree.
+ */
+const NODE_COUNT_THRESHOLD = 60;
+const EDGE_COUNT_THRESHOLD = 120;
+const EDGE_TO_NODE_RATIO_THRESHOLD = 3;
+const MAX_DEGREE_THRESHOLD = 60;
+
+/**
  * Resolve rendered node dimensions so exported geometry matches the browser rendering.
  *
  * @param nodeElement - The HTML element of the node to get dimensions for
@@ -981,4 +990,117 @@ export function validFileGraphData({
   }
 
   return true;
+}
+
+/**
+ * Represents the complexity of a graph, including node and edge counts, edge-to-node ratio, maximum
+ * node degree, and which of these, if any, exceed predefined thresholds. Also includes the
+ * threshold values and a flag indicating if any of the metrics exceed their thresholds.
+ *
+ * @property nodeCount - Total number of nodes in the graph
+ * @property edgeCount - Total number of edges in the graph
+ * @property edgeToNodeRatio - Ratio of edges to nodes
+ * @property maxDegree - Maximum degree of any node
+ * @property exceeded - Object indicating which metrics exceed thresholds
+ * @property thresholds - Object containing the threshold values for each metric
+ * @property isTooComplex - True if any of the metrics exceed thresholds
+ */
+export type GraphComplexity = {
+  nodeCount: number;
+  edgeCount: number;
+  edgeToNodeRatio: number;
+  maxDegree: number;
+  exceeded: {
+    nodeCount: boolean;
+    edgeCount: boolean;
+    edgeToNodeRatio: boolean;
+    maxDegree: boolean;
+  };
+  thresholds: {
+    nodeCount: number;
+    edgeCount: number;
+    edgeToNodeRatio: number;
+    maxDegree: number;
+  };
+  isTooComplex: boolean;
+};
+
+/**
+ * Analyze the given graph using predefined thresholds for node count, edge count, edge-to-node
+ * ratio, and maximum node degree.
+ *
+ * @param graphData - Graph data in ELK format to check for complexity
+ * @returns Object containing graph complexity metrics and whether it exceeds thresholds
+ */
+export function analyzeGraphComplexity(graphData: ElkNodeEx): GraphComplexity {
+  const nodeCount = countElkNodes(graphData);
+  const edgeCount = graphData.edges?.length || 0;
+  const edgeToNodeRatio = nodeCount > 0 ? edgeCount / nodeCount : 0;
+  const maxDegree = calcMaxDegree(graphData);
+
+  const exceeded = {
+    nodeCount: nodeCount > NODE_COUNT_THRESHOLD,
+    edgeCount: edgeCount > EDGE_COUNT_THRESHOLD,
+    edgeToNodeRatio: edgeToNodeRatio > EDGE_TO_NODE_RATIO_THRESHOLD,
+    maxDegree: maxDegree > MAX_DEGREE_THRESHOLD,
+  };
+
+  const isTooComplex =
+    exceeded.nodeCount ||
+    exceeded.edgeCount ||
+    exceeded.edgeToNodeRatio ||
+    exceeded.maxDegree;
+
+  return {
+    nodeCount,
+    edgeCount,
+    edgeToNodeRatio,
+    maxDegree,
+    exceeded,
+    thresholds: {
+      nodeCount: NODE_COUNT_THRESHOLD,
+      edgeCount: EDGE_COUNT_THRESHOLD,
+      edgeToNodeRatio: EDGE_TO_NODE_RATIO_THRESHOLD,
+      maxDegree: MAX_DEGREE_THRESHOLD,
+    },
+    isTooComplex,
+  };
+}
+
+/**
+ * Count every node in an ELK graph, including children nested inside group nodes.
+ *
+ * @param node - Root node of the ELK graph or subgraph
+ * @returns Total number of nodes including nested children
+ */
+function countElkNodes(node: ElkNode): number {
+  return (node.children ?? []).reduce(
+    (count, child) => count + 1 + countElkNodes(child),
+    0
+  );
+}
+
+/**
+ * Calculates the maximum degree of all the nodes in the given graph. The degree measures the number
+ * of edges connected to a node.
+ *
+ * @param graphData - Graph data in ELK format for which to calculate the maximum node degree
+ * @returns Maximum degree of any node in the graph, or 0 if the graph has no edges
+ */
+function calcMaxDegree(graphData: ElkNodeEx): number {
+  // Initialize a map to track the degree of each node. The keys are the IDs of each node and the
+  // values are the number of edges connected to that node.
+  const degrees = new Map<string, number>();
+
+  for (const edge of graphData.edges ?? []) {
+    const source = edge.sources[0];
+    const target = edge.targets[0];
+
+    // Increment the degree count for both the source and target nodes of this edge.
+    degrees.set(source, (degrees.get(source) ?? 0) + 1);
+    degrees.set(target, (degrees.get(target) ?? 0) + 1);
+  }
+
+  // Return the maximum degree of any node in the graph. Allow for 0 if no edges exist.
+  return Math.max(0, ...degrees.values());
 }
