@@ -61,10 +61,10 @@ const SVG_CONTENT_PADDING = 10;
  * Thresholds for determining if a graph is too complex based on node count, edge count,
  * edge-to-node ratio, and maximum node degree.
  */
-const NODE_COUNT_THRESHOLD = 200;
-const EDGE_COUNT_THRESHOLD = 250;
+const NODE_COUNT_THRESHOLD = 60;
+const EDGE_COUNT_THRESHOLD = 120;
 const EDGE_TO_NODE_RATIO_THRESHOLD = 3;
-const MAX_DEGREE_THRESHOLD = 200;
+const MAX_DEGREE_THRESHOLD = 60;
 
 /**
  * Resolve rendered node dimensions so exported geometry matches the browser rendering.
