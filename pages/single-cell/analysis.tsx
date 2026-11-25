@@ -7,7 +7,11 @@ import { useContext } from "react";
 // components
 import { DataTable } from "../../components/data-table";
 import MarkdownSection from "../../components/markdown-section";
-import { LinkedTableCell } from "../../components/matrix";
+import {
+  LabelXAxis,
+  LabelYAxis,
+  LinkedTableCell,
+} from "../../components/matrix";
 import NoCollectionData from "../../components/no-collection-data";
 import PagePreamble from "../../components/page-preamble";
 import SessionContext from "../../components/session-context";
@@ -184,11 +188,20 @@ export default function Analysis({ matrix }: SingleCellAnalysisProps) {
   }
 
   return (
-    <DataTable
-      className="table-row-hl [--matrix-first-column-width:10rem] [&_td]:border-r [&_td]:border-b [&_td]:border-gray-500 [&_th]:border-r [&_th]:border-b [&_th]:border-gray-500 [&_thead:first-of-type_tr:first-child>th]:sticky [&_thead:first-of-type_tr:first-child>th]:top-0 [&_thead:first-of-type_tr:first-child>th]:z-10 [&_tr>*:last-child]:border-r-0! [&>:last-child>tr:last-child>*]:border-b-0!"
-      scrollContainerClassName="max-w-full border-gray-300 dark:border-gray-600"
-      data={dataGrid}
-    />
+    <>
+      <PagePreamble />
+      <div className="mt-4">
+        <LabelXAxis label={matrix.x.label} />
+        <div className="flex">
+          <LabelYAxis label={matrix.y.label} />
+          <DataTable
+            className="table-row-hl [--matrix-first-column-width:10rem] [&_td]:border-r [&_td]:border-b [&_td]:border-gray-500 [&_th]:border-r [&_th]:border-b [&_th]:border-gray-500 [&_thead:first-of-type_tr:first-child>th]:sticky [&_thead:first-of-type_tr:first-child>th]:top-0 [&_thead:first-of-type_tr:first-child>th]:z-10 [&_tr>*:last-child]:border-r-0! [&>:last-child>tr:last-child>*]:border-b-0!"
+            scrollContainerClassName="max-w-full border-gray-300 dark:border-gray-600"
+            data={dataGrid}
+          />
+        </div>
+      </div>
+    </>
   );
 }
 
