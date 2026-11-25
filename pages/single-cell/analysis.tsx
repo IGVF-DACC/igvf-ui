@@ -131,6 +131,13 @@ const classificationRoleClasses = {
 } as const;
 
 /**
+ * Neutral colors for a targeted-sample cell that represents no targeted sample term.
+ */
+const noTargetedSampleTermClasses =
+  "bg-gray-100 [--row-hl-color:var(--color-gray-200)] " +
+  "dark:bg-gray-700 dark:[--row-hl-color:var(--color-gray-600)]";
+
+/**
  * Preferred assay titles used for single cell analysis request queries. This is a subset of the values in
  * the `preferred_assay_titles` field in the schema mixins:
  * https://github.com/IGVF-DACC/igvfd/blob/dev/src/igvfd/schemas/mixins.json
@@ -375,6 +382,7 @@ function MatrixYAxisSubheaderCell({
   classification: string;
   children: string;
 }) {
+  const hasNoTargetedSampleTerm = children === NO_TARGETED_SAMPLE_TERM;
   const baseClassification = getBaseClassification(classification);
   const hueClass = isClassification(baseClassification)
     ? classificationHueClasses[baseClassification]
@@ -389,16 +397,17 @@ function MatrixYAxisSubheaderCell({
   return (
     <LinkedTableCell
       href={`${BASE_SEARCH_URL}&${query}`}
+      label={hasNoTargetedSampleTerm ? "No targeted sample term" : undefined}
       as="th"
-      className={`w-[calc(var(--matrix-first-column-width)*1.6)] max-w-[calc(var(--matrix-first-column-width)*1.6)] min-w-[calc(var(--matrix-first-column-width)*1.6)] px-2 py-1 text-left text-sm font-normal wrap-anywhere whitespace-normal ${hueClass} ${classificationRoleClasses.targeted} ${classificationRoleClasses.targetedHl}`}
+      className={`w-[calc(var(--matrix-first-column-width)*1.6)] max-w-[calc(var(--matrix-first-column-width)*1.6)] min-w-[calc(var(--matrix-first-column-width)*1.6)] px-2 py-1 text-left text-sm font-normal wrap-anywhere whitespace-normal ${
+        hasNoTargetedSampleTerm
+          ? noTargetedSampleTermClasses
+          : `${hueClass} ${classificationRoleClasses.targeted} ${classificationRoleClasses.targetedHl}`
+      }`}
       linkClassName="px-0 whitespace-normal"
       data-highlight
     >
-      {children === NO_TARGETED_SAMPLE_TERM ? (
-        <span className="italic">none</span>
-      ) : (
-        children
-      )}
+      {hasNoTargetedSampleTerm ? null : children}
     </LinkedTableCell>
   );
 }
