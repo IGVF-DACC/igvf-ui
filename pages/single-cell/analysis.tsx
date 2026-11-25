@@ -162,13 +162,6 @@ const REQ_QUERY = `${BASE_QUERY}&${preferredAssayTitles.map((title) => `preferre
 const BASE_SEARCH_URL = `/search/?${BASE_QUERY}`;
 
 /**
- * Search URL for single cell analysis requests including preferred assay titles. Use this for the
- * starting and targeted sample terms in the matrix. Data cells and assay header cells already
- * specify a single preferred assay title.
- */
-const REQ_SEARCH_URL = `/search/?${REQ_QUERY}`;
-
-/**
  * Matrix bucket key used for analysis sets without a targeted sample term.
  */
 const NO_TARGETED_SAMPLE_TERM = "no_samples_targeted_sample_term";
@@ -297,7 +290,7 @@ function MatrixClassTitleRow({
 
   return (
     <LinkedTableCell
-      href={`${REQ_SEARCH_URL}&${query}`}
+      href={`${BASE_SEARCH_URL}&${query}`}
       className={`${hueClass} ${classificationRoleClasses.title}`}
       linkClassName="px-0 whitespace-normal"
       as="th"
@@ -339,7 +332,7 @@ function MatrixYAxisHeaderCell({
 
   return (
     <LinkedTableCell
-      href={`${REQ_SEARCH_URL}&${query}`}
+      href={`${BASE_SEARCH_URL}&${query}`}
       as="th"
       className={`w-(--matrix-first-column-width) max-w-(--matrix-first-column-width) min-w-(--matrix-first-column-width) px-2 py-1 text-left text-sm leading-[1.1] font-semibold ${hueClass} ${classificationRoleClasses.starting}`}
       linkClassName="px-0 whitespace-normal"
@@ -382,7 +375,7 @@ function MatrixYAxisSubheaderCell({
 
   return (
     <LinkedTableCell
-      href={`${REQ_SEARCH_URL}&${query}`}
+      href={`${BASE_SEARCH_URL}&${query}`}
       as="th"
       className={`w-[calc(var(--matrix-first-column-width)*1.6)] max-w-[calc(var(--matrix-first-column-width)*1.6)] min-w-[calc(var(--matrix-first-column-width)*1.6)] px-2 py-1 text-left text-sm font-normal wrap-anywhere whitespace-normal ${hueClass} ${classificationRoleClasses.targeted} ${classificationRoleClasses.targetedHl}`}
       linkClassName="px-0 whitespace-normal"
