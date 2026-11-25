@@ -1,5 +1,8 @@
 // node_modules
-import PropTypes from "prop-types";
+import {
+  type GetServerSidePropsContext,
+  type GetServerSidePropsResult,
+} from "next";
 import { useEffect, useState } from "react";
 // components
 import ChartFileSetLab from "../components/chart-file-set-lab";
@@ -11,12 +14,37 @@ import { TabGroup, TabList, TabTitle } from "../components/tabs";
 // lib
 import { getCachedDataFetch } from "../lib/cache";
 import FetchRequest from "../lib/fetch-request";
+import {
+  type AnalysisSetObject,
+  type MeasurementSetObject,
+  type PredictionSetObject,
+} from "../lib/file-sets";
 import { abbreviateNumber } from "../lib/general";
 import {
   getAllFileSetTypes,
   getFileSetTypeConfig,
   requestSummary,
+  type FileSetType,
 } from "../lib/home";
+import { type MatrixAxis } from "../lib/matrix";
+import { type PageProps } from "../lib/next-js";
+// root
+import type { SearchResults } from "../globals";
+
+/**
+ * Props from the Next.js server for the statistics displayed on the home page.
+ *
+ * @property processedCount - Number of processed data sets.
+ * @property predictionsCount - Number of predictions data sets.
+ * @property rawCount - Number of raw data sets.
+ */
+interface HomePageStatistics {
+  processedCount: number;
+  predictionsCount: number;
+  rawCount: number;
+}
+
+interface HomePageProps extends PageProps, HomePageStatistics {}
 
 /**
  * Map file-set types to corresponding icons.
@@ -39,8 +67,17 @@ const STATISTICS_CACHE_TTL = 15 * 60;
 
 /**
  * Icon for the processed data sets statistic.
+ *
+ * @param className - Tailwind CSS classes for the icon
+ * @param style - CSS style properties for the icon
  */
-function ProcessedIcon({ className, style }) {
+function ProcessedIcon({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -61,17 +98,12 @@ function ProcessedIcon({ className, style }) {
   );
 }
 
-ProcessedIcon.propTypes = {
-  // Tailwind CSS classes for the icon
-  className: PropTypes.string,
-  // CSS style properties
-  style: PropTypes.object,
-};
-
 /**
  * Icon for the predictions data sets statistic.
+ *
+ * @param className - Tailwind CSS classes for the icon
  */
-function PredictionsIcon({ className }) {
+function PredictionsIcon({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -86,16 +118,29 @@ function PredictionsIcon({ className }) {
   );
 }
 
-PredictionsIcon.propTypes = {
-  // Tailwind CSS classes for the icon
-  className: PropTypes.string,
-};
-
 /**
  * Display a statistic panel that shows some property and count of their occurrences in the
  * database.
+ *
+ * @param graphic - React component to display as the graphic
+ * @param label - Label for the statistic
+ * @param value - Value for the statistic
+ * @param query - Query string for the search link
+ * @param colorClass - Tailwind CSS color classes for the statistic box
  */
-function Statistic({ graphic, label, value, query, colorClass }) {
+function Statistic({
+  graphic,
+  label,
+  value,
+  query,
+  colorClass,
+}: {
+  graphic: React.ReactNode;
+  label: string;
+  value: number;
+  query: string;
+  colorClass?: string;
+}) {
   return (
     <div
       className={`my-4 grow basis-1/3 rounded-sm border @xl/home:my-0 ${colorClass}`}
@@ -121,19 +166,6 @@ function Statistic({ graphic, label, value, query, colorClass }) {
   );
 }
 
-Statistic.propTypes = {
-  // Graphic component to display
-  graphic: PropTypes.element.isRequired,
-  // Label for the statistic
-  label: PropTypes.string.isRequired,
-  // Value for the statistic
-  value: PropTypes.number.isRequired,
-  // Statistic box links to search URI with this query
-  query: PropTypes.string.isRequired,
-  // Add Tailwind CSS color classes to the statistic box
-  colorClass: PropTypes.string,
-};
-
 /**
  * Display the chart of file sets by lab and summary, along with the chart's title.
  */
@@ -145,11 +177,27 @@ function FileSetChartSection({ children }) {
   );
 }
 
-export default function Home({ processedCount, predictionsCount, rawCount }) {
+/**
+ * Display the home page with statistics for processed, predictions, and raw file sets.
+ *
+ * @param processedCount - Number of processed file sets
+ * @param predictionsCount - Number of prediction file sets
+ * @param rawCount - Number of raw file sets
+ */
+export default function Home({
+  processedCount,
+  predictionsCount,
+  rawCount,
+}: {
+  processedCount: number;
+  predictionsCount: number;
+  rawCount: number;
+}) {
   // Data for the currently active lab data chart tab
-  const [activeLabData, setActiveLabData] = useState();
+  const [activeLabData, setActiveLabData] = useState<MatrixAxis>(null);
   // Holds the ID of the currently selected tab
-  const [activeFileSetType, setActiveFileSetType] = useState("processed");
+  const [activeFileSetType, setActiveFileSetType] =
+    useState<FileSetType>("processed");
 
   const counts = {
     processed: processedCount,
@@ -164,7 +212,7 @@ export default function Home({ processedCount, predictionsCount, rawCount }) {
     // attributes. Just get the part after `tab-`.
     const type = tabId.replace("tab-", "");
     setActiveFileSetType(type);
-    requestSummary(type).then((summary) => {
+    void requestSummary(type).then((summary) => {
       if (summary) {
         setActiveLabData(summary);
       }
@@ -173,7 +221,7 @@ export default function Home({ processedCount, predictionsCount, rawCount }) {
 
   useEffect(() => {
     // Request the lab data for the processed tab as a browser-initiated fetch when the page loads.
-    requestSummary("processed").then((summary) => {
+    void requestSummary("processed").then((summary) => {
       if (summary) {
         setActiveLabData(summary);
       }
@@ -234,11 +282,7 @@ export default function Home({ processedCount, predictionsCount, rawCount }) {
       </TabGroup>
       <FileSetChartSection>
         {activeLabData?.doc_count > 0 ? (
-          <ChartFileSetLab
-            labData={activeLabData}
-            type={activeFileSetType}
-            shouldIncludeLinks
-          />
+          <ChartFileSetLab labData={activeLabData} type={activeFileSetType} />
         ) : (
           <div className="px-4 py-8 text-center text-gray-500 italic dark:text-gray-400">
             No {activeFileSetType} data available.
@@ -249,45 +293,50 @@ export default function Home({ processedCount, predictionsCount, rawCount }) {
   );
 }
 
-Home.propTypes = {
-  // Total number of processed data sets in the system
-  processedCount: PropTypes.number,
-  // Total number of prediction data sets in the system
-  predictionsCount: PropTypes.number,
-  // Total number of raw data sets in the system
-  rawCount: PropTypes.number,
-};
-
 /**
  * Fetch the statistics for the home page for copying to the cache.
  *
- * @param {string} cookie - Cookie to use for the request to the data provider
- * @returns {string} JSON string with the statistics for the home page
+ * @param cookie - Cookie to use for the request to the data provider
+ * @returns Object containing the counts of processed, prediction, and raw data sets
  */
-async function fetchHomePageStatistics(cookie) {
+async function fetchHomePageStatistics(
+  cookie: string
+): Promise<HomePageStatistics> {
   const request = new FetchRequest({ cookie: cookie || undefined });
-  const processedResults = (
-    await request.getObject("/search/?type=AnalysisSet&status=released&limit=0")
-  ).optional();
-  const predictionsResults = (
-    await request.getObject(
-      "/search/?type=PredictionSet&status=released&limit=0"
-    )
-  ).optional();
-  const rawResults = (
-    await request.getObject(
-      "/search/?type=MeasurementSet&status=released&limit=0"
-    )
-  ).optional();
+  const [processedResponse, predictionsResponse, rawResponse] =
+    await Promise.all([
+      request.getObject<SearchResults<AnalysisSetObject>>(
+        "/search/?type=AnalysisSet&status=released&limit=0"
+      ),
+      request.getObject<SearchResults<PredictionSetObject>>(
+        "/search/?type=PredictionSet&status=released&limit=0"
+      ),
+      request.getObject<SearchResults<MeasurementSetObject>>(
+        "/search/?type=MeasurementSet&status=released&limit=0"
+      ),
+    ]);
+  const processedResults = processedResponse.optional();
+  const predictionsResults = predictionsResponse.optional();
+  const rawResults = rawResponse.optional();
 
   return {
-    processedCount: processedResults?.total || 0,
-    predictionsCount: predictionsResults?.total || 0,
-    rawCount: rawResults?.total || 0,
+    processedCount: processedResults?.total ?? 0,
+    predictionsCount: predictionsResults?.total ?? 0,
+    rawCount: rawResults?.total ?? 0,
   };
 }
 
-export async function getServerSideProps({ req }) {
+/**
+ * Fetch the server-side props for the home page, including cached statistics.
+ *
+ * @param req - Incoming HTTP request object from Next.js
+ * @returns Object containing the server-side props for the home page, including cached statistics
+ */
+export async function getServerSideProps({
+  req,
+}: GetServerSidePropsContext): Promise<
+  GetServerSidePropsResult<HomePageProps>
+> {
   const { processedCount, predictionsCount, rawCount } =
     await getCachedDataFetch(
       STATISTICS_CACHE_KEY,
@@ -300,6 +349,8 @@ export async function getServerSideProps({ req }) {
       processedCount,
       predictionsCount,
       rawCount,
+      pageContext: { title: "Home" },
+      isJson: false,
     },
   };
 }

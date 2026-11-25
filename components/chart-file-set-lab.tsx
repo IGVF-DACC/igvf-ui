@@ -17,8 +17,8 @@ import {
   convertLabDataToChartData,
   NO_ASSAY_TITLE_LABEL,
   typeConfig,
-  type LabData,
 } from "../lib/home";
+import { type MatrixAxis } from "../lib/matrix";
 import { encodeUriElement } from "../lib/query-encoding";
 
 /**
@@ -182,7 +182,7 @@ export default function ChartFileSetLab({
   labData,
   type,
 }: {
-  labData: LabData;
+  labData: MatrixAxis;
   type: keyof typeof typeConfig;
 }) {
   const { chartData } = convertLabDataToChartData(labData);

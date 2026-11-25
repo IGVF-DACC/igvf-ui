@@ -9,7 +9,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getCachedDataFetch } from "../../lib/cache";
 import { requestDatasetSummary } from "../../lib/common-requests";
 import FetchRequest, { HTTP_STATUS_CODE } from "../../lib/fetch-request";
-import { type LabData } from "../../lib/home";
+import { isMatrixSoloResults, type MatrixAxis } from "../../lib/matrix";
 import { getQueryStringFromServerQuery } from "../../lib/query-utils";
 
 /**
@@ -43,16 +43,15 @@ function genLabChartDataCacheKey(type: string): string {
 async function fetchHomePageData(
   cookie: string,
   queryString: string
-): Promise<LabData | null> {
+): Promise<MatrixAxis | null> {
   const request = new FetchRequest({ cookie: cookie || undefined });
   const datasetSummary = await requestDatasetSummary(request, queryString);
-  return datasetSummary && datasetSummary.matrix
-    ? datasetSummary.matrix.y
-    : null;
+  return isMatrixSoloResults(datasetSummary) ? datasetSummary.matrix.y : null;
 }
 
 /**
  * Endpoint for fetching the dataset summary for the home page.
+ *
  * @param req Request from NextJS
  * @param res Response object from NextJS
  */
@@ -74,7 +73,7 @@ export default async function datasetSummary(
   const cookie = req.headers.cookie || "";
 
   // Request the lab chart data from the cache, or fetch it if it's not in the cache.
-  const labData = await getCachedDataFetch<LabData>(
+  const labData = await getCachedDataFetch<MatrixAxis>(
     genLabChartDataCacheKey(queryType),
     async () => fetchHomePageData(cookie, queryString),
     LAB_CHART_DATA_TTL

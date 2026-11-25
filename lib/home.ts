@@ -2,7 +2,7 @@
 import _ from "lodash";
 // lib
 import FetchRequest from "./fetch-request";
-import { type GroupByValue } from "./matrix";
+import { type GroupByValue, type MatrixAxis } from "./matrix";
 
 /**
  * Label to display for file sets that have no assay title.
@@ -12,7 +12,7 @@ export const NO_ASSAY_TITLE_LABEL = "unspecified assay";
 /**
  * Represents the file-set types that the Data Set Lab bar chart can represent.
  */
-type FileSetType = "processed" | "predictions" | "raw";
+export type FileSetType = "processed" | "predictions" | "raw";
 
 /**
  * Specifies the configuration for each file-set type.
@@ -104,26 +104,9 @@ type AxisData = {
 };
 
 /**
- * Represents the matrix data used for lab charts, but only the object under the `y` axis data. The
- * index signature key name comes from an entry in the `LabData.group_by` array.
- */
-export type LabData = {
-  /** Names of properties the data is grouped by */
-  group_by: GroupByValue;
-  /** Title representing the data */
-  label: string;
-  /** Number of items in the data */
-  doc_count: number;
-} & Record<string, AxisData | GroupByValue | string | number>;
-
-/**
  * Object returned by the dataset summary API route, containing the matrix data for the lab chart.
  */
-export type DatasetSummary = {
-  matrix: {
-    y: LabData;
-  };
-};
+export interface DatasetSummary extends MatrixAxis {}
 
 /**
  * Get the configuration for the given file-set type. Unknown file-set types return a default
@@ -160,14 +143,14 @@ export function getAllFileSetTypes(): FileSetType[] {
  */
 export async function requestSummary(
   type: FileSetType
-): Promise<DatasetSummary | null> {
+): Promise<MatrixAxis | null> {
   const { dataQuery, typeQuery } = getFileSetTypeConfig(type);
   const request = new FetchRequest({ backend: true });
   return (
-    await request.getObject(
+    await request.getObject<MatrixAxis>(
       `/api/dataset-summary/?type=${typeQuery}&${dataQuery}`
     )
-  ).optional() as DatasetSummary | null;
+  ).optional();
 }
 
 /**
@@ -191,7 +174,7 @@ export function isGroupByValueAnArrayOfStrings(
  * @param labData Data from the dataset summary API route
  * @returns Nivo data for a bar chart and maximum count of file sets in a single bar
  */
-export function convertLabDataToChartData(labData: LabData): LabChartData {
+export function convertLabDataToChartData(labData: MatrixAxis): LabChartData {
   const labGroup = labData.group_by[0] as string;
 
   // The subgroup can be an array or a string. If it's an array, the second element is the null

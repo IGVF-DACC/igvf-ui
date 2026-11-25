@@ -9,7 +9,7 @@ import {
 import { trimDeprecatedFiles } from "./deprecated-files";
 import FetchRequest from "./fetch-request";
 import { type FileSetObject } from "./file-sets";
-import { type DatasetSummary } from "./home";
+import { type MatrixSoloResults } from "./matrix";
 import { type OntologyTermObject } from "./ontology-terms";
 import { type QualityMetricObject } from "./quality-metric";
 import {
@@ -17,6 +17,7 @@ import {
   type MultiplexedSampleObject,
   type SampleObject,
 } from "./samples";
+import { isPathArray } from "./types";
 import { type WorkflowObject } from "./workflow";
 // root
 import type {
@@ -40,7 +41,6 @@ import type {
   TreatmentObject,
   UserObject,
 } from "../globals";
-import { isPathArray } from "./types";
 
 /**
  * Retrieve the analysis step objects for the given analysis step paths from the data provider.
@@ -571,9 +571,9 @@ export async function requestUsers(
 export async function requestDatasetSummary(
   request: FetchRequest,
   queryString: string = ""
-): Promise<DatasetSummary | null> {
+): Promise<MatrixSoloResults | null> {
   return (
-    await request.getObject<DatasetSummary | null>(
+    await request.getObject<MatrixSoloResults>(
       `/dataset-summary-agg/?${queryString}`
     )
   ).optional();

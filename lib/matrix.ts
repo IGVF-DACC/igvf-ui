@@ -33,6 +33,21 @@ import type { SearchResults } from "../globals";
  */
 
 /**
+ * Matrix Returning Non-Released Data Regardless of Login Status
+ *
+ * Matrix endpoints only return counts of data, not the objects that get counted themselves. The
+ * `/omnimatrix/` endpoint can return counts of non-released data regardless of the user's login
+ * status. Unlike the `/matrix/` endpoint, `/omnimatrix/` does not include any of the following
+ * properties:
+ *
+ * facets
+ * facet_groups
+ * search_base
+ * clear_filters
+ * filters
+ */
+
+/**
  * Format of a single bucket in matrix search results. Each bucket represents a single cell's value
  * in the matrix, or a row of buckets containing the cells of a row. Use `unknown` for the index
  * signature because Typescript has no way to correctly type index signatures within an object.
@@ -118,6 +133,14 @@ export interface MatrixResults extends SearchResults {
 }
 
 /**
+ * Certain matrix endpoints return only the matrix data without the additional search results
+ * properties. Examples include `/dataset-summary-agg/` and `/datasets-released/`.
+ */
+export interface MatrixSoloResults {
+  matrix: MatrixResultsObject;
+}
+
+/**
  * Maps a column label to its 0-based column index in the matrix.
  */
 export type ColumnMap = {
@@ -197,6 +220,26 @@ export function isMatrixResultsObject(item: unknown): item is MatrixResults {
     "@type" in item &&
     ((typeof item["@type"] === "string" && item["@type"] === "Omnimatrix") ||
       (Array.isArray(item["@type"]) && item["@type"].includes("Matrix"))) &&
+    "matrix" in item &&
+    typeof item.matrix === "object" &&
+    item.matrix !== null &&
+    "x" in item.matrix &&
+    "y" in item.matrix &&
+    isMatrixAxis(item.matrix.x) &&
+    isMatrixAxis(item.matrix.y)
+  );
+}
+
+/**
+ * Type guard to check if an item is a MatrixSoloResults object.
+ *
+ * @param item - Response from backend to test if it's likely a matrix solo results object or not
+ * @returns True if the item is a MatrixSoloResults object
+ */
+export function isMatrixSoloResults(item: unknown): item is MatrixSoloResults {
+  return (
+    typeof item === "object" &&
+    item !== null &&
     "matrix" in item &&
     typeof item.matrix === "object" &&
     item.matrix !== null &&
